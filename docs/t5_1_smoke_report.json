@@ -1,0 +1,12 @@
+{
+  "privacy": true,
+  "hover_selection_target_cancel": true,
+  "response_damage": true,
+  "death_visual": true,
+  "resize": true,
+  "complete_match": true,
+  "steps": 180,
+  "result": "反贼胜利",
+  "platform": "offscreen",
+  "entry_point": "python -m sanguosha / runpy"
+}

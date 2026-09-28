@@ -1,0 +1,674 @@
+{
+  "files": [
+    {
+      "path": "assets/cards/military/basic.fire_slash.png",
+      "source_sha256": "bc5780e71ca0bce353169e21617807acc1b3593658404a1be42258f0a9f7bdda",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/basic.thunder_slash.png",
+      "source_sha256": "0f4bd53890efc6e632088a0fe05a5cab645c8025d7ecc6fe03de09ee9282919f",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/basic.wine.png",
+      "source_sha256": "00d22fe9d6bb8ff5ec57ae7e8ca6d2d254588cbb4220aca5e0dc1ac3e62d50c7",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/delayed.indulgence.png",
+      "source_sha256": "7cfe589da9528839d997e8e37b43de269d6778517a3daf332dc3b221ddbb8d02",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/delayed.lightning.png",
+      "source_sha256": "dba347f934d0cc23b81123b3585474085d8e349cc2dee75bcacb057294e8db5b",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/delayed.supply_shortage.png",
+      "source_sha256": "9691029a62468ecc251532ac25f340dd1be73bb2a287d90fa0cdeb1f9d73b863",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.armor.eight_trigrams-v2.png",
+      "source_sha256": "f61740faa11fdc841d7291f6aac5440f17e7bd4705c8a52c089eae6a47f01537",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.armor.renwang_shield-v2.png",
+      "source_sha256": "00428cf67511a082da73bcd047a0eaa998f97a3f6cfa5255525b806b78865dc3",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.armor.silver_lion-v2.png",
+      "source_sha256": "6aa89151bed10b4b17222f40422b2b1dd8b4078316a539950ed2ded394987bd8",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.armor.vine-v2.png",
+      "source_sha256": "cd8bc600134797a29f0160ac414c78458ecbfa6b3eb45d7d49dcad9922bd2a8e",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.horse.chitu-v2.png",
+      "source_sha256": "5155454cf04088d11bd44201a119d25ff9de5d82a1bb380c0680384f590ffdee",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.horse.dayuan-v2.png",
+      "source_sha256": "4dfa239d1dca445838ac463d82ca3a27cf7ed591fadfb4e9d56d0b8d339d209b",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.horse.dilu-v2.png",
+      "source_sha256": "9463337c5bb702646a143d5427dda228a8fcaf45488484e12d780a4972b599ed",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.horse.hualiu-v2.png",
+      "source_sha256": "1d0da63205711fbe044b9bf2fb607ea455e4603d3d9dfebe9983713391facda9",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.horse.jueying-v2.png",
+      "source_sha256": "a1c0313b86f83ad35cd22260cec18cb41ce7e84f71fd7965af032d90fa3c6fe6",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.horse.zhaohuangfeidian-v2.png",
+      "source_sha256": "26a88f341a840872cd3e24442fcd6c177ac6295cf0ef38ea2cb87469d1a47503",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.horse.zixing-v2.png",
+      "source_sha256": "a04cb0f04e3638adcdd43cf3c2e4479e89cbdc1d99307fc5c3e0d47e0f69e058",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.weapon.ancient_blade-v2.png",
+      "source_sha256": "315ee46bcde4bde8616b918dcd9daceae4a1c292f690d5341df0561e5d6f6f19",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.weapon.crossbow-v2.png",
+      "source_sha256": "7d50478f0dcffece2edfeac795d01cab7ace533c601db582b2d3831e66f54d46",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.weapon.double_sword-v2.png",
+      "source_sha256": "30c1678eb16b855f6687dab1c11fd919b8cf95f7d8829a7340f543124cd24151",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.weapon.green_dragon_blade-v2.png",
+      "source_sha256": "a9871b21e2835661dc23f1ae7cc4a9beb835c76ee9ad9676ed2bd774a12a9c00",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.weapon.halberd-v2.png",
+      "source_sha256": "ac29b7348cb854df1243edb8c9ad34defe7ace5f2bfa84d6ba621a4ea209739e",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.weapon.ice_sword-v2.png",
+      "source_sha256": "c92c1c6805958f25ec4e48e351f58434228e27484ef5829dd9dc411cf1bf4176",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.weapon.kylin_bow-v2.png",
+      "source_sha256": "b4d1fa4b8e0571aede232ed13d2e8c42318b6b66567306487d52b8c49f684cf6",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.weapon.qinggang_sword-v2.png",
+      "source_sha256": "ba1fb4b527bcca2f62102ec122fd833e754397b631c9cbed49fa639236ce2ed3",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.weapon.rock_cleaving_axe-v2.png",
+      "source_sha256": "9672eb8cd88933c9b9a993f9856c0cc56365b40c33d44da46c4adebdbb705a80",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.weapon.serpent_spear-v2.png",
+      "source_sha256": "de2c3961d8c11bb242e9d556b411e8d6e9b88b5332d29d2682207e65aafc9998",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/equipment.weapon.vermilion_fan-v2.png",
+      "source_sha256": "7c9191150e8c98b1163a6945733bf1ec4e7bff887b3e21289e0813b4ba38dd74",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.amazing_grace.png",
+      "source_sha256": "47130ad632ad87449faa6a5cf7ec6285a4d14f946a921f4631595fd78878a70a",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.archery_attack.png",
+      "source_sha256": "d79580d08277cb97b9645062b0c528a9e80517c0796d8af6908cf3310146b2c2",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.borrowed_sword.png",
+      "source_sha256": "47e89cd8e5c60f9ade66c87bb4aa509374047aa2d53ef39eed54e51eb4e070ab",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.dismantlement.png",
+      "source_sha256": "b136b873af157b966caee0fc8e71d876a5a51adfb69a33ab58310b5c3bb47728",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.duel.png",
+      "source_sha256": "b68af117ee5d4e0cfbd3809c4089fcd24cf693e67fd285adcf5bec177a272155",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.ex_nihilo.png",
+      "source_sha256": "c9b2a29c7ac6a3c8dd12127471d03eb1bfcb803eeef18e6212ebb0b0f03e08e4",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.fire_attack.png",
+      "source_sha256": "2d5336cad17199748d3b7c7095eb41b85026717a823b2e0803d097e1549aaf3e",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.god_salvation.png",
+      "source_sha256": "c4881a3d223bbbc2359019defd968c0d5fb1955d3d9ea38f43729d4bc57fc47d",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.iron_chain.png",
+      "source_sha256": "9b54407820e286df0e2162c27ea7c801ac8f7e539a7745a739aa978486d138b3",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.nullification.png",
+      "source_sha256": "5328b18fbf0fda4483dfba49695850a857e159ddf2d580da6fca6b9f3a67e270",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.savage_assault.png",
+      "source_sha256": "ac5b0f552d1269d3170fcf0ef20a783e3f8009f1462b7bb5b4ab500d43a1099f",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/cards/military/trick.snatch.png",
+      "source_sha256": "02d6f61849358edfe49fdf3df48c88f42cd20f9c37c3a19540629c2b4e55f421",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "assets/manifest.json",
+      "source_sha256": "a90281306f77fd78bfcf409b296ab88dd8163695fa24d434d4660466bcdfc94b",
+      "formal_before_sha256": "477dadefe4dbdf205ab73dea9d7a4714ce3d00890786a970be3916517453e2e8"
+    },
+    {
+      "path": "docs/T6_2026-09-28.md",
+      "source_sha256": "a094b647e8c6d53aa6f0c6a3bc2b3138d7b075fe046b93287aeb6a5de4f6030b",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "docs/T6_ART.md",
+      "source_sha256": "cfcf13c2ed7d1ea5a3c9b7688c17b4ca22bb942dc02b84f72ec0041201175ec0",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "docs/T6_ART_INDEX.json",
+      "source_sha256": "422d377bd6327835bef24830dcfbc74a4dbc2b7e92daab5bb1ab4c93b6121de1",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "docs/T6_VALIDATION.json",
+      "source_sha256": "d598c665f9074d0265b2f1d9e052d8fc60b189d808b5fd54904da4f0004cf057",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "docs/smoke_full_match.py",
+      "source_sha256": "3404684bc15b4ce620e55262c26dce63bba658c7bd0e5baa2c087644882b74aa",
+      "formal_before_sha256": "a75caf804cc3efba7d339abeaf7d8796a43b5175dc7ecabee1b3a797d7f5618e"
+    },
+    {
+      "path": "docs/smoke_t5_1.py",
+      "source_sha256": "9699a8a4cb9167d5f7ac9f9b255b9255a822c76aa1f1d9925c165dd0b8f7bbca",
+      "formal_before_sha256": "423ebb280124228ecfb894ea25695370b27b0d4b81d9bed8edeb28768e5fe899"
+    },
+    {
+      "path": "docs/smoke_t6_development.py",
+      "source_sha256": "81299ba6f9568627491656f80123fd5488981c820a51730ac5fd6276a7eb321a",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "docs/smoke_t6_gui.py",
+      "source_sha256": "7fbd40adbae74c15e974a3764d6ae5d1fb876b46e7a09499d34bfea60ba1c77c",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "docs/validate_t6.py",
+      "source_sha256": "b07cadf8406df90a8b56e95f97c933bb83cb3da86f54acf80e2add10dbe57023",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "src/sanguosha/decisions/ai.py",
+      "source_sha256": "209d9c8d525a0ea6984c612d9e879e4bc1202d22766ffc3ca4669a128b1ce666",
+      "formal_before_sha256": "67f40f0d6995804301244252abb669f3d70875b406b9910aa925e52f79d946ec"
+    },
+    {
+      "path": "src/sanguosha/engine/actions.py",
+      "source_sha256": "e588299a30846f381d5e8c6c8df0ad1dbb53c9ca2cdb98593389902ba0393e83",
+      "formal_before_sha256": "5e0ca99f7f389e83ff2e47df26b15ea0a6d1f7fad24ff344e48345dc35167f87"
+    },
+    {
+      "path": "src/sanguosha/engine/card_rules.py",
+      "source_sha256": "ddbe5b5593c0fb49982203a8a8ecaea13494638d027015a082866271002fd72c",
+      "formal_before_sha256": "2eec4f97449985792dcce98fdcf5a4e45bdbb4e46440489126da62163ed34109"
+    },
+    {
+      "path": "src/sanguosha/engine/card_use.py",
+      "source_sha256": "dbcb753ba5cd8cefd8c0113e73a53c51ecf5cc4fac37b7b2d4cfa2d8e679799e",
+      "formal_before_sha256": "7f5ecaf9e39386d36bb0040cb4838db8f418183b9a6c22481a6b52aea230dacd"
+    },
+    {
+      "path": "src/sanguosha/engine/deck.py",
+      "source_sha256": "eeb4ccfaad191f25af98ca58486b3e456d7be1626deed5b8c0ebf9e9156976d1",
+      "formal_before_sha256": "f15f351f872d80a6ba57cb463a8f919b1e17be327532ac467c85f3343bd551e8"
+    },
+    {
+      "path": "src/sanguosha/engine/engine.py",
+      "source_sha256": "5dfff44496ee26e889c7b3bd9c880fc0fd85135e7ba6f7dd15d65e94bb73a1c2",
+      "formal_before_sha256": "0f9962f87d92c19c5fc142e7caf9f956ef4b5e57f7e2659b77d53929bccf9a3c"
+    },
+    {
+      "path": "src/sanguosha/engine/judgment.py",
+      "source_sha256": "3c47270690571bf9c8610bbcbf5af2c7e58583f727515e0dfbd6a05ae15725c9",
+      "formal_before_sha256": "a47c730624a0b278e5b750fc48cfac346a28c5eeaf71458eaea3b60817ee0259"
+    },
+    {
+      "path": "src/sanguosha/engine/military_basics.py",
+      "source_sha256": "7cf21cf478b4e4e6b5fca1461806908f0a8ead65ddb533100cd939c2d5c64636",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "src/sanguosha/engine/military_equipment.py",
+      "source_sha256": "017b3d3396c380398740dfb42c80a6fe0ea8eeb48d9995ba9245067c6dda3c4d",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "src/sanguosha/engine/military_tricks.py",
+      "source_sha256": "f3ceb5b4c60e92477fe903b74eda0ad2bacc715116f761fe26cc66454fc5bdb2",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "src/sanguosha/engine/resolution.py",
+      "source_sha256": "eccd792ca639f1f784da61ca639ba5b67373c42a9dd6648c7895793c02be17cb",
+      "formal_before_sha256": "1bb60480400050a15d432505c3a0b90adb6ee057d1ab52725a2e943bf05f912b"
+    },
+    {
+      "path": "src/sanguosha/engine/response.py",
+      "source_sha256": "706831e58e137d423d63a8bb4a5e294b78678e213b2dba1e163ad61ffcd0c459",
+      "formal_before_sha256": "de28b4988931104146d37259389d91b60f0d575659f0ad4a75deb3317a51afd5"
+    },
+    {
+      "path": "src/sanguosha/engine/turns.py",
+      "source_sha256": "04ec9ee8602916bf63f41a5fdf86f40321dfc99d3fef712d4a6cb748e59c5b57",
+      "formal_before_sha256": "98601f23542febf842eff29e46d7d478bea01bfda56f34d2f23fa6029bfd32ad"
+    },
+    {
+      "path": "src/sanguosha/engine/view_as.py",
+      "source_sha256": "30cbc30d1d31a5134ffa8b14537ec3d4375252003b7d4c961a2fbfccf738edc3",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "src/sanguosha/model/virtual_card.py",
+      "source_sha256": "57cf595ac6e183eebb068889349b4b06e4117bbacdf5e500ec2ca4f6ac84c277",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "src/sanguosha/projection.py",
+      "source_sha256": "326873b494902836d9831b0801a15f11fe0956cd7462a25c1ebbbca76e17bbe1",
+      "formal_before_sha256": "9d82ef69bbf3884d7b15e13bec85b3c4b62ea581a2eabfb96a4daf8b0cd880ea"
+    },
+    {
+      "path": "src/sanguosha/session.py",
+      "source_sha256": "816c8688aa123f0968fa88baccf255dd1bc706e6d14ab5ec7a0597aac8f801c2",
+      "formal_before_sha256": "db041dc333352db57c55a57217cd1317e13ec240c20d4d855480a2a2f470d261"
+    },
+    {
+      "path": "src/sanguosha/ui/game_table.py",
+      "source_sha256": "4c8bce089af0616cb5efd4ab7315d20dd82fbe688f9a79bcdd2654fd9c14c6c9",
+      "formal_before_sha256": "439bd2fe3ce381b465c019708d7eeb2cdd3c8442ef829afd4702b79a48d142b1"
+    },
+    {
+      "path": "src/sanguosha/ui/log_panel.py",
+      "source_sha256": "2e0b22e42f9c2990a2b91299f1fb2282665b2a5186424fadb77816ac2aed8879",
+      "formal_before_sha256": "9b0a91452c83a8d96f9081034df8a3ba89b72a1cf0fa025e1561bcec1e5aac5d"
+    },
+    {
+      "path": "src/sanguosha/ui/main_window.py",
+      "source_sha256": "a444549c88389700a751fd568856fde3f560a5e91dde0f8fa0de8ccb2c9746bb",
+      "formal_before_sha256": "e95d1f1e738f62ebc5af122abc20f51980b805afb11f285556df44cfdbf5e685"
+    },
+    {
+      "path": "src/sanguosha/ui/player_panel.py",
+      "source_sha256": "f9f24168030118caad284d17d90a2bcee2a1f13d9f92154899c063089c804059",
+      "formal_before_sha256": "1d1c8e1e2b13e724ca5c1c0b340aaff210807ad83a07a1283f31bcf05c1b5cbd"
+    },
+    {
+      "path": "tests/test_t5_1_completion.py",
+      "source_sha256": "d395267087f9dd0360c883dae877dd59f54dfaeb1c0ee25d6cec5d061123fc2f",
+      "formal_before_sha256": "bc854c81c76a40dfc9fd62ceb60435342f5f35c0dda651f14279aa7e69d352b8"
+    },
+    {
+      "path": "tests/test_t5_1_ui.py",
+      "source_sha256": "539f4195f25549358ed4966980683b6e8a5318d857e1973702a353ea26f4e558",
+      "formal_before_sha256": "00551b69ecf7a5a2204097f8fdcc6476039010bb01b0ac26f990ffd834033d1f"
+    },
+    {
+      "path": "tests/test_t5_2_ui.py",
+      "source_sha256": "54fd413b0c1e930ba8f538a4cfcdbf6082d32adfac04dbbb24d80550d13074a9",
+      "formal_before_sha256": "1cf7c040b6c6ec891b7710fd608a60dfed6266c90bdace2e24f0f77d932f5e95"
+    },
+    {
+      "path": "tests/test_t5_3_ui.py",
+      "source_sha256": "126d0e51a590b1bec68f47ef84f675e0335ddd1bd767e398331ba8d7f29ea5a7",
+      "formal_before_sha256": "77ab7493b59180a129b3a3cbc0bf16fc7728ab421feec7df63acd18b6bbfe5c2"
+    },
+    {
+      "path": "tests/test_t5_ui.py",
+      "source_sha256": "ec2b1830bb9c3ba2814cba6ed946e32a778ebf019ebd852a1841a05016c215e1",
+      "formal_before_sha256": "edf30d69248ebfa9844cae960692008e847786d34b9a1c09c6a262198ed6bc8b"
+    },
+    {
+      "path": "tests/test_t6_art_manifest.py",
+      "source_sha256": "94f78bb851ee1bb8510d8c6270f45a8b4f6a215a31fa530168fd25c57f084834",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "tests/test_t6_equipment_chains.py",
+      "source_sha256": "eb5f4901092c33aff3f8a99074eca33632dc7d635e53e1e34515b9b64d9bb3db",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "tests/test_t6_gui.py",
+      "source_sha256": "ff9225b5346634e5566eb37f34d2463702a588f76d43a499c3d12389c2a98b97",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "tests/test_t6_military_basics.py",
+      "source_sha256": "8a5b7d0938d6687c8f437fddb92e42df625b2ba9dda70f210517b9e6853692e0",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "tests/test_t6_remaining_effects.py",
+      "source_sha256": "223e4f77fa4b054bfead6ab95d7f1d928622f47aa7c3668a73b212ee8dea1647",
+      "formal_before_sha256": null
+    },
+    {
+      "path": "tests/test_t6_trick_chains.py",
+      "source_sha256": "b6bd332315656e16f950f8de7476d5c8700a83f420a71b04bbb14929723b6f85",
+      "formal_before_sha256": null
+    }
+  ],
+  "deck_sha256_unchanged": "81a891adaa8c27a6f852e707193a11b3031abe171aef9a1f06cb53b394ead89e",
+  "status": "VERIFIED",
+  "backup": "C:\\Sanguosha\\docs\\t6_backup_20260928_184640",
+  "formal_validation": {
+    "pytest": {
+      "total": 167,
+      "passed": 167,
+      "failed": 0,
+      "warnings": 0
+    },
+    "import_path": "C:\\Sanguosha\\src\\sanguosha\\__init__.py",
+    "syntax": "PASS",
+    "card_widgets_rendered": 43,
+    "original_art": 40,
+    "deck": 160,
+    "engine_smoke": [
+      {
+        "seed": 1,
+        "steps": 601,
+        "turns": 52,
+        "winner": "主公与忠臣胜利",
+        "used": [
+          "basic.fire_slash",
+          "basic.peach",
+          "basic.slash",
+          "basic.thunder_slash",
+          "basic.wine",
+          "delayed.indulgence",
+          "delayed.lightning",
+          "delayed.supply_shortage",
+          "equipment.armor.eight_trigrams",
+          "equipment.armor.renwang_shield",
+          "equipment.armor.silver_lion",
+          "equipment.armor.vine",
+          "equipment.horse.chitu",
+          "equipment.horse.dayuan",
+          "equipment.horse.dilu",
+          "equipment.horse.hualiu",
+          "equipment.horse.zhaohuangfeidian",
+          "equipment.horse.zixing",
+          "equipment.weapon.ancient_blade",
+          "equipment.weapon.crossbow",
+          "equipment.weapon.double_sword",
+          "equipment.weapon.halberd",
+          "equipment.weapon.kylin_bow",
+          "equipment.weapon.rock_cleaving_axe",
+          "equipment.weapon.serpent_spear",
+          "equipment.weapon.vermilion_fan",
+          "trick.amazing_grace",
+          "trick.archery_attack",
+          "trick.borrowed_sword",
+          "trick.dismantlement",
+          "trick.duel",
+          "trick.ex_nihilo",
+          "trick.fire_attack",
+          "trick.god_salvation",
+          "trick.iron_chain",
+          "trick.savage_assault",
+          "trick.snatch"
+        ]
+      },
+      {
+        "seed": 2,
+        "steps": 289,
+        "turns": 15,
+        "winner": "反贼胜利",
+        "used": [
+          "basic.fire_slash",
+          "basic.peach",
+          "basic.slash",
+          "basic.wine",
+          "delayed.indulgence",
+          "delayed.lightning",
+          "delayed.supply_shortage",
+          "equipment.armor.eight_trigrams",
+          "equipment.armor.vine",
+          "equipment.horse.hualiu",
+          "equipment.weapon.ancient_blade",
+          "equipment.weapon.crossbow",
+          "equipment.weapon.double_sword",
+          "equipment.weapon.green_dragon_blade",
+          "equipment.weapon.qinggang_sword",
+          "equipment.weapon.serpent_spear",
+          "trick.amazing_grace",
+          "trick.borrowed_sword",
+          "trick.dismantlement",
+          "trick.duel",
+          "trick.ex_nihilo",
+          "trick.fire_attack",
+          "trick.iron_chain",
+          "trick.savage_assault",
+          "trick.snatch"
+        ]
+      },
+      {
+        "seed": 3,
+        "steps": 283,
+        "turns": 17,
+        "winner": "反贼胜利",
+        "used": [
+          "basic.peach",
+          "basic.slash",
+          "basic.thunder_slash",
+          "basic.wine",
+          "delayed.lightning",
+          "delayed.supply_shortage",
+          "equipment.armor.eight_trigrams",
+          "equipment.armor.vine",
+          "equipment.horse.dayuan",
+          "equipment.horse.hualiu",
+          "equipment.horse.zhaohuangfeidian",
+          "equipment.weapon.ancient_blade",
+          "equipment.weapon.crossbow",
+          "equipment.weapon.kylin_bow",
+          "equipment.weapon.vermilion_fan",
+          "trick.amazing_grace",
+          "trick.dismantlement",
+          "trick.duel",
+          "trick.fire_attack",
+          "trick.god_salvation",
+          "trick.iron_chain",
+          "trick.savage_assault",
+          "trick.snatch"
+        ]
+      },
+      {
+        "seed": 4,
+        "steps": 381,
+        "turns": 31,
+        "winner": "主公与忠臣胜利",
+        "used": [
+          "basic.fire_slash",
+          "basic.peach",
+          "basic.slash",
+          "basic.thunder_slash",
+          "basic.wine",
+          "delayed.indulgence",
+          "delayed.lightning",
+          "equipment.armor.eight_trigrams",
+          "equipment.armor.renwang_shield",
+          "equipment.armor.silver_lion",
+          "equipment.armor.vine",
+          "equipment.horse.dilu",
+          "equipment.horse.hualiu",
+          "equipment.horse.jueying",
+          "equipment.horse.zhaohuangfeidian",
+          "equipment.weapon.ancient_blade",
+          "equipment.weapon.crossbow",
+          "equipment.weapon.double_sword",
+          "equipment.weapon.green_dragon_blade",
+          "equipment.weapon.halberd",
+          "equipment.weapon.ice_sword",
+          "equipment.weapon.kylin_bow",
+          "equipment.weapon.qinggang_sword",
+          "equipment.weapon.rock_cleaving_axe",
+          "trick.amazing_grace",
+          "trick.archery_attack",
+          "trick.borrowed_sword",
+          "trick.dismantlement",
+          "trick.duel",
+          "trick.ex_nihilo",
+          "trick.fire_attack",
+          "trick.iron_chain",
+          "trick.savage_assault",
+          "trick.snatch"
+        ]
+      },
+      {
+        "seed": 5,
+        "steps": 395,
+        "turns": 30,
+        "winner": "主公与忠臣胜利",
+        "used": [
+          "basic.fire_slash",
+          "basic.peach",
+          "basic.slash",
+          "basic.thunder_slash",
+          "basic.wine",
+          "delayed.indulgence",
+          "delayed.lightning",
+          "delayed.supply_shortage",
+          "equipment.armor.eight_trigrams",
+          "equipment.armor.renwang_shield",
+          "equipment.armor.vine",
+          "equipment.horse.chitu",
+          "equipment.horse.hualiu",
+          "equipment.horse.zhaohuangfeidian",
+          "equipment.weapon.crossbow",
+          "equipment.weapon.green_dragon_blade",
+          "equipment.weapon.qinggang_sword",
+          "equipment.weapon.rock_cleaving_axe",
+          "trick.amazing_grace",
+          "trick.borrowed_sword",
+          "trick.dismantlement",
+          "trick.duel",
+          "trick.ex_nihilo",
+          "trick.fire_attack",
+          "trick.god_salvation",
+          "trick.iron_chain",
+          "trick.savage_assault",
+          "trick.snatch"
+        ]
+      }
+    ],
+    "gui_smoke": [
+      {
+        "seed": 1,
+        "steps": 369,
+        "turns": 23,
+        "winner": "主公与忠臣胜利",
+        "gui": "PASS"
+      },
+      {
+        "seed": 2,
+        "steps": 286,
+        "turns": 15,
+        "winner": "反贼胜利",
+        "gui": "PASS"
+      },
+      {
+        "seed": 3,
+        "steps": 555,
+        "turns": 51,
+        "winner": "主公与忠臣胜利",
+        "gui": "PASS"
+      },
+      {
+        "seed": 4,
+        "steps": 373,
+        "turns": 31,
+        "winner": "主公与忠臣胜利",
+        "gui": "PASS"
+      },
+      {
+        "seed": 5,
+        "steps": 383,
+        "turns": 30,
+        "winner": "主公与忠臣胜利",
+        "gui": "PASS"
+      }
+    ],
+    "status": "PASS",
+    "deck_sha256": "81a891adaa8c27a6f852e707193a11b3031abe171aef9a1f06cb53b394ead89e"
+  },
+  "final_report_backup": "C:\\Sanguosha\\docs\\t6_backup_20260928_184640\\final_reports",
+  "final_reports": [
+    {
+      "path": "docs/T6_2026-09-28.md",
+      "sha256": "7fecb9a5e43b187294aca050a712c7c8e0d281ebe9fbff741230525a5829fb27"
+    },
+    {
+      "path": "docs/T6_ART.md",
+      "sha256": "a0997aa81c761914f01525dec4b45be602e212308537cd45f11754dbff73d31d"
+    },
+    {
+      "path": "docs/RECOVERY_2026-09-28.md",
+      "sha256": "fa2285f2a03b0ec068215c5cd09498c316adb52b83a8783b2c8e4b1712f7ad7a"
+    }
+  ],
+  "validation_report_sha256": "e54b96b0e63f2e3f9d0760761dbc2eb2ef28a04c42a8666c39050aa768d51058"
+}

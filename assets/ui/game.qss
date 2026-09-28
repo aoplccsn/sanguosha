@@ -1,0 +1,22 @@
+
+QMainWindow, QWidget#root { background: #0d2426; color: #f4e4bb; }
+QPushButton#new-game, QPushButton[action="true"] {
+    background: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #886039,stop:1 #593a25);
+    color: #fff0cb; border: 2px solid #d9b779;
+    border-radius: 7px; padding: 8px 20px; font-size: 14px; font-weight: bold;
+}
+QPushButton#new-game:hover, QPushButton[action="true"]:hover { background: #966e39; border-color: #ffe0a1; }
+QPushButton#new-game:pressed, QPushButton[action="true"]:pressed { background: #483921; }
+QPushButton[action="true"]:disabled { background: #46514b; color: #adb1a4; border-color: #697468; }
+QLabel#game-prompt { color: #f7e6bf; background: #203a36; border: 2px solid #b49158;
+    border-radius: 7px; padding: 10px 16px; font-size: 16px; font-weight: bold; }
+QTextEdit#game-log { background: #142a2a; color: #aebbb0;
+    border: 1px solid #6d705a; border-radius: 7px; padding: 5px; }
+QLabel#status { color: #f3dfb1; font-size: 17px; font-weight: bold; padding: 5px 15px;
+    background: #1a3937; border: 1px solid #9c7f4e; border-radius: 6px; }
+
+QLabel#game-prompt[mode="response"] { background: #492a2b; border: 2px solid #dc9865; }
+QLabel#game-prompt[mode="target"] { border: 2px solid #ffe077; }
+QToolTip { color: #f4e4bb; background: #203a36; border: 1px solid #d5ad65; padding: 6px; }
+QScrollBar:vertical { background: #142a2a; width: 9px; }
+QScrollBar::handle:vertical { background: #806c47; min-height: 16px; }

@@ -1,0 +1,385 @@
+"""Military basic cards built on the existing explicit action stack.
+
+Distance, equipment storage, judgment and dying resolution are reused.
+"""
+from dataclasses import dataclass
+
+from sanguosha.content.cards.basic import SlashRule, ReachableOpponent, EquipmentSlashLimit
+from sanguosha.content.cards.classic_military import register_additional_definitions
+from sanguosha.model.enums import DamageNature, Color, EquipmentSlot, Phase
+from sanguosha.model.ids import CardInstanceId, PlayerId
+from sanguosha.model.state import GameStatus
+from sanguosha.model.zones import ZoneRef, ZoneType
+from .actions import Action, StepResult
+from .card_effects import SlashEffectAction
+from .card_rules import InvalidCardUse
+from .damage import DamageAction, DamageActionHandler
+from .distance import DistanceSystem
+from .dying import DyingAction
+from .events import BeforeDamageEvent, DamageDealtEvent, AfterDamageEvent, DyingRequiredEvent, Event
+from .judgment import JudgmentAction, JudgmentPattern, JudgmentHandler
+from .response import RespondWithCardAction, RespondWithCardHandler
+from .requests import PendingRequest, RequestType
+from .equipment import EquipCardAction, EquipCardHandler, register_equipment_rules
+from sanguosha.model.virtual_card import VirtualCard
+
+SLASH_IDS = frozenset(('basic.slash', 'basic.fire_slash', 'basic.thunder_slash'))
+
+def equipped(state, player, slot):
+    cards = state.cards_in(ZoneRef(ZoneType.EQUIPMENT, player, slot))
+    return state.cards[cards[0]].definition_id if cards else None
+
+@dataclass(frozen=True, slots=True)
+class MilitaryDamageAction(DamageAction):
+    propagated: bool = False
+    ignore_armor: bool = False
+
+class MilitaryDamageHandler(DamageActionHandler):
+    """The first recipient completes dying before the chain cursor advances."""
+    def validate_start(self, state, action):
+        if action.amount <= 0 or action.target_id not in state.players or not state.players[action.target_id].is_alive:
+            raise InvalidCardUse('damage must have positive amount and a living target')
+
+    def step(self, state, frame):
+        action = frame.action
+        target = state.players[action.target_id]
+        if frame.step_index == 0:
+            self.validate_start(state, action)
+            amount = action.amount
+            armor = equipped(state, action.target_id, EquipmentSlot.ARMOR)
+            if not getattr(action, 'ignore_armor', False):
+                if armor == 'equipment.armor.vine' and action.nature is DamageNature.FIRE:
+                    amount += 1
+                if armor == 'equipment.armor.silver_lion':
+                    amount = min(amount, 1)
+            frame.local['amount'] = amount
+            chain = ()
+            if action.nature is not DamageNature.NORMAL and target.chained:
+                target.chained = False
+                if not getattr(action, 'propagated', False):
+                    start = state.seat_order.index(action.target_id)
+                    order = state.seat_order[start + 1:] + state.seat_order[:start]
+                    chain = tuple(pid for pid in order if state.players[pid].is_alive and state.players[pid].chained)
+            frame.local['chain'] = '|'.join(chain)
+            self.recorder.record(BeforeDamageEvent(action.action_id + ':before', action.source_id, action.target_id, amount))
+            target.hp -= amount
+            self.recorder.record(DamageDealtEvent(action.action_id + ':dealt', action.source_id, action.target_id, amount, target.hp))
+            self.recorder.record(AfterDamageEvent(action.action_id + ':after', action.source_id, action.target_id, amount))
+            self.recorder.record(Event(action.action_id + ':nature', 'damage_nature', action.target_id,
+                                       metadata={'nature': action.nature.value, 'amount': amount}))
+            frame.step_index = 1
+            if target.hp <= 0:
+                self.recorder.record(DyingRequiredEvent(action.action_id + ':dying', action.target_id, target.hp))
+                return StepResult.push(DyingAction(action.action_id + ':rescue', action.target_id, action.source_id))
+            return StepResult.continue_()
+        chain = str(frame.local['chain']).split('|') if frame.local['chain'] else []
+        if state.status is GameStatus.FINISHED or frame.cursor >= len(chain):
+            return StepResult.complete(int(frame.local['amount']))
+        pid = PlayerId(chain[frame.cursor])
+        frame.cursor += 1
+        if not state.players[pid].is_alive or not state.players[pid].chained:
+            return StepResult.continue_()
+        return StepResult.push(MilitaryDamageAction(
+            f'{action.action_id}:chain:{frame.cursor}', action.source_id, pid,
+            int(frame.local['amount']), action.nature, action.card_id, action.related_action_id,
+            propagated=True))
+
+@dataclass(frozen=True, slots=True)
+class WineAction(Action):
+    player_id: PlayerId
+
+class WineHandler:
+    def step(self, state, frame):
+        state.players[frame.action.player_id].marks['wine'] = 1
+        return StepResult.complete()
+
+class WineRule:
+    requires_target_selection = False
+    def can_use(self, state, user):
+        return True
+    def target_candidates(self, state, user):
+        return ()
+    def validate_targets(self, state, user, targets):
+        if targets:
+            raise InvalidCardUse('wine does not choose a target')
+    def usage_limit(self, state, user):
+        return 1
+    def effect_action(self, action_id, user, card, targets):
+        return WineAction(action_id, user)
+
+class MilitarySlashRule(SlashRule):
+    usage_key = 'basic.slash'
+    def __init__(self, distance):
+        super().__init__(ReachableOpponent(distance), EquipmentSlashLimit())
+    def target_bounds(self,state,user,card):
+        maximum = 3 if equipped(state,user,EquipmentSlot.WEAPON)=='equipment.weapon.halberd' and len(state.cards_in(ZoneRef(ZoneType.HAND,user)))==1 else 1
+        return 1,maximum
+    def validate_targets(self,state,user,targets):
+        low,high=self.target_bounds(state,user,None)
+        if not low<=len(targets)<=high or len(set(targets))!=len(targets) or any(pid not in self.target_candidates(state,user) for pid in targets):
+            raise InvalidCardUse('invalid Slash targets')
+    def effect_action(self,aid,user,card,targets):
+        return SlashSequence(aid,user,card,targets)
+
+@dataclass(frozen=True,slots=True)
+class MilitaryStrike(SlashEffectAction):
+    wine_bonus: int = 0
+    virtual_card: VirtualCard | None = None
+
+@dataclass(frozen=True,slots=True)
+class SlashSequence(Action):
+    source_id: str
+    card_id: str
+    targets: tuple[str,...]
+    virtual_card: VirtualCard | None = None
+
+class SlashSequenceHandler:
+    def step(self,state,f):
+        a=f.action
+        if f.step_index==0:
+            f.local['wine']=state.players[a.source_id].marks.pop('wine',0)
+            f.step_index=1
+        if f.cursor>=len(a.targets) or state.status is GameStatus.FINISHED:
+            return StepResult.complete()
+        target=a.targets[f.cursor]
+        f.cursor+=1
+        if not state.players[target].is_alive:
+            return StepResult.continue_()
+        return StepResult.push(MilitaryStrike(f'{a.action_id}:target:{f.cursor}',a.source_id,target,a.card_id,
+            'basic.dodge',int(f.local['wine']),a.virtual_card))
+
+class MilitarySlashHandler:
+    def step(self, state, frame):
+        action = frame.action
+        armor = equipped(state, action.target_id, EquipmentSlot.ARMOR)
+        weapon = equipped(state, action.source_id, EquipmentSlot.WEAPON)
+        card = state.cards[action.card_id]
+        virtual=getattr(action,'virtual_card',None)
+        definition=virtual.definition_id if virtual else card.definition_id
+        color=virtual.color if virtual else card.color
+        nature = DamageNature.FIRE if frame.local.get('fan_fire') else {'basic.fire_slash': DamageNature.FIRE, 'basic.thunder_slash': DamageNature.THUNDER}.get(definition, DamageNature.NORMAL)
+        ignore = weapon == 'equipment.weapon.qinggang_sword'
+        if frame.step_index == 0:
+            if 'amount' not in frame.local:
+                wine = action.wine_bonus if isinstance(action,MilitaryStrike) else state.players[action.source_id].marks.pop('wine', 0)
+                frame.local['amount'] = 1 + wine
+            if not frame.local.get('fan_handled') and weapon=='equipment.weapon.vermilion_fan' and nature is DamageNature.NORMAL:
+                frame.local['fan_handled']=True
+                frame.step_index=9
+                return StepResult.ask(PendingRequest(action.action_id+':fan',action.source_id,RequestType.YES_NO,
+                    '是否发动朱雀羽扇，将普通杀转为火杀？',action.action_id,frame.frame_id))
+            genders=state.metadata.get('genders',{})
+            if not frame.local.get('double_handled') and weapon=='equipment.weapon.double_sword' and genders.get(action.source_id,'male') != genders.get(action.target_id,'male'):
+                frame.local['double_handled']=True
+                frame.step_index=10
+                return StepResult.ask(PendingRequest(action.action_id+':double',action.source_id,RequestType.YES_NO,
+                    '是否发动雌雄双股剑？',action.action_id,frame.frame_id))
+            if not ignore and (armor == 'equipment.armor.renwang_shield' and color is Color.BLACK
+                               or armor == 'equipment.armor.vine' and nature is DamageNature.NORMAL):
+                return StepResult.complete('prevented')
+            frame.step_index = 1
+            if armor == 'equipment.armor.eight_trigrams' and not ignore:
+                return StepResult.ask(PendingRequest(action.action_id + ':eight-trigrams', action.target_id,
+                    RequestType.YES_NO, '是否发动八卦阵判定？', action.action_id, frame.frame_id))
+            return StepResult.continue_()
+        if frame.step_index == 1:
+            use_armor = frame.decision is True
+            frame.decision = None
+            if use_armor:
+                frame.step_index = 2
+                return StepResult.push(JudgmentAction(action.action_id + ':judgment', action.target_id,
+                    JudgmentPattern(color=Color.RED)))
+            frame.step_index = 3
+            return StepResult.push(RespondWithCardAction(action.action_id + ':response', action.target_id,
+                action.dodge_definition_id, action.action_id, '请打出闪响应杀', action.target_id, False))
+        if frame.step_index == 2:
+            if frame.child_result is True:
+                return StepResult.complete('avoided')
+            frame.step_index = 3
+            return StepResult.push(RespondWithCardAction(action.action_id + ':response', action.target_id,
+                action.dodge_definition_id, action.action_id, '八卦阵未生效，请打出闪', action.target_id, False))
+        if frame.step_index == 3:
+            if frame.child_result is not None:
+                if weapon=='equipment.weapon.green_dragon_blade':
+                    frame.step_index=14
+                    return StepResult.push(RespondWithCardAction(action.action_id+':green-dragon',action.source_id,
+                        'basic.slash',action.action_id,'青龙偃月刀：继续对同一目标出杀，或放弃',action.target_id))
+                if weapon=='equipment.weapon.rock_cleaving_axe':
+                    from .military_equipment import discardable
+                    costs=discardable(state,action.source_id)
+                    if len(costs)>=2:
+                        frame.step_index=12
+                        return StepResult.ask(PendingRequest(action.action_id+':axe-option',action.source_id,RequestType.YES_NO,
+                            '是否发动贯石斧，弃两张牌令杀生效？',action.action_id,frame.frame_id))
+                return StepResult.complete('avoided')
+            if weapon=='equipment.weapon.ice_sword':
+                from .military_equipment import discardable
+                if discardable(state,action.target_id):
+                    frame.step_index=13
+                    return StepResult.ask(PendingRequest(action.action_id+':ice',action.source_id,RequestType.YES_NO,
+                        '是否发动寒冰剑，防止伤害并弃置目标两张牌？',action.action_id,frame.frame_id))
+            if weapon=='equipment.weapon.ancient_blade' and not state.cards_in(ZoneRef(ZoneType.HAND,action.target_id)):
+                frame.local['amount']+=1
+            frame.step_index = 4
+            return StepResult.push(MilitaryDamageAction(action.action_id + ':damage', action.source_id,
+                action.target_id, int(frame.local['amount']), nature, action.card_id, action.action_id,
+                ignore_armor=ignore))
+        if frame.step_index==4:
+            horses=any(state.cards_in(ZoneRef(ZoneType.EQUIPMENT,action.target_id,slot)) for slot in (EquipmentSlot.OFFENSIVE_HORSE,EquipmentSlot.DEFENSIVE_HORSE))
+            if weapon=='equipment.weapon.kylin_bow' and horses and state.players[action.target_id].is_alive and state.status is not GameStatus.FINISHED:
+                frame.step_index=15
+                return StepResult.ask(PendingRequest(action.action_id+':kylin',action.source_id,RequestType.YES_NO,
+                    '是否发动麒麟弓，弃置目标一张马？',action.action_id,frame.frame_id))
+        if frame.step_index==9:
+            frame.local['fan_fire']=frame.decision is True
+            frame.decision=None
+            frame.step_index=0
+            return StepResult.continue_()
+        if frame.step_index in (10,13,15):
+            from .military_equipment import WeaponChoice
+            stage=frame.step_index
+            yes=frame.decision is True
+            frame.decision=None
+            if stage==10:
+                frame.step_index=11 if yes else 0
+            elif stage==13:
+                frame.step_index=16 if yes else 3
+                if not yes:
+                    # Avoid offering the same optional replacement again.
+                    frame.step_index=4
+                    return StepResult.push(MilitaryDamageAction(action.action_id+':damage',action.source_id,
+                        action.target_id,int(frame.local['amount']),nature,action.card_id,action.action_id))
+            else:
+                frame.step_index=16
+            if yes:
+                return StepResult.push(WeaponChoice(action.action_id+':weapon-choice',action.source_id,action.target_id,
+                    {10:'double_sword',13:'ice_sword',15:'kylin_bow'}[stage]))
+            return StepResult.continue_()
+        if frame.step_index==11:
+            frame.step_index=0
+            return StepResult.continue_()
+        if frame.step_index==12:
+            if frame.decision is not True:
+                return StepResult.complete('avoided')
+            frame.decision=None
+            from .military_equipment import discardable
+            frame.step_index=17
+            return StepResult.ask(PendingRequest(action.action_id+':axe-cost',action.source_id,RequestType.CHOOSE_CARDS,
+                '贯石斧：选择弃置两张牌',action.action_id,frame.frame_id,eligible_card_ids=discardable(state,action.source_id),min_count=2,max_count=2))
+        if frame.step_index==17:
+            from .card_moves import CardMove,CardMoveReason
+            for cid in frame.decision:
+                ref=next(ref for ref,z in state.zones.items() if cid in z.card_ids)
+                self.moves.move(state,CardMove(action.action_id+':axe:'+cid,(cid,),ref,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,action.source_id))
+            frame.decision=None
+            frame.step_index=4
+            return StepResult.push(MilitaryDamageAction(action.action_id+':forced-damage',action.source_id,action.target_id,int(frame.local['amount']),nature,action.card_id,action.action_id))
+        if frame.step_index==14:
+            if frame.child_result is None:
+                return StepResult.complete('avoided')
+            result=frame.child_result
+            cid=result.material_ids[0] if isinstance(result,VirtualCard) else str(result)
+            frame.step_index=16
+            return StepResult.push(MilitaryStrike(action.action_id+':green-dragon-strike',action.source_id,action.target_id,cid,action.dodge_definition_id,virtual_card=result if isinstance(result,VirtualCard) else None))
+        return StepResult.complete('hit')
+
+    def __init__(self,moves):
+        self.moves=moves
+
+class MilitaryResponseHandler(RespondWithCardHandler):
+    """All Slash prints respond as Slash; Wine only saves its own dying owner."""
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index == 0 and not frame.local.get('armor_offered') and action.allow_armor and action.required_definition_id=='basic.dodge' and equipped(state,action.player_id,EquipmentSlot.ARMOR)=='equipment.armor.eight_trigrams':
+            frame.local['armor_offered']=True
+            frame.step_index=8
+            return StepResult.ask(PendingRequest(action.action_id+':armor',action.player_id,RequestType.YES_NO,
+                '是否发动八卦阵判定？',action.action_id,frame.frame_id))
+        if frame.step_index==8:
+            yes=frame.decision is True
+            frame.decision=None
+            frame.step_index=9 if yes else 0
+            if yes:
+                return StepResult.push(JudgmentAction(action.action_id+':judgment',action.player_id,JudgmentPattern(color=Color.RED)))
+        if frame.step_index==9:
+            if frame.child_result is True:
+                return StepResult.complete(VirtualCard('basic.dodge',(),None,None))
+            frame.step_index=0
+        if frame.step_index == 0:
+            hand = state.cards_in(ZoneRef(ZoneType.HAND, action.player_id))
+            eligible = tuple(cid for cid in hand if
+                state.cards[cid].definition_id == action.required_definition_id
+                or action.required_definition_id == 'basic.slash' and state.cards[cid].definition_id in SLASH_IDS
+                or action.required_definition_id == 'basic.peach' and action.subject_player_id == action.player_id
+                and state.players[action.player_id].hp <= 0 and state.cards[cid].definition_id == 'basic.wine')
+            frame.local['eligible'] = '|'.join(eligible)
+            if action.required_definition_id=='basic.slash' and equipped(state,action.player_id,EquipmentSlot.WEAPON)=='equipment.weapon.serpent_spear' and len(hand)>=2:
+                eligible=(*eligible,'virtual:spear')
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':request', action.player_id,
+                RequestType.RESPOND_WITH_CARD, action.prompt, action.action_id, frame.frame_id,
+                required_definition_id=action.required_definition_id, eligible_card_ids=eligible,
+                allow_pass=True, subject_player_id=action.subject_player_id))
+        # Validate against the same immutable eligibility list, then reuse the
+        # physical movement/event contract without changing any card definition.
+        from .requests import PASS_RESPONSE
+        from .card_moves import CardMove, CardMoveReason
+        from .events import CardRespondedEvent
+        choice = frame.decision
+        frame.decision = None
+        if frame.step_index==2:
+            if equipped(state,action.player_id,EquipmentSlot.WEAPON)!='equipment.weapon.serpent_spear':
+                raise InvalidCardUse('spear no longer equipped')
+            materials=tuple(choice)
+            virtual=VirtualCard.spear(state,materials)
+            for cid in materials:
+                self.moves.move(state,CardMove(action.action_id+':virtual:'+cid,(cid,),ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.RESPONSE,action.player_id))
+                self.recorder.record(CardRespondedEvent(action.action_id+':virtual-responded:'+cid,action.player_id,cid,action.source_action_id))
+            return StepResult.complete(virtual)
+        if choice=='virtual:spear':
+            frame.step_index=2
+            return StepResult.ask(PendingRequest(action.action_id+':spear-cost',action.player_id,RequestType.CHOOSE_CARDS,
+                '丈八蛇矛：选择两张手牌当杀',action.action_id,frame.frame_id,
+                eligible_card_ids=state.cards_in(ZoneRef(ZoneType.HAND,action.player_id)),min_count=2,max_count=2))
+        if choice is PASS_RESPONSE:
+            return StepResult.complete()
+        if choice not in str(frame.local['eligible']).split('|') or choice not in state.cards_in(ZoneRef(ZoneType.HAND, action.player_id)):
+            raise InvalidCardUse('response no longer eligible')
+        card = CardInstanceId(choice)
+        processing = ZoneRef(ZoneType.PROCESSING)
+        self.moves.move(state, CardMove(action.action_id + ':processing', (card,),
+            ZoneRef(ZoneType.HAND, action.player_id), processing, CardMoveReason.RESPONSE, action.player_id))
+        self.recorder.record(CardRespondedEvent(action.action_id + ':responded', action.player_id, card, action.source_action_id))
+        self.moves.move(state, CardMove(action.action_id + ':discard', (card,), processing,
+            ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.RESPONSE, action.player_id))
+        return StepResult.complete(str(card))
+
+class MilitaryFinishBody:
+    def step(self, state, frame):
+        state.players[frame.action.player_id].marks.pop('wine', None)
+        return StepResult.complete()
+
+def register_military_basics(definitions, rules, registry, moves, events, bodies):
+    register_additional_definitions(definitions)
+    distance = DistanceSystem(definitions)
+    for definition in SLASH_IDS:
+        rule = MilitarySlashRule(distance)
+        if definition == 'basic.slash':
+            rules.replace(definition, rule)
+        else:
+            rules.register(definition, rule)
+    rules.register('basic.wine', WineRule())
+    register_equipment_rules(definitions, rules)
+    registry.register(WineAction, WineHandler())
+    registry.register(SlashEffectAction, MilitarySlashHandler(moves))
+    registry.register(MilitaryStrike, MilitarySlashHandler(moves))
+    registry.register(SlashSequence, SlashSequenceHandler())
+    from .military_equipment import WeaponChoice,WeaponChoiceHandler
+    registry.register(WeaponChoice,WeaponChoiceHandler(moves))
+    handler = MilitaryDamageHandler(events)
+    registry.register(DamageAction, handler)
+    registry.register(MilitaryDamageAction, handler)
+    registry.register(RespondWithCardAction, MilitaryResponseHandler(moves, events))
+    registry.register(JudgmentAction, JudgmentHandler(moves, events))
+    registry.register(EquipCardAction, EquipCardHandler(moves, definitions))
+    bodies.register(Phase.FINISH, MilitaryFinishBody())
