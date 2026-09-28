@@ -476,6 +476,12 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                     eligible += tuple(f'virtual:qingguo:{cid}' for cid in hand if state.cards[cid].color is Color.BLACK)
                 if action.required_definition_id == 'basic.peach':
                     eligible += tuple(f'virtual:jijiu:{cid}' for cid in self.skills.emergency_peach_materials(state,action.player_id))
+                if self.skills.has(state,action.player_id,'longdan'):
+                    opposite = ('basic.slash' if action.required_definition_id == 'basic.dodge' else
+                                'basic.dodge' if action.required_definition_id == 'basic.slash' else None)
+                    if opposite:
+                        eligible += tuple(f'virtual:longdan:{cid}' for cid in hand
+                                          if state.cards[cid].definition_id == opposite)
             frame.step_index = 1
             return StepResult.ask(PendingRequest(action.action_id + ':request', action.player_id,
                 RequestType.RESPOND_WITH_CARD, action.prompt, action.action_id, frame.frame_id,
@@ -547,6 +553,25 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             self.recorder.record(CardRespondedEvent(action.action_id+':jijiu-responded',action.player_id,
                 material,action.source_action_id,'basic.peach'))
             self.moves.move(state,CardMove(action.action_id+':jijiu-discard',(material,),
+                ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.RESPONSE,action.player_id))
+            return StepResult.complete(virtual)
+        if isinstance(choice,str) and choice.startswith('virtual:longdan:'):
+            material=choice.split(':',2)[2]
+            opposite = ('basic.slash' if action.required_definition_id == 'basic.dodge' else
+                        'basic.dodge' if action.required_definition_id == 'basic.slash' else None)
+            if (self.skills is None or not self.skills.has(state,action.player_id,'longdan')
+                    or opposite is None or material not in state.cards_in(ZoneRef(ZoneType.HAND,action.player_id))
+                    or state.cards[material].definition_id != opposite):
+                raise InvalidCardUse('龙胆材料不合法')
+            card=state.cards[material]
+            virtual=VirtualCard(action.required_definition_id,(material,),card.suit,card.color)
+            self.moves.move(state,CardMove(action.action_id+':longdan-processing',(material,),
+                ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.PROCESSING),
+                CardMoveReason.RESPONSE,action.player_id))
+            self.recorder.record(CardRespondedEvent(action.action_id+':longdan-responded',action.player_id,
+                material,action.source_action_id,action.required_definition_id,action.response_number))
+            self.moves.move(state,CardMove(action.action_id+':longdan-discard',(material,),
                 ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE,action.player_id))
             return StepResult.complete(virtual)

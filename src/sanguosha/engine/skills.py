@@ -536,6 +536,56 @@ class QixiUseHandler:
 
 
 @dataclass(frozen=True, slots=True)
+class LongdanUse(Action):
+    player_id: str
+    material_id: str
+
+
+class LongdanUseHandler:
+    def __init__(self, skills, moves, recorder, slash_rule):
+        self.skills, self.moves, self.recorder, self.slash_rule = skills, moves, recorder, slash_rule
+
+    def step(self, state, frame):
+        action = frame.action
+        hand = ZoneRef(ZoneType.HAND, action.player_id)
+        if frame.step_index == 0:
+            limit = self.slash_rule.usage_limit(state, action.player_id)
+            if (not self.skills.has(state, action.player_id, 'longdan')
+                    or state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY
+                    or action.material_id not in state.cards_in(hand)
+                    or state.cards[action.material_id].definition_id != 'basic.dodge'
+                    or limit is not None and state.play_usage.count('basic.slash') >= limit):
+                raise InvalidCardUse('龙胆不可用')
+            targets = self.slash_rule.target_candidates(state, action.player_id)
+            if not targets:
+                raise InvalidCardUse('龙胆没有合法杀目标')
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':target', action.player_id,
+                RequestType.CHOOSE_PLAYER, '龙胆：选择杀目标', action.action_id,
+                frame.frame_id, allowed_player_ids=targets))
+        if frame.step_index == 1:
+            target = frame.decision
+            frame.decision = None
+            self.slash_rule.validate_targets(state, action.player_id, (target,))
+            card = state.cards[action.material_id]
+            virtual = VirtualCard('basic.slash', (action.material_id,), card.suit, card.color)
+            self.moves.move(state, CardMove(action.action_id + ':processing', (action.material_id,),
+                hand, ZoneRef(ZoneType.PROCESSING), CardMoveReason.USE,
+                action.player_id, action.action_id))
+            state.play_usage.record('basic.slash')
+            self.recorder.record(CardUsedEvent(action.action_id + ':used', action.player_id,
+                action.material_id, (target,), 'basic.slash'))
+            frame.step_index = 2
+            return StepResult.push(SlashSequence(action.action_id + ':slash', action.player_id,
+                action.material_id, (target,), virtual))
+        if action.material_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
+            self.moves.move(state, CardMove(action.action_id + ':discard', (action.material_id,),
+                ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.USE, action.player_id, action.action_id))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
 class FanjianAction(Action):
     player_id: str
 
@@ -892,6 +942,9 @@ class SkillPlayOptions:
         slash_available = (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
         if slash_available:
             extra.extend(f'virtual:wusheng:{cid}' for cid in self.skills.red_slash_materials(state,pid))
+            if self.skills.has(state,pid,'longdan'):
+                extra.extend(f'virtual:longdan:{cid}' for cid in hand
+                             if state.cards[cid].definition_id == 'basic.dodge')
             if self.skills.has(state,pid,'jijiang') and not state.play_usage.count('skill.jijiang.attempted') and self.skills.allies(state,pid,Kingdom.SHU):
                 extra.append('skill:jijiang')
         return (*ordinary,*extra)
@@ -919,4 +972,6 @@ class SkillPlayOptions:
             return WushengUse(aid+':wusheng',pid,option.split(':',2)[2])
         if option.startswith('virtual:qixi:'):
             return QixiUse(aid+':qixi',pid,option.split(':',2)[2])
+        if option.startswith('virtual:longdan:'):
+            return LongdanUse(aid+':longdan',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)

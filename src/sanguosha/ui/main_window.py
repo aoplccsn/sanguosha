@@ -213,6 +213,8 @@ class MainWindow(QMainWindow):
                     value = f'virtual:qingguo:{card_id}'
                 elif request and f'virtual:jijiu:{card_id}' in request.eligible_card_ids:
                     value = f'virtual:jijiu:{card_id}'
+                elif request and f'virtual:longdan:{card_id}' in request.eligible_card_ids:
+                    value = f'virtual:longdan:{card_id}'
                 else:
                     value = f'virtual:wusheng:{card_id}'
             else:
@@ -331,7 +333,8 @@ class MainWindow(QMainWindow):
             if (CardInstanceId(card_id) in request.eligible_card_ids or
                     f'virtual:wusheng:{card_id}' in request.eligible_card_ids or
                     f'virtual:qingguo:{card_id}' in request.eligible_card_ids or
-                    f'virtual:jijiu:{card_id}' in request.eligible_card_ids):
+                    f'virtual:jijiu:{card_id}' in request.eligible_card_ids or
+                    f'virtual:longdan:{card_id}' in request.eligible_card_ids):
                 if request.request_type is RequestType.RESPOND_WITH_CARD:
                     self.interaction.select_response(card_id)
                     self._render()
@@ -499,11 +502,11 @@ class MainWindow(QMainWindow):
             if human_request.request_type is RequestType.CHOOSE_OPTION:
                 selectable = {choice[4:] for choice in human_request.choices if choice.startswith("use:")}
                 selectable.update(choice.split(':', 2)[2] for choice in human_request.choices
-                                  if choice.startswith(('virtual:wusheng:', 'virtual:qixi:')))
+                                  if choice.startswith(('virtual:wusheng:', 'virtual:qixi:', 'virtual:longdan:')))
             elif human_request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD, RequestType.CHOOSE_CARDS):
                 selectable = set(map(str, human_request.eligible_card_ids))
                 selectable.update(choice.split(':',2)[2] for choice in human_request.eligible_card_ids
-                                  if isinstance(choice,str) and choice.startswith(('virtual:wusheng:', 'virtual:qingguo:', 'virtual:jijiu:')))
+                                  if isinstance(choice,str) and choice.startswith(('virtual:wusheng:', 'virtual:qingguo:', 'virtual:jijiu:', 'virtual:longdan:')))
         selected_cards = set(self._selected_cards)
         if self.interaction.card_id:
             selected_cards.add(self.interaction.card_id)
@@ -609,6 +612,10 @@ class MainWindow(QMainWindow):
                         material = choice.split(':',2)[2]
                         card = next((card for card in view.hand if str(card.card_id) == material), None)
                         return f'奇袭 · {card.name} {card.suit}{card.rank}' if card else '奇袭 · 黑牌'
+                    if choice.startswith('virtual:longdan:'):
+                        material = choice.split(':',2)[2]
+                        card = next((card for card in view.hand if str(card.card_id) == material), None)
+                        return f'龙胆 · {card.name} {card.suit}{card.rank}' if card else '龙胆 · 闪当杀'
                     return labels.get(choice,choice)
                 actions.extend((option_label(choice),choice,True)
                                for choice in request.choices

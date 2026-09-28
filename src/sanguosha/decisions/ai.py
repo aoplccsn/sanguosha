@@ -46,6 +46,8 @@ class AIDecisionProvider:
                 value = next(choice for choice in request.choices if choice.startswith('virtual:wusheng:'))
             elif enemies and any(choice.startswith('virtual:qixi:') for choice in request.choices):
                 value = next(choice for choice in request.choices if choice.startswith('virtual:qixi:'))
+            elif enemies and any(choice.startswith('virtual:longdan:') for choice in request.choices):
+                value = next(choice for choice in request.choices if choice.startswith('virtual:longdan:'))
             elif enemies and 'skill:jijiang' in request.choices:
                 value = 'skill:jijiang'
             elif usable and state.ruleset_id == 'classic-military':
