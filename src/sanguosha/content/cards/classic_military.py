@@ -53,6 +53,26 @@ HORSES = (
     ("zixing", "紫骍", EquipmentSlot.OFFENSIVE_HORSE),
 )
 
+WEAPON_EFFECTS = {
+    "crossbow": "出牌阶段使用【杀】不受通常次数限制。",
+    "double_sword": "对异性目标使用【杀】时，可令其弃一张手牌或令你摸一张牌。",
+    "qinggang_sword": "你的【杀】无视目标的防具。",
+    "green_dragon_blade": "目标以【闪】抵消【杀】后，可对其继续出【杀】。",
+    "serpent_spear": "可将两张手牌作为一张【杀】使用或打出。",
+    "rock_cleaving_axe": "【杀】被闪避时，可弃两张牌令其仍造成伤害。",
+    "halberd": "最后一张手牌为【杀】时，可额外指定目标。",
+    "kylin_bow": "【杀】造成伤害时，可弃置目标的一张坐骑牌。",
+    "ice_sword": "【杀】将造成伤害时，可改为弃置目标的牌。",
+    "ancient_blade": "【杀】对没有手牌的目标造成伤害时，伤害增加。",
+    "vermilion_fan": "普通【杀】可视为火【杀】。",
+}
+ARMOR_EFFECTS = {
+    "eight_trigrams": "需要使用【闪】时，可判定并按结果视为提供【闪】。",
+    "renwang_shield": "锁定技：黑色【杀】对你无效。",
+    "vine": "锁定技：部分锦囊和普通【杀】对你无效；火焰伤害增加。",
+    "silver_lion": "锁定技：单次受到的伤害至多为 1；失去此防具时恢复体力。",
+}
+
 
 def register_additional_definitions(definitions: CardDefinitionRegistry) -> None:
     for key, name, nature in ADDITIONAL_BASICS:
@@ -64,10 +84,15 @@ def register_additional_definitions(definitions: CardDefinitionRegistry) -> None
     for key, name, attack_range in WEAPONS:
         definitions.register(CardDefinition(CardDefinitionId(f"equipment.weapon.{key}"), name,
                                             CardCategory.EQUIPMENT, equipment_slot=EquipmentSlot.WEAPON,
-                                            attack_range=attack_range))
+                                            attack_range=attack_range,
+                                            metadata={"effect_summary": WEAPON_EFFECTS[key]}))
     for key, name in ARMORS:
         definitions.register(CardDefinition(CardDefinitionId(f"equipment.armor.{key}"), name,
-                                            CardCategory.EQUIPMENT, equipment_slot=EquipmentSlot.ARMOR))
+                                            CardCategory.EQUIPMENT, equipment_slot=EquipmentSlot.ARMOR,
+                                            metadata={"effect_summary": ARMOR_EFFECTS[key]}))
     for key, name, slot in HORSES:
         definitions.register(CardDefinition(CardDefinitionId(f"equipment.horse.{key}"), name,
-                                            CardCategory.EQUIPMENT, equipment_slot=slot))
+                                            CardCategory.EQUIPMENT, equipment_slot=slot,
+                                            metadata={"effect_summary":
+                                                "其他角色计算到你的距离时 +1。" if slot is EquipmentSlot.DEFENSIVE_HORSE
+                                                else "你计算到其他角色的距离时 -1。"}))

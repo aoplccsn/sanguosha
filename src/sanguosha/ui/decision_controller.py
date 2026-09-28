@@ -1,7 +1,7 @@
 """Compatibility facade composing a prompt HUD and contextual action bar."""
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QHBoxLayout, QWidget
-from .hud import PromptPanel, ActionBar
+from .hud import HumanDecisionPrompt, ActionBar
 
 class DecisionController(QWidget):
     value_selected = Signal(object)
@@ -9,7 +9,7 @@ class DecisionController(QWidget):
         super().__init__()
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        self.prompt_label = PromptPanel()
+        self.prompt_label = HumanDecisionPrompt()
         self.action_bar = ActionBar()
         self.action_bar.value_selected.connect(self.value_selected)
         layout.addWidget(self.prompt_label, 1)

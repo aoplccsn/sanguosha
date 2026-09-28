@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 
 from sanguosha.engine.card_registry import CardDefinitionRegistry
+from sanguosha.engine.distance import DistanceSystem
 from sanguosha.model.enums import Identity, Suit
 from sanguosha.model.ids import CardInstanceId, PlayerId
 from sanguosha.model.state import GameState
@@ -30,6 +31,7 @@ class CardView:
     definition_id: str = ""
     category: str = "basic"
     equipment_slot: str = ""
+    details: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,6 +50,9 @@ class PlayerView:
     chained: bool = False
     equipment: tuple[CardView,...] = ()
     judgments: tuple[CardView,...] = ()
+    base_distance: int | None = None
+    effective_distance: int | None = None
+    attack_range: int = 1
 
 
 @dataclass(frozen=True, slots=True)
@@ -70,9 +75,19 @@ def project_for_human(
     def card_view(cid, equipment_slot=""):
         card=state.cards[cid]
         definition=definitions.get(card.definition_id)
+        detail = ""
+        if definition.equipment_slot is not None:
+            slot_name = {"weapon": "武器", "armor": "防具", "defensive_horse": "+1 坐骑",
+                         "offensive_horse": "-1 坐骑"}.get(definition.equipment_slot.value, "装备")
+            detail = f"{definition.name}\n{slot_name}"
+            if definition.attack_range is not None:
+                detail += f"\n攻击范围：{definition.attack_range}"
+            summary = definition.metadata.get("effect_summary", "暂无效果说明")
+            detail += f"\n效果：{summary}"
         return CardView(cid,definition.name,SUIT_SYMBOLS[card.suit],RANK_LABELS.get(card.rank,str(card.rank)),
-                        str(card.definition_id),definition.category.value, equipment_slot)
+                        str(card.definition_id),definition.category.value, equipment_slot, detail)
     players = []
+    distance = DistanceSystem(definitions)
     for pid in state.seat_order:
         player = state.players[pid]
         visible = pid == human_id or pid in state.revealed_identities or player.identity is Identity.LORD
@@ -87,14 +102,11 @@ def project_for_human(
             GENERAL_PRESENTATION.get(str(player.character_id), ("", "群"))[1], player.chained,
             tuple(card_view(cid, ref.equipment_slot.value) for ref,z in state.zones.items() if ref.player_id==pid and ref.zone_type is ZoneType.EQUIPMENT for cid in z.card_ids),
             tuple(card_view(cid) for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid))),
+            distance.base_distance(state,human_id,pid) if pid != human_id and state.players[human_id].is_alive and player.is_alive else None,
+            distance.distance_between(state,human_id,pid) if pid != human_id and state.players[human_id].is_alive and player.is_alive else None,
+            distance.attack_range(state,pid) if player.is_alive else 1,
         ))
-    hand = tuple(
-        CardView(card_id, definitions.get(state.cards[card_id].definition_id).name,
-                 SUIT_SYMBOLS[state.cards[card_id].suit],
-                 RANK_LABELS.get(state.cards[card_id].rank, str(state.cards[card_id].rank)),
-                 str(state.cards[card_id].definition_id), definitions.get(state.cards[card_id].definition_id).category.value)
-        for card_id in state.cards_in(ZoneRef(ZoneType.HAND, human_id))
-    )
+    hand = tuple(card_view(card_id) for card_id in state.cards_in(ZoneRef(ZoneType.HAND, human_id)))
     discard = state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
     top = discard[-1] if discard else None
     top_view = (CardView(top, definitions.get(state.cards[top].definition_id).name,

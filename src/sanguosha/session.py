@@ -1,6 +1,6 @@
 """Headless five-player match composition and one-turn-at-a-time orchestration."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from sanguosha.content.cards.basic import register_basic_cards
 from sanguosha.decisions.ai import AIDecisionProvider
@@ -21,7 +21,7 @@ from sanguosha.engine.identity import IdentitySystem
 from sanguosha.engine.phases import PhaseAction, PhaseActionHandler, standard_phase_bodies
 from sanguosha.engine.recovery import RecoverAction, RecoverActionHandler
 from sanguosha.engine.registry import ActionHandlerRegistry
-from sanguosha.engine.requests import Decision
+from sanguosha.engine.requests import Decision, PASS_RESPONSE
 from sanguosha.engine.response import RespondWithCardAction, RespondWithCardHandler
 from sanguosha.engine.rng import PythonRandomSource
 from sanguosha.engine.turn_order import next_alive_player
@@ -44,6 +44,38 @@ class GameSession:
     human_id: PlayerId
     ai: AIDecisionProvider
     character_names: dict[PlayerId, str]
+    declined_nullification_windows: set[str] = field(default_factory=set)
+
+    def nullification_window_id(self, request=None) -> str | None:
+        request = request or self.engine.pending_request
+        if request is None or request.required_definition_id != "trick.nullification":
+            return None
+        from sanguosha.engine.military_tricks import NullificationWindow
+        return next((frame.action.action_id for frame in reversed(self.engine.stack.snapshot())
+                     if isinstance(frame.action, NullificationWindow)), None)
+
+    def pass_unavailable_nullification(self) -> bool:
+        """Resolve only the current human counter request using its rule candidates."""
+        request = self.engine.pending_request
+        window = self.nullification_window_id(request)
+        if window is None or request.player_id != self.human_id:
+            return False
+        if window not in self.declined_nullification_windows and request.has_legal_response():
+            return False
+        self.submit_human(Decision(request.request_id, request.player_id, PASS_RESPONSE))
+        return True
+
+    def decline_nullification_window(self) -> None:
+        window = self.nullification_window_id()
+        if window is None:
+            raise ValueError("no nullification window is pending")
+        self.declined_nullification_windows.add(window)
+
+    def clear_finished_nullification_windows(self) -> None:
+        from sanguosha.engine.military_tricks import NullificationWindow
+        live = {frame.action.action_id for frame in self.engine.stack.snapshot()
+                if isinstance(frame.action, NullificationWindow)}
+        self.declined_nullification_windows.intersection_update(live)
 
     @classmethod
     def new_game(cls, seed: int = 6, *, military: bool = False) -> "GameSession":
@@ -124,6 +156,9 @@ class GameSession:
         """Perform at most one AI decision or start one turn; Qt schedules each call."""
         if self.state.status is GameStatus.FINISHED:
             return False
+        self.clear_finished_nullification_windows()
+        if self.pass_unavailable_nullification():
+            return True
         if self.engine.status in (EngineStatus.IDLE, EngineStatus.COMPLETED):
             current = self.state.current_player_id
             next_player = self.human_id if current is None else next_alive_player(self.state, current)

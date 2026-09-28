@@ -37,12 +37,16 @@ class DistanceSystem:
         self.definitions = definitions
         self.modifiers = modifiers
 
-    def distance_between(self, state: GameState, source: PlayerId, target: PlayerId) -> int:
+    def base_distance(self, state: GameState, source: PlayerId, target: PlayerId) -> int:
         living = tuple(pid for pid in state.seat_order if state.players[pid].is_alive)
         if source == target or source not in living or target not in living:
             raise ValueError("distance requires two distinct living players")
         difference = abs(living.index(source) - living.index(target))
         base = min(difference, len(living) - difference)
+        return base
+
+    def distance_between(self, state: GameState, source: PlayerId, target: PlayerId) -> int:
+        base = self.base_distance(state, source, target)
         return max(1, base + sum(mod.distance_delta(state, source, target) for mod in self.modifiers))
 
     def attack_range(self, state: GameState, player: PlayerId) -> int:

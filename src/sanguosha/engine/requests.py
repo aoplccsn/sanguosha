@@ -44,6 +44,32 @@ class PendingRequest:
     max_count: int = 0
     subject_player_id: PlayerId | None = None
 
+    def has_legal_response(self) -> bool:
+        """The rule handler supplies physical and virtual response candidates here."""
+        return self.request_type is RequestType.RESPOND_WITH_CARD and bool(self.eligible_card_ids)
+
+    def timeout_value(self) -> ChoiceValue:
+        """A deterministic legal fallback, submitted through the normal Decision API."""
+        if self.request_type is RequestType.RESPOND_WITH_CARD and self.allow_pass:
+            value = PASS_RESPONSE
+        elif self.request_type is RequestType.YES_NO:
+            value = False
+        elif self.request_type is RequestType.CHOOSE_OPTION:
+            from .phases import END_PLAY_PHASE
+            value = END_PLAY_PHASE if END_PLAY_PHASE in self.choices else self.choices[0]
+        elif self.request_type is RequestType.CHOOSE_PLAYER:
+            value = self.allowed_player_ids[0]
+        elif self.request_type is RequestType.CHOOSE_PLAYERS:
+            value = self.allowed_player_ids[:self.min_count]
+        elif self.request_type is RequestType.CHOOSE_CARD:
+            value = self.eligible_card_ids[0]
+        elif self.request_type is RequestType.CHOOSE_CARDS:
+            value = self.eligible_card_ids[:self.min_count]
+        else:
+            raise InvalidDecision(f"no timeout fallback for {self.request_type}")
+        self.validate(value)
+        return value
+
     def validate(self, value: ChoiceValue) -> None:
         kind = self.request_type
         if kind is RequestType.YES_NO:

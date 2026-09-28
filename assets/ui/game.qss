@@ -11,7 +11,7 @@ QPushButton#new-game:pressed, QPushButton[action="true"]:pressed { background: #
 QPushButton[action="true"]:disabled { background: #65584a; color: #b9aa92; border-color: #80705d; }
 QLabel#game-prompt {
     color: #f6e7c7; background: #523c2e; border: 1px solid #b28b58;
-    border-radius: 5px; padding: 7px 13px; font-size: 14px; font-weight: bold;
+    border-radius: 5px; padding: 8px 14px; font-size: 18px; font-weight: bold;
 }
 QLabel#game-prompt[mode="response"] { background: #664039; border: 2px solid #d4a177; }
 QLabel#game-prompt[mode="target"] { border: 2px solid #e6c16d; }

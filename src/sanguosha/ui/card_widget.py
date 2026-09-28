@@ -17,7 +17,7 @@ class CardWidget(QPushButton):
         self.setObjectName(f"card-{self.card_id}")
         self.setFixedSize(Theme.card_width, Theme.card_height)
         self.category_label = {"basic":"基础牌", "trick":"锦囊牌", "delayed_trick":"延时锦囊", "equipment":"装备牌"}.get(card.category, "卡牌")
-        self.setToolTip(f"{card.suit} {card.rank} · {card.name} · {self.category_label}")
+        self.setToolTip(card.details or f"{card.suit} {card.rank} · {card.name} · {self.category_label}")
         self.setText(card.name)
         self.clicked.connect(lambda: self.card_selected.emit(self.card_id))
         self._selected = False

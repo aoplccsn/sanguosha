@@ -40,6 +40,11 @@ class PromptPanel(QLabel):
         self.style().unpolish(self)
         self.style().polish(self)
 
+
+class HumanDecisionPrompt(PromptPanel):
+    """Human action instruction displayed between the seat and the hand."""
+
+
 class ActionBar(QWidget):
     value_selected = Signal(object)
     def __init__(self):

@@ -27,6 +27,8 @@ from .theme import QSS
 from .resources import RESOURCES
 
 NORMAL_AI_DELAY_MS = 500
+HUMAN_DECISION_TIMEOUT_MS = 15000
+DECISION_TIMER_TICK_MS = 100
 
 
 class MainWindow(QMainWindow):
@@ -47,6 +49,11 @@ class MainWindow(QMainWindow):
         self._tick_timer = QTimer(self)
         self._tick_timer.setSingleShot(True)
         self._tick_timer.timeout.connect(self._tick)
+        self._decision_timer = QTimer(self)
+        self._decision_timer.timeout.connect(self._decision_countdown)
+        self._decision_request_id = None
+        self._decision_remaining_ms = HUMAN_DECISION_TIMEOUT_MS
+        self._decision_timer.setInterval(DECISION_TIMER_TICK_MS)
         root = QWidget()
         root.setObjectName("root")
         self.setStyleSheet(QSS)
@@ -71,10 +78,10 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.table, stretch=1)
         self.hand = HandView()
         self.hand.card_selected.connect(self._card_clicked)
-        layout.addWidget(self.hand)
         self.decision = DecisionController()
         self.decision.value_selected.connect(self._submit_value)
         layout.addWidget(self.decision)
+        layout.addWidget(self.hand)
         self.log = LogPanel()
         self.log_toggle = QPushButton("战报  ▾")
         self.log_toggle.setProperty("action", True)
@@ -87,6 +94,8 @@ class MainWindow(QMainWindow):
 
     def start_new_game(self) -> None:
         self._tick_timer.stop()
+        self._decision_timer.stop()
+        self._decision_request_id = None
         self._tick_scheduled = False
         self.session = GameSession.new_game(military=self.military)
         self._seen_events = 0
@@ -107,6 +116,7 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event) -> None:
         self._closed = True
         self._tick_timer.stop()
+        self._decision_timer.stop()
         self._tick_scheduled = False
         for animation in self.findChildren(QAbstractAnimation):
             animation.stop()
@@ -126,6 +136,9 @@ class MainWindow(QMainWindow):
             self._schedule_tick()
 
     def _submit_value(self, value: object) -> None:
+        if value == "ui.decline_nullification" and self.session is not None:
+            self.session.decline_nullification_window()
+            value = PASS_RESPONSE
         if isinstance(value, tuple) and len(value) == 2 and value[0] == 'ui.toggle_card':
             self._card_clicked(value[1])
             return
@@ -158,6 +171,7 @@ class MainWindow(QMainWindow):
             return
         request = self.session.engine.pending_request
         try:
+            self._decision_timer.stop()
             self.session.submit_human(Decision(request.request_id, request.player_id, value))
         except Exception as exc:
             self.decision.render(f"选择无效：{exc}", [])
@@ -169,6 +183,21 @@ class MainWindow(QMainWindow):
         self.interaction.reset()
         self._render()
         self._schedule_tick()
+
+    def _decision_countdown(self) -> None:
+        if self._closed or self.session is None:
+            self._decision_timer.stop()
+            return
+        request = self.session.engine.pending_request
+        if request is None or request.request_id != self._decision_request_id or request.player_id != self.session.human_id:
+            self._decision_timer.stop()
+            return
+        self._decision_remaining_ms = max(0, self._decision_remaining_ms - DECISION_TIMER_TICK_MS)
+        self.table.panels[str(self.session.human_id)].set_decision_progress(
+            self._decision_remaining_ms / HUMAN_DECISION_TIMEOUT_MS)
+        if self._decision_remaining_ms == 0:
+            self._decision_timer.stop()
+            self._submit_value(request.timeout_value())
 
     def _preview_targets(self, card_id: str) -> set[str]:
         """Read the registered rule; previewing does not mutate engine state."""
@@ -292,9 +321,22 @@ class MainWindow(QMainWindow):
         if self.session is None:
             return
         session = self.session
+        session.clear_finished_nullification_windows()
+        skipped = False
+        while session.pass_unavailable_nullification():
+            skipped = True
+        if skipped:
+            self._schedule_tick()
         view = project_for_human(session.state, session.definitions, session.human_id, session.character_names)
         request = session.engine.pending_request
         human_request = request if request is not None and request.player_id == session.human_id else None
+        if human_request is not None and human_request.request_id != self._decision_request_id:
+            self._decision_request_id = human_request.request_id
+            self._decision_remaining_ms = HUMAN_DECISION_TIMEOUT_MS
+            self._decision_timer.start()
+        elif human_request is None:
+            self._decision_timer.stop()
+            self._decision_request_id = None
         request_id = human_request.request_id if human_request else None
         if request_id != self.interaction.request_id:
             self._selected_shared_card = None
@@ -330,6 +372,13 @@ class MainWindow(QMainWindow):
                           attack[0] if attack else None, attack[1] if attack else None,
                           self._attack_definition() if attack else None, self._selected_shared_card,
                           notice, art)
+        for pid, panel in self.table.panels.items():
+            panel.set_pending_responder(bool(request and str(request.player_id) == pid and
+                                             not next((p.active for p in view.players if str(p.player_id) == pid), False)))
+            panel.set_decision_progress(
+                self._decision_remaining_ms / HUMAN_DECISION_TIMEOUT_MS
+                if human_request and pid == str(session.human_id) else
+                1.0 if request and str(request.player_id) == pid else None)
         selectable: set[str] = set()
         if human_request is not None:
             if human_request.request_type is RequestType.CHOOSE_OPTION:
@@ -431,6 +480,8 @@ class MainWindow(QMainWindow):
                 prompt = request.prompt + " · 请选择响应牌"
             if request.allow_pass:
                 actions.append(("不出", PASS_RESPONSE, True))
+            if self.session.nullification_window_id(request) is not None:
+                actions.append(("本次均不响应", "ui.decline_nullification", True))
             actions.append(("确认响应", "ui.confirm_response", self.interaction.card_id is not None))
             if 'virtual:spear' in request.eligible_card_ids:
                 actions.append(('丈八蛇矛（两张手牌）','virtual:spear',True))

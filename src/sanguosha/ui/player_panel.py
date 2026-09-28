@@ -17,6 +17,8 @@ class PlayerPanel(QPushButton):
         self.view: PlayerView | None = None
         self.targetable = self.selected_target = False
         self.attack_role: str | None = None
+        self.pending_responder = False
+        self.decision_progress: float | None = None
         self.damage_flash = self.recovery_flash = self.death_opacity = self.turn_glow = 0.0
         self._damage_animation = self._animation("damage_flash", 380)
         self._recovery_animation = self._animation("recovery_flash", 480)
@@ -27,6 +29,16 @@ class PlayerPanel(QPushButton):
         self.setMouseTracking(True)
         self._equipment_preview = EquipmentPreview(self)
         self.clicked.connect(lambda: self.player_selected.emit(self.player_id))
+
+    def set_pending_responder(self, value: bool) -> None:
+        if self.pending_responder != value:
+            self.pending_responder = value
+            self.update()
+
+    def set_decision_progress(self, value: float | None) -> None:
+        if self.decision_progress != value:
+            self.decision_progress = value
+            self.update()
 
     def _equipped_slots(self):
         equipment = {"武":None, "甲":None, "+马":None, "-马":None}
@@ -48,7 +60,7 @@ class PlayerPanel(QPushButton):
                 card = list(self._equipped_slots().values())[index]
                 if card:
                     on_right = self.mapTo(self.window(), QPoint(0, 0)).x() > self.window().width()/2
-                    position = self.mapToGlobal(QPoint(-202 if on_right else self.width()+8, 0))
+                    position = self.mapToGlobal(QPoint(-290 if on_right else self.width()+8, 0))
                     self._equipment_preview.show_card(card, position)
                     super().mouseMoveEvent(event)
                     return
@@ -102,8 +114,11 @@ class PlayerPanel(QPushButton):
         self.attack_role = "attacker" if attacker else "defender" if defender else None
         status = "阵亡" if not view.alive else "当前回合" if view.active else "存活"
         self.setText(f"{view.name} · {view.character_name} {view.identity_label} {status} 手牌 {view.hand_count}")
+        distance_text = (f"\n距离：{view.base_distance}；装备修正后：{view.effective_distance}"
+                         if view.base_distance is not None else "")
         self.setToolTip("装备：" + ("、".join(c.name for c in view.equipment) or "无") +
-                        "\n判定：" + ("、".join(c.name for c in view.judgments) or "无"))
+                        "\n判定：" + ("、".join(c.name for c in view.judgments) or "无") +
+                        f"\n当前攻击范围：{view.attack_range}" + distance_text)
         self.setEnabled(not choosing_target or targetable)
         self.setCursor(Qt.PointingHandCursor if targetable else Qt.ArrowCursor)
         self.update()
@@ -114,11 +129,12 @@ class PlayerPanel(QPushButton):
         w, h = self.width(), self.height()
         outer = QRectF(3, 3, w-6, h-6)
         edge = QColor(Theme.selected if self.selected_target else
+                      "#f4cb65" if self.view and self.view.active else
                       "#e0bc69" if self.targetable else
                       "#b35a43" if self.attack_role == "attacker" else
                       "#668a98" if self.attack_role == "defender" else
-                      Theme.accent if self.view and self.view.active else "#8b7053")
-        if self.selected_target or self.targetable or self.attack_role or self.turn_glow:
+                      "#8b7053")
+        if self.selected_target or self.targetable or self.attack_role or self.turn_glow or self.pending_responder:
             halo = QColor(edge)
             halo.setAlpha(110 if self.selected_target else 45 + int(35*self.turn_glow))
             p.setPen(QPen(halo, 6))
@@ -130,6 +146,16 @@ class PlayerPanel(QPushButton):
         p.setBrush(grad)
         p.setPen(QPen(edge, 4 if self.selected_target else 2))
         p.drawRoundedRect(outer, 7, 7)
+        if self.view and self.view.active:
+            gold = QColor("#f6d47d")
+            gold.setAlpha(175 + int(70 * self.turn_glow))
+            p.setPen(QPen(gold, 5))
+            p.setBrush(Qt.NoBrush)
+            p.drawRoundedRect(outer.adjusted(2, 2, -2, -2), 7, 7)
+        if self.pending_responder:
+            p.setPen(QPen(QColor("#ffb65b"), 3))
+            p.setBrush(Qt.NoBrush)
+            p.drawRoundedRect(outer.adjusted(7, 7, -7, -7), 5, 5)
         p.setPen(QPen(QColor("#5c402b"), 1))
         p.drawRoundedRect(outer.adjusted(5, 5, -5, -5), 4, 4)
         if not self.view:
@@ -214,6 +240,13 @@ class PlayerPanel(QPushButton):
         if v.active:
             p.setPen(QPen(QColor("#b88d43"), 3))
             p.drawLine(10, h-8, w-10, h-8)
+        if self.decision_progress is not None:
+            fraction = max(0.0, min(1.0, self.decision_progress))
+            p.setPen(Qt.NoPen)
+            p.setBrush(QColor("#61503b"))
+            p.drawRoundedRect(QRectF(12, h-13, w-24, 6), 3, 3)
+            p.setBrush(QColor("#d99153" if fraction < .2 else "#e4bf6f"))
+            p.drawRoundedRect(QRectF(12, h-13, (w-24)*fraction, 6), 3, 3)
         if self.attack_role:
             p.setBrush(QColor("#913f31" if self.attack_role == "attacker" else "#456d7a"))
             p.setPen(QColor("#f6e6c4"))
