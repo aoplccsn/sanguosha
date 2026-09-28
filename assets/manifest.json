@@ -1,5 +1,5 @@
 {
-  "table.background": "backgrounds/table/felt.png",
+  "table.background": "backgrounds/table/ink_wash_v1.png",
   "default.general": "generals/default_general.png",
   "general.caocao": "generals/wei/caocao.png",
   "general.liubei": "generals/shu/liubei.png",
@@ -22,7 +22,7 @@
   "default.trick": "cards/default_card.png",
   "default.delayed_trick": "cards/default_card.png",
   "default.equipment": "cards/default_card.png",
-  "default.table": "backgrounds/table/felt.png",
+  "default.table": "backgrounds/table/ink_wash_v1.png",
   "ui.hp": "icons/hp.png",
   "identity.lord": "identities/lord.png",
   "identity.loyalist": "identities/loyalist.png",

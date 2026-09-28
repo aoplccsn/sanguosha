@@ -1,4 +1,4 @@
-"""Illustrated, clickable general plaque."""
+"""Illustrated seat plaque; all data comes from the public PlayerView."""
 from PySide6.QtCore import Qt, QRectF, Signal, QVariantAnimation
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QPushButton
@@ -9,31 +9,25 @@ from .theme import Theme
 
 class PlayerPanel(QPushButton):
     player_selected = Signal(str)
+
     def __init__(self, player_id: str) -> None:
         super().__init__()
         self.player_id = player_id
         self.view: PlayerView | None = None
-        self.damage_flash = 0.0
-        self.death_opacity = 0.0
-        self.turn_glow = 0.0
+        self.targetable = self.selected_target = False
+        self.attack_role: str | None = None
+        self.damage_flash = self.death_opacity = self.turn_glow = 0.0
         self._damage_animation = self._animation("damage_flash", 380)
         self._death_animation = self._animation("death_opacity", 420)
-        self._turn_animation = self._animation("turn_glow", 220)
-        self.targetable = False
-        self.selected_target = False
-        self.attack_role: str | None = None
+        self._turn_animation = self._animation("turn_glow", 280)
         self.setObjectName(f"player-{player_id}")
-        self.setMinimumSize(205, 136)
-        self.setCursor(Qt.PointingHandCursor)
+        self.setMinimumSize(205, 145)
         self.clicked.connect(lambda: self.player_selected.emit(self.player_id))
 
     def _animation(self, attribute, duration):
         animation = QVariantAnimation(self)
         animation.setDuration(duration)
-        def update(value):
-            setattr(self, attribute, float(value))
-            self.update()
-        animation.valueChanged.connect(update)
+        animation.valueChanged.connect(lambda value: (setattr(self, attribute, float(value)), self.update()))
         return animation
 
     def _start_animation(self, animation, start, end):
@@ -49,18 +43,19 @@ class PlayerPanel(QPushButton):
             self._start_animation(self._damage_animation, 1, 0)
         if old and old.alive and not view.alive:
             self._start_animation(self._death_animation, 0, 1)
-        elif old is None or (old and not old.alive and view.alive):
+        elif old is None or not old.alive and view.alive:
             self._death_animation.stop()
             self.death_opacity = 0 if view.alive else 1
         if old is None or old.active != view.active:
             self._start_animation(self._turn_animation, self.turn_glow, 1 if view.active else 0)
         self.view = view
-        self.setToolTip('装备：'+('、'.join(c.name for c in view.equipment) or '无')+'\n判定：'+('、'.join(c.name for c in view.judgments) or '无'))
         self.targetable = targetable
         self.selected_target = selected_target
         self.attack_role = "attacker" if attacker else "defender" if defender else None
         status = "阵亡" if not view.alive else "当前回合" if view.active else "存活"
-        self.setText(f"{view.name} · {view.character_name}  {view.identity_label}  {status}  手牌 {view.hand_count}")
+        self.setText(f"{view.name} · {view.character_name} {view.identity_label} {status} 手牌 {view.hand_count}")
+        self.setToolTip("装备：" + ("、".join(c.name for c in view.equipment) or "无") +
+                        "\n判定：" + ("、".join(c.name for c in view.judgments) or "无"))
         self.setEnabled(not choosing_target or targetable)
         self.setCursor(Qt.PointingHandCursor if targetable else Qt.ArrowCursor)
         self.update()
@@ -68,93 +63,107 @@ class PlayerPanel(QPushButton):
     def paintEvent(self, event) -> None:
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
-        r = self.rect().adjusted(3, 3, -3, -3)
-        edge = QColor(Theme.shade_fff3b7 if self.selected_target else Theme.shade_ffdf8a if self.targetable and self.underMouse()
-                      else Theme.shade_eab465 if self.attack_role == "attacker"
-                      else Theme.shade_76d4d4 if self.attack_role == "defender" else Theme.shade_e3bf76 if self.targetable
-                      else Theme.shade_ddbd77 if self.view and self.view.active else Theme.shade_947b53)
-        bg = QLinearGradient(0, 0, self.width(), self.height())
-        bg.setColorAt(0, QColor(Theme.shade_274944))
-        bg.setColorAt(1, QColor(Theme.shade_101f22))
-        if self.selected_target or self.targetable or self.attack_role or self.turn_glow > 0:
-            for inset, alpha in ((0, 55), (2, 90)):
-                glow = QColor(edge)
-                glow.setAlpha(alpha)
-                p.setPen(QPen(glow, 5))
-                p.setBrush(Qt.NoBrush)
-                p.drawRoundedRect(r.adjusted(inset, inset, -inset, -inset), 11, 11)
-        p.setPen(QPen(edge, 5 if self.selected_target else 3 if self.targetable or self.attack_role else 2))
-        p.setBrush(bg)
-        p.drawRoundedRect(r, 10, 10)
-        p.setPen(QPen(QColor(210, 176, 112, 125), 1))
-        p.drawRoundedRect(r.adjusted(5, 5, -5, -5), 7, 7)
-        if self.selected_target:
-            p.setPen(QPen(QColor(Theme.shade_fff0a5), 2))
-            p.drawRoundedRect(r.adjusted(9, 9, -9, -9), 6, 6)
+        w, h = self.width(), self.height()
+        outer = QRectF(3, 3, w-6, h-6)
+        edge = QColor(Theme.selected if self.selected_target else
+                      "#e0bc69" if self.targetable else
+                      "#b35a43" if self.attack_role == "attacker" else
+                      "#668a98" if self.attack_role == "defender" else
+                      Theme.accent if self.view and self.view.active else "#8b7053")
+        if self.selected_target or self.targetable or self.attack_role or self.turn_glow:
+            halo = QColor(edge)
+            halo.setAlpha(110 if self.selected_target else 45 + int(35*self.turn_glow))
+            p.setPen(QPen(halo, 6))
+            p.setBrush(Qt.NoBrush)
+            p.drawRoundedRect(outer, 8, 8)
+        grad = QLinearGradient(0, 0, w, h)
+        grad.setColorAt(0, QColor("#ede0c4"))
+        grad.setColorAt(1, QColor("#b9a384"))
+        p.setBrush(grad)
+        p.setPen(QPen(edge, 4 if self.selected_target else 2))
+        p.drawRoundedRect(outer, 7, 7)
+        p.setPen(QPen(QColor("#5c402b"), 1))
+        p.drawRoundedRect(outer.adjusted(5, 5, -5, -5), 4, 4)
         if not self.view:
             return
         v = self.view
-        portrait = RESOURCES.general_portrait(v.character_id, v.character_name)
-        portrait_w = min(108, int(self.width() * .42))
-        image_rect = QRectF(8, 8, portrait_w, self.height()-16)
-        path = QPainterPath()
-        path.addRoundedRect(image_rect, 5, 5)
-        p.setClipPath(path)
-        p.drawPixmap(image_rect.toRect(), portrait)
+        portrait_width = int(w*.53)
+        art = QRectF(9, 9, portrait_width-8, h-18)
+        clip = QPainterPath()
+        clip.addRoundedRect(art, 3, 3)
+        p.setClipPath(clip)
+        p.drawPixmap(art.toRect(), RESOURCES.general_portrait(v.character_id, v.character_name))
+        if not v.alive:
+            p.fillRect(art, QColor(24, 21, 19, int(185*self.death_opacity)))
         p.setClipping(False)
-        p.setPen(QPen(QColor(Theme.shade_d9bd7a), 2))
+        p.setPen(QPen(QColor("#795d3c"), 2))
         p.setBrush(Qt.NoBrush)
-        p.drawRoundedRect(image_rect, 5, 5)
-        if self.attack_role:
-            p.setPen(Qt.NoPen)
-            p.setBrush(QColor(Theme.shade_975034 if self.attack_role == "attacker" else Theme.shade_356c75))
-            p.drawRoundedRect(QRectF(image_rect.x()+4, image_rect.y()+4, 38, 17), 3, 3)
-            p.setPen(QColor(Theme.shade_fff0cf))
-            p.setFont(QFont("Microsoft YaHei UI", 8, QFont.Bold))
-            p.drawText(QRectF(image_rect.x()+4, image_rect.y()+4, 38, 17), Qt.AlignCenter,
-                       "出杀" if self.attack_role == "attacker" else "受击")
-        if not v.alive:
-            p.fillRect(image_rect, QColor(0, 0, 0, int(165*self.death_opacity)))
-        x = portrait_w + 18
-        faction = v.faction
-        p.setPen(QColor(Theme.shade_f3e1b8))
-        p.setFont(QFont("Microsoft YaHei UI", 13, QFont.Bold))
-        p.drawText(x, 29, v.character_name)
-        p.setPen(QColor(Theme.shade_d1aa69))
+        p.drawRoundedRect(art, 3, 3)
+        x = portrait_width + 6
+        rw = w-x-11
+        p.setPen(QColor("#2e2821"))
+        p.setFont(QFont("Microsoft YaHei UI", 12, QFont.Bold))
+        p.drawText(QRectF(x, 12, rw-25, 23), Qt.AlignLeft, v.character_name)
+        p.drawPixmap(w-34, 9, 25, 25, RESOURCES.identity_icon(v.identity_label))
+        p.setPen(QColor("#f6e8c8"))
         p.setFont(QFont("Microsoft YaHei UI", 9, QFont.Bold))
-        p.drawText(x, 47, f"{faction}  ·  {v.name}")
-        icon = RESOURCES.identity_icon(v.identity_label)
-        p.drawPixmap(self.width()-39, 9, 30, 30, icon)
+        seal = {"主公":"主", "忠臣":"忠", "反贼":"反", "内奸":"内", "未知":"?"}.get(v.identity_label, "?")
+        p.drawText(QRectF(w-34, 9, 25, 25), Qt.AlignCenter, seal)
+        faction_color = {"魏":"#435a73", "蜀":"#765438", "吴":"#55725f", "群":"#685b67"}.get(v.faction, "#685b67")
+        p.setBrush(QColor(faction_color))
+        p.setPen(Qt.NoPen)
+        p.drawRoundedRect(QRectF(x, 37, 26, 20), 3, 3)
+        p.setPen(QColor("#f8edda"))
+        p.setFont(QFont("Microsoft YaHei UI", 9, QFont.Bold))
+        p.drawText(QRectF(x, 37, 26, 20), Qt.AlignCenter, v.faction)
+        p.setPen(QColor("#4b3c2c"))
+        p.drawText(QRectF(x+30, 37, rw-30, 20), Qt.AlignLeft, v.name)
+        bead_step = min(19, max(12, (rw-8)//max(1, v.max_hp)))
         for i in range(v.max_hp):
-            cx = x + 8 + i*19
-            bead = QLinearGradient(cx-7, 55, cx+7, 70)
-            bead.setColorAt(0, QColor(Theme.shade_ed7464 if i < v.hp else Theme.shade_5c6560))
-            bead.setColorAt(1, QColor(Theme.shade_852f30 if i < v.hp else Theme.shade_313b3b))
+            cx = x+7+i*bead_step
+            bead = QLinearGradient(cx-6, 61, cx+6, 74)
+            bead.setColorAt(0, QColor("#e4a97a" if i < v.hp else "#aaa18f"))
+            bead.setColorAt(1, QColor("#9c3d37" if i < v.hp else "#665b50"))
             p.setBrush(bead)
-            p.setPen(QPen(QColor(Theme.shade_efc787 if i < v.hp else Theme.shade_72807a), 1.5))
-            p.drawEllipse(cx-7, 55, 14, 14)
+            p.setPen(QPen(QColor("#efcf91" if i < v.hp else "#81715d"), 1))
+            p.drawEllipse(QRectF(cx-6, 61, 13, 13))
+        p.setPen(QColor("#493b2d"))
         p.setFont(QFont("Microsoft YaHei UI", 8))
-        p.setPen(QColor(Theme.shade_c5c9b4))
-        p.drawText(x, 86, f"手牌 {v.hand_count}    体力 {v.hp}/{v.max_hp}")
-        for j, title in enumerate(("装备", "判定")):
-            box = QRectF(x+j*(self.width()-x-13)/2, 96, (self.width()-x-20)/2, 25)
-            p.setPen(QPen(QColor(Theme.shade_7d7761), 1))
-            p.setBrush(QColor(12, 29, 31, 155))
-            p.drawRoundedRect(box, 4, 4)
-            p.setPen(QColor(Theme.shade_a9ae9c))
-            cards=v.equipment if j==0 else v.judgments
-            p.setFont(QFont("Microsoft YaHei UI", 7))
-            p.drawText(box, Qt.AlignCenter, ' / '.join(c.name for c in cards) or title)
+        p.drawText(QRectF(x, 78, rw, 17), Qt.AlignLeft, f"手牌 {v.hand_count}   体力 {v.hp}/{v.max_hp}")
+        equipment = {"武":None, "甲":None, "+马":None, "-马":None}
+        for card in v.equipment:
+            slot = {"weapon":"武", "armor":"甲", "defensive_horse":"+马", "offensive_horse":"-马"}.get(card.equipment_slot)
+            if slot is None:
+                continue
+            equipment[slot] = card
+        cell = rw/4
+        for i, (slot, card) in enumerate(equipment.items()):
+            box = QRectF(x+i*cell, 98, cell-2, 21)
+            p.setBrush(QColor("#e2d0ab" if card else "#b3a084"))
+            p.setPen(QPen(QColor("#8a6c48"), 1))
+            p.drawRoundedRect(box, 2, 2)
+            p.setPen(QColor("#3b3027" if card else "#756653"))
+            p.setFont(QFont("Microsoft YaHei UI", 7, QFont.Bold if card else QFont.Normal))
+            p.drawText(box, Qt.AlignCenter, card.name[:3] if card else slot)
+        p.setPen(QColor("#624b34"))
         p.setFont(QFont("Microsoft YaHei UI", 8))
-        p.setPen(QColor(Theme.accent if v.active else Theme.muted))
-        p.drawText(QRectF(x, self.height()-25, self.width()-x-10, 17), Qt.AlignCenter,
-                   ('当前回合 · 连环' if v.chained else '当前回合') if v.active and v.alive else "连环" if v.chained else "技能 · —")
-        if self.damage_flash > 0:
-            p.setPen(Qt.NoPen)
-            p.setBrush(QColor(180, 43, 33, int(130*self.damage_flash)))
-            p.drawRoundedRect(r, 10, 10)
+        judgments = "  ".join("【"+c.name+"】" for c in v.judgments) or "判定 · 无"
+        p.drawText(QRectF(x, 121, rw, 18), Qt.AlignLeft, judgments)
+        p.setFont(QFont("Microsoft YaHei UI", 8, QFont.Bold))
+        p.setPen(QColor("#8b3f31" if v.chained else "#756653"))
+        p.drawText(QRectF(x, h-25, rw, 17), Qt.AlignRight, "⛓ 连环" if v.chained else "当前回合" if v.active else "")
+        if v.active:
+            p.setPen(QPen(QColor("#b88d43"), 3))
+            p.drawLine(10, h-8, w-10, h-8)
+        if self.attack_role:
+            p.setBrush(QColor("#913f31" if self.attack_role == "attacker" else "#456d7a"))
+            p.setPen(QColor("#f6e6c4"))
+            badge = QRectF(13, 14, 39, 19)
+            p.drawRoundedRect(badge, 3, 3)
+            p.drawText(badge, Qt.AlignCenter, "出杀" if self.attack_role == "attacker" else "受击")
+        if self.damage_flash:
+            p.fillRect(outer, QColor(180, 43, 33, int(125*self.damage_flash)))
         if not v.alive:
-            p.setOpacity(self.death_opacity)
-            p.setPen(QColor(Theme.shade_e7b9a9))
-            p.setFont(QFont("Microsoft YaHei UI", 16, QFont.Bold))
-            p.drawText(r, Qt.AlignCenter, "阵亡")
+            p.setPen(QColor("#a23831"))
+            p.setFont(QFont("Microsoft YaHei UI", 18, QFont.Bold))
+            p.drawText(art, Qt.AlignCenter, "阵亡")

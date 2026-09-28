@@ -38,6 +38,7 @@ class MainWindow(QMainWindow):
         self._seen_events = 0
         self._selected_cards: set[str] = set()
         self._selected_players: set[str] = set()
+        self._selected_shared_card: str | None = None
         self.interaction = InteractionState()
         self._tick_scheduled = False
         self._closed = False
@@ -49,8 +50,8 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(QSS)
         self.setCentralWidget(root)
         layout = QVBoxLayout(root)
-        layout.setContentsMargins(12, 7, 12, 7)
-        layout.setSpacing(5)
+        layout.setContentsMargins(6, 5, 6, 5)
+        layout.setSpacing(3)
         header = QHBoxLayout()
         self.new_game_button = QPushButton("开始游戏")
         self.new_game_button.setObjectName("new-game")
@@ -62,8 +63,9 @@ class MainWindow(QMainWindow):
         header.addStretch()
         layout.addLayout(header)
         self.table = GameTable()
-        self.table.setMinimumHeight(430)
+        self.table.setMinimumHeight(400)
         self.table.player_selected.connect(self._player_clicked)
+        self.table.shared_card_selected.connect(self._shared_card_clicked)
         layout.addWidget(self.table, stretch=1)
         self.hand = HandView()
         self.hand.card_selected.connect(self._card_clicked)
@@ -75,10 +77,11 @@ class MainWindow(QMainWindow):
         self.log_toggle = QPushButton("战报  ▾")
         self.log_toggle.setProperty("action", True)
         self.log_toggle.setCheckable(True)
-        self.log_toggle.setChecked(True)
+        self.log_toggle.setChecked(False)
         self.log_toggle.toggled.connect(self.log.setVisible)
         header.addWidget(self.log_toggle)
         layout.addWidget(self.log, alignment=Qt.AlignRight)
+        self.log.setVisible(False)
 
     def start_new_game(self) -> None:
         self._tick_timer.stop()
@@ -87,6 +90,7 @@ class MainWindow(QMainWindow):
         self._seen_events = 0
         self._selected_cards.clear()
         self._selected_players.clear()
+        self._selected_shared_card = None
         self.interaction.reset()
         self.log.clear()
         self._render()
@@ -144,6 +148,10 @@ class MainWindow(QMainWindow):
                 value = PlayerId(self.interaction.target_id)
             else:
                 return
+        if value == "ui.confirm_shared":
+            if self._selected_shared_card is None:
+                return
+            value = CardInstanceId(self._selected_shared_card)
         if self.session is None or self.session.engine.pending_request is None:
             return
         request = self.session.engine.pending_request
@@ -155,6 +163,7 @@ class MainWindow(QMainWindow):
             return
         self._selected_cards.clear()
         self._selected_players.clear()
+        self._selected_shared_card = None
         self.interaction.reset()
         self._render()
         self._schedule_tick()
@@ -266,6 +275,17 @@ class MainWindow(QMainWindow):
                 self._selected_players.add(player_id)
             self._render()
 
+    def _shared_card_clicked(self, card_id: str) -> None:
+        if self.session is None:
+            return
+        request = self.session.engine.pending_request
+        if (request is None or request.player_id != self.session.human_id or
+                request.request_type is not RequestType.CHOOSE_CARD or
+                CardInstanceId(card_id) not in request.eligible_card_ids):
+            return
+        self._selected_shared_card = card_id
+        self._render()
+
     def _render(self) -> None:
         if self.session is None:
             return
@@ -275,6 +295,7 @@ class MainWindow(QMainWindow):
         human_request = request if request is not None and request.player_id == session.human_id else None
         request_id = human_request.request_id if human_request else None
         if request_id != self.interaction.request_id:
+            self._selected_shared_card = None
             mode = (UiMode.RESPONDING_WITH_CARD if human_request and human_request.request_type is RequestType.RESPOND_WITH_CARD
                     else UiMode.MULTI_CARD_DISCARDING if human_request and human_request.request_type is RequestType.CHOOSE_CARDS
                     else UiMode.IDLE)
@@ -283,10 +304,24 @@ class MainWindow(QMainWindow):
         if human_request and human_request.request_type in (RequestType.CHOOSE_PLAYER, RequestType.CHOOSE_PLAYERS):
             targets = set(map(str, human_request.allowed_player_ids))
         attack = self._attack_context() if human_request and human_request.request_type is RequestType.RESPOND_WITH_CARD else None
+        notice = art = None
+        if human_request and human_request.required_definition_id == "trick.nullification":
+            target = next((p.name for p in view.players if p.player_id == human_request.subject_player_id), "目标")
+            frames = session.engine.stack.snapshot()
+            trick = next((getattr(f.action, "definition_id") for f in reversed(frames)
+                          if getattr(f.action, "definition_id", "").startswith("trick.")), None)
+            trick_name = session.definitions.get(trick).name if trick else "锦囊"
+            layer = next((int(f.local.get("round", 0)) for f in reversed(frames)
+                          if type(f.action).__name__ == "NullificationWindow"), 0)
+            notice = f"当前锦囊：【{trick_name}】\n作用目标：{target} · 无懈层数：{layer}"
+            art = trick or "trick.nullification"
+        elif view.current_phase == "judgment":
+            notice, art = "判定中 · 等待判定牌", "delayed.lightning"
         selected_targets=set(self._selected_players) or ({self.interaction.target_id} if self.interaction.target_id else set())
         self.table.render(view, targets, selected_targets,
                           attack[0] if attack else None, attack[1] if attack else None,
-                          self._attack_definition() if attack else None)
+                          self._attack_definition() if attack else None, self._selected_shared_card,
+                          notice, art)
         selectable: set[str] = set()
         if human_request is not None:
             if human_request.request_type is RequestType.CHOOSE_OPTION:
@@ -381,9 +416,13 @@ class MainWindow(QMainWindow):
                 if str(cid) not in owned_hand:
                     actions.append((self._public_card_label(cid,view),('ui.toggle_card',str(cid)),True))
         elif kind is RequestType.CHOOSE_CARD:
-            prompt = request.prompt + "（点击手牌）"
+            shared_ids = {str(card.card_id) for card in view.shared_cards}
+            shared_request = bool(shared_ids.intersection(map(str, request.eligible_card_ids)))
+            prompt = request.prompt + ("（在桌心选牌，再确认）" if shared_request else "（点击手牌）")
             owned_hand={str(c.card_id) for c in view.hand}
             actions.extend((self._public_card_label(cid,view),cid,True) for cid in request.eligible_card_ids if str(cid) not in owned_hand)
+            if shared_request:
+                actions.append(("确认选择", "ui.confirm_shared", self._selected_shared_card is not None))
         elif kind is RequestType.CHOOSE_PLAYERS:
             count = len(self._selected_players)
             prompt = f"请选择 {request.min_count} 名玩家：已选 {count} 名。"
@@ -403,8 +442,10 @@ class MainWindow(QMainWindow):
             if card:
                 button.setIcon(QIcon(RESOURCES.card_art(card.definition_id)))
                 button.setIconSize(QSize(35,46))
+            if kind is RequestType.CHOOSE_CARD and isinstance(cid, str) and cid in {str(c.card_id) for c in view.shared_cards}:
+                button.hide()
 
     def _public_card_label(self,cid,view):
         public=(*view.shared_cards,*(card for player in view.players for card in (*player.equipment,*player.judgments)))
         card=next((card for card in public if str(card.card_id)==str(cid)),None)
-        return f'{card.name} {card.suit}{card.rank}' if card else f'目标背面手牌 · {cid}'
+        return f'{card.name} {card.suit}{card.rank}' if card else '目标背面手牌'

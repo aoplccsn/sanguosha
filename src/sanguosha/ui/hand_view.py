@@ -20,7 +20,12 @@ class HandView(QWidget):
         self.cards = {}
         for card in hand:
             key = str(card.card_id)
-            widget = old.pop(key, None) or CardWidget(card)
+            widget = old.pop(key, None)
+            if widget is not None and widget.card != card:
+                widget.hide()
+                widget.deleteLater()
+                widget = None
+            widget = widget or CardWidget(card)
             widget.setParent(self)
             widget.set_selectable(key in selectable)
             widget.set_selected(key in selected)
@@ -43,10 +48,10 @@ class HandView(QWidget):
         p.setRenderHint(QPainter.Antialiasing)
         r = QRectF(2, 3, self.width()-4, self.height()-7)
         grad = QLinearGradient(0, 0, 0, self.height())
-        grad.setColorAt(0, QColor(Theme.shade_193634))
-        grad.setColorAt(1, QColor(Theme.shade_0d2426))
+        grad.setColorAt(0, QColor("#493322"))
+        grad.setColorAt(1, QColor("#241a16"))
         p.setBrush(grad)
-        p.setPen(QPen(QColor(Theme.shade_806c47), 2))
+        p.setPen(QPen(QColor("#b18b54"), 2))
         p.drawRoundedRect(r, 9, 9)
         p.setPen(QColor(Theme.shade_b39b67))
         p.setFont(QFont("Microsoft YaHei UI", 9, QFont.Bold))
@@ -57,7 +62,7 @@ class HandView(QWidget):
         if not count:
             return
         step = min(Theme.card_width + 8, max(0, (self.width()-Theme.card_width-24)/max(1, count-1)))
-        start = max(0, (self.width()-(count-1)*step-116)//2)
+        start = max(0, (self.width()-(count-1)*step-Theme.card_width)//2)
         for index, widget in enumerate(self.cards.values()):
             widget.move(round(start+index*step), 0)
             widget.raise_()

@@ -29,6 +29,7 @@ class CardView:
     rank: str
     definition_id: str = ""
     category: str = "basic"
+    equipment_slot: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -66,11 +67,11 @@ def project_for_human(
     state: GameState, definitions: CardDefinitionRegistry,
     human_id: PlayerId, character_names: dict[PlayerId, str],
 ) -> TableView:
-    def card_view(cid):
+    def card_view(cid, equipment_slot=""):
         card=state.cards[cid]
         definition=definitions.get(card.definition_id)
         return CardView(cid,definition.name,SUIT_SYMBOLS[card.suit],RANK_LABELS.get(card.rank,str(card.rank)),
-                        str(card.definition_id),definition.category.value)
+                        str(card.definition_id),definition.category.value, equipment_slot)
     players = []
     for pid in state.seat_order:
         player = state.players[pid]
@@ -84,7 +85,7 @@ def project_for_human(
             player.is_alive, state.current_player_id == pid,
             GENERAL_PRESENTATION.get(str(player.character_id), (str(player.character_id), "群"))[0],
             GENERAL_PRESENTATION.get(str(player.character_id), ("", "群"))[1], player.chained,
-            tuple(card_view(cid) for ref,z in state.zones.items() if ref.player_id==pid and ref.zone_type is ZoneType.EQUIPMENT for cid in z.card_ids),
+            tuple(card_view(cid, ref.equipment_slot.value) for ref,z in state.zones.items() if ref.player_id==pid and ref.zone_type is ZoneType.EQUIPMENT for cid in z.card_ids),
             tuple(card_view(cid) for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid))),
         ))
     hand = tuple(

@@ -2,14 +2,14 @@
 from .resources import ASSETS
 
 class Theme:
-    background = "#0d2426"
-    panel = "#203a36"
-    accent = "#d5ad65"
+    background = "#251d18"
+    panel = "#4b3628"
+    accent = "#c79b56"
     danger = "#ad5146"
     card = "#f4e4bb"
-    disabled = "#46514b"
-    selected = "#ffe077"
-    muted = "#9daea5"
+    disabled = "#8d8172"
+    selected = "#f2cc70"
+    muted = "#b6a488"
     slash = "#9c3e37"
     dodge = "#3e7775"
     peach = "#98616b"
@@ -74,4 +74,4 @@ DANGER = Theme.danger
 try:
     QSS = (ASSETS / "ui" / "game.qss").read_text(encoding="utf-8")
 except OSError:
-    QSS = "QWidget { background: #0d2426; color: #f4e4bb; }"
+    QSS = "QWidget { background: #251d18; color: #f4e4bb; }"

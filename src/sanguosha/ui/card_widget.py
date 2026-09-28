@@ -46,6 +46,8 @@ class CardWidget(QPushButton):
         self.update()
 
     def set_selected(self, value: bool) -> None:
+        if self._selected == value:
+            return
         self._selected = value
         self._animate_lift()
         self.update()
