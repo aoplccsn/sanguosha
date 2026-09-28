@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 
 from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL as CHARACTERS, STANDARD_SKILL_CATALOGUE as SKILLS
-from sanguosha.model.enums import Identity, Phase, Color, Kingdom, EquipmentSlot
+from sanguosha.model.enums import Identity, Phase, Color, Kingdom, EquipmentSlot, Suit
 from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.model.virtual_card import VirtualCard
 from .actions import Action, StepResult
@@ -14,6 +14,7 @@ from .response import RespondWithCardAction
 from .recovery import RecoverAction
 from .card_rules import InvalidCardUse
 from .hp import LoseHpAction
+from .judgment import JudgmentAction, JudgmentPattern
 
 
 class SkillRegistry:
@@ -119,6 +120,69 @@ class XiaojiHandler:
             return StepResult.push(DrawCardsAction(action.action_id + ':draw', action.player_id,
                                                    2 * action.lost_count))
         return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class GanglieAction(Action):
+    owner_id: str
+    source_id: str
+
+
+class GanglieHandler:
+    def __init__(self, moves):
+        self.moves = moves
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index == 0:
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':offer', action.owner_id,
+                RequestType.YES_NO, '受到伤害后，是否发动【刚烈】判定？',
+                action.action_id, frame.frame_id))
+        if frame.step_index == 1:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted or not state.players[action.source_id].is_alive:
+                return StepResult.complete()
+            frame.step_index = 2
+            return StepResult.push(JudgmentAction(action.action_id + ':judge', action.owner_id,
+                                                   JudgmentPattern(suit=Suit.HEART)))
+        if frame.step_index == 2:
+            if frame.child_result is True or not state.players[action.source_id].is_alive:
+                return StepResult.complete()
+            hand = state.cards_in(ZoneRef(ZoneType.HAND, action.source_id))
+            if len(hand) < 2:
+                return self._damage(frame)
+            frame.step_index = 3
+            return StepResult.ask(PendingRequest(action.action_id + ':source-choice', action.source_id,
+                RequestType.CHOOSE_OPTION, '刚烈：弃两张手牌或受到一点伤害',
+                action.action_id, frame.frame_id, choices=('discard', 'damage')))
+        if frame.step_index == 3:
+            choice = frame.decision
+            frame.decision = None
+            if choice == 'damage':
+                return self._damage(frame)
+            hand = state.cards_in(ZoneRef(ZoneType.HAND, action.source_id))
+            if len(hand) < 2:
+                return self._damage(frame)
+            frame.step_index = 4
+            return StepResult.ask(PendingRequest(action.action_id + ':discard', action.source_id,
+                RequestType.CHOOSE_CARDS, '刚烈：选择弃置两张手牌', action.action_id,
+                frame.frame_id, eligible_card_ids=hand, min_count=2, max_count=2))
+        if frame.step_index == 4:
+            cards = tuple(frame.decision)
+            frame.decision = None
+            self.moves.move(state, CardMove(action.action_id + ':discard-move', cards,
+                ZoneRef(ZoneType.HAND, action.source_id), ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.DISCARD, action.source_id))
+        return StepResult.complete()
+
+    def _damage(self, frame):
+        from .military_basics import MilitaryDamageAction
+        action = frame.action
+        frame.step_index = 5
+        return StepResult.push(MilitaryDamageAction(action.action_id + ':damage',
+                                                     action.owner_id, action.source_id, 1))
 
 
 @dataclass(frozen=True, slots=True)

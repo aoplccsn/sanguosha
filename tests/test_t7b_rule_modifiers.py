@@ -272,6 +272,43 @@ def test_guicai_replaces_revealed_card_before_judgment_result():
                for event in session.events.events)
     assert session.engine.stack.is_empty()
 
+
+def test_ganglie_failed_judgment_lets_source_take_damage():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p2'].character_id = 'xiahou_dun'
+    top = session.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    session.state.cards[top] = replace(session.state.cards[top], suit=Suit.SPADE)
+    session.engine.start_action(MilitaryDamageAction('ganglie-incoming', 'p1', 'p2', 1))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO and '刚烈' in request.prompt
+    session.engine.submit_decision(Decision(request.request_id, 'p2', True))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_OPTION
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'damage'))
+    assert session.state.players['p2'].hp == 3
+    assert session.state.players['p1'].hp == 4
+    assert session.engine.stack.is_empty()
+
+
+def test_ganglie_source_can_discard_two_hand_cards():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p2'].character_id = 'xiahou_dun'
+    top = session.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    session.state.cards[top] = replace(session.state.cards[top], suit=Suit.SPADE)
+    hand = ZoneRef(ZoneType.HAND, 'p1')
+    before = len(session.state.cards_in(hand))
+    session.engine.start_action(MilitaryDamageAction('ganglie-discard', 'p1', 'p2', 1))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p2', True))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'discard'))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_CARDS and request.min_count == 2
+    session.engine.submit_decision(Decision(request.request_id, 'p1', request.eligible_card_ids[:2]))
+    assert len(session.state.cards_in(hand)) == before - 2
+    assert session.state.players['p1'].hp == 5
+    assert session.engine.stack.is_empty()
+
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p2'].character_id = 'zhenji'

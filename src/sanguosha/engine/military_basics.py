@@ -137,6 +137,13 @@ class MilitaryDamageHandler(DamageActionHandler):
                 frame.step_index = 6
                 return StepResult.ask(PendingRequest(action.action_id+':fankui',action.target_id,
                     RequestType.YES_NO,'受到伤害，是否发动【反馈】？',action.action_id,frame.frame_id))
+        if (frame.step_index == 1 and not frame.local.get('ganglie_offered') and self.skills is not None
+                and self.skills.has(state,action.target_id,'ganglie') and target.is_alive
+                and action.source_id is not None and action.source_id != action.target_id
+                and state.players[action.source_id].is_alive):
+            from .skills import GanglieAction
+            frame.local['ganglie_offered'] = True
+            return StepResult.push(GanglieAction(action.action_id+':ganglie',action.target_id,action.source_id))
         chain = str(frame.local['chain']).split('|') if frame.local['chain'] else []
         if state.status is GameStatus.FINISHED or frame.cursor >= len(chain):
             return StepResult.complete(int(frame.local['amount']))
