@@ -10,6 +10,7 @@ from .equipment_preview import EquipmentPreview
 
 class PlayerPanel(QPushButton):
     player_selected = Signal(str)
+    detail_requested = Signal(str)
 
     def __init__(self, player_id: str) -> None:
         super().__init__()
@@ -28,7 +29,13 @@ class PlayerPanel(QPushButton):
         self.setMinimumSize(205, 145)
         self.setMouseTracking(True)
         self._equipment_preview = EquipmentPreview(self)
-        self.clicked.connect(lambda: self.player_selected.emit(self.player_id))
+        self.clicked.connect(self._activate)
+
+    def _activate(self) -> None:
+        if self.targetable:
+            self.player_selected.emit(self.player_id)
+        else:
+            self.detail_requested.emit(self.player_id)
 
     def set_pending_responder(self, value: bool) -> None:
         if self.pending_responder != value:

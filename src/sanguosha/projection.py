@@ -103,8 +103,9 @@ def project_for_human(
             player.hp, player.max_hp,
             len(state.cards_in(ZoneRef(ZoneType.HAND, pid))),
             player.is_alive, state.current_player_id == pid,
-            GENERAL_PRESENTATION.get(str(player.character_id), (str(player.character_id), "群"))[0],
-            GENERAL_PRESENTATION.get(str(player.character_id), ("", "群"))[1], player.chained,
+            str(player.character_id) if player.character_id in skills.characters else GENERAL_PRESENTATION.get(str(player.character_id), (str(player.character_id), "群"))[0],
+            {"wei":"魏", "shu":"蜀", "wu":"吴", "qun":"群"}[skills.characters[player.character_id].kingdom.value]
+            if player.character_id in skills.characters else GENERAL_PRESENTATION.get(str(player.character_id), ("", "群"))[1], player.chained,
             tuple(card_view(cid, ref.equipment_slot.value) for ref,z in state.zones.items() if ref.player_id==pid and ref.zone_type is ZoneType.EQUIPMENT for cid in z.card_ids),
             tuple(card_view(cid) for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid))),
             distance.base_distance(state,human_id,pid) if pid != human_id and state.players[human_id].is_alive and player.is_alive else None,

@@ -4,7 +4,7 @@ import os
 from PySide6.QtCore import QTimer, Qt, QAbstractAnimation, QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QHBoxLayout, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget,
+    QDialog, QHBoxLayout, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget,
 )
 
 from sanguosha.engine.phases import END_PLAY_PHASE
@@ -17,6 +17,7 @@ from sanguosha.model.zones import ZoneType
 from sanguosha.model.state import GameStatus
 from sanguosha.projection import project_for_human
 from sanguosha.session import GameSession
+from sanguosha.pregame import Pregame, SetupStage
 
 from .decision_controller import DecisionController
 from .game_table import GameTable
@@ -25,6 +26,8 @@ from .interaction import InteractionState, UiMode
 from .log_panel import LogPanel
 from .theme import QSS
 from .resources import RESOURCES
+from .general_detail import GeneralDetailPanel, SkillBar
+from .pregame_dialog import PregameDialog
 
 NORMAL_AI_DELAY_MS = 500
 HUMAN_DECISION_TIMEOUT_MS = 15000
@@ -43,6 +46,9 @@ class MainWindow(QMainWindow):
         self._selected_cards: set[str] = set()
         self._selected_players: set[str] = set()
         self._selected_shared_card: str | None = None
+        self._skill_mode: str | None = None
+        self._detail_dialog = None
+        self._pregame_dialog = None
         self.interaction = InteractionState()
         self._tick_scheduled = False
         self._closed = False
@@ -62,7 +68,12 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(6, 5, 6, 5)
         layout.setSpacing(3)
         header = QHBoxLayout()
-        self.new_game_button = QPushButton("开始游戏")
+        self.standard_game_button = QPushButton('标准开局预览 · 随机身份与十选一')
+        self.standard_game_button.setObjectName('standard-new-game')
+        self.standard_game_button.clicked.connect(lambda checked=False: self.start_standard_game())
+        if military:
+            header.addWidget(self.standard_game_button)
+        self.new_game_button = QPushButton("五将练习")
         self.new_game_button.setObjectName("new-game")
         self.new_game_button.clicked.connect(self.start_new_game)
         header.addWidget(self.new_game_button)
@@ -74,8 +85,12 @@ class MainWindow(QMainWindow):
         self.table = GameTable()
         self.table.setMinimumHeight(400)
         self.table.player_selected.connect(self._player_clicked)
+        self.table.detail_requested.connect(self._show_general_detail)
         self.table.shared_card_selected.connect(self._shared_card_clicked)
         layout.addWidget(self.table, stretch=1)
+        self.skill_bar = SkillBar()
+        self.skill_bar.selected.connect(self._skill_clicked)
+        layout.addWidget(self.skill_bar, alignment=Qt.AlignHCenter)
         self.hand = HandView()
         self.hand.card_selected.connect(self._card_clicked)
         self.decision = DecisionController()
@@ -93,15 +108,38 @@ class MainWindow(QMainWindow):
         self.log.setVisible(False)
 
     def start_new_game(self) -> None:
+        """Keep the five-general practice match for the existing T7-A tests."""
+        self._install_session(GameSession.new_game(military=self.military, five_generals=self.military))
+
+    def start_standard_game(self, seed: int | None = None) -> None:
+        if not self.military:
+            return
+        if self._pregame_dialog is not None:
+            self._pregame_dialog.close()
+        self._tick_timer.stop()
+        self._decision_timer.stop()
+        setup = Pregame.create(seed)
+        dialog = PregameDialog(setup, self)
+        self._pregame_dialog = dialog
+        def finished(result):
+            if result == QDialog.DialogCode.Accepted and setup.stage is SetupStage.COMPLETE and not self._closed:
+                self._install_session(GameSession.new_game(military=True, setup=setup))
+            if self._pregame_dialog is dialog:
+                self._pregame_dialog = None
+        dialog.finished.connect(finished)
+        dialog.show()
+
+    def _install_session(self, session: GameSession) -> None:
         self._tick_timer.stop()
         self._decision_timer.stop()
         self._decision_request_id = None
         self._tick_scheduled = False
-        self.session = GameSession.new_game(military=self.military, five_generals=self.military)
+        self.session = session
         self._seen_events = 0
         self._selected_cards.clear()
         self._selected_players.clear()
         self._selected_shared_card = None
+        self._skill_mode = None
         self.interaction.reset()
         self.log.clear()
         self._render()
@@ -118,6 +156,8 @@ class MainWindow(QMainWindow):
         self._tick_timer.stop()
         self._decision_timer.stop()
         self._tick_scheduled = False
+        if self._pregame_dialog is not None:
+            self._pregame_dialog.close()
         for animation in self.findChildren(QAbstractAnimation):
             animation.stop()
         super().closeEvent(event)
@@ -254,6 +294,11 @@ class MainWindow(QMainWindow):
         if request.player_id != self.session.human_id:
             return
         if request.request_type is RequestType.CHOOSE_OPTION:
+            virtual = f'virtual:{self._skill_mode}:{card_id}' if self._skill_mode else None
+            if virtual and virtual in request.choices:
+                self._skill_mode = None
+                self._submit_value(virtual)
+                return
             option = f"use:{card_id}"
             if option in request.choices:
                 if self.interaction.card_id == card_id:
@@ -309,6 +354,40 @@ class MainWindow(QMainWindow):
                 self._selected_players.add(player_id)
             self._render()
 
+    def _show_general_detail(self, player_id: str) -> None:
+        if self.session is None or self.session.skills is None:
+            return
+        pid = PlayerId(player_id)
+        character = self.session.skills.characters.get(self.session.state.players[pid].character_id)
+        if character is None:
+            return
+        view = project_for_human(self.session.state, self.session.definitions,
+                                 self.session.human_id, self.session.character_names)
+        player_view = next(p for p in view.players if p.player_id == pid)
+        request = self.session.engine.pending_request
+        choices = (request.choices + tuple(map(str, request.eligible_card_ids))
+                   if request is not None and request.player_id == pid else ())
+        self._detail_dialog = GeneralDetailPanel(player_view, character, self.session.skills.skills,
+                                                 self.session.state.players[pid], self.session.state,
+                                                 choices, self)
+        self._detail_dialog.show()
+
+    def _skill_clicked(self, skill_id: str) -> None:
+        if self.session is None:
+            return
+        request = self.session.engine.pending_request
+        if request is None or request.player_id != self.session.human_id:
+            return
+        direct = f'skill:{skill_id}'
+        virtual = f'virtual:{skill_id}'
+        if direct in request.choices:
+            self._submit_value(direct)
+        elif virtual in request.eligible_card_ids:
+            self._submit_value(virtual)
+        elif any(str(choice).startswith(virtual + ':') for choice in (*request.choices, *request.eligible_card_ids)):
+            self._skill_mode = skill_id
+            self.decision.prompt_label.setText(f'【{self.session.skills.skills[skill_id].name}】请选择材料牌')
+
     def _shared_card_clicked(self, card_id: str) -> None:
         if self.session is None:
             return
@@ -343,6 +422,7 @@ class MainWindow(QMainWindow):
         request_id = human_request.request_id if human_request else None
         if request_id != self.interaction.request_id:
             self._selected_shared_card = None
+            self._skill_mode = None
             mode = (UiMode.RESPONDING_WITH_CARD if human_request and human_request.request_type is RequestType.RESPOND_WITH_CARD
                     else UiMode.MULTI_CARD_DISCARDING if human_request and human_request.request_type is RequestType.CHOOSE_CARDS
                     else UiMode.IDLE)
@@ -382,10 +462,21 @@ class MainWindow(QMainWindow):
                 self._decision_remaining_ms / HUMAN_DECISION_TIMEOUT_MS
                 if human_request and pid == str(session.human_id) else
                 1.0 if request and str(request.player_id) == pid else None)
+        if session.skills is not None:
+            actor = session.state.players[session.human_id]
+            character = session.skills.characters.get(actor.character_id)
+            choices = (human_request.choices + tuple(map(str, human_request.eligible_card_ids))
+                       if human_request is not None else ())
+            self.skill_bar.render(character, session.skills.skills, actor, session.state, choices)
+            self.skill_bar.setVisible(character is not None)
+        else:
+            self.skill_bar.hide()
         selectable: set[str] = set()
         if human_request is not None:
             if human_request.request_type is RequestType.CHOOSE_OPTION:
                 selectable = {choice[4:] for choice in human_request.choices if choice.startswith("use:")}
+                selectable.update(choice.split(':', 2)[2] for choice in human_request.choices
+                                  if choice.startswith('virtual:wusheng:'))
             elif human_request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD, RequestType.CHOOSE_CARDS):
                 selectable = set(map(str, human_request.eligible_card_ids))
                 selectable.update(choice.split(':',2)[2] for choice in human_request.eligible_card_ids
@@ -478,7 +569,8 @@ class MainWindow(QMainWindow):
                         return f'武圣 · {card.name} {card.suit}{card.rank}' if card else '武圣 · 红牌'
                     return labels.get(choice,choice)
                 actions.extend((option_label(choice),choice,True)
-                               for choice in request.choices if not choice.startswith('use:') and choice!=END_PLAY_PHASE)
+                               for choice in request.choices
+                               if not choice.startswith('use:') and choice != END_PLAY_PHASE)
                 prompt = "出牌阶段 · 请选择可用手牌"
         elif kind is RequestType.CHOOSE_PLAYER:
             chosen = next((p.name for p in view.players if str(p.player_id) == self.interaction.target_id), None)

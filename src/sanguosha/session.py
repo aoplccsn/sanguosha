@@ -1,5 +1,7 @@
 """Headless five-player match composition and one-turn-at-a-time orchestration."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 from sanguosha.content.cards.basic import register_basic_cards
@@ -30,6 +32,7 @@ from sanguosha.model.enums import Identity, Phase
 from sanguosha.model.ids import CharacterId, PlayerId
 from sanguosha.model.player import PlayerState
 from sanguosha.model.state import GameState, GameStatus
+from sanguosha.pregame import Pregame, SetupStage
 
 
 CHARACTER_NAMES = ("曹操", "刘备", "孙权", "吕布", "关羽")
@@ -79,29 +82,37 @@ class GameSession:
         self.declined_nullification_windows.intersection_update(live)
 
     @classmethod
-    def new_game(cls, seed: int = 6, *, military: bool = False, five_generals: bool = False) -> "GameSession":
-        rng = PythonRandomSource(seed)
+    def new_game(cls, seed: int = 6, *, military: bool = False, five_generals: bool = False,
+                 setup: Pregame | None = None) -> "GameSession":
+        if setup is not None and setup.stage is not SetupStage.COMPLETE:
+            raise ValueError('general draft must finish before starting a match')
+        if setup is not None and not military:
+            raise ValueError('standard general draft requires the military ruleset')
+        rng = setup.rng if setup is not None else PythonRandomSource(seed)
         card_instances, draw_zone = classic_military_deck(rng) if military else basic_deck(rng)
         ids = tuple(PlayerId(f"p{i}") for i in range(1, 6))
         if five_generals and not military:
             raise ValueError('five generals require the military ruleset')
         skills = None
         characters = None
-        if five_generals:
+        if five_generals or setup is not None:
             from sanguosha.engine.skills import SkillRegistry
             skills = SkillRegistry()
             # Seat order follows the original portrait order.
-            characters = tuple(skills.characters[key] for key in ('caocao','liubei','sunquan','lvbu','guanyu'))
+            characters = (tuple(skills.characters[setup.generals[pid]] for pid in ids) if setup is not None else
+                          tuple(skills.characters[key] for key in ('caocao','liubei','sunquan','lvbu','guanyu')))
+        identities = tuple(setup.identities[pid] for pid in ids) if setup is not None else IDENTITIES
         players = {}
         for index, pid in enumerate(ids):
             character = characters[index] if characters else None
-            maximum = character.max_hp + (1 if IDENTITIES[index] is Identity.LORD and characters else 0) if character else 4
+            maximum = character.max_hp + (1 if identities[index] is Identity.LORD and characters else 0) if character else 4
             players[pid] = PlayerState(pid, index, character.id if character else CharacterId(f'blank-{index+1}'),
-                                       IDENTITIES[index], maximum, maximum)
+                                       identities[index], maximum, maximum)
         state = GameState(
             "classic-military" if military else "t5-basic-identity", players=players, seat_order=ids,
             cards=card_instances, zones={draw_zone.ref: draw_zone},
-            status=GameStatus.ACTIVE, revealed_identities={ids[0]},
+            status=GameStatus.ACTIVE,
+            revealed_identities={setup.lord_id} if setup is not None else {ids[0]},
         )
         events = EventRecorder()
         events.record(Event("game-start", "game-start"))
@@ -162,7 +173,9 @@ class GameSession:
             engine.reaction_provider = moves.next_reaction
         return cls(
             engine, events, definitions, ids[0],
-            AIDecisionProvider(ids[0]), dict(zip(ids, CHARACTER_NAMES)), skills,
+            AIDecisionProvider(ids[0]),
+            {pid: characters[index].name for index, pid in enumerate(ids)} if setup is not None else dict(zip(ids, CHARACTER_NAMES)),
+            skills,
         )
 
     @property
@@ -184,7 +197,8 @@ class GameSession:
             return True
         if self.engine.status in (EngineStatus.IDLE, EngineStatus.COMPLETED):
             current = self.state.current_player_id
-            next_player = self.human_id if current is None else next_alive_player(self.state, current)
+            next_player = (next(pid for pid in self.state.seat_order if self.state.players[pid].identity is Identity.LORD)
+                           if current is None else next_alive_player(self.state, current))
             self.engine.start_action(TurnAction(f"turn-{self.state.turn_number + 1}", next_player))
             return True
         request = self.engine.pending_request

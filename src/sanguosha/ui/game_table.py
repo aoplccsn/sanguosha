@@ -13,6 +13,7 @@ PHASES = {"preparation":"准备", "judgment":"判定", "draw":"摸牌",
 
 class GameTable(QWidget):
     player_selected = Signal(str)
+    detail_requested = Signal(str)
     shared_card_selected = Signal(str)
 
     def __init__(self) -> None:
@@ -46,6 +47,7 @@ class GameTable(QWidget):
         for panel in self.panels.values():
             panel.setParent(self)
             panel.player_selected.connect(self.player_selected)
+            panel.detail_requested.connect(self.detail_requested)
         self.setMinimumHeight(400)
 
     def play_judgment(self, name: str, art_id: str, matched: bool) -> None:

@@ -1,7 +1,7 @@
 """Registered skills and explicit active/cross-player skill actions."""
 from dataclasses import dataclass
 
-from sanguosha.content.characters.classic import CHARACTERS, SKILLS
+from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL as CHARACTERS, STANDARD_SKILL_CATALOGUE as SKILLS
 from sanguosha.model.enums import Identity, Phase, Color, Kingdom, EquipmentSlot
 from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.model.virtual_card import VirtualCard
