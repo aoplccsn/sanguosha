@@ -98,6 +98,30 @@ class LianyingHandler:
 
 
 @dataclass(frozen=True, slots=True)
+class XiaojiAction(Action):
+    player_id: str
+    lost_count: int
+
+
+class XiaojiHandler:
+    def step(self, state, frame):
+        action = frame.action
+        if not state.players[action.player_id].is_alive:
+            return StepResult.complete()
+        if frame.step_index == 0:
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':choice', action.player_id,
+                RequestType.YES_NO, f'失去 {action.lost_count} 张装备，是否发动【枭姬】摸牌？',
+                action.action_id, frame.frame_id))
+        if frame.step_index == 1 and frame.decision is True:
+            frame.decision = None
+            frame.step_index = 2
+            return StepResult.push(DrawCardsAction(action.action_id + ':draw', action.player_id,
+                                                   2 * action.lost_count))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
 class KurouAction(Action):
     player_id: str
 

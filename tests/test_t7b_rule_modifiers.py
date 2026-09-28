@@ -154,6 +154,25 @@ def test_lianying_follows_real_loss_of_last_hand_card():
     resolve(session)
     assert len(session.state.cards_in(hand)) == 3  # 连营一张，无中生有两张
 
+
+def test_xiaoji_triggers_from_equipment_zone_loss():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'sunshangxiang'
+    session.state.current_player_id = 'p1'
+    session.state.turn_number = 1
+    card = gear(session, 'weapon.double_sword')
+    equipment = ZoneRef(ZoneType.EQUIPMENT, 'p1', EquipmentSlot.WEAPON)
+    moves = session.engine.registry.handler_for(PhaseAction('lookup', 'p1', Phase.DISCARD)).bodies.body_for(Phase.DISCARD).moves
+    moves.move(session.state, CardMove('lose-equipment', (card,), equipment,
+        ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.SYSTEM, 'p1'))
+    before = len(session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1')))
+    session.engine.start_action(PhaseAction('xiaoji-finish', 'p1', Phase.FINISH))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO and '枭姬' in request.prompt
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    assert session.engine.stack.is_empty()
+    assert len(session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == before + 2
+
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p2'].character_id = 'zhenji'

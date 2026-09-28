@@ -18,6 +18,8 @@ class MilitaryMoveService(CardMoveService):
         lost_last_hand=(move.from_zone.zone_type is ZoneType.HAND and owner is not None
                         and self.skills is not None and self.skills.has(state,owner,'lianying')
                         and len(state.cards_in(move.from_zone))==len(move.card_ids))
+        lost_equipment=(move.from_zone.zone_type is ZoneType.EQUIPMENT and owner is not None
+                        and self.skills is not None and self.skills.has(state,owner,'xiaoji'))
         silver=move.from_zone.zone_type is ZoneType.EQUIPMENT and any(
             state.cards[cid].definition_id=='equipment.armor.silver_lion' for cid in move.card_ids)
         super().move(state,move)
@@ -26,6 +28,9 @@ class MilitaryMoveService(CardMoveService):
         if lost_last_hand and state.players[owner].is_alive:
             from .skills import LianyingAction
             self.reactions.append(LianyingAction(move.move_id+':lianying',owner))
+        if lost_equipment and state.players[owner].is_alive:
+            from .skills import XiaojiAction
+            self.reactions.append(XiaojiAction(move.move_id+':xiaoji',owner,len(move.card_ids)))
     def next_reaction(self,state):
         while self.reactions:
             action=self.reactions.pop(0)
