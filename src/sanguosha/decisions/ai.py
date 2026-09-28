@@ -64,7 +64,7 @@ class AIDecisionProvider:
         elif kind is RequestType.CHOOSE_PLAYER:
             value = (player_id if '青囊' in request.prompt and player_id in request.allowed_player_ids else
                      min(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid))
-                     if '仁德' in request.prompt or '青囊' in request.prompt else
+                     if '仁德' in request.prompt or '青囊' in request.prompt or '遗计' in request.prompt else
                      max(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid)))
         elif kind is RequestType.RESPOND_WITH_CARD:
             if not request.eligible_card_ids:

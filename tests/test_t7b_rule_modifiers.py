@@ -336,6 +336,33 @@ def test_tuxi_replaces_draw_with_two_other_players_hand_cards():
     assert len(session.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))) == deck_before
     assert session.engine.stack.is_empty()
 
+
+def test_yiji_handles_each_damage_point_and_splits_drawn_cards():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p2'].character_id = 'guojia'
+    session.state.players['p2'].max_hp = 3
+    session.state.players['p2'].hp = 3
+    own_hand = ZoneRef(ZoneType.HAND, 'p2')
+    ally_hand = ZoneRef(ZoneType.HAND, 'p1')
+    own_before = len(session.state.cards_in(own_hand))
+    ally_before = len(session.state.cards_in(ally_hand))
+    session.engine.start_action(MilitaryDamageAction('yiji-hit', 'p1', 'p2', 2))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO and '遗计' in request.prompt
+    session.engine.submit_decision(Decision(request.request_id, 'p2', True))
+    first = session.engine.pending_request
+    assert first.request_type is RequestType.CHOOSE_PLAYER
+    session.engine.submit_decision(Decision(first.request_id, 'p2', 'p1'))
+    second = session.engine.pending_request
+    session.engine.submit_decision(Decision(second.request_id, 'p2', 'p2'))
+    next_point = session.engine.pending_request
+    assert next_point.request_type is RequestType.YES_NO and '第 2 点' in next_point.prompt
+    session.engine.submit_decision(Decision(next_point.request_id, 'p2', False))
+    assert len(session.state.cards_in(own_hand)) == own_before + 1
+    assert len(session.state.cards_in(ally_hand)) == ally_before + 1
+    assert session.state.players['p2'].hp == 1
+    assert session.engine.stack.is_empty()
+
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p2'].character_id = 'zhenji'

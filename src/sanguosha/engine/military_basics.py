@@ -144,6 +144,12 @@ class MilitaryDamageHandler(DamageActionHandler):
             from .skills import GanglieAction
             frame.local['ganglie_offered'] = True
             return StepResult.push(GanglieAction(action.action_id+':ganglie',action.target_id,action.source_id))
+        if (frame.step_index == 1 and not frame.local.get('yiji_offered') and self.skills is not None
+                and self.skills.has(state,action.target_id,'yiji') and target.is_alive):
+            from .skills import YijiAction
+            frame.local['yiji_offered'] = True
+            return StepResult.push(YijiAction(action.action_id+':yiji',action.target_id,
+                                              int(frame.local['amount'])))
         chain = str(frame.local['chain']).split('|') if frame.local['chain'] else []
         if state.status is GameStatus.FINISHED or frame.cursor >= len(chain):
             return StepResult.complete(int(frame.local['amount']))

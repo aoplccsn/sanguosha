@@ -239,6 +239,73 @@ class TuxiHandler:
 
 
 @dataclass(frozen=True, slots=True)
+class YijiAction(Action):
+    player_id: str
+    damage_points: int
+
+
+class YijiHandler:
+    def __init__(self, moves):
+        self.moves = moves
+
+    def step(self, state, frame):
+        action = frame.action
+        owner = action.player_id
+        hand = ZoneRef(ZoneType.HAND, owner)
+        if frame.step_index == 0:
+            frame.cursor = 0
+            frame.step_index = 1
+        if frame.step_index == 1:
+            if frame.cursor >= action.damage_points or not state.players[owner].is_alive:
+                return StepResult.complete()
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(f'{action.action_id}:offer:{frame.cursor}', owner,
+                RequestType.YES_NO, f'第 {frame.cursor + 1} 点伤害：是否发动【遗计】摸两张牌并分配？',
+                action.action_id, frame.frame_id))
+        if frame.step_index == 2:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted:
+                frame.cursor += 1
+                frame.step_index = 1
+                return StepResult.continue_()
+            frame.local['before_draw'] = '|'.join(state.cards_in(hand))
+            frame.step_index = 3
+            return StepResult.push(DrawCardsAction(f'{action.action_id}:draw:{frame.cursor}', owner, 2))
+        if frame.step_index == 3:
+            before = set(str(frame.local['before_draw']).split('|'))
+            frame.local['new_cards'] = '|'.join(cid for cid in state.cards_in(hand) if cid not in before)
+            frame.local['card_cursor'] = 0
+            frame.step_index = 4
+        if frame.step_index == 5:
+            target = frame.decision
+            frame.decision = None
+            card = str(frame.local['current_card'])
+            if target != owner and card in state.cards_in(hand) and state.players[target].is_alive:
+                self.moves.move(state, CardMove(f'{action.action_id}:give:{frame.cursor}:{frame.local["card_cursor"]}',
+                    (card,), hand, ZoneRef(ZoneType.HAND, target), CardMoveReason.SYSTEM,
+                    owner, action.action_id))
+            frame.local['card_cursor'] = int(frame.local['card_cursor']) + 1
+            frame.step_index = 4
+        if frame.step_index == 4:
+            cards = str(frame.local['new_cards']).split('|') if frame.local['new_cards'] else []
+            index = int(frame.local['card_cursor'])
+            if index >= len(cards):
+                frame.cursor += 1
+                frame.step_index = 1
+                return StepResult.continue_()
+            card = cards[index]
+            frame.local['current_card'] = card
+            frame.step_index = 5
+            return StepResult.ask(PendingRequest(f'{action.action_id}:recipient:{frame.cursor}:{index}',
+                owner, RequestType.CHOOSE_PLAYER,
+                f'【遗计】第 {index + 1} 张牌交给谁？选择自己则保留。',
+                action.action_id, frame.frame_id,
+                allowed_player_ids=tuple(pid for pid in state.seat_order if state.players[pid].is_alive)))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
 class KurouAction(Action):
     player_id: str
 
