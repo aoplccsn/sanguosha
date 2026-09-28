@@ -39,7 +39,7 @@ def describe_event(event: object, state: GameState, definitions: CardDefinitionR
         card_name = definitions.get(event.virtual_definition_id or state.cards[event.card_id].definition_id).name
         return f"{name(event.player_id)} 使用【{card_name}】，目标：{', '.join(map(name, event.target_ids)) or '自己'}。"
     if isinstance(event, CardRespondedEvent):
-        card_name = definitions.get(state.cards[event.card_id].definition_id).name
+        card_name = definitions.get(event.response_definition_id or state.cards[event.card_id].definition_id).name
         return f"{name(event.player_id)} 打出【{card_name}】。"
     if isinstance(event, DamageDealtEvent):
         return f"{name(event.target_id)} 受到 {event.amount} 点伤害，体力变为 {event.hp_after}。"

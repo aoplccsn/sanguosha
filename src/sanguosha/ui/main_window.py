@@ -211,6 +211,8 @@ class MainWindow(QMainWindow):
                     value = CardInstanceId(card_id)
                 elif request and f'virtual:qingguo:{card_id}' in request.eligible_card_ids:
                     value = f'virtual:qingguo:{card_id}'
+                elif request and f'virtual:jijiu:{card_id}' in request.eligible_card_ids:
+                    value = f'virtual:jijiu:{card_id}'
                 else:
                     value = f'virtual:wusheng:{card_id}'
             else:
@@ -328,7 +330,8 @@ class MainWindow(QMainWindow):
         elif request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD):
             if (CardInstanceId(card_id) in request.eligible_card_ids or
                     f'virtual:wusheng:{card_id}' in request.eligible_card_ids or
-                    f'virtual:qingguo:{card_id}' in request.eligible_card_ids):
+                    f'virtual:qingguo:{card_id}' in request.eligible_card_ids or
+                    f'virtual:jijiu:{card_id}' in request.eligible_card_ids):
                 if request.request_type is RequestType.RESPOND_WITH_CARD:
                     self.interaction.select_response(card_id)
                     self._render()
@@ -500,7 +503,7 @@ class MainWindow(QMainWindow):
             elif human_request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD, RequestType.CHOOSE_CARDS):
                 selectable = set(map(str, human_request.eligible_card_ids))
                 selectable.update(choice.split(':',2)[2] for choice in human_request.eligible_card_ids
-                                  if isinstance(choice,str) and choice.startswith(('virtual:wusheng:', 'virtual:qingguo:')))
+                                  if isinstance(choice,str) and choice.startswith(('virtual:wusheng:', 'virtual:qingguo:', 'virtual:jijiu:')))
         selected_cards = set(self._selected_cards)
         if self.interaction.card_id:
             selected_cards.add(self.interaction.card_id)
@@ -639,6 +642,9 @@ class MainWindow(QMainWindow):
                 actions.append(('护驾 · 请魏角色出闪','virtual:hujia',True))
             if 'virtual:jijiang' in request.eligible_card_ids:
                 actions.append(('激将 · 请蜀角色出杀','virtual:jijiang',True))
+            for choice in request.eligible_card_ids:
+                if isinstance(choice,str) and choice.startswith('virtual:jijiu:'):
+                    actions.append(('急救 · 红牌当桃',choice,True))
             if self.interaction.card_id:
                 actions.append(("取消", "ui.cancel", True))
         elif kind is RequestType.CHOOSE_CARDS:

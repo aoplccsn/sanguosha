@@ -449,6 +449,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                     eligible += ('virtual:hujia',)
                 if action.required_definition_id == 'basic.dodge' and self.skills.has(state,action.player_id,'qingguo'):
                     eligible += tuple(f'virtual:qingguo:{cid}' for cid in hand if state.cards[cid].color is Color.BLACK)
+                if action.required_definition_id == 'basic.peach':
+                    eligible += tuple(f'virtual:jijiu:{cid}' for cid in self.skills.emergency_peach_materials(state,action.player_id))
             frame.step_index = 1
             return StepResult.ask(PendingRequest(action.action_id + ':request', action.player_id,
                 RequestType.RESPOND_WITH_CARD, action.prompt, action.action_id, frame.frame_id,
@@ -504,6 +506,22 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             self.recorder.record(CardRespondedEvent(action.action_id+':qingguo-responded',action.player_id,
                 material,action.source_action_id,'basic.dodge',action.response_number))
             self.moves.move(state,CardMove(action.action_id+':qingguo-discard',(material,),
+                ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.RESPONSE,action.player_id))
+            return StepResult.complete(virtual)
+        if isinstance(choice,str) and choice.startswith('virtual:jijiu:'):
+            material=choice.split(':',2)[2]
+            if (self.skills is None or action.required_definition_id!='basic.peach'
+                    or material not in self.skills.emergency_peach_materials(state,action.player_id)):
+                raise InvalidCardUse('急救材料不合法')
+            card=state.cards[material]
+            virtual=VirtualCard('basic.peach',(material,),card.suit,card.color)
+            source=next(ref for ref,zone in state.zones.items() if material in zone.card_ids)
+            self.moves.move(state,CardMove(action.action_id+':jijiu-processing',(material,),
+                source,ZoneRef(ZoneType.PROCESSING),CardMoveReason.RESPONSE,action.player_id))
+            self.recorder.record(CardRespondedEvent(action.action_id+':jijiu-responded',action.player_id,
+                material,action.source_action_id,'basic.peach'))
+            self.moves.move(state,CardMove(action.action_id+':jijiu-discard',(material,),
                 ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE,action.player_id))
             return StepResult.complete(virtual)

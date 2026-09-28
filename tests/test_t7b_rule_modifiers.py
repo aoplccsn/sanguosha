@@ -458,6 +458,28 @@ def test_fanjian_random_hand_card_is_given_and_wrong_guess_deals_damage():
     assert session.state.play_usage.count('skill.fanjian') == 1
     assert session.engine.stack.is_empty()
 
+
+@pytest.mark.parametrize('zone,slot', [
+    (ZoneType.HAND, None), (ZoneType.EQUIPMENT, EquipmentSlot.WEAPON),
+])
+def test_jijiu_red_hand_or_equipment_responds_as_peach_outside_turn(zone, slot):
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p2'].character_id = 'huatuo'
+    session.state.current_player_id = 'p1'
+    material = put(session, 'basic.slash' if zone is ZoneType.HAND else 'equipment.weapon.double_sword',
+                   'p2', zone, slot)
+    session.state.cards[material] = replace(session.state.cards[material], suit=Suit.HEART)
+    session.engine.start_action(RespondWithCardAction('jijiu-response', 'p2', 'basic.peach',
+                                                      'dying-save', subject_player_id='p3'))
+    request = session.engine.pending_request
+    choice = f'virtual:jijiu:{material}'
+    assert choice in request.eligible_card_ids
+    session.engine.submit_decision(Decision(request.request_id, 'p2', choice))
+    assert material in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert any(isinstance(event, CardRespondedEvent) and event.card_id == material
+               and event.response_definition_id == 'basic.peach' for event in session.events.events)
+    assert session.engine.stack.is_empty()
+
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p2'].character_id = 'zhenji'

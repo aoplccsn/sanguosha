@@ -49,6 +49,13 @@ class SkillRegistry:
         return tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, player_id))
                      if state.cards[cid].color is Color.RED)
 
+    def emergency_peach_materials(self, state, player_id):
+        if not self.has(state, player_id, 'jijiu') or state.current_player_id == player_id:
+            return ()
+        return tuple(cid for ref, zone in state.zones.items()
+                     if ref.player_id == player_id and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
+                     for cid in zone.card_ids if state.cards[cid].color is Color.RED)
+
 
 class FinishSkillBody:
     """Optional end-phase draw through the normal decision and draw actions."""
