@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 
 from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL as CHARACTERS, STANDARD_SKILL_CATALOGUE as SKILLS
-from sanguosha.model.enums import Identity, Phase, Color, Kingdom, EquipmentSlot, Suit
+from sanguosha.model.enums import Identity, Phase, Color, Kingdom, EquipmentSlot, Suit, Gender
 from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.model.virtual_card import VirtualCard
 from .actions import Action, StepResult
@@ -421,6 +421,64 @@ class QingnangHandler:
 
 
 @dataclass(frozen=True, slots=True)
+class JieyinAction(Action):
+    player_id: str
+
+
+class JieyinHandler:
+    def __init__(self, skills, moves):
+        self.skills, self.moves = skills, moves
+
+    def targets(self, state, actor):
+        return tuple(pid for pid in state.seat_order if pid != actor and state.players[pid].is_alive
+                     and state.players[pid].hp < state.players[pid].max_hp
+                     and self.skills.gender(state, pid) is Gender.MALE)
+
+    def validate_start(self, state, action):
+        if (not self.skills.has(state, action.player_id, 'jieyin')
+                or state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY
+                or state.play_usage is None or state.play_usage.count('skill.jieyin')
+                or len(state.cards_in(ZoneRef(ZoneType.HAND, action.player_id))) < 2
+                or not self.targets(state, action.player_id)):
+            raise InvalidCardUse('结姻不可用')
+
+    def step(self, state, frame):
+        action = frame.action
+        hand = ZoneRef(ZoneType.HAND, action.player_id)
+        if frame.step_index == 0:
+            self.validate_start(state, action)
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':cards', action.player_id,
+                RequestType.CHOOSE_CARDS, '结姻：选择弃置两张手牌', action.action_id,
+                frame.frame_id, eligible_card_ids=state.cards_in(hand), min_count=2, max_count=2))
+        if frame.step_index == 1:
+            frame.local['cards'] = tuple(frame.decision)
+            frame.decision = None
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(action.action_id + ':target', action.player_id,
+                RequestType.CHOOSE_PLAYER, '结姻：选择受伤的男性角色', action.action_id,
+                frame.frame_id, allowed_player_ids=self.targets(state, action.player_id)))
+        if frame.step_index == 2:
+            target = frame.decision
+            frame.decision = None
+            cards = frame.local['cards']
+            if target not in self.targets(state, action.player_id) or any(cid not in state.cards_in(hand) for cid in cards):
+                raise InvalidCardUse('结姻目标或材料已失效')
+            self.moves.move(state, CardMove(action.action_id + ':discard', cards, hand,
+                ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD, action.player_id))
+            state.play_usage.record('skill.jieyin')
+            frame.local['target'] = target
+            frame.step_index = 3
+            return StepResult.push(RecoverAction(action.action_id + ':self', action.player_id, action.player_id, 1))
+        if frame.step_index == 3:
+            frame.step_index = 4
+            target = frame.local['target']
+            if state.players[target].is_alive:
+                return StepResult.push(RecoverAction(action.action_id + ':target', action.player_id, target, 1))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
 class AllianceResponse(Action):
     lord_id: str
     required_definition_id: str
@@ -637,6 +695,10 @@ class SkillPlayOptions:
         if (self.skills.has(state,pid,'qingnang') and not state.play_usage.count('skill.qingnang') and hand
                 and any(p.is_alive and p.hp < p.max_hp for p in state.players.values())):
             extra.append('skill:qingnang')
+        if (self.skills.has(state,pid,'jieyin') and not state.play_usage.count('skill.jieyin')
+                and len(hand) >= 2 and any(q != pid and p.is_alive and p.hp < p.max_hp
+                    and self.skills.gender(state,q) is Gender.MALE for q,p in state.players.items())):
+            extra.append('skill:jieyin')
         limit = self.slash_rule.usage_limit(state,pid)
         slash_available = (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
         if slash_available:
@@ -658,6 +720,8 @@ class SkillPlayOptions:
             return KurouAction(aid+':kurou', pid)
         if option == 'skill:qingnang':
             return QingnangAction(aid+':qingnang', pid)
+        if option == 'skill:jieyin':
+            return JieyinAction(aid+':jieyin', pid)
         if option.startswith('virtual:wusheng:'):
             return WushengUse(aid+':wusheng',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)

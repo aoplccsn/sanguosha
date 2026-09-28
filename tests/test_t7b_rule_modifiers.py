@@ -11,7 +11,7 @@ from sanguosha.engine.events import CardRespondedEvent as RecordedResponse
 from sanguosha.engine.events import TurnStartedEvent, CardUsedEvent, CardRespondedEvent
 from sanguosha.engine.resolution import ResolutionFrame
 from sanguosha.engine.requests import Decision, RequestType
-from sanguosha.engine.skills import KurouAction, QingnangAction
+from sanguosha.engine.skills import KurouAction, QingnangAction, JieyinAction
 from sanguosha.engine.card_rules import InvalidCardUse
 from sanguosha.model.enums import Phase
 from sanguosha.model.enums import EquipmentSlot, Gender
@@ -383,6 +383,31 @@ def test_luoshen_repeats_black_judgment_and_stops_on_red():
     assert black in session.state.cards_in(hand)
     session.engine.submit_decision(Decision(second.request_id, 'p1', True))
     assert red in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert session.engine.stack.is_empty()
+
+
+def test_jieyin_discards_two_and_recovers_both_once_per_play_phase():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'sunshangxiang'
+    session.state.players['p1'].hp = 3
+    session.state.players['p2'].hp = 2
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    hand = ZoneRef(ZoneType.HAND, 'p1')
+    before = len(session.state.cards_in(hand))
+    session.engine.start_action(JieyinAction('jieyin-test', 'p1'))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_CARDS and request.min_count == 2
+    session.engine.submit_decision(Decision(request.request_id, 'p1', request.eligible_card_ids[:2]))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_PLAYER and 'p2' in request.allowed_player_ids
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'p2'))
+    assert len(session.state.cards_in(hand)) == before - 2
+    assert session.state.players['p1'].hp == 4
+    assert session.state.players['p2'].hp == 3
+    assert session.state.play_usage.count('skill.jieyin') == 1
     assert session.engine.stack.is_empty()
 
 def test_double_sword_reads_character_gender_in_standard_mode():

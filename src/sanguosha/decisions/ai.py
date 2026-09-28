@@ -52,6 +52,8 @@ class AIDecisionProvider:
                 value = 'skill:zhiheng'
             elif 'skill:qingnang' in request.choices:
                 value = 'skill:qingnang'
+            elif 'skill:jieyin' in request.choices:
+                value = 'skill:jieyin'
             elif ('skill:kurou' in request.choices and state.players[player_id].hp > 2
                   and len(state.cards_in(ZoneRef(ZoneType.HAND, player_id))) < 2):
                 value = 'skill:kurou'
@@ -64,7 +66,7 @@ class AIDecisionProvider:
         elif kind is RequestType.CHOOSE_PLAYER:
             value = (player_id if '青囊' in request.prompt and player_id in request.allowed_player_ids else
                      min(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid))
-                     if '仁德' in request.prompt or '青囊' in request.prompt or '遗计' in request.prompt else
+                     if '仁德' in request.prompt or '青囊' in request.prompt or '遗计' in request.prompt or '结姻' in request.prompt else
                      max(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid)))
         elif kind is RequestType.RESPOND_WITH_CARD:
             if not request.eligible_card_ids:
