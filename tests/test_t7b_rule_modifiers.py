@@ -15,7 +15,7 @@ from sanguosha.engine.skills import KurouAction, QingnangAction
 from sanguosha.engine.card_rules import InvalidCardUse
 from sanguosha.model.enums import Phase
 from sanguosha.model.enums import EquipmentSlot, Gender
-from sanguosha.model.enums import Suit
+from sanguosha.model.enums import Suit, Color
 from dataclasses import replace
 from sanguosha.model.usage import PlayUsageState
 from sanguosha.model.zones import ZoneRef, ZoneType
@@ -247,6 +247,29 @@ def test_tiandu_obtains_own_resolved_judgment_card():
     session.engine.submit_decision(Decision(request.request_id, 'p1', True))
     assert top in session.state.cards_in(hand)
     assert len(session.state.cards_in(hand)) == before + 1
+    assert session.engine.stack.is_empty()
+
+
+def test_guicai_replaces_revealed_card_before_judgment_result():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'simayi'
+    old = session.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    session.state.cards[old] = replace(session.state.cards[old], suit=Suit.SPADE)
+    material = session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    session.state.cards[material] = replace(session.state.cards[material], suit=Suit.HEART)
+    session.engine.start_action(JudgmentAction('guicai-judge', 'p1', JudgmentPattern(color=Color.RED)))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO and '鬼才' in request.prompt
+    assert session.ai.decide(session.state, request).value is True
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    request = session.engine.pending_request
+    assert material in request.eligible_card_ids
+    session.engine.submit_decision(Decision(request.request_id, 'p1', material))
+    assert old in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert material in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert any(getattr(event, 'event_type', '') == 'judgment_result'
+               and event.metadata['card_id'] == material and event.metadata['matched']
+               for event in session.events.events)
     assert session.engine.stack.is_empty()
 
 def test_double_sword_reads_character_gender_in_standard_mode():

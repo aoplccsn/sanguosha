@@ -70,9 +70,57 @@ class JudgmentHandler:
             frame.step_index = 1
             return StepResult.continue_()
         card_id = CardInstanceId(str(frame.local["card_id"]))
+        if frame.step_index == 4:
+            replace_card = frame.decision is True
+            frame.decision = None
+            frame.step_index = 1
+            if replace_card:
+                actor = PlayerId(str(frame.local['guicai_actor']))
+                candidates = state.cards_in(ZoneRef(ZoneType.HAND, actor))
+                if candidates:
+                    frame.step_index = 5
+                    preferred = set(str(frame.local.get('guicai_preferred', '')).split('|'))
+                    candidates = tuple(sorted(candidates, key=lambda cid: cid not in preferred))
+                    return StepResult.ask(PendingRequest(f'{action.action_id}:guicai-card', actor,
+                        RequestType.CHOOSE_CARD, '【鬼才】选择一张手牌替换判定牌',
+                        action.action_id, frame.frame_id, eligible_card_ids=candidates,
+                        choices=tuple(f'better:{cid}' for cid in candidates if cid in preferred)))
+            return StepResult.continue_()
+        if frame.step_index == 5:
+            actor = PlayerId(str(frame.local['guicai_actor']))
+            material = CardInstanceId(str(frame.decision))
+            frame.decision = None
+            self.moves.move(state, CardMove(f'{action.action_id}:guicai-old', (card_id,),
+                processing, ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.SYSTEM,
+                actor, action.action_id))
+            self.moves.move(state, CardMove(f'{action.action_id}:guicai-new', (material,),
+                ZoneRef(ZoneType.HAND, actor), processing, CardMoveReason.RESPONSE,
+                actor, action.action_id))
+            frame.local['card_id'] = str(material)
+            self.recorder.record(Event(f'{action.action_id}:replaced', 'judgment_card_replaced', actor,
+                metadata={'old_card_id': str(card_id), 'card_id': str(material)}))
+            frame.step_index = 1
+            return StepResult.continue_()
         if frame.step_index == 1:
             if card_id not in state.cards_in(processing):
                 raise ValueError("judgment card left processing before result")
+            if self.skills is not None and not frame.local.get('guicai_offered'):
+                frame.local['guicai_offered'] = True
+                actor = next((pid for pid in state.seat_order if state.players[pid].is_alive
+                              and self.skills.has(state, pid, 'guicai')
+                              and state.cards_in(ZoneRef(ZoneType.HAND, pid))), None)
+                if actor is not None:
+                    frame.local['guicai_actor'] = str(actor)
+                    current_match = action.pattern.matches(state, card_id)
+                    preferred = tuple(str(cid) for cid in state.cards_in(ZoneRef(ZoneType.HAND, actor))
+                                      if action.pattern.matches(state, cid) != current_match)
+                    frame.local['guicai_preferred'] = '|'.join(preferred)
+                    frame.step_index = 4
+                    return StepResult.ask(PendingRequest(f'{action.action_id}:guicai', actor,
+                        RequestType.YES_NO, '判定牌已亮出，是否发动【鬼才】改判？',
+                        action.action_id, frame.frame_id,
+                        choices=(f'current:{int(current_match)}', *(f'better:{cid}' for cid in preferred)),
+                        subject_player_id=action.player_id))
             matched = action.pattern.matches(state, card_id)
             frame.local["matched"] = matched
             self.recorder.record(Event(f"{action.action_id}:result", "judgment_result",

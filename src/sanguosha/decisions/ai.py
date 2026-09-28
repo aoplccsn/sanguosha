@@ -85,7 +85,8 @@ class AIDecisionProvider:
             ordered = sorted(request.eligible_card_ids, key=lambda cid: (keep_value.get(state.cards[cid].definition_id, 0), str(cid)))
             value = tuple(ordered[:request.min_count])
         elif kind is RequestType.CHOOSE_CARD:
-            value = request.eligible_card_ids[0]
+            value = (next((cid for cid in request.eligible_card_ids
+                           if f'better:{cid}' in request.choices), request.eligible_card_ids[0]))
         elif kind is RequestType.CHOOSE_PLAYERS:
             ordered=sorted(request.allowed_player_ids,key=lambda pid:self._priority(state,player_id,pid),reverse=True)
             count=max(1,request.min_count) if state.ruleset_id=='classic-military' else request.min_count
@@ -94,8 +95,14 @@ class AIDecisionProvider:
                 count=max(count,min(request.max_count,len(enemies)))
             value=tuple(ordered[:min(count,len(ordered),request.max_count)])
         elif kind is RequestType.YES_NO:
-            value = state.ruleset_id == 'classic-military' and ('苦肉' not in request.prompt or state.players[player_id].hp > 2) and (
-                '是否发动' in request.prompt or '【奸雄】' in request.prompt)
+            if '【鬼才】' in request.prompt:
+                subject = request.subject_player_id
+                current_match = 'current:1' in request.choices
+                enemy = subject is not None and self._priority(state, player_id, subject) > 0
+                value = any(choice.startswith('better:') for choice in request.choices) and (current_match == enemy)
+            else:
+                value = state.ruleset_id == 'classic-military' and ('苦肉' not in request.prompt or state.players[player_id].hp > 2) and (
+                    '是否发动' in request.prompt or '【奸雄】' in request.prompt)
         else:
             raise RuntimeError(f"AI cannot answer request type {kind}")
         return Decision(request.request_id, player_id, value)
