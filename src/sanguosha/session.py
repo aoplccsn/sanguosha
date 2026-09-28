@@ -165,7 +165,7 @@ class GameSession:
                     LianyingAction, LianyingHandler, XiaojiAction, XiaojiHandler,
                     GanglieAction, GanglieHandler, TuxiAction, TuxiHandler,
                     YijiAction, YijiHandler, JieyinAction, JieyinHandler,
-                    QixiUse, QixiUseHandler)
+                    QixiUse, QixiUseHandler, FanjianAction, FanjianHandler)
                 slash_rule = card_rules.get('basic.slash')
                 provider = SkillPlayOptions(provider, skills, slash_rule)
                 registry.register(RendeAction, RendeHandler(moves))
@@ -183,6 +183,7 @@ class GameSession:
                 registry.register(JieyinAction, JieyinHandler(skills, moves))
                 registry.register(QixiUse, QixiUseHandler(skills, moves, events,
                     card_rules.get('trick.dismantlement')))
+                registry.register(FanjianAction, FanjianHandler(skills, moves, rng))
             registry.register(UseSpear,UseSpearHandler(provider,moves))
             bodies.register(Phase.PLAY,PlayPhaseBody(provider))
             if skills is not None:

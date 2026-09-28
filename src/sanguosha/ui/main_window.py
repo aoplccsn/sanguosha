@@ -595,6 +595,7 @@ class MainWindow(QMainWindow):
                           'skill:zhiheng':'制衡', 'skill:jijiang':'激将',
                           'skill:kurou':'苦肉', 'skill:qingnang':'青囊'}
                 labels['skill:jieyin'] = '结姻'
+                labels['skill:fanjian'] = '反间'
                 def option_label(choice):
                     if choice.startswith('virtual:wusheng:'):
                         material = choice.split(':',2)[2]

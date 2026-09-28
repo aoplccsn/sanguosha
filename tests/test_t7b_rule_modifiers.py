@@ -11,7 +11,7 @@ from sanguosha.engine.events import CardRespondedEvent as RecordedResponse
 from sanguosha.engine.events import TurnStartedEvent, CardUsedEvent, CardRespondedEvent
 from sanguosha.engine.resolution import ResolutionFrame
 from sanguosha.engine.requests import Decision, RequestType
-from sanguosha.engine.skills import KurouAction, QingnangAction, JieyinAction, QixiUse
+from sanguosha.engine.skills import KurouAction, QingnangAction, JieyinAction, QixiUse, FanjianAction
 from sanguosha.engine.card_rules import InvalidCardUse
 from sanguosha.model.enums import Phase
 from sanguosha.model.enums import EquipmentSlot, Gender
@@ -431,6 +431,32 @@ def test_qixi_black_card_uses_real_dismantlement_resolution():
     assert material in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
     assert any(getattr(event, 'virtual_definition_id', '') == 'trick.dismantlement'
                for event in session.events.events)
+
+
+def test_fanjian_random_hand_card_is_given_and_wrong_guess_deals_damage():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'zhouyu'
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    hand = ZoneRef(ZoneType.HAND, 'p1')
+    original = session.state.cards_in(hand)
+    CardMoveService(session.events).move(session.state, CardMove('clear-fanjian', original,
+        hand, ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.SYSTEM, 'p1'))
+    material = put(session, 'basic.peach', 'p1')
+    session.state.cards[material] = replace(session.state.cards[material], suit=Suit.HEART)
+    session.engine.start_action(FanjianAction('fanjian-test', 'p1'))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_PLAYER
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'p2'))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_OPTION and Suit.SPADE.value in request.choices
+    session.engine.submit_decision(Decision(request.request_id, 'p2', Suit.SPADE.value))
+    assert material in session.state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
+    assert session.state.players['p2'].hp == 3
+    assert session.state.play_usage.count('skill.fanjian') == 1
+    assert session.engine.stack.is_empty()
 
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)

@@ -529,6 +529,62 @@ class QixiUseHandler:
 
 
 @dataclass(frozen=True, slots=True)
+class FanjianAction(Action):
+    player_id: str
+
+
+class FanjianHandler:
+    def __init__(self, skills, moves, rng):
+        self.skills, self.moves, self.rng = skills, moves, rng
+
+    def validate_start(self, state, action):
+        if (not self.skills.has(state, action.player_id, 'fanjian')
+                or state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY
+                or state.play_usage is None or state.play_usage.count('skill.fanjian')
+                or not state.cards_in(ZoneRef(ZoneType.HAND, action.player_id))
+                or not any(pid != action.player_id and state.players[pid].is_alive for pid in state.seat_order)):
+            raise InvalidCardUse('反间不可用')
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index == 0:
+            self.validate_start(state, action)
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':target', action.player_id,
+                RequestType.CHOOSE_PLAYER, '反间：选择猜花色的角色', action.action_id,
+                frame.frame_id, allowed_player_ids=tuple(pid for pid in state.seat_order
+                    if pid != action.player_id and state.players[pid].is_alive)))
+        if frame.step_index == 1:
+            target = frame.decision
+            frame.decision = None
+            frame.local['target'] = target
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(action.action_id + ':guess', target,
+                RequestType.CHOOSE_OPTION, '反间：猜测即将获得的牌的花色',
+                action.action_id, frame.frame_id,
+                choices=tuple(suit.value for suit in Suit)))
+        if frame.step_index == 2:
+            guess = frame.decision
+            frame.decision = None
+            target = frame.local['target']
+            hand = ZoneRef(ZoneType.HAND, action.player_id)
+            cards = state.cards_in(hand)
+            if not cards or not state.players[target].is_alive:
+                return StepResult.complete()
+            material = self.rng.choice(cards)
+            state.play_usage.record('skill.fanjian')
+            self.moves.move(state, CardMove(action.action_id + ':give', (material,), hand,
+                ZoneRef(ZoneType.HAND, target), CardMoveReason.SYSTEM,
+                action.player_id, action.action_id))
+            if state.cards[material].suit.value != guess:
+                from .military_basics import MilitaryDamageAction
+                frame.step_index = 3
+                return StepResult.push(MilitaryDamageAction(action.action_id + ':damage',
+                    action.player_id, target, 1))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
 class AllianceResponse(Action):
     lord_id: str
     required_definition_id: str
@@ -753,6 +809,9 @@ class SkillPlayOptions:
             dismantlement = self.validator.rules.get('trick.dismantlement')
             if dismantlement.target_candidates(state,pid):
                 extra.extend(f'virtual:qixi:{cid}' for cid in hand if state.cards[cid].color is Color.BLACK)
+        if (self.skills.has(state,pid,'fanjian') and not state.play_usage.count('skill.fanjian')
+                and hand and any(q != pid and p.is_alive for q,p in state.players.items())):
+            extra.append('skill:fanjian')
         limit = self.slash_rule.usage_limit(state,pid)
         slash_available = (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
         if slash_available:
@@ -776,6 +835,8 @@ class SkillPlayOptions:
             return QingnangAction(aid+':qingnang', pid)
         if option == 'skill:jieyin':
             return JieyinAction(aid+':jieyin', pid)
+        if option == 'skill:fanjian':
+            return FanjianAction(aid+':fanjian', pid)
         if option.startswith('virtual:wusheng:'):
             return WushengUse(aid+':wusheng',pid,option.split(':',2)[2])
         if option.startswith('virtual:qixi:'):

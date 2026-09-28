@@ -56,6 +56,8 @@ class AIDecisionProvider:
                 value = 'skill:qingnang'
             elif 'skill:jieyin' in request.choices:
                 value = 'skill:jieyin'
+            elif 'skill:fanjian' in request.choices:
+                value = 'skill:fanjian'
             elif ('skill:kurou' in request.choices and state.players[player_id].hp > 2
                   and len(state.cards_in(ZoneRef(ZoneType.HAND, player_id))) < 2):
                 value = 'skill:kurou'
