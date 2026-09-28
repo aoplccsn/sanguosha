@@ -17,6 +17,8 @@ IDENTITY_LABELS = {
 GENERAL_PRESENTATION = {
     "blank-1": ("caocao", "魏"), "blank-2": ("liubei", "蜀"),
     "blank-3": ("sunquan", "吴"), "blank-4": ("lvbu", "群"), "blank-5": ("guanyu", "蜀"),
+    "caocao": ("caocao", "魏"), "liubei": ("liubei", "蜀"),
+    "sunquan": ("sunquan", "吴"), "lvbu": ("lvbu", "群"), "guanyu": ("guanyu", "蜀"),
 }
 SUIT_SYMBOLS = {Suit.HEART: "♥", Suit.DIAMOND: "♦", Suit.SPADE: "♠", Suit.CLUB: "♣"}
 RANK_LABELS = {1: "A", 11: "J", 12: "Q", 13: "K"}
@@ -53,6 +55,7 @@ class PlayerView:
     base_distance: int | None = None
     effective_distance: int | None = None
     attack_range: int = 1
+    skill_labels: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -88,6 +91,8 @@ def project_for_human(
                         str(card.definition_id),definition.category.value, equipment_slot, detail)
     players = []
     distance = DistanceSystem(definitions)
+    from sanguosha.engine.skills import SkillRegistry
+    skills = SkillRegistry()
     for pid in state.seat_order:
         player = state.players[pid]
         visible = pid == human_id or pid in state.revealed_identities or player.identity is Identity.LORD
@@ -105,6 +110,11 @@ def project_for_human(
             distance.base_distance(state,human_id,pid) if pid != human_id and state.players[human_id].is_alive and player.is_alive else None,
             distance.distance_between(state,human_id,pid) if pid != human_id and state.players[human_id].is_alive and player.is_alive else None,
             distance.attack_range(state,pid) if player.is_alive else 1,
+            tuple(skills.skills[sid].name + (" · 已用" if sid == 'zhiheng' and state.play_usage and state.play_usage.player_id == pid
+                                         and state.play_usage.count('skill.zhiheng') else "") +
+                  (" · 主公技" if skills.skills[sid].metadata.get('lord') else "")
+                  for sid in skills.characters[player.character_id].skill_ids)
+            if player.character_id in skills.characters else (),
         ))
     hand = tuple(card_view(card_id) for card_id in state.cards_in(ZoneRef(ZoneType.HAND, human_id)))
     discard = state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))

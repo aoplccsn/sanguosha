@@ -13,11 +13,13 @@ from sanguosha.model.zones import ZoneRef,ZoneType
 
 def match(seed):
     w=MainWindow(); w.show()
-    w.session=GameSession.new_game(seed,military=True)
+    w.session=GameSession.new_game(seed,military=True,five_generals=bool(os.environ.get('SANGUOSHA_FIVE_GENERALS')))
     s=w.session
     w._render()
     steps=0
+    skill_actions=set()
     while s.state.status is not GameStatus.FINISHED and steps<20000:
+        skill_actions.update(type(frame.action).__name__ for frame in s.engine.stack.snapshot())
         r=s.engine.pending_request
         if r and r.player_id==s.human_id:
             decision=s.ai.decide(s.state,r)
@@ -43,13 +45,16 @@ def match(seed):
         else:
             s.step_auto(); w._render()
         w._tick_timer.stop(); w._tick_scheduled=False
+        if str(s.engine.status) == 'error':
+            raise RuntimeError(('engine error', seed, steps, w.decision.prompt_label.text(), s.engine.stack.snapshot()))
         s.state.__post_init__(); steps+=1
         if steps%40==0: assert not w.grab().isNull()
-    assert s.state.status is GameStatus.FINISHED,(seed,steps,w.decision.prompt_label.text())
+    assert s.state.status is GameStatus.FINISHED,(seed,steps,s.state.turn_number,str(s.engine.status),w.decision.prompt_label.text(),s.engine.pending_request)
     assert s.engine.pending_request is None and s.engine.stack.is_empty()
     assert not s.state.cards_in(ZoneRef(ZoneType.PROCESSING))
     assert len(s.state.cards)==160
-    result={'seed':seed,'steps':steps,'turns':s.state.turn_number,'winner':s.state.victory.label,'gui':'PASS'}
+    result={'seed':seed,'steps':steps,'turns':s.state.turn_number,'winner':s.state.victory.label,'gui':'PASS',
+        'skills':sorted(skill_actions & {'RendeAction','ZhihengAction','WushengUse','JijiangUse','AllianceResponse'})}
     w.close(); w.deleteLater(); QCoreApplication.sendPostedEvents(None,QEvent.DeferredDelete); QApplication.processEvents()
     return result
 

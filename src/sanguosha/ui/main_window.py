@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
         self._decision_timer.stop()
         self._decision_request_id = None
         self._tick_scheduled = False
-        self.session = GameSession.new_game(military=self.military)
+        self.session = GameSession.new_game(military=self.military, five_generals=self.military)
         self._seen_events = 0
         self._selected_cards.clear()
         self._selected_players.clear()
@@ -155,7 +155,10 @@ class MainWindow(QMainWindow):
             return
         if value == "ui.confirm_response":
             if self.interaction.card_id:
-                value = CardInstanceId(self.interaction.card_id)
+                card_id = self.interaction.card_id
+                request = self.session.engine.pending_request if self.session else None
+                value = (CardInstanceId(card_id) if request and CardInstanceId(card_id) in request.eligible_card_ids
+                         else f'virtual:wusheng:{card_id}')
             else:
                 return
         if value == "ui.confirm_target":
@@ -264,7 +267,7 @@ class MainWindow(QMainWindow):
                     self._selected_players.clear()
                 self._render()
         elif request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD):
-            if CardInstanceId(card_id) in request.eligible_card_ids:
+            if CardInstanceId(card_id) in request.eligible_card_ids or f'virtual:wusheng:{card_id}' in request.eligible_card_ids:
                 if request.request_type is RequestType.RESPOND_WITH_CARD:
                     self.interaction.select_response(card_id)
                     self._render()
@@ -385,6 +388,8 @@ class MainWindow(QMainWindow):
                 selectable = {choice[4:] for choice in human_request.choices if choice.startswith("use:")}
             elif human_request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD, RequestType.CHOOSE_CARDS):
                 selectable = set(map(str, human_request.eligible_card_ids))
+                selectable.update(choice.split(':',2)[2] for choice in human_request.eligible_card_ids
+                                  if isinstance(choice,str) and choice.startswith('virtual:wusheng:'))
         selected_cards = set(self._selected_cards)
         if self.interaction.card_id:
             selected_cards.add(self.interaction.card_id)
@@ -464,7 +469,15 @@ class MainWindow(QMainWindow):
             else:
                 if END_PLAY_PHASE in request.choices:
                     actions.append(("结束出牌阶段", END_PLAY_PHASE, True))
-                actions.extend(('丈八蛇矛' if choice=='virtual:spear' else choice,choice,True)
+                labels = {'virtual:spear':'丈八蛇矛', 'skill:rende':'仁德',
+                          'skill:zhiheng':'制衡', 'skill:jijiang':'激将'}
+                def option_label(choice):
+                    if choice.startswith('virtual:wusheng:'):
+                        material = choice.split(':',2)[2]
+                        card = next((card for card in view.hand if str(card.card_id) == material), None)
+                        return f'武圣 · {card.name} {card.suit}{card.rank}' if card else '武圣 · 红牌'
+                    return labels.get(choice,choice)
+                actions.extend((option_label(choice),choice,True)
                                for choice in request.choices if not choice.startswith('use:') and choice!=END_PLAY_PHASE)
                 prompt = "出牌阶段 · 请选择可用手牌"
         elif kind is RequestType.CHOOSE_PLAYER:
@@ -476,6 +489,13 @@ class MainWindow(QMainWindow):
                 attacker = next((p.name for p in view.players if str(p.player_id) == attack[0]), attack[0])
                 defender = next((p.name for p in view.players if str(p.player_id) == attack[1]), "你")
                 prompt = f"{attacker} 对{defender}使用了【杀】 · 请选择【闪】响应"
+            elif request.required_definition_id == 'trick.nullification':
+                trick = next((getattr(frame.action,'definition_id') for frame in
+                              reversed(self.session.engine.stack.snapshot())
+                              if getattr(frame.action,'definition_id','').startswith(('trick.','delayed.'))), None)
+                card_name = self.session.definitions.get(trick).name if trick else '锦囊'
+                target = next((p.name for p in view.players if p.player_id == request.subject_player_id), '目标')
+                prompt = f'【{card_name}】正在对{target}结算 · 你可以使用【无懈可击】'
             else:
                 prompt = request.prompt + " · 请选择响应牌"
             if request.allow_pass:
@@ -485,13 +505,19 @@ class MainWindow(QMainWindow):
             actions.append(("确认响应", "ui.confirm_response", self.interaction.card_id is not None))
             if 'virtual:spear' in request.eligible_card_ids:
                 actions.append(('丈八蛇矛（两张手牌）','virtual:spear',True))
+            if 'virtual:hujia' in request.eligible_card_ids:
+                actions.append(('护驾 · 请魏角色出闪','virtual:hujia',True))
+            if 'virtual:jijiang' in request.eligible_card_ids:
+                actions.append(('激将 · 请蜀角色出杀','virtual:jijiang',True))
             if self.interaction.card_id:
                 actions.append(("取消", "ui.cancel", True))
         elif kind is RequestType.CHOOSE_CARDS:
             count = len(self._selected_cards)
             prompt = request.prompt + f"：已选 {count}/{request.min_count} 张。"
             ordered = tuple(card_id for card_id in request.eligible_card_ids if str(card_id) in self._selected_cards)
-            actions.append((f"确认弃置 {count}/{request.min_count}", ordered, count == request.min_count))
+            verb = '确认选择' if '仁德' in request.prompt or '制衡' in request.prompt else '确认弃置'
+            actions.append((f"{verb} {count}/{request.min_count}", ordered,
+                            request.min_count <= count <= request.max_count))
             owned_hand={str(c.card_id) for c in view.hand}
             for cid in request.eligible_card_ids:
                 if str(cid) not in owned_hand:

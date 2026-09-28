@@ -44,6 +44,7 @@ class GameSession:
     human_id: PlayerId
     ai: AIDecisionProvider
     character_names: dict[PlayerId, str]
+    skills: object | None = None
     declined_nullification_windows: set[str] = field(default_factory=set)
 
     def nullification_window_id(self, request=None) -> str | None:
@@ -78,14 +79,25 @@ class GameSession:
         self.declined_nullification_windows.intersection_update(live)
 
     @classmethod
-    def new_game(cls, seed: int = 6, *, military: bool = False) -> "GameSession":
+    def new_game(cls, seed: int = 6, *, military: bool = False, five_generals: bool = False) -> "GameSession":
         rng = PythonRandomSource(seed)
         card_instances, draw_zone = classic_military_deck(rng) if military else basic_deck(rng)
         ids = tuple(PlayerId(f"p{i}") for i in range(1, 6))
-        players = {
-            pid: PlayerState(pid, index, CharacterId(f"blank-{index+1}"), IDENTITIES[index], 4, 4)
-            for index, pid in enumerate(ids)
-        }
+        if five_generals and not military:
+            raise ValueError('five generals require the military ruleset')
+        skills = None
+        characters = None
+        if five_generals:
+            from sanguosha.engine.skills import SkillRegistry
+            skills = SkillRegistry()
+            # Seat order follows the original portrait order.
+            characters = tuple(skills.characters[key] for key in ('caocao','liubei','sunquan','lvbu','guanyu'))
+        players = {}
+        for index, pid in enumerate(ids):
+            character = characters[index] if characters else None
+            maximum = character.max_hp + (1 if IDENTITIES[index] is Identity.LORD and characters else 0) if character else 4
+            players[pid] = PlayerState(pid, index, character.id if character else CharacterId(f'blank-{index+1}'),
+                                       IDENTITIES[index], maximum, maximum)
         state = GameState(
             "classic-military" if military else "t5-basic-identity", players=players, seat_order=ids,
             cards=card_instances, zones={draw_zone.ref: draw_zone},
@@ -120,18 +132,29 @@ class GameSession:
         registry.register(DamageAction, DamageActionHandler(
             events, lambda action: DyingAction(f"{action.action_id}:dying-resolution", action.target_id, action.source_id),
         ))
-        registry.register(DyingAction, DyingActionHandler(events))
+        registry.register(DyingAction, DyingActionHandler(events, skills))
         registry.register(DeathAction, DeathActionHandler(moves, IdentitySystem(), events))
         if military:
             from sanguosha.engine.military_basics import register_military_basics
-            register_military_basics(definitions, card_rules, registry, moves, events, bodies)
+            register_military_basics(definitions, card_rules, registry, moves, events, bodies, skills)
             from sanguosha.engine.military_tricks import register_military_tricks
-            register_military_tricks(definitions, card_rules, registry, moves, events, deck, bodies)
+            register_military_tricks(definitions, card_rules, registry, moves, events, deck, bodies, skills)
             from sanguosha.engine.judgment import JudgmentAction, JudgmentHandler
             registry.register(JudgmentAction, JudgmentHandler(moves, events, deck))
             from sanguosha.engine.view_as import UseSpear,UseSpearHandler,MilitaryPlayOptions
             from sanguosha.engine.phases import PlayPhaseBody
             provider=MilitaryPlayOptions(validator)
+            if skills is not None:
+                from sanguosha.engine.skills import (SkillPlayOptions, RendeAction, RendeHandler,
+                    ZhihengAction, ZhihengHandler, WushengUse, WushengUseHandler,
+                    JijiangUse, JijiangUseHandler, AllianceResponse, AllianceResponseHandler)
+                slash_rule = card_rules.get('basic.slash')
+                provider = SkillPlayOptions(provider, skills, slash_rule)
+                registry.register(RendeAction, RendeHandler(moves))
+                registry.register(ZhihengAction, ZhihengHandler(moves))
+                registry.register(WushengUse, WushengUseHandler(skills,moves,slash_rule))
+                registry.register(JijiangUse, JijiangUseHandler(skills,slash_rule))
+                registry.register(AllianceResponse, AllianceResponseHandler(skills))
             registry.register(UseSpear,UseSpearHandler(provider,moves))
             bodies.register(Phase.PLAY,PlayPhaseBody(provider))
         engine = GameEngine(state, registry)
@@ -139,7 +162,7 @@ class GameSession:
             engine.reaction_provider = moves.next_reaction
         return cls(
             engine, events, definitions, ids[0],
-            AIDecisionProvider(ids[0]), dict(zip(ids, CHARACTER_NAMES)),
+            AIDecisionProvider(ids[0]), dict(zip(ids, CHARACTER_NAMES)), skills,
         )
 
     @property

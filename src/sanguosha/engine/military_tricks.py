@@ -173,9 +173,10 @@ class TrickHandler:
         return StepResult.push(NullificationWindow(f'{a.action_id}:window:{frame.cursor}',target))
 
 class TargetTrickHandler:
-    def __init__(self,moves,distance):
+    def __init__(self,moves,distance,skills=None):
         self.moves=moves
         self.distance=distance
+        self.skills=skills
     def ask(self,a,f,player,kind,prompt,**kwargs):
         return StepResult.ask(PendingRequest(f'{a.action_id}:request:{f.step_index}',player,kind,prompt,a.action_id,f.frame_id,**kwargs))
     def move(self,state,a,cid,dest):
@@ -238,11 +239,21 @@ class TargetTrickHandler:
                 if f.child_result is not None:
                     if d != 'trick.duel':
                         return StepResult.complete()
+                    responder = f.local['who']
+                    opponent = a.source_id if responder == a.target_id else a.target_id
+                    if (self.skills is not None and self.skills.has(state,opponent,'wushuang') and
+                            not f.local.get('duel_second')):
+                        f.local['duel_second'] = True
+                        f.cursor += 1
+                        return StepResult.push(RespondWithCardAction(f'{a.action_id}:response:{f.cursor}',responder,
+                            'basic.slash',a.action_id,'无双：决斗中请再打出一张杀',responder))
+                    f.local.pop('duel_second',None)
                     who=a.source_id if f.local['who'] == a.target_id else a.target_id
                     f.local['who']=who
                     f.cursor+=1
                     return StepResult.push(RespondWithCardAction(f'{a.action_id}:response:{f.cursor}',who,'basic.slash',a.action_id,'决斗：请继续打出杀',who))
                 f.step_index=3
+                f.local.pop('duel_second',None)
                 who=str(f.local['who'])
                 source=(a.target_id if who == a.source_id else a.source_id) if d == 'trick.duel' else a.source_id
                 return StepResult.push(MilitaryDamageAction(a.action_id+':damage',source,who,1,card_id=a.card_id))
@@ -327,7 +338,7 @@ class JudgmentPhaseBody:
             return StepResult.continue_()
         return StepResult.push(ResolveDelayed(f'{a.action_id}:delayed:{f.cursor}',a.player_id,cid))
 
-def register_military_tricks(definitions,rules,registry,moves,events,deck,bodies):
+def register_military_tricks(definitions,rules,registry,moves,events,deck,bodies,skills=None):
     from sanguosha.content.cards.classic_military import TRICKS,DELAYED
     from .distance import DistanceSystem
     distance=DistanceSystem(definitions)
@@ -337,6 +348,6 @@ def register_military_tricks(definitions,rules,registry,moves,events,deck,bodies
         rules.register('delayed.'+key,MilitaryTrickRule('delayed.'+key,distance))
     registry.register(NullificationWindow,NullificationHandler())
     registry.register(TrickAction,TrickHandler(moves,deck))
-    registry.register(TargetTrick,TargetTrickHandler(moves,distance))
+    registry.register(TargetTrick,TargetTrickHandler(moves,distance,skills))
     registry.register(ResolveDelayed,DelayedHandler(moves))
     bodies.register(Phase.JUDGMENT,JudgmentPhaseBody())

@@ -1,0 +1,277 @@
+"""Registered skills and explicit active/cross-player skill actions."""
+from dataclasses import dataclass
+
+from sanguosha.content.characters.classic import CHARACTERS, SKILLS
+from sanguosha.model.enums import Identity, Phase, Color, Kingdom, EquipmentSlot
+from sanguosha.model.zones import ZoneRef, ZoneType
+from sanguosha.model.virtual_card import VirtualCard
+from .actions import Action, StepResult
+from .card_moves import CardMove, CardMoveReason
+from .deck import DrawCardsAction
+from .military_basics import SlashSequence, MilitaryStrike
+from .requests import PendingRequest, RequestType
+from .response import RespondWithCardAction
+from .recovery import RecoverAction
+from .card_rules import InvalidCardUse
+
+
+class SkillRegistry:
+    def __init__(self):
+        self.characters = {character.id: character for character in CHARACTERS}
+        self.skills = {skill.id: skill for skill in SKILLS}
+
+    def has(self, state, player_id, skill_id):
+        character = self.characters.get(state.players[player_id].character_id)
+        if character is None or skill_id not in character.skill_ids:
+            return False
+        skill = self.skills[skill_id]
+        return not skill.metadata.get('lord') or state.players[player_id].identity is Identity.LORD
+
+    def faction(self, state, player_id):
+        character = self.characters.get(state.players[player_id].character_id)
+        return character.kingdom if character else None
+
+    def allies(self, state, player_id, faction):
+        start = state.seat_order.index(player_id)
+        order = state.seat_order[start+1:] + state.seat_order[:start]
+        return tuple(pid for pid in order if state.players[pid].is_alive and self.faction(state, pid) is faction)
+
+    def red_slash_materials(self, state, player_id):
+        if not self.has(state, player_id, 'wusheng'):
+            return ()
+        return tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, player_id))
+                     if state.cards[cid].color is Color.RED)
+
+
+@dataclass(frozen=True, slots=True)
+class AllianceResponse(Action):
+    lord_id: str
+    required_definition_id: str
+    source_action_id: str
+    faction: Kingdom
+
+
+class AllianceResponseHandler:
+    def __init__(self, skills):
+        self.skills = skills
+
+    def step(self, state, frame):
+        action = frame.action
+        allies = self.skills.allies(state, action.lord_id, action.faction)
+        if frame.step_index == 1:
+            if frame.child_result is not None:
+                return StepResult.complete(frame.child_result)
+            frame.step_index = 0
+        if frame.cursor >= len(allies):
+            return StepResult.complete()
+        ally = allies[frame.cursor]
+        frame.cursor += 1
+        frame.step_index = 1
+        return StepResult.push(RespondWithCardAction(
+            f'{action.action_id}:ally:{frame.cursor}', ally, action.required_definition_id,
+            action.source_action_id, f'是否为同势力主公提供【{"闪" if action.required_definition_id == "basic.dodge" else "杀"}】？',
+            action.lord_id))
+
+
+@dataclass(frozen=True, slots=True)
+class RendeAction(Action):
+    player_id: str
+
+
+class RendeHandler:
+    def __init__(self, moves):
+        self.moves = moves
+
+    def step(self, state, frame):
+        action = frame.action
+        hand = ZoneRef(ZoneType.HAND, action.player_id)
+        if frame.step_index == 0:
+            if state.current_phase is not Phase.PLAY or state.current_player_id != action.player_id or not state.cards_in(hand):
+                raise InvalidCardUse('仁德不可用')
+            frame.step_index = 1
+            cards = state.cards_in(hand)
+            return StepResult.ask(PendingRequest(action.action_id+':cards', action.player_id,
+                RequestType.CHOOSE_CARDS, '仁德：选择要交出的手牌', action.action_id, frame.frame_id,
+                eligible_card_ids=cards, min_count=1, max_count=len(cards)))
+        if frame.step_index == 1:
+            frame.local['cards'] = tuple(frame.decision)
+            frame.decision = None
+            frame.step_index = 2
+            targets = tuple(pid for pid in state.seat_order if pid != action.player_id and state.players[pid].is_alive)
+            return StepResult.ask(PendingRequest(action.action_id+':target', action.player_id,
+                RequestType.CHOOSE_PLAYER, '仁德：选择获得手牌的角色', action.action_id, frame.frame_id,
+                allowed_player_ids=targets))
+        if frame.step_index == 2:
+            target = frame.decision
+            cards = frame.local['cards']
+            if target == action.player_id or not state.players[target].is_alive or any(cid not in state.cards_in(hand) for cid in cards):
+                raise InvalidCardUse('仁德目标或手牌已失效')
+            self.moves.move(state, CardMove(action.action_id+':give', cards, hand,
+                ZoneRef(ZoneType.HAND,target), CardMoveReason.SYSTEM, action.player_id))
+            usage = state.play_usage
+            before = usage.count('skill.rende.cards')
+            for _ in cards:
+                usage.record('skill.rende.cards')
+            frame.step_index = 3
+            if before < 2 <= usage.count('skill.rende.cards') and state.players[action.player_id].hp < state.players[action.player_id].max_hp:
+                return StepResult.push(RecoverAction(action.action_id+':heal', action.player_id, action.player_id, 1))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class ZhihengAction(Action):
+    player_id: str
+
+
+class ZhihengHandler:
+    def __init__(self, moves):
+        self.moves = moves
+
+    def step(self, state, frame):
+        action = frame.action
+        usage = state.play_usage
+        if frame.step_index == 0:
+            if state.current_phase is not Phase.PLAY or state.current_player_id != action.player_id or usage.count('skill.zhiheng'):
+                raise InvalidCardUse('制衡本阶段已用或不可用')
+            cards = tuple(cid for ref, zone in state.zones.items() if ref.player_id == action.player_id
+                          and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT) for cid in zone.card_ids)
+            if not cards:
+                raise InvalidCardUse('制衡无可弃牌')
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id+':cards', action.player_id,
+                RequestType.CHOOSE_CARDS, '制衡：选择要弃置的牌', action.action_id, frame.frame_id,
+                eligible_card_ids=cards, min_count=1, max_count=len(cards)))
+        if frame.step_index == 1:
+            cards = tuple(frame.decision)
+            usage.record('skill.zhiheng')
+            for index, cid in enumerate(cards):
+                ref = next(ref for ref, zone in state.zones.items() if cid in zone.card_ids)
+                self.moves.move(state, CardMove(f'{action.action_id}:discard:{index}', (cid,), ref,
+                    ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD, action.player_id))
+            frame.step_index = 2
+            return StepResult.push(DrawCardsAction(action.action_id+':draw', action.player_id, len(cards)))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class WushengUse(Action):
+    player_id: str
+    material_id: str
+
+
+class WushengUseHandler:
+    def __init__(self, skills, moves, slash_rule):
+        self.skills, self.moves, self.slash_rule = skills, moves, slash_rule
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index == 0:
+            limit = self.slash_rule.usage_limit(state,action.player_id)
+            if (state.current_phase is not Phase.PLAY or state.current_player_id != action.player_id or
+                    action.material_id not in self.skills.red_slash_materials(state,action.player_id) or
+                    limit is not None and state.play_usage.count('basic.slash') >= limit):
+                raise InvalidCardUse('武圣不可用')
+            targets = self.slash_rule.target_candidates(state, action.player_id)
+            if not targets:
+                raise InvalidCardUse('武圣没有合法杀目标')
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id+':target', action.player_id,
+                RequestType.CHOOSE_PLAYER, '武圣：请选择杀目标', action.action_id, frame.frame_id,
+                allowed_player_ids=targets))
+        if frame.step_index == 1:
+            target = frame.decision
+            self.slash_rule.validate_targets(state, action.player_id, (target,))
+            card = state.cards[action.material_id]
+            virtual = VirtualCard('basic.slash', (action.material_id,), card.suit, card.color)
+            self.moves.move(state, CardMove(action.action_id+':processing', (action.material_id,),
+                ZoneRef(ZoneType.HAND,action.player_id), ZoneRef(ZoneType.PROCESSING),
+                CardMoveReason.USE, action.player_id))
+            state.play_usage.record('basic.slash')
+            frame.step_index = 2
+            return StepResult.push(SlashSequence(action.action_id+':slash', action.player_id,
+                action.material_id, (target,), virtual))
+        if action.material_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
+            self.moves.move(state, CardMove(action.action_id+':discard', (action.material_id,),
+                ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.USE, action.player_id))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class JijiangUse(Action):
+    player_id: str
+
+
+class JijiangUseHandler:
+    def __init__(self, skills, slash_rule):
+        self.skills, self.slash_rule = skills, slash_rule
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index == 0:
+            limit = self.slash_rule.usage_limit(state,action.player_id)
+            if (not self.skills.has(state,action.player_id,'jijiang') or state.current_phase is not Phase.PLAY or
+                    state.play_usage.count('skill.jijiang.attempted') or
+                    limit is not None and state.play_usage.count('basic.slash') >= limit):
+                raise InvalidCardUse('激将不可用')
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id+':target',action.player_id,
+                RequestType.CHOOSE_PLAYER,'激将：选择杀目标',action.action_id,frame.frame_id,
+                allowed_player_ids=self.slash_rule.target_candidates(state,action.player_id)))
+        if frame.step_index == 1:
+            target=frame.decision
+            self.slash_rule.validate_targets(state,action.player_id,(target,))
+            state.play_usage.record('skill.jijiang.attempted')
+            frame.local['target']=target
+            frame.step_index=2
+            return StepResult.push(AllianceResponse(action.action_id+':allies',action.player_id,
+                'basic.slash',action.action_id,Kingdom.SHU))
+        if frame.step_index == 2:
+            result=frame.child_result
+            if result is None:
+                return StepResult.complete()
+            material=result.material_ids[0] if isinstance(result,VirtualCard) else result
+            state.play_usage.record('basic.slash')
+            frame.step_index=3
+            return StepResult.push(MilitaryStrike(action.action_id+':strike',action.player_id,
+                frame.local['target'],material,'basic.dodge',virtual_card=result if isinstance(result,VirtualCard) else None))
+        return StepResult.complete()
+
+
+class SkillPlayOptions:
+    def __init__(self, base, skills, slash_rule):
+        self.base, self.skills, self.slash_rule = base, skills, slash_rule
+        self.validator = base.validator
+
+    def spear_legal(self, state, pid):
+        return self.base.spear_legal(state,pid)
+
+    def options(self, state, pid):
+        ordinary = self.base.options(state,pid)
+        extra = []
+        hand = state.cards_in(ZoneRef(ZoneType.HAND,pid))
+        if self.skills.has(state,pid,'rende') and hand and any(state.players[q].is_alive for q in state.seat_order if q != pid):
+            extra.append('skill:rende')
+        if self.skills.has(state,pid,'zhiheng') and not state.play_usage.count('skill.zhiheng') and any(
+                ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT) and zone.card_ids
+                for ref,zone in state.zones.items()):
+            extra.append('skill:zhiheng')
+        limit = self.slash_rule.usage_limit(state,pid)
+        slash_available = (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
+        if slash_available:
+            extra.extend(f'virtual:wusheng:{cid}' for cid in self.skills.red_slash_materials(state,pid))
+            if self.skills.has(state,pid,'jijiang') and not state.play_usage.count('skill.jijiang.attempted') and self.skills.allies(state,pid,Kingdom.SHU):
+                extra.append('skill:jijiang')
+        return (*ordinary,*extra)
+
+    def build_action(self, state, pid, option, aid):
+        if option not in self.options(state,pid):
+            raise InvalidCardUse('skill option is no longer legal')
+        if option == 'skill:rende':
+            return RendeAction(aid+':rende',pid)
+        if option == 'skill:zhiheng':
+            return ZhihengAction(aid+':zhiheng',pid)
+        if option == 'skill:jijiang':
+            return JijiangUse(aid+':jijiang',pid)
+        if option.startswith('virtual:wusheng:'):
+            return WushengUse(aid+':wusheng',pid,option.split(':',2)[2])
+        return self.base.build_action(state,pid,option,aid)

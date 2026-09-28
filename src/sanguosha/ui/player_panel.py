@@ -204,6 +204,11 @@ class PlayerPanel(QPushButton):
         p.setPen(QColor("#493b2d"))
         p.setFont(QFont("Microsoft YaHei UI", 8))
         p.drawText(QRectF(x, 78, rw, 17), Qt.AlignLeft, f"手牌 {v.hand_count}   体力 {v.hp}/{v.max_hp}")
+        if v.skill_labels:
+            p.setFont(QFont("Microsoft YaHei UI", 7, QFont.Bold))
+            p.setPen(QColor("#6e4229"))
+            p.drawText(QRectF(11, h-38, int(w*.52)-12, 28), Qt.TextWordWrap,
+                       " · ".join(v.skill_labels))
         equipment = self._equipped_slots()
         cell = rw/4
         for i, (slot, card) in enumerate(equipment.items()):

@@ -21,8 +21,9 @@ class DyingAction(Action):
 
 
 class DyingActionHandler:
-    def __init__(self, recorder: EventRecorder) -> None:
+    def __init__(self, recorder: EventRecorder, skills=None) -> None:
         self.recorder = recorder
+        self.skills = skills
 
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
@@ -56,7 +57,10 @@ class DyingActionHandler:
             frame.step_index = 2
             round_number = int(frame.local.get("round", 0))
             return StepResult.push(RecoverAction(
-                f"{action.action_id}:recover:{round_number}:{frame.cursor}", responder, action.target_id, 1,
+                f"{action.action_id}:recover:{round_number}:{frame.cursor}", responder, action.target_id,
+                2 if self.skills is not None and self.skills.has(state,action.target_id,'jiuyuan')
+                and responder != action.target_id and self.skills.faction(state,responder) == self.skills.faction(state,action.target_id)
+                else 1,
             ))
         if frame.step_index == 2:
             frame.cursor = 0

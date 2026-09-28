@@ -60,5 +60,7 @@ class UseSpearHandler:
             state.play_usage.record('basic.slash')
             f.step_index=3
             return StepResult.push(SlashSequence(a.action_id+':slash',a.player_id,materials[0],(target,),virtual))
-        self.moves.move(state,CardMove(a.action_id+':discard',materials,ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.USE,a.player_id))
+        remaining=tuple(cid for cid in materials if cid in state.cards_in(ZoneRef(ZoneType.PROCESSING)))
+        if remaining:
+            self.moves.move(state,CardMove(a.action_id+':discard',remaining,ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.USE,a.player_id))
         return StepResult.complete()

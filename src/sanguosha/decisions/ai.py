@@ -6,6 +6,7 @@ from sanguosha.engine.requests import PASS_RESPONSE, Decision, PendingRequest, R
 from sanguosha.model.enums import Identity
 from sanguosha.model.ids import CardInstanceId, PlayerId
 from sanguosha.model.state import GameState
+from sanguosha.model.zones import ZoneRef, ZoneType
 
 
 class AIDecisionProvider:
@@ -41,14 +42,24 @@ class AIDecisionProvider:
                 value = peach[0]
             elif slash and enemies:
                 value = slash[0]
+            elif enemies and any(choice.startswith('virtual:wusheng:') for choice in request.choices):
+                value = next(choice for choice in request.choices if choice.startswith('virtual:wusheng:'))
+            elif enemies and 'skill:jijiang' in request.choices:
+                value = 'skill:jijiang'
             elif usable and state.ruleset_id == 'classic-military':
                 value = usable[0]
+            elif 'skill:zhiheng' in request.choices:
+                value = 'skill:zhiheng'
+            elif 'skill:rende' in request.choices and len(state.cards_in(ZoneRef(ZoneType.HAND,player_id))) > 1:
+                value = 'skill:rende'
             elif 'virtual:spear' in request.choices:
                 value = 'virtual:spear'
             else:
                 value = END_PLAY_PHASE if END_PLAY_PHASE in request.choices else request.choices[0]
         elif kind is RequestType.CHOOSE_PLAYER:
-            value = max(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid))
+            value = (min(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid))
+                     if '仁德' in request.prompt else
+                     max(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid)))
         elif kind is RequestType.RESPOND_WITH_CARD:
             if not request.eligible_card_ids:
                 value = PASS_RESPONSE
@@ -77,7 +88,8 @@ class AIDecisionProvider:
                 count=max(count,min(request.max_count,len(enemies)))
             value=tuple(ordered[:min(count,len(ordered),request.max_count)])
         elif kind is RequestType.YES_NO:
-            value = state.ruleset_id == 'classic-military' and '是否发动' in request.prompt
+            value = state.ruleset_id == 'classic-military' and (
+                '是否发动' in request.prompt or '【奸雄】' in request.prompt)
         else:
             raise RuntimeError(f"AI cannot answer request type {kind}")
         return Decision(request.request_id, player_id, value)
