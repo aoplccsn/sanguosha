@@ -50,6 +50,11 @@ class AIDecisionProvider:
                 value = usable[0]
             elif 'skill:zhiheng' in request.choices:
                 value = 'skill:zhiheng'
+            elif 'skill:qingnang' in request.choices:
+                value = 'skill:qingnang'
+            elif ('skill:kurou' in request.choices and state.players[player_id].hp > 2
+                  and len(state.cards_in(ZoneRef(ZoneType.HAND, player_id))) < 2):
+                value = 'skill:kurou'
             elif 'skill:rende' in request.choices and len(state.cards_in(ZoneRef(ZoneType.HAND,player_id))) > 1:
                 value = 'skill:rende'
             elif 'virtual:spear' in request.choices:
@@ -57,8 +62,9 @@ class AIDecisionProvider:
             else:
                 value = END_PLAY_PHASE if END_PLAY_PHASE in request.choices else request.choices[0]
         elif kind is RequestType.CHOOSE_PLAYER:
-            value = (min(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid))
-                     if '仁德' in request.prompt else
+            value = (player_id if '青囊' in request.prompt and player_id in request.allowed_player_ids else
+                     min(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid))
+                     if '仁德' in request.prompt or '青囊' in request.prompt else
                      max(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid)))
         elif kind is RequestType.RESPOND_WITH_CARD:
             if not request.eligible_card_ids:
@@ -88,7 +94,7 @@ class AIDecisionProvider:
                 count=max(count,min(request.max_count,len(enemies)))
             value=tuple(ordered[:min(count,len(ordered),request.max_count)])
         elif kind is RequestType.YES_NO:
-            value = state.ruleset_id == 'classic-military' and (
+            value = state.ruleset_id == 'classic-military' and ('苦肉' not in request.prompt or state.players[player_id].hp > 2) and (
                 '是否发动' in request.prompt or '【奸雄】' in request.prompt)
         else:
             raise RuntimeError(f"AI cannot answer request type {kind}")

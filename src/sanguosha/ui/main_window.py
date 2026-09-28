@@ -561,7 +561,8 @@ class MainWindow(QMainWindow):
                 if END_PLAY_PHASE in request.choices:
                     actions.append(("结束出牌阶段", END_PLAY_PHASE, True))
                 labels = {'virtual:spear':'丈八蛇矛', 'skill:rende':'仁德',
-                          'skill:zhiheng':'制衡', 'skill:jijiang':'激将'}
+                          'skill:zhiheng':'制衡', 'skill:jijiang':'激将',
+                          'skill:kurou':'苦肉', 'skill:qingnang':'青囊'}
                 def option_label(choice):
                     if choice.startswith('virtual:wusheng:'):
                         material = choice.split(':',2)[2]

@@ -117,9 +117,13 @@ class DrawCardsHandler:
 
 
 class DrawPhaseBody:
+    def __init__(self, skills=None):
+        self.skills = skills
+
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         if frame.step_index == 1:
             frame.step_index = 2
             action = frame.action
-            return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id, 2))
+            bonus = int(self.skills is not None and self.skills.has(state, action.player_id, 'yingzi'))
+            return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id, 2 + bonus))
         return StepResult.complete(frame.child_result)

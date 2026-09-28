@@ -13,6 +13,7 @@ from .requests import PendingRequest, RequestType
 from .response import RespondWithCardAction
 from .recovery import RecoverAction
 from .card_rules import InvalidCardUse
+from .hp import LoseHpAction
 
 
 class SkillRegistry:
@@ -31,6 +32,10 @@ class SkillRegistry:
         character = self.characters.get(state.players[player_id].character_id)
         return character.kingdom if character else None
 
+    def gender(self, state, player_id):
+        character = self.characters.get(state.players[player_id].character_id)
+        return character.gender if character else None
+
     def allies(self, state, player_id, faction):
         start = state.seat_order.index(player_id)
         order = state.seat_order[start+1:] + state.seat_order[:start]
@@ -41,6 +46,120 @@ class SkillRegistry:
             return ()
         return tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, player_id))
                      if state.cards[cid].color is Color.RED)
+
+
+class FinishSkillBody:
+    """Optional end-phase draw through the normal decision and draw actions."""
+
+    def __init__(self, skills, base=None):
+        self.skills = skills
+        self.base = base
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        if frame.step_index == 1:
+            if self.base is not None:
+                self.base.step(state, frame)
+            if not self.skills.has(state, actor, 'biyue') or not state.players[actor].is_alive:
+                return StepResult.complete()
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(frame.action.action_id + ':biyue', actor,
+                RequestType.YES_NO, '是否发动【闭月】摸一张牌？', frame.action.action_id, frame.frame_id))
+        if frame.step_index == 2:
+            choice = frame.decision
+            frame.decision = None
+            if not choice:
+                return StepResult.complete()
+            frame.step_index = 3
+            return StepResult.push(DrawCardsAction(frame.action.action_id + ':biyue-draw', actor, 1))
+        return StepResult.complete(frame.child_result)
+
+
+@dataclass(frozen=True, slots=True)
+class KurouAction(Action):
+    player_id: str
+
+
+class KurouHandler:
+    def __init__(self, skills):
+        self.skills = skills
+
+    def validate_start(self, state, action):
+        if (not self.skills.has(state, action.player_id, 'kurou') or
+                state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY or
+                not state.players[action.player_id].is_alive):
+            raise InvalidCardUse('苦肉不可用')
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index == 0:
+            self.validate_start(state, action)
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':confirm', action.player_id,
+                RequestType.YES_NO, '是否发动【苦肉】？失去一点体力后摸两张牌。',
+                action.action_id, frame.frame_id))
+        if frame.step_index == 1:
+            choice = frame.decision
+            frame.decision = None
+            if not choice:
+                return StepResult.complete()
+            frame.step_index = 2
+            return StepResult.push(LoseHpAction(action.action_id + ':lose-hp', action.player_id, 1))
+        if frame.step_index == 2:
+            if not state.players[action.player_id].is_alive:
+                return StepResult.complete()
+            frame.step_index = 3
+            return StepResult.push(DrawCardsAction(action.action_id + ':draw', action.player_id, 2))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class QingnangAction(Action):
+    player_id: str
+
+
+class QingnangHandler:
+    def __init__(self, skills, moves):
+        self.skills, self.moves = skills, moves
+
+    def validate_start(self, state, action):
+        usage = state.play_usage
+        if (not self.skills.has(state, action.player_id, 'qingnang') or
+                state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY or
+                usage is None or usage.count('skill.qingnang') or
+                not state.cards_in(ZoneRef(ZoneType.HAND, action.player_id)) or
+                not any(p.is_alive and p.hp < p.max_hp for p in state.players.values())):
+            raise InvalidCardUse('青囊不可用')
+
+    def step(self, state, frame):
+        action = frame.action
+        hand = ZoneRef(ZoneType.HAND, action.player_id)
+        if frame.step_index == 0:
+            self.validate_start(state, action)
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':card', action.player_id,
+                RequestType.CHOOSE_CARD, '青囊：选择要弃置的手牌', action.action_id,
+                frame.frame_id, eligible_card_ids=state.cards_in(hand)))
+        if frame.step_index == 1:
+            frame.local['card'] = frame.decision
+            frame.decision = None
+            targets = tuple(pid for pid in state.seat_order
+                            if state.players[pid].is_alive and state.players[pid].hp < state.players[pid].max_hp)
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(action.action_id + ':target', action.player_id,
+                RequestType.CHOOSE_PLAYER, '青囊：选择受伤角色', action.action_id,
+                frame.frame_id, allowed_player_ids=targets))
+        if frame.step_index == 2:
+            card_id, target = frame.local['card'], frame.decision
+            if (card_id not in state.cards_in(hand) or not state.players[target].is_alive or
+                    state.players[target].hp >= state.players[target].max_hp):
+                raise InvalidCardUse('青囊材料或目标已失效')
+            self.moves.move(state, CardMove(action.action_id + ':discard', (card_id,), hand,
+                ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD, action.player_id))
+            state.play_usage.record('skill.qingnang')
+            frame.step_index = 3
+            return StepResult.push(RecoverAction(action.action_id + ':recover', action.player_id, target, 1))
+        return StepResult.complete()
 
 
 @dataclass(frozen=True, slots=True)
@@ -255,6 +374,11 @@ class SkillPlayOptions:
                 ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT) and zone.card_ids
                 for ref,zone in state.zones.items()):
             extra.append('skill:zhiheng')
+        if self.skills.has(state,pid,'kurou'):
+            extra.append('skill:kurou')
+        if (self.skills.has(state,pid,'qingnang') and not state.play_usage.count('skill.qingnang') and hand
+                and any(p.is_alive and p.hp < p.max_hp for p in state.players.values())):
+            extra.append('skill:qingnang')
         limit = self.slash_rule.usage_limit(state,pid)
         slash_available = (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
         if slash_available:
@@ -272,6 +396,10 @@ class SkillPlayOptions:
             return ZhihengAction(aid+':zhiheng',pid)
         if option == 'skill:jijiang':
             return JijiangUse(aid+':jijiang',pid)
+        if option == 'skill:kurou':
+            return KurouAction(aid+':kurou', pid)
+        if option == 'skill:qingnang':
+            return QingnangAction(aid+':qingnang', pid)
         if option.startswith('virtual:wusheng:'):
             return WushengUse(aid+':wusheng',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)

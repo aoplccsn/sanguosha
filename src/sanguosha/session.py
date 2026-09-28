@@ -129,7 +129,7 @@ class GameSession:
         register_basic_cards(definitions, card_rules)
         validator = CardUseValidator(definitions, card_rules, TargetValidator())
         bodies = standard_phase_bodies(LegalPlayActionProvider(validator))
-        bodies.register(Phase.DRAW, DrawPhaseBody())
+        bodies.register(Phase.DRAW, DrawPhaseBody(skills))
         bodies.register(Phase.DISCARD, DiscardPhaseBody(moves))
         registry = ActionHandlerRegistry()
         registry.register(TurnAction, TurnActionHandler(events))
@@ -144,6 +144,8 @@ class GameSession:
             events, lambda action: DyingAction(f"{action.action_id}:dying-resolution", action.target_id, action.source_id),
         ))
         registry.register(DyingAction, DyingActionHandler(events, skills))
+        from sanguosha.engine.hp import LoseHpAction, LoseHpHandler
+        registry.register(LoseHpAction, LoseHpHandler(events))
         registry.register(DeathAction, DeathActionHandler(moves, IdentitySystem(), events))
         if military:
             from sanguosha.engine.military_basics import register_military_basics
@@ -158,7 +160,8 @@ class GameSession:
             if skills is not None:
                 from sanguosha.engine.skills import (SkillPlayOptions, RendeAction, RendeHandler,
                     ZhihengAction, ZhihengHandler, WushengUse, WushengUseHandler,
-                    JijiangUse, JijiangUseHandler, AllianceResponse, AllianceResponseHandler)
+                    JijiangUse, JijiangUseHandler, AllianceResponse, AllianceResponseHandler,
+                    KurouAction, KurouHandler, QingnangAction, QingnangHandler)
                 slash_rule = card_rules.get('basic.slash')
                 provider = SkillPlayOptions(provider, skills, slash_rule)
                 registry.register(RendeAction, RendeHandler(moves))
@@ -166,8 +169,14 @@ class GameSession:
                 registry.register(WushengUse, WushengUseHandler(skills,moves,slash_rule))
                 registry.register(JijiangUse, JijiangUseHandler(skills,slash_rule))
                 registry.register(AllianceResponse, AllianceResponseHandler(skills))
+                registry.register(KurouAction, KurouHandler(skills))
+                registry.register(QingnangAction, QingnangHandler(skills, moves))
             registry.register(UseSpear,UseSpearHandler(provider,moves))
             bodies.register(Phase.PLAY,PlayPhaseBody(provider))
+            if skills is not None:
+                from sanguosha.engine.skills import FinishSkillBody
+                from sanguosha.engine.military_basics import MilitaryFinishBody
+                bodies.register(Phase.FINISH, FinishSkillBody(skills, MilitaryFinishBody()))
         engine = GameEngine(state, registry)
         if military:
             engine.reaction_provider = moves.next_reaction

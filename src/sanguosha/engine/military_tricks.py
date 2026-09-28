@@ -67,9 +67,10 @@ class TargetTrick(Action):
     pool_key: str = ''
 
 class MilitaryTrickRule:
-    def __init__(self, definition, distance):
+    def __init__(self, definition, distance, skills=None):
         self.definition = definition
         self.distance = distance
+        self.skills = skills
         self.requires_target_selection = definition not in ('trick.ex_nihilo','trick.savage_assault',
             'trick.archery_attack','trick.god_salvation','trick.amazing_grace','delayed.lightning')
     def can_use(self, state, user):
@@ -85,12 +86,19 @@ class MilitaryTrickRule:
         def valid(pid):
             if not state.players[pid].is_alive:
                 return False
+            if self.skills is not None:
+                if d in ('trick.snatch', 'delayed.indulgence') and self.skills.has(state, pid, 'qianxun'):
+                    return False
+                if d == 'trick.duel' and self.skills.has(state, pid, 'kongcheng') and not state.cards_in(ZoneRef(ZoneType.HAND, pid)):
+                    return False
             if d == 'trick.iron_chain':
                 return True
             if pid == user and d != 'trick.fire_attack':
                 return False
             if d in ('trick.dismantlement','trick.snatch'):
-                return bool(personal_cards(state,pid)) and (d != 'trick.snatch' or self.distance.distance_between(state,user,pid) <= 1)
+                return bool(personal_cards(state,pid)) and (d != 'trick.snatch' or
+                    self.skills is not None and self.skills.has(state, user, 'qicai') or
+                    self.distance.distance_between(state,user,pid) <= 1)
             if d == 'trick.borrowed_sword':
                 return equipped(state,pid,EquipmentSlot.WEAPON) is not None and any(
                     self.distance.can_reach_with_slash(state,pid,q) for q in state.seat_order if q != pid and state.players[q].is_alive)
@@ -343,9 +351,9 @@ def register_military_tricks(definitions,rules,registry,moves,events,deck,bodies
     from .distance import DistanceSystem
     distance=DistanceSystem(definitions)
     for key,_ in TRICKS:
-        rules.register('trick.'+key,MilitaryTrickRule('trick.'+key,distance))
+        rules.register('trick.'+key,MilitaryTrickRule('trick.'+key,distance,skills))
     for key,_ in DELAYED:
-        rules.register('delayed.'+key,MilitaryTrickRule('delayed.'+key,distance))
+        rules.register('delayed.'+key,MilitaryTrickRule('delayed.'+key,distance,skills))
     registry.register(NullificationWindow,NullificationHandler())
     registry.register(TrickAction,TrickHandler(moves,deck))
     registry.register(TargetTrick,TargetTrickHandler(moves,distance,skills))

@@ -134,10 +134,29 @@ class WineRule:
     def effect_action(self, action_id, user, card, targets):
         return WineAction(action_id, user)
 
+class SkillSlashLimit:
+    def __init__(self, skills):
+        self.skills = skills
+        self.equipment = EquipmentSlashLimit()
+
+    def limit(self, state, user):
+        if self.skills is not None and self.skills.has(state, user, 'paoxiao'):
+            return None
+        return self.equipment.limit(state, user)
+
+
 class MilitarySlashRule(SlashRule):
     usage_key = 'basic.slash'
-    def __init__(self, distance):
-        super().__init__(ReachableOpponent(distance), EquipmentSlashLimit())
+    def __init__(self, distance, skills=None):
+        super().__init__(ReachableOpponent(distance), SkillSlashLimit(skills))
+        self.skills = skills
+    def target_candidates(self, state, user):
+        candidates = super().target_candidates(state, user)
+        if self.skills is None:
+            return candidates
+        return tuple(pid for pid in candidates if not (
+            self.skills.has(state, pid, 'kongcheng') and
+            not state.cards_in(ZoneRef(ZoneType.HAND, pid))))
     def target_bounds(self,state,user,card):
         maximum = 3 if equipped(state,user,EquipmentSlot.WEAPON)=='equipment.weapon.halberd' and len(state.cards_in(ZoneRef(ZoneType.HAND,user)))==1 else 1
         return 1,maximum
@@ -195,8 +214,16 @@ class MilitarySlashHandler:
                 frame.step_index=9
                 return StepResult.ask(PendingRequest(action.action_id+':fan',action.source_id,RequestType.YES_NO,
                     '是否发动朱雀羽扇，将普通杀转为火杀？',action.action_id,frame.frame_id))
-            genders=state.metadata.get('genders',{})
-            if not frame.local.get('double_handled') and weapon=='equipment.weapon.double_sword' and genders.get(action.source_id,'male') != genders.get(action.target_id,'male'):
+            if self.skills is not None:
+                source_gender = self.skills.gender(state, action.source_id)
+                target_gender = self.skills.gender(state, action.target_id)
+            else:
+                genders = state.metadata.get('genders', {})
+                source_gender = genders.get(action.source_id, 'male')
+                target_gender = genders.get(action.target_id, 'male')
+            if (not frame.local.get('double_handled') and weapon=='equipment.weapon.double_sword'
+                    and source_gender is not None and target_gender is not None
+                    and source_gender != target_gender):
                 frame.local['double_handled']=True
                 frame.step_index=10
                 return StepResult.ask(PendingRequest(action.action_id+':double',action.source_id,RequestType.YES_NO,
@@ -436,7 +463,7 @@ def register_military_basics(definitions, rules, registry, moves, events, bodies
     register_additional_definitions(definitions)
     distance = DistanceSystem(definitions)
     for definition in SLASH_IDS:
-        rule = MilitarySlashRule(distance)
+        rule = MilitarySlashRule(distance, skills)
         if definition == 'basic.slash':
             rules.replace(definition, rule)
         else:

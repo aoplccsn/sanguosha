@@ -7,6 +7,7 @@ small DistanceModifier protocol.
 
 from typing import Protocol
 
+from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL
 from sanguosha.model.enums import EquipmentSlot
 from sanguosha.model.ids import PlayerId
 from sanguosha.model.state import GameState
@@ -31,9 +32,23 @@ class HorseModifier:
         return current
 
 
+class CharacterDistanceModifier:
+    """Declarative character distance effects in the shared distance path."""
+
+    def distance_delta(self, state: GameState, source: PlayerId, target: PlayerId) -> int:
+        character = _CHARACTERS.get(state.players[source].character_id)
+        return -1 if character is not None and 'mashu' in character.skill_ids else 0
+
+    def attack_range(self, state: GameState, player: PlayerId, current: int) -> int:
+        return current
+
+
+_CHARACTERS = {character.id: character for character in STANDARD_25_GENERAL_POOL}
+
+
 class DistanceSystem:
     def __init__(self, definitions: CardDefinitionRegistry | None = None,
-                 modifiers: tuple[DistanceModifier, ...] = (HorseModifier(),)) -> None:
+                 modifiers: tuple[DistanceModifier, ...] = (HorseModifier(), CharacterDistanceModifier())) -> None:
         self.definitions = definitions
         self.modifiers = modifiers
 
