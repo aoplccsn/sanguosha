@@ -8,6 +8,8 @@ from sanguosha.ui.main_window import MainWindow
 from sanguosha.engine.card_moves import CardMove, CardMoveReason, CardMoveService
 from sanguosha.engine.military_tricks import TargetTrick
 from sanguosha.engine.judgment import JudgmentAction, JudgmentPattern
+from sanguosha.engine.phases import PhaseAction
+from sanguosha.model.enums import Phase
 from sanguosha.model.zones import ZoneRef, ZoneType
 from test_t6_military_basics import game, put
 from test_t6_equipment_chains import gear
@@ -152,4 +154,19 @@ def test_equipment_slot_hover_shows_full_card_preview():
     QTest.mouseMove(panel, QPoint(int(panel.width()*.53)+8, 108))
     assert panel._equipment_preview.card.name == "麒麟弓"
     assert panel._equipment_preview.isVisible()
+    window.close()
+
+
+def test_selected_target_appears_in_center_before_confirmation():
+    session = game()
+    card = put(session, "basic.slash")
+    session.engine.start_action(PhaseAction("ui-play", "p1", Phase.PLAY))
+    window = MainWindow()
+    window.session = session
+    window.show()
+    window._render()
+    window._card_clicked(card)
+    window._player_clicked("p2")
+    assert "玩家2" in window.table.center_notice
+    assert session.engine.pending_request is not None
     window.close()

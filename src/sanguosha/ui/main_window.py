@@ -306,6 +306,7 @@ class MainWindow(QMainWindow):
         if human_request and human_request.request_type in (RequestType.CHOOSE_PLAYER, RequestType.CHOOSE_PLAYERS):
             targets = set(map(str, human_request.allowed_player_ids))
         attack = self._attack_context() if human_request and human_request.request_type is RequestType.RESPOND_WITH_CARD else None
+        selected_targets=set(self._selected_players) or ({self.interaction.target_id} if self.interaction.target_id else set())
         notice = art = None
         if human_request and human_request.required_definition_id == "trick.nullification":
             target = next((p.name for p in view.players if p.player_id == human_request.subject_player_id), "目标")
@@ -319,7 +320,12 @@ class MainWindow(QMainWindow):
             art = trick or "trick.nullification"
         elif view.current_phase == "judgment":
             notice, art = "判定中 · 等待判定牌", "delayed.lightning"
-        selected_targets=set(self._selected_players) or ({self.interaction.target_id} if self.interaction.target_id else set())
+        elif self.interaction.card_id and targets:
+            card = next((c for c in view.hand if str(c.card_id) == self.interaction.card_id), None)
+            if card:
+                selected_names = [p.name for p in view.players if str(p.player_id) in selected_targets]
+                notice = f"【{card.name}】· " + ("目标：" + "、".join(selected_names) if selected_names else "请选择金框目标")
+                art = card.definition_id
         self.table.render(view, targets, selected_targets,
                           attack[0] if attack else None, attack[1] if attack else None,
                           self._attack_definition() if attack else None, self._selected_shared_card,
