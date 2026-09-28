@@ -4,6 +4,7 @@ from sanguosha.engine.card_moves import CardMove, CardMoveReason, CardMoveServic
 from sanguosha.engine.card_use import UseCardAction
 from sanguosha.engine.distance import DistanceSystem
 from sanguosha.engine.phases import PhaseAction
+from sanguosha.engine.military_basics import MilitaryDamageAction
 from sanguosha.engine.events import TurnStartedEvent, CardUsedEvent, CardRespondedEvent
 from sanguosha.engine.resolution import ResolutionFrame
 from sanguosha.engine.requests import Decision, RequestType
@@ -172,6 +173,22 @@ def test_xiaoji_triggers_from_equipment_zone_loss():
     session.engine.submit_decision(Decision(request.request_id, 'p1', True))
     assert session.engine.stack.is_empty()
     assert len(session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == before + 2
+
+
+def test_fankui_takes_one_real_card_from_damage_source():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p2'].character_id = 'simayi'
+    source_card = session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    session.engine.start_action(MilitaryDamageAction('fankui-hit', 'p1', 'p2', 1))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO and '反馈' in request.prompt
+    session.engine.submit_decision(Decision(request.request_id, 'p2', True))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_CARD and source_card in request.eligible_card_ids
+    session.engine.submit_decision(Decision(request.request_id, 'p2', source_card))
+    assert source_card in session.state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
+    assert source_card not in session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
+    assert session.engine.stack.is_empty()
 
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)

@@ -90,6 +90,30 @@ class MilitaryDamageHandler(DamageActionHandler):
                     if ref is not None and ref.zone_type in (ZoneType.PROCESSING, ZoneType.DISCARD_PILE):
                         self.moves.move(state,CardMove(f'{action.action_id}:jianxiong:{index}',(cid,),ref,
                             ZoneRef(ZoneType.HAND,action.target_id),CardMoveReason.SYSTEM,action.target_id))
+        if frame.step_index == 6:
+            wanted = frame.decision is True
+            frame.decision = None
+            frame.local['fankui_offered'] = True
+            frame.step_index = 1
+            if wanted:
+                source = action.source_id
+                from .military_equipment import discardable
+                cards = discardable(state, source) if source is not None and state.players[source].is_alive else ()
+                if cards:
+                    frame.step_index = 7
+                    return StepResult.ask(PendingRequest(action.action_id+':fankui-card',action.target_id,
+                        RequestType.CHOOSE_CARD,'【反馈】选择获得伤害来源的一张牌',action.action_id,frame.frame_id,
+                        eligible_card_ids=cards,subject_player_id=source))
+        if frame.step_index == 7:
+            cid = frame.decision
+            frame.decision = None
+            source = action.source_id
+            from .military_equipment import discardable
+            if source is not None and cid in discardable(state, source):
+                ref = next(ref for ref, zone in state.zones.items() if cid in zone.card_ids)
+                self.moves.move(state,CardMove(action.action_id+':fankui-gain',(cid,),ref,
+                    ZoneRef(ZoneType.HAND,action.target_id),CardMoveReason.SYSTEM,action.target_id))
+            frame.step_index = 1
         if frame.step_index == 1 and not frame.local.get('jianxiong_offered') and self.skills is not None and self.skills.has(state,action.target_id,'jianxiong') and target.is_alive:
             materials = getattr(action,'material_card_ids',()) or ((action.card_id,) if action.card_id else ())
             obtainable = tuple(cid for cid in dict.fromkeys(materials) if any(cid in zone.card_ids and ref.zone_type in
@@ -99,6 +123,15 @@ class MilitaryDamageHandler(DamageActionHandler):
                 frame.step_index = 5
                 return StepResult.ask(PendingRequest(action.action_id+':jianxiong',action.target_id,
                     RequestType.YES_NO,'【奸雄】是否获得造成伤害的牌？',action.action_id,frame.frame_id))
+        if (frame.step_index == 1 and not frame.local.get('fankui_offered') and self.skills is not None
+                and self.skills.has(state,action.target_id,'fankui') and target.is_alive
+                and action.source_id is not None and state.players[action.source_id].is_alive):
+            from .military_equipment import discardable
+            frame.local['fankui_offered'] = True
+            if discardable(state,action.source_id):
+                frame.step_index = 6
+                return StepResult.ask(PendingRequest(action.action_id+':fankui',action.target_id,
+                    RequestType.YES_NO,'受到伤害，是否发动【反馈】？',action.action_id,frame.frame_id))
         chain = str(frame.local['chain']).split('|') if frame.local['chain'] else []
         if state.status is GameStatus.FINISHED or frame.cursor >= len(chain):
             return StepResult.complete(int(frame.local['amount']))
