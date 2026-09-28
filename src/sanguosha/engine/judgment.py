@@ -31,6 +31,7 @@ class JudgmentPattern:
 class JudgmentAction(Action):
     player_id: PlayerId
     pattern: JudgmentPattern
+    gain_on_match: bool = False
 
 
 class JudgmentHandler:
@@ -134,6 +135,8 @@ class JudgmentHandler:
             return StepResult.ask(PendingRequest(f'{action.action_id}:tiandu', action.player_id,
                 RequestType.YES_NO, '自己的判定牌结算后，是否发动【天妒】获得之？',
                 action.action_id, frame.frame_id))
+        if frame.step_index == 2 and action.gain_on_match and frame.local['matched']:
+            return self._finish(state, frame, card_id, ZoneRef(ZoneType.HAND, action.player_id))
         if frame.step_index == 3:
             obtain = frame.decision is True
             frame.decision = None

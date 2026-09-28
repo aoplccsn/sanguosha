@@ -182,9 +182,10 @@ class GameSession:
             registry.register(UseSpear,UseSpearHandler(provider,moves))
             bodies.register(Phase.PLAY,PlayPhaseBody(provider))
             if skills is not None:
-                from sanguosha.engine.skills import FinishSkillBody
+                from sanguosha.engine.skills import FinishSkillBody, PreparationSkillBody
                 from sanguosha.engine.military_basics import MilitaryFinishBody
                 bodies.register(Phase.FINISH, FinishSkillBody(skills, MilitaryFinishBody()))
+                bodies.register(Phase.PREPARATION, PreparationSkillBody(skills))
         engine = GameEngine(state, registry)
         if military:
             engine.reaction_provider = moves.next_reaction

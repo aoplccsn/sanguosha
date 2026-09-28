@@ -76,6 +76,34 @@ class FinishSkillBody:
         return StepResult.complete(frame.child_result)
 
 
+class PreparationSkillBody:
+    def __init__(self, skills):
+        self.skills = skills
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        if not self.skills.has(state, actor, 'luoshen') or not state.players[actor].is_alive:
+            return StepResult.complete()
+        if frame.step_index == 1:
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(f'{frame.action.action_id}:luoshen:{frame.cursor}', actor,
+                RequestType.YES_NO, '是否发动【洛神】进行黑色判定？',
+                frame.action.action_id, frame.frame_id))
+        if frame.step_index == 2:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted:
+                return StepResult.complete()
+            frame.step_index = 3
+            return StepResult.push(JudgmentAction(f'{frame.action.action_id}:luoshen-judge:{frame.cursor}',
+                actor, JudgmentPattern(color=Color.BLACK), gain_on_match=True))
+        if frame.step_index == 3 and frame.child_result is True:
+            frame.cursor += 1
+            frame.step_index = 1
+            return StepResult.continue_()
+        return StepResult.complete()
+
+
 @dataclass(frozen=True, slots=True)
 class LianyingAction(Action):
     player_id: str

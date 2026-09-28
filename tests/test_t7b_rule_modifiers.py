@@ -363,6 +363,28 @@ def test_yiji_handles_each_damage_point_and_splits_drawn_cards():
     assert session.state.players['p2'].hp == 1
     assert session.engine.stack.is_empty()
 
+
+def test_luoshen_repeats_black_judgment_and_stops_on_red():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'zhenji'
+    session.state.current_player_id = 'p1'
+    session.state.turn_number = 1
+    draw = ZoneRef(ZoneType.DRAW_PILE)
+    black, red = session.state.cards_in(draw)[:2]
+    session.state.cards[black] = replace(session.state.cards[black], suit=Suit.SPADE)
+    session.state.cards[red] = replace(session.state.cards[red], suit=Suit.HEART)
+    hand = ZoneRef(ZoneType.HAND, 'p1')
+    session.engine.start_action(PhaseAction('luoshen-preparation', 'p1', Phase.PREPARATION))
+    first = session.engine.pending_request
+    assert first.request_type is RequestType.YES_NO and '洛神' in first.prompt
+    session.engine.submit_decision(Decision(first.request_id, 'p1', True))
+    second = session.engine.pending_request
+    assert second.request_type is RequestType.YES_NO and '洛神' in second.prompt
+    assert black in session.state.cards_in(hand)
+    session.engine.submit_decision(Decision(second.request_id, 'p1', True))
+    assert red in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert session.engine.stack.is_empty()
+
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p2'].character_id = 'zhenji'
