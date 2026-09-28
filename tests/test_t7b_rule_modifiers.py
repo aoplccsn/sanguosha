@@ -110,12 +110,29 @@ def test_keji_only_offered_without_slash_use_or_response_this_turn():
     session.events.record(CardUsedEvent('used-slash', 'p1', slash, ('p2',)))
     frame = ResolutionFrame('no-keji-use', action, step_index=1)
     assert body.step(session.state, frame).request.request_type is RequestType.CHOOSE_CARDS
-
     session.events.record(TurnStartedEvent('turn-2', 'p1', 2))
     session.events.record(CardRespondedEvent('responded-slash', 'p1', slash, 'duel', 'basic.slash'))
     frame = ResolutionFrame('no-keji-response', action, step_index=1)
     assert body.step(session.state, frame).request.request_type is RequestType.CHOOSE_CARDS
 
+
+def test_jizhi_draws_before_non_delayed_trick_resolves():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'huangyueying'
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    card = put(session, 'trick.ex_nihilo', 'p1')
+    hand = ZoneRef(ZoneType.HAND, 'p1')
+    before = len(session.state.cards_in(hand))
+    session.engine.start_action(UseCardAction('jizhi-card', 'p1', card))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO and '集智' in request.prompt
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    resolve(session)
+    assert session.engine.stack.is_empty()
+    assert len(session.state.cards_in(hand)) == before + 2  # cost one, 集智 one, 无中生有 two
 
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)

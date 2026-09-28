@@ -135,7 +135,7 @@ class GameSession:
         registry.register(TurnAction, TurnActionHandler(events))
         registry.register(PhaseAction, PhaseActionHandler(bodies, events))
         registry.register(DrawCardsAction, DrawCardsHandler(deck))
-        registry.register(UseCardAction, UseCardActionHandler(validator, moves, events))
+        registry.register(UseCardAction, UseCardActionHandler(validator, moves, events, skills))
         registry.register(SlashEffectAction, SlashEffectHandler())
         registry.register(RespondWithCardAction, RespondWithCardHandler(moves, events))
         registry.register(PeachEffectAction, PeachEffectHandler())

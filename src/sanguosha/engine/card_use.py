@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 
 from sanguosha.model.ids import CardInstanceId, PlayerId
+from sanguosha.model.enums import CardCategory
 from sanguosha.model.state import GameState
 from sanguosha.model.zones import ZoneRef, ZoneType
 
@@ -10,6 +11,7 @@ from .actions import Action, StepResult
 from .card_moves import CardMove, CardMoveReason, CardMoveService
 from .card_rules import CardRule, CardUseValidator, InvalidCardUse
 from .events import CardResolvedEvent, CardUsedEvent, EventRecorder
+from .deck import DrawCardsAction
 from .requests import PendingRequest, RequestType
 from .resolution import ResolutionFrame
 
@@ -22,10 +24,12 @@ class UseCardAction(Action):
 
 
 class UseCardActionHandler:
-    def __init__(self, validator: CardUseValidator, moves: CardMoveService, recorder: EventRecorder) -> None:
+    def __init__(self, validator: CardUseValidator, moves: CardMoveService, recorder: EventRecorder,
+                 skills=None) -> None:
         self.validator = validator
         self.moves = moves
         self.recorder = recorder
+        self.skills = skills
 
     def validate_start(self, state: GameState, action: Action) -> None:
         assert isinstance(action, UseCardAction)
@@ -52,6 +56,23 @@ class UseCardActionHandler:
         self.recorder.record(CardUsedEvent(f"{action.action_id}:used", action.user_id, action.card_id, targets))
         return StepResult.push(effect)
 
+    def _commit_with_jizhi(self, state, frame, action, targets):
+        outcome = self._commit(state, action, targets)
+        definition = self.validator.definitions.get(state.cards[action.card_id].definition_id)
+        if (self.skills is not None and self.skills.has(state, action.user_id, 'jizhi')
+                and definition.category is CardCategory.TRICK):
+            frame.local['jizhi_targets'] = tuple(targets)
+            frame.step_index = 3
+            return StepResult.ask(PendingRequest(
+                f"{action.action_id}:jizhi", action.user_id, RequestType.YES_NO,
+                '是否发动【集智】摸一张牌？', action.action_id, frame.frame_id))
+        return outcome
+
+    def _jizhi_effect(self, state, frame, action):
+        targets = frame.local['jizhi_targets']
+        rule = self.validator.rule_for(state, action.card_id)
+        return rule.effect_action(f"{action.action_id}:effect", action.user_id, action.card_id, targets)
+
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
         assert isinstance(action, UseCardAction)
@@ -68,14 +89,26 @@ class UseCardActionHandler:
                     min_count=low, max_count=high,
                 ))
             frame.step_index = 2
-            return self._commit(state, action, action.target_ids)
+            return self._commit_with_jizhi(state, frame, action, action.target_ids)
         if frame.step_index == 1:
             target = frame.decision
             if not isinstance(target, (str, tuple)):
                 raise InvalidCardUse("target choice is missing")
             frame.decision = None
             frame.step_index = 2
-            return self._commit(state, action, tuple(map(PlayerId, target)) if isinstance(target, tuple) else (PlayerId(target),))
+            return self._commit_with_jizhi(state, frame, action,
+                                           tuple(map(PlayerId, target)) if isinstance(target, tuple) else (PlayerId(target),))
+        if frame.step_index == 3:
+            draw = frame.decision is True
+            frame.decision = None
+            if draw:
+                frame.step_index = 4
+                return StepResult.push(DrawCardsAction(f"{action.action_id}:jizhi-draw", action.user_id, 1))
+            frame.step_index = 2
+            return StepResult.push(self._jizhi_effect(state, frame, action))
+        if frame.step_index == 4:
+            frame.step_index = 2
+            return StepResult.push(self._jizhi_effect(state, frame, action))
         if frame.step_index == 2:
             processing = ZoneRef(ZoneType.PROCESSING)
             discard = ZoneRef(ZoneType.DISCARD_PILE)
