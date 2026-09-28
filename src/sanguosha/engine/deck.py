@@ -125,6 +125,13 @@ class DrawPhaseBody:
         if frame.step_index == 1:
             action = frame.action
             state.players[action.player_id].marks.pop('luoyi', None)
+            if (self.skills is not None and self.skills.has(state, action.player_id, 'tuxi')
+                    and any(pid != action.player_id and state.players[pid].is_alive
+                            and state.cards_in(ZoneRef(ZoneType.HAND, pid)) for pid in state.seat_order)):
+                frame.step_index = 5
+                return StepResult.ask(PendingRequest(action.action_id + ':tuxi', action.player_id,
+                    RequestType.YES_NO, '是否发动【突袭】改为取得其他角色的手牌？',
+                    action.action_id, frame.frame_id))
             if self.skills is not None and self.skills.has(state, action.player_id, 'luoyi'):
                 frame.step_index = 3
                 return StepResult.ask(PendingRequest(action.action_id + ':luoyi', action.player_id,
@@ -142,4 +149,13 @@ class DrawPhaseBody:
             frame.step_index = 2
             return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id,
                                                    1 if activate else 2))
+        if frame.step_index == 5:
+            action = frame.action
+            activate = frame.decision is True
+            frame.decision = None
+            frame.step_index = 2
+            if activate:
+                from .skills import TuxiAction
+                return StepResult.push(TuxiAction(action.action_id + ':tuxi', action.player_id))
+            return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id, 2))
         return StepResult.complete(frame.child_result)

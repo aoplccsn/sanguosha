@@ -186,6 +186,59 @@ class GanglieHandler:
 
 
 @dataclass(frozen=True, slots=True)
+class TuxiAction(Action):
+    player_id: str
+
+
+class TuxiHandler:
+    def __init__(self, moves):
+        self.moves = moves
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index == 0:
+            candidates = tuple(pid for pid in state.seat_order if pid != action.player_id
+                               and state.players[pid].is_alive
+                               and state.cards_in(ZoneRef(ZoneType.HAND, pid)))
+            if not candidates:
+                return StepResult.complete()
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':targets', action.player_id,
+                RequestType.CHOOSE_PLAYERS, '突袭：选择至多两名有手牌的其他角色',
+                action.action_id, frame.frame_id, allowed_player_ids=candidates,
+                min_count=1, max_count=min(2, len(candidates))))
+        if frame.step_index == 1:
+            frame.local['targets'] = '|'.join(frame.decision)
+            frame.decision = None
+            frame.cursor = 0
+            frame.step_index = 2
+        if frame.step_index == 3:
+            target = str(frame.local['current_target'])
+            card = frame.decision
+            frame.decision = None
+            hand = ZoneRef(ZoneType.HAND, target)
+            if card in state.cards_in(hand):
+                self.moves.move(state, CardMove(f'{action.action_id}:gain:{frame.cursor}', (card,),
+                    hand, ZoneRef(ZoneType.HAND, action.player_id), CardMoveReason.SYSTEM,
+                    action.player_id, action.action_id))
+            frame.step_index = 2
+        targets = str(frame.local['targets']).split('|') if frame.local['targets'] else []
+        while frame.cursor < len(targets):
+            target = targets[frame.cursor]
+            frame.cursor += 1
+            cards = state.cards_in(ZoneRef(ZoneType.HAND, target))
+            if not state.players[target].is_alive or not cards:
+                continue
+            frame.local['current_target'] = target
+            frame.step_index = 3
+            return StepResult.ask(PendingRequest(f'{action.action_id}:card:{frame.cursor}',
+                action.player_id, RequestType.CHOOSE_CARD, '突袭：选择目标的一张背面手牌',
+                action.action_id, frame.frame_id, eligible_card_ids=cards,
+                subject_player_id=target))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
 class KurouAction(Action):
     player_id: str
 

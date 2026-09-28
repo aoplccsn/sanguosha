@@ -309,6 +309,33 @@ def test_ganglie_source_can_discard_two_hand_cards():
     assert session.state.players['p1'].hp == 5
     assert session.engine.stack.is_empty()
 
+
+def test_tuxi_replaces_draw_with_two_other_players_hand_cards():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'zhangliao'
+    session.state.current_player_id = 'p1'
+    session.state.turn_number = 1
+    hand = ZoneRef(ZoneType.HAND, 'p1')
+    before = len(session.state.cards_in(hand))
+    deck_before = len(session.state.cards_in(ZoneRef(ZoneType.DRAW_PILE)))
+    stolen = (session.state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))[0],
+              session.state.cards_in(ZoneRef(ZoneType.HAND, 'p3'))[0])
+    session.engine.start_action(PhaseAction('tuxi-phase', 'p1', Phase.DRAW))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO and '突袭' in request.prompt
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_PLAYERS and request.max_count == 2
+    session.engine.submit_decision(Decision(request.request_id, 'p1', ('p2', 'p3')))
+    for card in stolen:
+        request = session.engine.pending_request
+        assert request.request_type is RequestType.CHOOSE_CARD and card in request.eligible_card_ids
+        session.engine.submit_decision(Decision(request.request_id, 'p1', card))
+    assert len(session.state.cards_in(hand)) == before + 2
+    assert all(card in session.state.cards_in(hand) for card in stolen)
+    assert len(session.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))) == deck_before
+    assert session.engine.stack.is_empty()
+
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p2'].character_id = 'zhenji'
