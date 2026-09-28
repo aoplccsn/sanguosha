@@ -30,6 +30,27 @@ def rules_for(session):
     return handler.validator.rules
 
 
+def test_guanxing_reorders_top_and_bottom_without_losing_cards():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.current_player_id = 'p1'
+    session.state.players['p1'].character_id = 'zhugeliang'
+    draw = ZoneRef(ZoneType.DRAW_PILE)
+    original = session.state.cards_in(draw)
+    session.engine.start_action(PhaseAction('guanxing-phase', 'p1', Phase.PREPARATION))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    for side, cid in [('top', original[2]), ('bottom', original[0]),
+                      ('top', original[1]), ('bottom', original[3]), ('top', original[4])]:
+        request = session.engine.pending_request
+        assert f'{side}:{cid}' in request.choices
+        session.engine.submit_decision(Decision(request.request_id, 'p1', f'{side}:{cid}'))
+    assert session.engine.pending_request is None
+    assert session.state.cards_in(draw) == (original[2], original[1], original[4],
+                                             *original[5:], original[0], original[3])
+    assert session.engine.stack.is_empty()
+
+
 def test_paoxiao_removes_slash_count_limit_without_changing_range():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p1'].character_id = 'zhangfei'

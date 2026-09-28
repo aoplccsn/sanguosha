@@ -1,5 +1,6 @@
 """Registered skills and explicit active/cross-player skill actions."""
 from dataclasses import dataclass
+import json
 
 from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL as CHARACTERS, STANDARD_SKILL_CATALOGUE as SKILLS
 from sanguosha.model.enums import Identity, Phase, Color, Kingdom, EquipmentSlot, Suit, Gender
@@ -85,11 +86,16 @@ class FinishSkillBody:
 
 
 class PreparationSkillBody:
-    def __init__(self, skills):
+    def __init__(self, skills, deck):
         self.skills = skills
+        self.deck = deck
 
     def step(self, state, frame):
         actor = frame.action.player_id
+        if not state.players[actor].is_alive:
+            return StepResult.complete()
+        if self.skills.has(state, actor, 'guanxing'):
+            return self._guanxing(state, frame, actor)
         if not self.skills.has(state, actor, 'luoshen') or not state.players[actor].is_alive:
             return StepResult.complete()
         if frame.step_index == 1:
@@ -110,6 +116,52 @@ class PreparationSkillBody:
             frame.step_index = 1
             return StepResult.continue_()
         return StepResult.complete()
+
+    def _guanxing(self, state, frame, actor):
+        draw_ref = ZoneRef(ZoneType.DRAW_PILE)
+        if frame.step_index == 1:
+            frame.step_index = 5
+            return StepResult.ask(PendingRequest(frame.action.action_id + ':guanxing', actor,
+                RequestType.YES_NO, '是否发动【观星】查看并调整牌堆顶？',
+                frame.action.action_id, frame.frame_id))
+        if frame.step_index == 5:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted:
+                return StepResult.complete()
+            self.deck.ensure_draw(state, frame.action.action_id + ':guanxing')
+            count = min(5, sum(p.is_alive for p in state.players.values()), len(state.cards_in(draw_ref)))
+            frame.local['guanxing_remaining'] = json.dumps(state.cards_in(draw_ref)[:count])
+            frame.local['guanxing_top'] = '[]'
+            frame.local['guanxing_bottom'] = '[]'
+            frame.step_index = 6
+        if frame.step_index == 6:
+            remaining = json.loads(frame.local['guanxing_remaining'])
+            if not remaining:
+                top = json.loads(frame.local['guanxing_top'])
+                bottom = json.loads(frame.local['guanxing_bottom'])
+                zone = state.zones[draw_ref].card_ids
+                zone[:] = top + zone[len(top) + len(bottom):] + bottom
+                return StepResult.complete()
+            frame.step_index = 7
+            choices = tuple(f'{side}:{cid}' for side in ('top', 'bottom') for cid in remaining)
+            return StepResult.ask(PendingRequest(
+                f'{frame.action.action_id}:guanxing:{frame.cursor}', actor, RequestType.CHOOSE_OPTION,
+                '观星：选择一张牌放到牌堆顶或牌堆底（按选择顺序排列）',
+                frame.action.action_id, frame.frame_id, choices=choices))
+        if frame.step_index == 7:
+            side, cid = frame.decision.split(':', 1)
+            remaining = json.loads(frame.local['guanxing_remaining'])
+            remaining.remove(cid)
+            ordered = json.loads(frame.local['guanxing_' + side])
+            ordered.append(cid)
+            frame.local['guanxing_remaining'] = json.dumps(remaining)
+            frame.local['guanxing_' + side] = json.dumps(ordered)
+            frame.decision = None
+            frame.cursor += 1
+            frame.step_index = 6
+            return StepResult.continue_()
+        raise InvalidCardUse('观星状态无效')
 
 
 @dataclass(frozen=True, slots=True)

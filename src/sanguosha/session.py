@@ -193,7 +193,7 @@ class GameSession:
                 from sanguosha.engine.skills import FinishSkillBody, PreparationSkillBody
                 from sanguosha.engine.military_basics import MilitaryFinishBody
                 bodies.register(Phase.FINISH, FinishSkillBody(skills, MilitaryFinishBody()))
-                bodies.register(Phase.PREPARATION, PreparationSkillBody(skills))
+                bodies.register(Phase.PREPARATION, PreparationSkillBody(skills, deck))
         engine = GameEngine(state, registry)
         if military:
             engine.reaction_provider = moves.next_reaction

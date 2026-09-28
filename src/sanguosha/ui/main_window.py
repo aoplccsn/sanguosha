@@ -579,7 +579,14 @@ class MainWindow(QMainWindow):
         kind = request.request_type
         actions: list[tuple[str, object, bool]] = []
         if kind is RequestType.CHOOSE_OPTION:
-            if self.interaction.card_id:
+            if '观星' in request.prompt:
+                prompt = request.prompt
+                actions = [(f'{"牌堆顶" if choice.startswith("top:") else "牌堆底"} · '
+                            f'{self.session.definitions.get(self.session.state.cards[choice.split(":", 1)[1]].definition_id).name} '
+                            f'{self.session.state.cards[choice.split(":", 1)[1]].suit.value}'
+                            f'{self.session.state.cards[choice.split(":", 1)[1]].rank}', choice, True)
+                           for choice in request.choices]
+            elif self.interaction.card_id:
                 card = next((c for c in view.hand if str(c.card_id) == self.interaction.card_id), None)
                 card_name = card.name if card else "卡牌"
                 if self.interaction.legal_targets:
