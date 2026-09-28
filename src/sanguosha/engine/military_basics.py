@@ -262,7 +262,8 @@ class MilitarySlashHandler:
                     frame.local['dodge_complete'] = True
                     frame.step_index = 18
                     return StepResult.push(RespondWithCardAction(action.action_id+':wushuang-second',action.target_id,
-                        action.dodge_definition_id,action.action_id,'无双：请再打出一张闪',action.target_id,not ignore))
+                        action.dodge_definition_id,action.action_id,'无双：第一张闪已响应，还需第二张闪',
+                        action.target_id,not ignore,2))
                 if weapon=='equipment.weapon.green_dragon_blade':
                     frame.step_index=14
                     return StepResult.push(RespondWithCardAction(action.action_id+':green-dragon',action.source_id,

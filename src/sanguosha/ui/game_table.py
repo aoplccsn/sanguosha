@@ -6,6 +6,7 @@ from sanguosha.projection import TableView
 from .player_panel import PlayerPanel
 from .resources import RESOURCES
 from .hud import PhaseIndicator
+from .card_vfx import CardVfxLayer
 
 PHASES = {"preparation":"准备", "judgment":"判定", "draw":"摸牌",
           "play":"出牌", "discard":"弃牌", "finish":"结束"}
@@ -48,6 +49,8 @@ class GameTable(QWidget):
             panel.setParent(self)
             panel.player_selected.connect(self.player_selected)
             panel.detail_requested.connect(self.detail_requested)
+        self.vfx = CardVfxLayer(self)
+        self.vfx.raise_()
         self.setMinimumHeight(400)
 
     def play_judgment(self, name: str, art_id: str, matched: bool) -> None:
@@ -104,6 +107,7 @@ class GameTable(QWidget):
             width = int(pw*1.19) if key == "p1" else pw
             height = int(ph*1.05) if key == "p1" else ph
             self.panels[key].setGeometry(x, y, width, height)
+        self.vfx.setGeometry(self.rect())
         super().resizeEvent(event)
 
     def render(self, view: TableView, target_ids: set[str], selected_ids: set[str] | None = None,
@@ -123,6 +127,7 @@ class GameTable(QWidget):
             pid = str(player.player_id)
             self.panels[pid].render(player, pid in target_ids, bool(target_ids), pid in selected_ids,
                                     pid == attacker_id, pid == defender_id)
+        self.vfx.raise_()
         self.update()
 
     def mousePressEvent(self, event) -> None:

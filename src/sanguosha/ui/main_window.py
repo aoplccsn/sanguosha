@@ -79,6 +79,14 @@ class MainWindow(QMainWindow):
         self.status_label = QLabel("五人身份局 · 军争 160 张" if military else "五人身份局 · 普通杀 / 闪 / 桃")
         self.status_label.setObjectName("status")
         header.addWidget(self.status_label)
+        self.result_new_game = QPushButton('再来一局')
+        self.result_new_game.clicked.connect(lambda checked=False: self.start_standard_game() if self.military else self.start_new_game())
+        self.result_new_game.hide()
+        header.addWidget(self.result_new_game)
+        self.result_exit = QPushButton('退出')
+        self.result_exit.clicked.connect(self.close)
+        self.result_exit.hide()
+        header.addWidget(self.result_exit)
         header.addStretch()
         layout.addLayout(header)
         self.table = GameTable()
@@ -141,6 +149,9 @@ class MainWindow(QMainWindow):
         self._skill_mode = None
         self.interaction.reset()
         self.log.clear()
+        self.table.vfx.reset()
+        self.result_new_game.hide()
+        self.result_exit.hide()
         self._render()
         self._schedule_tick()
 
@@ -454,6 +465,10 @@ class MainWindow(QMainWindow):
                           attack[0] if attack else None, attack[1] if attack else None,
                           self._attack_definition() if attack else None, self._selected_shared_card,
                           notice, art)
+        preview_kind = ('protect' if art in ('basic.peach', 'basic.dodge') else
+                        'control' if art and art.startswith('trick.') else 'attack')
+        self.table.vfx.set_preview(str(session.human_id) if self.interaction.card_id else None,
+                                   selected_targets, preview_kind)
         for pid, panel in self.table.panels.items():
             panel.set_pending_responder(bool(request and str(request.player_id) == pid and
                                              not next((p.active for p in view.players if str(p.player_id) == pid), False)))
@@ -488,13 +503,23 @@ class MainWindow(QMainWindow):
         if view.result is not None:
             self.status_label.setText(f"游戏结束 · {view.result}")
             self.decision.render(view.result, [])
+            self.result_new_game.show()
+            self.result_exit.show()
         else:
+            self.result_new_game.hide()
+            self.result_exit.hide()
             active = next((player.name for player in view.players if player.active), "等待开局")
             phase = {"preparation": "准备", "judgment": "判定", "draw": "摸牌", "play": "出牌", "discard": "弃牌", "finish": "结束"}.get(view.current_phase, view.current_phase)
             self.status_label.setText(f"第 {view.turn_number} 回合 · {active} · {phase}阶段")
             self._render_request(human_request, view, attack)
         for event in session.events.events[self._seen_events:]:
             self.log.add_event(event, session.state, session.definitions)
+            card_id = getattr(event, 'card_id', None)
+            definition_id = (getattr(event, 'response_definition_id', '') or
+                             (str(session.state.cards[card_id].definition_id) if card_id in session.state.cards else ''))
+            names = {str(player.player_id): player.name for player in view.players}
+            self.table.vfx.consume(event, definition_id=definition_id,
+                                   human_id=str(session.human_id), names=names)
             if isinstance(event, CardUsedEvent):
                 definition_id = session.state.cards[event.card_id].definition_id
                 card_name = session.definitions.get(definition_id).name

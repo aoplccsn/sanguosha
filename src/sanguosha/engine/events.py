@@ -78,6 +78,8 @@ class CardRespondedEvent:
     player_id: PlayerId
     card_id: CardInstanceId
     source_action_id: str
+    response_definition_id: str = ''
+    response_number: int = 1
 
 
 @dataclass(frozen=True, slots=True)
