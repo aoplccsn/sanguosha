@@ -37,7 +37,8 @@ class ResourceManager:
                 if not pix.isNull():
                     break
         if pix.isNull():
-            pix = self._generated("将" if key.startswith("general.") else "牌", size)
+            label = "将" if key.startswith("general.") else "局" if key.startswith("table.") or key == "default.table" else "牌"
+            pix = self._generated(label, size)
         else:
             pix = pix.scaled(*size, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
             pix = pix.copy((pix.width()-size[0])//2, (pix.height()-size[1])//2, *size)
@@ -85,10 +86,10 @@ class ResourceManager:
         p = QPainter(pix)
         p.setRenderHint(QPainter.Antialiasing)
         grad = QLinearGradient(0, 0, size[0], size[1])
-        grad.setColorAt(0, QColor("#375952"))
-        grad.setColorAt(1, QColor("#15292e"))
+        grad.setColorAt(0, QColor("#e3d0ac"))
+        grad.setColorAt(1, QColor("#a99271"))
         p.fillRect(pix.rect(), grad)
-        p.setPen(QColor("#d7bd82"))
+        p.setPen(QColor("#765438"))
         p.drawRoundedRect(QRectF(9, 9, size[0]-18, size[1]-18), 16, 16)
         p.setFont(QFont("Microsoft YaHei UI", max(18, min(size)//5), QFont.Bold))
         p.drawText(pix.rect(), Qt.AlignCenter, label)

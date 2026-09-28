@@ -5,6 +5,7 @@ from PySide6.QtTest import QTest
 from sanguosha.projection import CardView, project_for_human
 from sanguosha.session import GameSession
 from sanguosha.ui.main_window import MainWindow
+from sanguosha.ui.resources import ResourceManager
 from sanguosha.engine.card_moves import CardMove, CardMoveReason, CardMoveService
 from sanguosha.engine.military_tricks import TargetTrick
 from sanguosha.engine.judgment import JudgmentAction, JudgmentPattern
@@ -170,3 +171,11 @@ def test_selected_target_appears_in_center_before_confirmation():
     assert "玩家2" in window.table.center_notice
     assert session.engine.pending_request is not None
     window.close()
+
+
+def test_missing_table_art_falls_back_to_paper_palette(tmp_path):
+    resources = ResourceManager(tmp_path)
+    image = resources.table_background().toImage()
+    color = image.pixelColor(2, 2)
+    assert not image.isNull()
+    assert color.red() > color.green() > color.blue()
