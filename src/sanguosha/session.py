@@ -153,7 +153,7 @@ class GameSession:
             from sanguosha.engine.military_tricks import register_military_tricks
             register_military_tricks(definitions, card_rules, registry, moves, events, deck, bodies, skills)
             from sanguosha.engine.judgment import JudgmentAction, JudgmentHandler
-            registry.register(JudgmentAction, JudgmentHandler(moves, events, deck))
+            registry.register(JudgmentAction, JudgmentHandler(moves, events, deck, skills))
             from sanguosha.engine.view_as import UseSpear,UseSpearHandler,MilitaryPlayOptions
             from sanguosha.engine.phases import PlayPhaseBody
             provider=MilitaryPlayOptions(validator)

@@ -11,6 +11,7 @@ from .actions import Action, StepResult
 from .card_moves import CardMove, CardMoveReason, CardMoveService
 from .events import Event, EventRecorder
 from .resolution import ResolutionFrame
+from .requests import PendingRequest, RequestType
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,10 +34,20 @@ class JudgmentAction(Action):
 
 
 class JudgmentHandler:
-    def __init__(self, moves: CardMoveService, recorder: EventRecorder, deck=None) -> None:
+    def __init__(self, moves: CardMoveService, recorder: EventRecorder, deck=None, skills=None) -> None:
         self.moves = moves
         self.recorder = recorder
         self.deck = deck
+        self.skills = skills
+
+    def _finish(self, state, frame, card_id, destination):
+        action = frame.action
+        self.moves.move(state, CardMove(f"{action.action_id}:after-move", (card_id,),
+                                        ZoneRef(ZoneType.PROCESSING), destination,
+                                        CardMoveReason.SYSTEM, action.player_id, action.action_id))
+        self.recorder.record(Event(f"{action.action_id}:after", "after_judgment", action.player_id,
+                                   metadata={"card_id": str(card_id), "matched": bool(frame.local["matched"])}))
+        return StepResult.complete(bool(frame.local["matched"]))
 
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
@@ -68,9 +79,16 @@ class JudgmentHandler:
                                        action.player_id, metadata={"card_id": str(card_id), "matched": matched}))
             frame.step_index = 2
             return StepResult.continue_()
-        self.moves.move(state, CardMove(f"{action.action_id}:discard", (card_id,), processing,
-                                        ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.SYSTEM,
-                                        action.player_id, action.action_id))
-        self.recorder.record(Event(f"{action.action_id}:after", "after_judgment", action.player_id,
-                                   metadata={"card_id": str(card_id), "matched": bool(frame.local["matched"])}))
-        return StepResult.complete(bool(frame.local["matched"]))
+        if (frame.step_index == 2 and self.skills is not None
+                and self.skills.has(state, action.player_id, 'tiandu')
+                and state.players[action.player_id].is_alive):
+            frame.step_index = 3
+            return StepResult.ask(PendingRequest(f'{action.action_id}:tiandu', action.player_id,
+                RequestType.YES_NO, '自己的判定牌结算后，是否发动【天妒】获得之？',
+                action.action_id, frame.frame_id))
+        if frame.step_index == 3:
+            obtain = frame.decision is True
+            frame.decision = None
+            return self._finish(state, frame, card_id,
+                                ZoneRef(ZoneType.HAND, action.player_id) if obtain else ZoneRef(ZoneType.DISCARD_PILE))
+        return self._finish(state, frame, card_id, ZoneRef(ZoneType.DISCARD_PILE))

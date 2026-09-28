@@ -5,6 +5,7 @@ from sanguosha.engine.card_use import UseCardAction
 from sanguosha.engine.distance import DistanceSystem
 from sanguosha.engine.phases import PhaseAction
 from sanguosha.engine.military_basics import MilitaryDamageAction
+from sanguosha.engine.judgment import JudgmentAction, JudgmentPattern
 from sanguosha.engine.response import RespondWithCardAction
 from sanguosha.engine.events import CardRespondedEvent as RecordedResponse
 from sanguosha.engine.events import TurnStartedEvent, CardUsedEvent, CardRespondedEvent
@@ -231,6 +232,21 @@ def test_qingguo_turns_black_hand_card_into_real_dodge_response():
     assert material in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
     assert any(isinstance(event, RecordedResponse) and event.card_id == material
                and event.response_definition_id == 'basic.dodge' for event in session.events.events)
+    assert session.engine.stack.is_empty()
+
+
+def test_tiandu_obtains_own_resolved_judgment_card():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'guojia'
+    top = session.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    hand = ZoneRef(ZoneType.HAND, 'p1')
+    before = len(session.state.cards_in(hand))
+    session.engine.start_action(JudgmentAction('tiandu-judge', 'p1', JudgmentPattern()))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO and '天妒' in request.prompt
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    assert top in session.state.cards_in(hand)
+    assert len(session.state.cards_in(hand)) == before + 1
     assert session.engine.stack.is_empty()
 
 def test_double_sword_reads_character_gender_in_standard_mode():
