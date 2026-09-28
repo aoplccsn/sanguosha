@@ -190,6 +190,27 @@ def test_fankui_takes_one_real_card_from_damage_source():
     assert source_card not in session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
     assert session.engine.stack.is_empty()
 
+
+def test_luoyi_draws_one_and_adds_slash_damage_this_turn():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'xuchu'
+    session.state.current_player_id = 'p1'
+    session.state.turn_number = 1
+    hand = ZoneRef(ZoneType.HAND, 'p1')
+    before = len(session.state.cards_in(hand))
+    session.engine.start_action(PhaseAction('luoyi-draw', 'p1', Phase.DRAW))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO and '裸衣' in request.prompt
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    assert len(session.state.cards_in(hand)) == before + 1
+    assert session.state.players['p1'].marks['luoyi'] == 1
+    slash = put(session, 'basic.slash', 'p1')
+    session.engine.start_action(MilitaryDamageAction('luoyi-hit', 'p1', 'p2', 1,
+                                                     card_id=slash))
+    assert session.state.players['p2'].hp == 2
+    session.engine.start_action(PhaseAction('luoyi-finish', 'p1', Phase.FINISH))
+    assert 'luoyi' not in session.state.players['p1'].marks
+
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p2'].character_id = 'zhenji'

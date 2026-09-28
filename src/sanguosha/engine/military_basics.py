@@ -53,6 +53,11 @@ class MilitaryDamageHandler(DamageActionHandler):
             self.validate_start(state, action)
             amount = action.amount
             armor = equipped(state, action.target_id, EquipmentSlot.ARMOR)
+            if (action.source_id is not None and state.current_player_id == action.source_id
+                    and state.players[action.source_id].marks.get('luoyi')
+                    and not getattr(action, 'propagated', False) and action.card_id in state.cards
+                    and state.cards[action.card_id].definition_id in (*SLASH_IDS, 'trick.duel')):
+                amount += 1
             if not getattr(action, 'ignore_armor', False):
                 if armor == 'equipment.armor.vine' and action.nature is DamageNature.FIRE:
                     amount += 1
@@ -494,6 +499,7 @@ class MilitaryResponseHandler(RespondWithCardHandler):
 class MilitaryFinishBody:
     def step(self, state, frame):
         state.players[frame.action.player_id].marks.pop('wine', None)
+        state.players[frame.action.player_id].marks.pop('luoyi', None)
         return StepResult.complete()
 
 def register_military_basics(definitions, rules, registry, moves, events, bodies, skills=None):

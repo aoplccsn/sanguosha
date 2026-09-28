@@ -14,6 +14,7 @@ from sanguosha.model.zones import CardZone, ZoneRef, ZoneType
 from .actions import Action, StepResult
 from .card_moves import CardMove, CardMoveReason, CardMoveService
 from .resolution import ResolutionFrame
+from .requests import PendingRequest, RequestType
 from .rng import RandomSource
 
 
@@ -122,8 +123,23 @@ class DrawPhaseBody:
 
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         if frame.step_index == 1:
-            frame.step_index = 2
             action = frame.action
+            state.players[action.player_id].marks.pop('luoyi', None)
+            if self.skills is not None and self.skills.has(state, action.player_id, 'luoyi'):
+                frame.step_index = 3
+                return StepResult.ask(PendingRequest(action.action_id + ':luoyi', action.player_id,
+                    RequestType.YES_NO, '是否发动【裸衣】少摸一张牌，使本回合杀与决斗伤害增加？',
+                    action.action_id, frame.frame_id))
+            frame.step_index = 2
             bonus = int(self.skills is not None and self.skills.has(state, action.player_id, 'yingzi'))
             return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id, 2 + bonus))
+        if frame.step_index == 3:
+            action = frame.action
+            activate = frame.decision is True
+            frame.decision = None
+            if activate:
+                state.players[action.player_id].marks['luoyi'] = 1
+            frame.step_index = 2
+            return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id,
+                                                   1 if activate else 2))
         return StepResult.complete(frame.child_result)
