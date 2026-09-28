@@ -11,7 +11,7 @@ from sanguosha.engine.events import CardRespondedEvent as RecordedResponse
 from sanguosha.engine.events import TurnStartedEvent, CardUsedEvent, CardRespondedEvent
 from sanguosha.engine.resolution import ResolutionFrame
 from sanguosha.engine.requests import Decision, RequestType
-from sanguosha.engine.skills import KurouAction, QingnangAction, JieyinAction, QixiUse, FanjianAction
+from sanguosha.engine.skills import KurouAction, QingnangAction, JieyinAction, QixiUse, FanjianAction, LijianAction
 from sanguosha.engine.card_rules import InvalidCardUse
 from sanguosha.model.enums import Phase
 from sanguosha.model.enums import EquipmentSlot, Gender
@@ -478,6 +478,34 @@ def test_jijiu_red_hand_or_equipment_responds_as_peach_outside_turn(zone, slot):
     assert material in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
     assert any(isinstance(event, CardRespondedEvent) and event.card_id == material
                and event.response_definition_id == 'basic.peach' for event in session.events.events)
+    assert session.engine.stack.is_empty()
+
+
+def test_lijian_discards_cost_and_starts_two_male_duel_without_counter_window():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'diaochan'
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    target_hand = ZoneRef(ZoneType.HAND, 'p3')
+    original = session.state.cards_in(target_hand)
+    CardMoveService(session.events).move(session.state, CardMove('clear-lijian-target', original,
+        target_hand, ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.SYSTEM, 'p3'))
+    cost = session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    session.engine.start_action(LijianAction('lijian-test', 'p1'))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_CARD and cost in request.eligible_card_ids
+    session.engine.submit_decision(Decision(request.request_id, 'p1', cost))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_PLAYERS
+    session.engine.submit_decision(Decision(request.request_id, 'p1', ('p2', 'p3')))
+    assert session.engine.pending_request.request_type is RequestType.RESPOND_WITH_CARD
+    assert session.engine.pending_request.player_id == 'p3'
+    resolve(session)
+    assert cost in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert session.state.players['p3'].hp == 3
+    assert session.state.play_usage.count('skill.lijian') == 1
     assert session.engine.stack.is_empty()
 
 def test_double_sword_reads_character_gender_in_standard_mode():

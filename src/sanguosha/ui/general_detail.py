@@ -18,7 +18,7 @@ IMPLEMENTED_SKILL_IDS = {skill.id for skill in IMPLEMENTED_SKILLS}
 IMPLEMENTED_SKILL_IDS.update((
     'fankui', 'guicai', 'ganglie', 'tuxi', 'luoyi', 'tiandu', 'yiji', 'luoshen', 'qingguo',
     'paoxiao', 'kongcheng', 'mashu', 'qicai', 'jizhi', 'qixi', 'keji', 'kurou',
-    'yingzi', 'fanjian', 'qianxun', 'lianying', 'jieyin', 'xiaoji', 'jijiu', 'qingnang', 'biyue',
+    'yingzi', 'fanjian', 'qianxun', 'lianying', 'jieyin', 'xiaoji', 'jijiu', 'qingnang', 'lijian', 'biyue',
 ))
 
 

@@ -592,6 +592,69 @@ class FanjianHandler:
 
 
 @dataclass(frozen=True, slots=True)
+class LijianAction(Action):
+    player_id: str
+
+
+class LijianHandler:
+    def __init__(self, skills, moves, recorder):
+        self.skills, self.moves, self.recorder = skills, moves, recorder
+
+    def materials(self, state, actor):
+        return tuple(cid for ref, zone in state.zones.items()
+                     if ref.player_id == actor and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
+                     for cid in zone.card_ids)
+
+    def targets(self, state, actor):
+        return tuple(pid for pid in state.seat_order if pid != actor and state.players[pid].is_alive
+                     and self.skills.gender(state, pid) is Gender.MALE)
+
+    def validate_start(self, state, action):
+        if (not self.skills.has(state, action.player_id, 'lijian')
+                or state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY
+                or state.play_usage is None or state.play_usage.count('skill.lijian')
+                or not self.materials(state, action.player_id) or len(self.targets(state, action.player_id)) < 2):
+            raise InvalidCardUse('离间不可用')
+
+    def step(self, state, frame):
+        from .military_tricks import TargetTrick
+        from .events import Event
+        action = frame.action
+        if frame.step_index == 0:
+            self.validate_start(state, action)
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':cost', action.player_id,
+                RequestType.CHOOSE_CARD, '离间：选择弃置一张牌', action.action_id,
+                frame.frame_id, eligible_card_ids=self.materials(state, action.player_id)))
+        if frame.step_index == 1:
+            frame.local['card'] = frame.decision
+            frame.decision = None
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(action.action_id + ':targets', action.player_id,
+                RequestType.CHOOSE_PLAYERS, '离间：选择两名男性角色进行决斗', action.action_id,
+                frame.frame_id, allowed_player_ids=self.targets(state, action.player_id),
+                min_count=2, max_count=2))
+        if frame.step_index == 2:
+            targets = tuple(frame.decision)
+            frame.decision = None
+            card = frame.local['card']
+            if (len(targets) != 2 or targets[0] == targets[1]
+                    or any(pid not in self.targets(state, action.player_id) for pid in targets)
+                    or card not in self.materials(state, action.player_id)):
+                raise InvalidCardUse('离间材料或目标已失效')
+            source = next(ref for ref, zone in state.zones.items() if card in zone.card_ids)
+            self.moves.move(state, CardMove(action.action_id + ':discard', (card,), source,
+                ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD, action.player_id))
+            state.play_usage.record('skill.lijian')
+            self.recorder.record(Event(action.action_id + ':used', 'skill_lijian', action.player_id,
+                                       target_ids=targets))
+            frame.step_index = 3
+            return StepResult.push(TargetTrick(action.action_id + ':duel', targets[0], targets[1],
+                                                card, 'trick.duel'))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
 class AllianceResponse(Action):
     lord_id: str
     required_definition_id: str
@@ -819,6 +882,12 @@ class SkillPlayOptions:
         if (self.skills.has(state,pid,'fanjian') and not state.play_usage.count('skill.fanjian')
                 and hand and any(q != pid and p.is_alive for q,p in state.players.items())):
             extra.append('skill:fanjian')
+        if (self.skills.has(state,pid,'lijian') and not state.play_usage.count('skill.lijian')
+                and any(ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
+                        and zone.card_ids for ref,zone in state.zones.items())
+                and sum(q != pid and p.is_alive and self.skills.gender(state,q) is Gender.MALE
+                        for q,p in state.players.items()) >= 2):
+            extra.append('skill:lijian')
         limit = self.slash_rule.usage_limit(state,pid)
         slash_available = (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
         if slash_available:
@@ -844,6 +913,8 @@ class SkillPlayOptions:
             return JieyinAction(aid+':jieyin', pid)
         if option == 'skill:fanjian':
             return FanjianAction(aid+':fanjian', pid)
+        if option == 'skill:lijian':
+            return LijianAction(aid+':lijian', pid)
         if option.startswith('virtual:wusheng:'):
             return WushengUse(aid+':wusheng',pid,option.split(':',2)[2])
         if option.startswith('virtual:qixi:'):
