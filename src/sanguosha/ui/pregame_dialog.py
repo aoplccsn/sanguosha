@@ -11,6 +11,7 @@ from sanguosha.engine.requests import Decision
 from sanguosha.pregame import Pregame, SetupStage
 from sanguosha.projection import IDENTITY_LABELS
 from .resources import RESOURCES
+from .timing import PREGAME_GENERAL_TIMEOUT_MS
 
 
 GOAL_HINTS = {
@@ -131,7 +132,7 @@ class PregameDialog(QDialog):
         outer.addWidget(self.details)
         self.confirm_button.setText('确认选择')
         self.confirm_button.setEnabled(False)
-        self._timer.start(15000)
+        self._timer.start(PREGAME_GENERAL_TIMEOUT_MS)
 
     def _select(self, cid):
         if self.setup.stage is not SetupStage.CHOOSE_GENERAL:

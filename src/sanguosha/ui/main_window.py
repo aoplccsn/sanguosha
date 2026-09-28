@@ -28,10 +28,9 @@ from .theme import QSS
 from .resources import RESOURCES
 from .general_detail import GeneralDetailPanel, SkillBar
 from .pregame_dialog import PregameDialog
+from .timing import HUMAN_DECISION_TIMEOUT_MS, DECISION_TIMER_TICK_MS
 
 NORMAL_AI_DELAY_MS = 500
-HUMAN_DECISION_TIMEOUT_MS = 15000
-DECISION_TIMER_TICK_MS = 100
 
 
 class MainWindow(QMainWindow):
