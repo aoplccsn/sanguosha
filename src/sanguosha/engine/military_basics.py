@@ -434,6 +434,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                         eligible += ('virtual:jijiang',)
                 if action.required_definition_id == 'basic.dodge' and self.skills.has(state,action.player_id,'hujia') and self.skills.allies(state,action.player_id,Kingdom.WEI):
                     eligible += ('virtual:hujia',)
+                if action.required_definition_id == 'basic.dodge' and self.skills.has(state,action.player_id,'qingguo'):
+                    eligible += tuple(f'virtual:qingguo:{cid}' for cid in hand if state.cards[cid].color is Color.BLACK)
             frame.step_index = 1
             return StepResult.ask(PendingRequest(action.action_id + ':request', action.player_id,
                 RequestType.RESPOND_WITH_CARD, action.prompt, action.action_id, frame.frame_id,
@@ -473,6 +475,24 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                                                     action.source_action_id,'basic.slash'))
             self.moves.move(state,CardMove(action.action_id+':wusheng-discard',(material,),
                 ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.RESPONSE,action.player_id))
+            return StepResult.complete(virtual)
+        if isinstance(choice,str) and choice.startswith('virtual:qingguo:'):
+            material=choice.split(':',2)[2]
+            if (self.skills is None or not self.skills.has(state,action.player_id,'qingguo')
+                    or action.required_definition_id!='basic.dodge' or material not in
+                    state.cards_in(ZoneRef(ZoneType.HAND,action.player_id))
+                    or state.cards[material].color is not Color.BLACK):
+                raise InvalidCardUse('倾国材料不合法')
+            card=state.cards[material]
+            virtual=VirtualCard('basic.dodge',(material,),card.suit,card.color)
+            self.moves.move(state,CardMove(action.action_id+':qingguo-processing',(material,),
+                ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.PROCESSING),
+                CardMoveReason.RESPONSE,action.player_id))
+            self.recorder.record(CardRespondedEvent(action.action_id+':qingguo-responded',action.player_id,
+                material,action.source_action_id,'basic.dodge',action.response_number))
+            self.moves.move(state,CardMove(action.action_id+':qingguo-discard',(material,),
+                ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.RESPONSE,action.player_id))
             return StepResult.complete(virtual)
         if choice in ('virtual:hujia','virtual:jijiang'):
             from .skills import AllianceResponse

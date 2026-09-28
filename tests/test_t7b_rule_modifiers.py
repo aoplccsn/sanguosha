@@ -5,6 +5,8 @@ from sanguosha.engine.card_use import UseCardAction
 from sanguosha.engine.distance import DistanceSystem
 from sanguosha.engine.phases import PhaseAction
 from sanguosha.engine.military_basics import MilitaryDamageAction
+from sanguosha.engine.response import RespondWithCardAction
+from sanguosha.engine.events import CardRespondedEvent as RecordedResponse
 from sanguosha.engine.events import TurnStartedEvent, CardUsedEvent, CardRespondedEvent
 from sanguosha.engine.resolution import ResolutionFrame
 from sanguosha.engine.requests import Decision, RequestType
@@ -12,6 +14,8 @@ from sanguosha.engine.skills import KurouAction, QingnangAction
 from sanguosha.engine.card_rules import InvalidCardUse
 from sanguosha.model.enums import Phase
 from sanguosha.model.enums import EquipmentSlot, Gender
+from sanguosha.model.enums import Suit
+from dataclasses import replace
 from sanguosha.model.usage import PlayUsageState
 from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.session import GameSession
@@ -210,6 +214,24 @@ def test_luoyi_draws_one_and_adds_slash_damage_this_turn():
     assert session.state.players['p2'].hp == 2
     session.engine.start_action(PhaseAction('luoyi-finish', 'p1', Phase.FINISH))
     assert 'luoyi' not in session.state.players['p1'].marks
+
+
+def test_qingguo_turns_black_hand_card_into_real_dodge_response():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p2'].character_id = 'zhenji'
+    material = put(session, 'basic.peach', 'p2')
+    session.state.cards[material] = replace(session.state.cards[material], suit=Suit.SPADE)
+    session.engine.start_action(RespondWithCardAction('qingguo-response', 'p2',
+        'basic.dodge', 'incoming-slash'))
+    request = session.engine.pending_request
+    choice = f'virtual:qingguo:{material}'
+    assert choice in request.eligible_card_ids
+    session.engine.submit_decision(Decision(request.request_id, 'p2', choice))
+    assert material not in session.state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
+    assert material in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert any(isinstance(event, RecordedResponse) and event.card_id == material
+               and event.response_definition_id == 'basic.dodge' for event in session.events.events)
+    assert session.engine.stack.is_empty()
 
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)

@@ -207,8 +207,12 @@ class MainWindow(QMainWindow):
             if self.interaction.card_id:
                 card_id = self.interaction.card_id
                 request = self.session.engine.pending_request if self.session else None
-                value = (CardInstanceId(card_id) if request and CardInstanceId(card_id) in request.eligible_card_ids
-                         else f'virtual:wusheng:{card_id}')
+                if request and CardInstanceId(card_id) in request.eligible_card_ids:
+                    value = CardInstanceId(card_id)
+                elif request and f'virtual:qingguo:{card_id}' in request.eligible_card_ids:
+                    value = f'virtual:qingguo:{card_id}'
+                else:
+                    value = f'virtual:wusheng:{card_id}'
             else:
                 return
         if value == "ui.confirm_target":
@@ -322,7 +326,9 @@ class MainWindow(QMainWindow):
                     self._selected_players.clear()
                 self._render()
         elif request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD):
-            if CardInstanceId(card_id) in request.eligible_card_ids or f'virtual:wusheng:{card_id}' in request.eligible_card_ids:
+            if (CardInstanceId(card_id) in request.eligible_card_ids or
+                    f'virtual:wusheng:{card_id}' in request.eligible_card_ids or
+                    f'virtual:qingguo:{card_id}' in request.eligible_card_ids):
                 if request.request_type is RequestType.RESPOND_WITH_CARD:
                     self.interaction.select_response(card_id)
                     self._render()
@@ -494,7 +500,7 @@ class MainWindow(QMainWindow):
             elif human_request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD, RequestType.CHOOSE_CARDS):
                 selectable = set(map(str, human_request.eligible_card_ids))
                 selectable.update(choice.split(':',2)[2] for choice in human_request.eligible_card_ids
-                                  if isinstance(choice,str) and choice.startswith('virtual:wusheng:'))
+                                  if isinstance(choice,str) and choice.startswith(('virtual:wusheng:', 'virtual:qingguo:')))
         selected_cards = set(self._selected_cards)
         if self.interaction.card_id:
             selected_cards.add(self.interaction.card_id)
