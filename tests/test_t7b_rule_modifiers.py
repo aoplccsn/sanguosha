@@ -134,6 +134,26 @@ def test_jizhi_draws_before_non_delayed_trick_resolves():
     assert session.engine.stack.is_empty()
     assert len(session.state.cards_in(hand)) == before + 2  # cost one, 集智 one, 无中生有 two
 
+
+def test_lianying_follows_real_loss_of_last_hand_card():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'luxun'
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    hand = ZoneRef(ZoneType.HAND, 'p1')
+    original = session.state.cards_in(hand)
+    CardMoveService(session.events).move(session.state, CardMove('clear-for-lianying', original,
+        hand, ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.SYSTEM, 'p1'))
+    card = put(session, 'trick.ex_nihilo', 'p1')
+    session.engine.start_action(UseCardAction('last-card', 'p1', card))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO and '连营' in request.prompt
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    resolve(session)
+    assert len(session.state.cards_in(hand)) == 3  # 连营一张，无中生有两张
+
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p2'].character_id = 'zhenji'

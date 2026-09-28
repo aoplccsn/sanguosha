@@ -76,6 +76,28 @@ class FinishSkillBody:
 
 
 @dataclass(frozen=True, slots=True)
+class LianyingAction(Action):
+    player_id: str
+
+
+class LianyingHandler:
+    def step(self, state, frame):
+        action = frame.action
+        if not state.players[action.player_id].is_alive:
+            return StepResult.complete()
+        if frame.step_index == 0:
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':choice', action.player_id,
+                RequestType.YES_NO, '失去最后一张手牌，是否发动【连营】摸一张牌？',
+                action.action_id, frame.frame_id))
+        if frame.step_index == 1 and frame.decision is True:
+            frame.decision = None
+            frame.step_index = 2
+            return StepResult.push(DrawCardsAction(action.action_id + ':draw', action.player_id, 1))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
 class KurouAction(Action):
     player_id: str
 

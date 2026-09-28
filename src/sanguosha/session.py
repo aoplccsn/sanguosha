@@ -118,7 +118,7 @@ class GameSession:
         events.record(Event("game-start", "game-start"))
         if military:
             from sanguosha.engine.military_equipment import MilitaryMoveService
-            moves = MilitaryMoveService(events)
+            moves = MilitaryMoveService(events, skills)
         else:
             moves = CardMoveService(events)
         deck = DeckService(rng, moves)
@@ -161,7 +161,8 @@ class GameSession:
                 from sanguosha.engine.skills import (SkillPlayOptions, RendeAction, RendeHandler,
                     ZhihengAction, ZhihengHandler, WushengUse, WushengUseHandler,
                     JijiangUse, JijiangUseHandler, AllianceResponse, AllianceResponseHandler,
-                    KurouAction, KurouHandler, QingnangAction, QingnangHandler)
+                    KurouAction, KurouHandler, QingnangAction, QingnangHandler,
+                    LianyingAction, LianyingHandler)
                 slash_rule = card_rules.get('basic.slash')
                 provider = SkillPlayOptions(provider, skills, slash_rule)
                 registry.register(RendeAction, RendeHandler(moves))
@@ -171,6 +172,7 @@ class GameSession:
                 registry.register(AllianceResponse, AllianceResponseHandler(skills))
                 registry.register(KurouAction, KurouHandler(skills))
                 registry.register(QingnangAction, QingnangHandler(skills, moves))
+                registry.register(LianyingAction, LianyingHandler())
             registry.register(UseSpear,UseSpearHandler(provider,moves))
             bodies.register(Phase.PLAY,PlayPhaseBody(provider))
             if skills is not None:

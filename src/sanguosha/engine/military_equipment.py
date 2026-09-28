@@ -9,20 +9,28 @@ from sanguosha.model.enums import EquipmentSlot
 from sanguosha.model.zones import ZoneRef,ZoneType
 
 class MilitaryMoveService(CardMoveService):
-    def __init__(self,events):
+    def __init__(self,events,skills=None):
         super().__init__(events)
         self.reactions=[]
+        self.skills=skills
     def move(self,state,move):
         owner=move.from_zone.player_id
+        lost_last_hand=(move.from_zone.zone_type is ZoneType.HAND and owner is not None
+                        and self.skills is not None and self.skills.has(state,owner,'lianying')
+                        and len(state.cards_in(move.from_zone))==len(move.card_ids))
         silver=move.from_zone.zone_type is ZoneType.EQUIPMENT and any(
             state.cards[cid].definition_id=='equipment.armor.silver_lion' for cid in move.card_ids)
         super().move(state,move)
         if silver and state.players[owner].is_alive:
             self.reactions.append(RecoverAction(move.move_id+':silver-lion-loss',owner,owner,1))
+        if lost_last_hand and state.players[owner].is_alive:
+            from .skills import LianyingAction
+            self.reactions.append(LianyingAction(move.move_id+':lianying',owner))
     def next_reaction(self,state):
         while self.reactions:
             action=self.reactions.pop(0)
-            if state.players[action.target_id].is_alive:
+            target=getattr(action,'target_id',getattr(action,'player_id',None))
+            if target is not None and state.players[target].is_alive:
                 return action
         return None
 
