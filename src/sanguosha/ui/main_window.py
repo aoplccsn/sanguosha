@@ -496,7 +496,7 @@ class MainWindow(QMainWindow):
             if human_request.request_type is RequestType.CHOOSE_OPTION:
                 selectable = {choice[4:] for choice in human_request.choices if choice.startswith("use:")}
                 selectable.update(choice.split(':', 2)[2] for choice in human_request.choices
-                                  if choice.startswith('virtual:wusheng:'))
+                                  if choice.startswith(('virtual:wusheng:', 'virtual:qixi:')))
             elif human_request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD, RequestType.CHOOSE_CARDS):
                 selectable = set(map(str, human_request.eligible_card_ids))
                 selectable.update(choice.split(':',2)[2] for choice in human_request.eligible_card_ids
@@ -521,13 +521,14 @@ class MainWindow(QMainWindow):
         for event in session.events.events[self._seen_events:]:
             self.log.add_event(event, session.state, session.definitions)
             card_id = getattr(event, 'card_id', None)
-            definition_id = (getattr(event, 'response_definition_id', '') or
+            definition_id = (getattr(event, 'virtual_definition_id', '') or
+                             getattr(event, 'response_definition_id', '') or
                              (str(session.state.cards[card_id].definition_id) if card_id in session.state.cards else ''))
             names = {str(player.player_id): player.name for player in view.players}
             self.table.vfx.consume(event, definition_id=definition_id,
                                    human_id=str(session.human_id), names=names)
             if isinstance(event, CardUsedEvent):
-                definition_id = session.state.cards[event.card_id].definition_id
+                definition_id = event.virtual_definition_id or session.state.cards[event.card_id].definition_id
                 card_name = session.definitions.get(definition_id).name
                 source = next((p.name for p in view.players if p.player_id == event.player_id), "玩家")
                 self.table.play_public_event(f"{source} 使用【{card_name}】", str(definition_id))
@@ -599,6 +600,10 @@ class MainWindow(QMainWindow):
                         material = choice.split(':',2)[2]
                         card = next((card for card in view.hand if str(card.card_id) == material), None)
                         return f'武圣 · {card.name} {card.suit}{card.rank}' if card else '武圣 · 红牌'
+                    if choice.startswith('virtual:qixi:'):
+                        material = choice.split(':',2)[2]
+                        card = next((card for card in view.hand if str(card.card_id) == material), None)
+                        return f'奇袭 · {card.name} {card.suit}{card.rank}' if card else '奇袭 · 黑牌'
                     return labels.get(choice,choice)
                 actions.extend((option_label(choice),choice,True)
                                for choice in request.choices

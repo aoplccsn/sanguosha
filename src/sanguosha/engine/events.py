@@ -70,6 +70,7 @@ class CardUsedEvent:
     player_id: PlayerId
     card_id: CardInstanceId
     target_ids: tuple[PlayerId, ...]
+    virtual_definition_id: str = ''
 
 
 @dataclass(frozen=True, slots=True)

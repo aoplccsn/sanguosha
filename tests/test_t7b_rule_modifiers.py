@@ -11,7 +11,7 @@ from sanguosha.engine.events import CardRespondedEvent as RecordedResponse
 from sanguosha.engine.events import TurnStartedEvent, CardUsedEvent, CardRespondedEvent
 from sanguosha.engine.resolution import ResolutionFrame
 from sanguosha.engine.requests import Decision, RequestType
-from sanguosha.engine.skills import KurouAction, QingnangAction, JieyinAction
+from sanguosha.engine.skills import KurouAction, QingnangAction, JieyinAction, QixiUse
 from sanguosha.engine.card_rules import InvalidCardUse
 from sanguosha.model.enums import Phase
 from sanguosha.model.enums import EquipmentSlot, Gender
@@ -409,6 +409,28 @@ def test_jieyin_discards_two_and_recovers_both_once_per_play_phase():
     assert session.state.players['p2'].hp == 3
     assert session.state.play_usage.count('skill.jieyin') == 1
     assert session.engine.stack.is_empty()
+
+
+def test_qixi_black_card_uses_real_dismantlement_resolution():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'ganning'
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    material = put(session, 'basic.peach', 'p1')
+    session.state.cards[material] = replace(session.state.cards[material], suit=Suit.SPADE)
+    target_hand = ZoneRef(ZoneType.HAND, 'p2')
+    before = len(session.state.cards_in(target_hand))
+    session.engine.start_action(QixiUse('qixi-use', 'p1', material))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_PLAYER and 'p2' in request.allowed_player_ids
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'p2'))
+    resolve(session, choose)
+    assert len(session.state.cards_in(target_hand)) == before - 1
+    assert material in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert any(getattr(event, 'virtual_definition_id', '') == 'trick.dismantlement'
+               for event in session.events.events)
 
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)

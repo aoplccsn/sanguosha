@@ -15,6 +15,7 @@ from .recovery import RecoverAction
 from .card_rules import InvalidCardUse
 from .hp import LoseHpAction
 from .judgment import JudgmentAction, JudgmentPattern
+from .events import CardUsedEvent
 
 
 class SkillRegistry:
@@ -479,6 +480,55 @@ class JieyinHandler:
 
 
 @dataclass(frozen=True, slots=True)
+class QixiUse(Action):
+    player_id: str
+    material_id: str
+
+
+class QixiUseHandler:
+    def __init__(self, skills, moves, recorder, trick_rule):
+        self.skills, self.moves, self.recorder, self.trick_rule = skills, moves, recorder, trick_rule
+
+    def validate_start(self, state, action):
+        hand = ZoneRef(ZoneType.HAND, action.player_id)
+        if (not self.skills.has(state, action.player_id, 'qixi')
+                or state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY
+                or action.material_id not in state.cards_in(hand)
+                or state.cards[action.material_id].color is not Color.BLACK
+                or not self.trick_rule.target_candidates(state, action.player_id)):
+            raise InvalidCardUse('奇袭不可用')
+
+    def step(self, state, frame):
+        from .military_tricks import TrickAction
+        action = frame.action
+        if frame.step_index == 0:
+            self.validate_start(state, action)
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':target', action.player_id,
+                RequestType.CHOOSE_PLAYER, '奇袭：选择【过河拆桥】目标', action.action_id,
+                frame.frame_id, allowed_player_ids=self.trick_rule.target_candidates(state, action.player_id)))
+        if frame.step_index == 1:
+            target = frame.decision
+            frame.decision = None
+            self.validate_start(state, action)
+            self.trick_rule.validate_targets(state, action.player_id, (target,))
+            self.moves.move(state, CardMove(action.action_id + ':processing', (action.material_id,),
+                ZoneRef(ZoneType.HAND, action.player_id), ZoneRef(ZoneType.PROCESSING),
+                CardMoveReason.USE, action.player_id, action.action_id))
+            state.play_usage.record('trick.dismantlement')
+            self.recorder.record(CardUsedEvent(action.action_id + ':used', action.player_id,
+                action.material_id, (target,), 'trick.dismantlement'))
+            frame.step_index = 2
+            return StepResult.push(TrickAction(action.action_id + ':trick', action.player_id,
+                action.material_id, 'trick.dismantlement', (target,)))
+        if action.material_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
+            self.moves.move(state, CardMove(action.action_id + ':discard', (action.material_id,),
+                ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.USE, action.player_id, action.action_id))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
 class AllianceResponse(Action):
     lord_id: str
     required_definition_id: str
@@ -699,6 +749,10 @@ class SkillPlayOptions:
                 and len(hand) >= 2 and any(q != pid and p.is_alive and p.hp < p.max_hp
                     and self.skills.gender(state,q) is Gender.MALE for q,p in state.players.items())):
             extra.append('skill:jieyin')
+        if self.skills.has(state,pid,'qixi'):
+            dismantlement = self.validator.rules.get('trick.dismantlement')
+            if dismantlement.target_candidates(state,pid):
+                extra.extend(f'virtual:qixi:{cid}' for cid in hand if state.cards[cid].color is Color.BLACK)
         limit = self.slash_rule.usage_limit(state,pid)
         slash_available = (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
         if slash_available:
@@ -724,4 +778,6 @@ class SkillPlayOptions:
             return JieyinAction(aid+':jieyin', pid)
         if option.startswith('virtual:wusheng:'):
             return WushengUse(aid+':wusheng',pid,option.split(':',2)[2])
+        if option.startswith('virtual:qixi:'):
+            return QixiUse(aid+':qixi',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)

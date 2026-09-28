@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QLabel
 
 from sanguosha.engine.phases import PhaseAction
 from sanguosha.engine.response import RespondWithCardAction
+from sanguosha.engine.requests import RequestType
 from sanguosha.model.enums import Suit
 from sanguosha.model.zones import ZoneRef, ZoneType
 from dataclasses import replace
@@ -104,5 +105,25 @@ def test_qingguo_black_hand_card_is_selectable_in_human_response():
     assert window.interaction.card_id == str(material)
     window._submit_value('ui.confirm_response')
     assert material in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    window._tick_timer.stop()
+    window.close()
+
+
+def test_qixi_skill_chip_selects_black_card_and_opens_target_request():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'ganning'
+    session.state.current_player_id = 'p1'
+    session.state.turn_number = 1
+    material = put(session, 'basic.peach', 'p1')
+    session.state.cards[material] = replace(session.state.cards[material], suit=Suit.SPADE)
+    session.engine.start_action(PhaseAction('qixi-play', 'p1', Phase.PLAY))
+    window = MainWindow()
+    window.session = session
+    window._render()
+    assert window.skill_bar.buttons['qixi'].isEnabled()
+    window._skill_clicked('qixi')
+    window._card_clicked(str(material))
+    assert session.engine.pending_request.request_type is RequestType.CHOOSE_PLAYER
+    assert '奇袭' in session.engine.pending_request.prompt
     window._tick_timer.stop()
     window.close()

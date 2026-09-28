@@ -36,7 +36,7 @@ def describe_event(event: object, state: GameState, definitions: CardDefinitionR
         if event.reason == "discard" or "cleanup" in event.event_id:
             return f"{name(event.actor_id)} 弃置了 {len(event.card_ids)} 张牌。"
     if isinstance(event, CardUsedEvent):
-        card_name = definitions.get(state.cards[event.card_id].definition_id).name
+        card_name = definitions.get(event.virtual_definition_id or state.cards[event.card_id].definition_id).name
         return f"{name(event.player_id)} 使用【{card_name}】，目标：{', '.join(map(name, event.target_ids)) or '自己'}。"
     if isinstance(event, CardRespondedEvent):
         card_name = definitions.get(state.cards[event.card_id].definition_id).name

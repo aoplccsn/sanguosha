@@ -15,8 +15,11 @@ TYPE_LABELS = {
     SkillType.LIMITED: '限定', SkillType.RULE_MODIFIER: '规则',
 }
 IMPLEMENTED_SKILL_IDS = {skill.id for skill in IMPLEMENTED_SKILLS}
-IMPLEMENTED_SKILL_IDS.update(('paoxiao', 'mashu', 'qicai', 'kongcheng',
-                              'qianxun', 'yingzi', 'biyue', 'kurou', 'qingnang'))
+IMPLEMENTED_SKILL_IDS.update((
+    'fankui', 'guicai', 'ganglie', 'tuxi', 'luoyi', 'tiandu', 'yiji', 'luoshen', 'qingguo',
+    'paoxiao', 'kongcheng', 'mashu', 'qicai', 'jizhi', 'qixi', 'keji', 'kurou',
+    'yingzi', 'qianxun', 'lianying', 'jieyin', 'xiaoji', 'qingnang', 'biyue',
+))
 
 
 def skill_status(skill, player, state, choices=()):
