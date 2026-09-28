@@ -1,10 +1,11 @@
 """Illustrated seat plaque; all data comes from the public PlayerView."""
-from PySide6.QtCore import Qt, QRectF, Signal, QVariantAnimation
+from PySide6.QtCore import Qt, QRectF, QPoint, Signal, QVariantAnimation
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QPushButton
 from sanguosha.projection import PlayerView
 from .resources import RESOURCES
 from .theme import Theme
+from .equipment_preview import EquipmentPreview
 
 
 class PlayerPanel(QPushButton):
@@ -16,13 +17,51 @@ class PlayerPanel(QPushButton):
         self.view: PlayerView | None = None
         self.targetable = self.selected_target = False
         self.attack_role: str | None = None
-        self.damage_flash = self.death_opacity = self.turn_glow = 0.0
+        self.damage_flash = self.recovery_flash = self.death_opacity = self.turn_glow = 0.0
         self._damage_animation = self._animation("damage_flash", 380)
+        self._recovery_animation = self._animation("recovery_flash", 480)
         self._death_animation = self._animation("death_opacity", 420)
         self._turn_animation = self._animation("turn_glow", 280)
         self.setObjectName(f"player-{player_id}")
         self.setMinimumSize(205, 145)
+        self.setMouseTracking(True)
+        self._equipment_preview = EquipmentPreview(self)
         self.clicked.connect(lambda: self.player_selected.emit(self.player_id))
+
+    def _equipped_slots(self):
+        equipment = {"武":None, "甲":None, "+马":None, "-马":None}
+        if self.view:
+            for card in self.view.equipment:
+                slot = {"weapon":"武", "armor":"甲", "defensive_horse":"+马",
+                        "offensive_horse":"-马"}.get(card.equipment_slot)
+                if slot is not None:
+                    equipment[slot] = card
+        return equipment
+
+    def mouseMoveEvent(self, event) -> None:
+        if self.view:
+            x = int(self.width()*.53)+6
+            cell = (self.width()-x-11)/4
+            point = event.position()
+            if 98 <= point.y() <= 119 and x <= point.x() < x+cell*4:
+                index = int((point.x()-x)//cell)
+                card = list(self._equipped_slots().values())[index]
+                if card:
+                    on_right = self.mapTo(self.window(), QPoint(0, 0)).x() > self.window().width()/2
+                    position = self.mapToGlobal(QPoint(-202 if on_right else self.width()+8, 0))
+                    self._equipment_preview.show_card(card, position)
+                    super().mouseMoveEvent(event)
+                    return
+        self._equipment_preview.hide()
+        super().mouseMoveEvent(event)
+
+    def leaveEvent(self, event) -> None:
+        self._equipment_preview.hide()
+        super().leaveEvent(event)
+
+    def closeEvent(self, event) -> None:
+        self._equipment_preview.hide()
+        super().closeEvent(event)
 
     def _animation(self, attribute, duration):
         animation = QVariantAnimation(self)
@@ -41,13 +80,22 @@ class PlayerPanel(QPushButton):
         old = self.view
         if old and view.hp < old.hp:
             self._start_animation(self._damage_animation, 1, 0)
+        if old and view.hp > old.hp:
+            self._start_animation(self._recovery_animation, 1, 0)
         if old and old.alive and not view.alive:
             self._start_animation(self._death_animation, 0, 1)
         elif old is None or not old.alive and view.alive:
             self._death_animation.stop()
             self.death_opacity = 0 if view.alive else 1
         if old is None or old.active != view.active:
-            self._start_animation(self._turn_animation, self.turn_glow, 1 if view.active else 0)
+            self._turn_animation.stop()
+            if view.active:
+                self._turn_animation.setDuration(1600)
+                self._turn_animation.setKeyValues([(0, 0.4), (0.5, 1.0), (1, 0.4)])
+                self._turn_animation.setLoopCount(-1)
+                self._turn_animation.start()
+            else:
+                self.turn_glow = 0
         self.view = view
         self.targetable = targetable
         self.selected_target = selected_target
@@ -130,12 +178,7 @@ class PlayerPanel(QPushButton):
         p.setPen(QColor("#493b2d"))
         p.setFont(QFont("Microsoft YaHei UI", 8))
         p.drawText(QRectF(x, 78, rw, 17), Qt.AlignLeft, f"手牌 {v.hand_count}   体力 {v.hp}/{v.max_hp}")
-        equipment = {"武":None, "甲":None, "+马":None, "-马":None}
-        for card in v.equipment:
-            slot = {"weapon":"武", "armor":"甲", "defensive_horse":"+马", "offensive_horse":"-马"}.get(card.equipment_slot)
-            if slot is None:
-                continue
-            equipment[slot] = card
+        equipment = self._equipped_slots()
         cell = rw/4
         for i, (slot, card) in enumerate(equipment.items()):
             box = QRectF(x+i*cell, 98, cell-2, 21)
@@ -146,12 +189,28 @@ class PlayerPanel(QPushButton):
             p.setFont(QFont("Microsoft YaHei UI", 7, QFont.Bold if card else QFont.Normal))
             p.drawText(box, Qt.AlignCenter, card.name[:3] if card else slot)
         p.setPen(QColor("#624b34"))
-        p.setFont(QFont("Microsoft YaHei UI", 8))
-        judgments = "  ".join("【"+c.name+"】" for c in v.judgments) or "判定 · 无"
-        p.drawText(QRectF(x, 121, rw, 18), Qt.AlignLeft, judgments)
+        if v.judgments:
+            step = min(31, (rw*.72)/max(1, len(v.judgments)))
+            for i, card in enumerate(v.judgments[:3]):
+                jx = x+i*step
+                p.setPen(QPen(QColor("#8b6841"), 1))
+                p.setBrush(QColor("#e7d7b9"))
+                p.drawRoundedRect(QRectF(jx, 122, 18, 25), 2, 2)
+                p.drawPixmap(int(jx+2), 124, 14, 17, RESOURCES.card_art(card.definition_id))
+                p.setPen(QColor("#3f3026"))
+                p.setFont(QFont("Microsoft YaHei UI", 6))
+                p.drawText(QRectF(jx-4, 140, 26, 9), Qt.AlignCenter, card.name[:2])
+        else:
+            p.setFont(QFont("Microsoft YaHei UI", 8))
+            p.drawText(QRectF(x, 121, rw, 18), Qt.AlignLeft, "判定 · 无")
         p.setFont(QFont("Microsoft YaHei UI", 8, QFont.Bold))
         p.setPen(QColor("#8b3f31" if v.chained else "#756653"))
-        p.drawText(QRectF(x, h-25, rw, 17), Qt.AlignRight, "⛓ 连环" if v.chained else "当前回合" if v.active else "")
+        p.drawText(QRectF(x, h-25, rw, 17), Qt.AlignRight, "连环" if v.chained else "当前回合" if v.active else "")
+        if v.chained:
+            p.setPen(QPen(QColor("#8b3f31"), 2))
+            p.setBrush(Qt.NoBrush)
+            p.drawEllipse(QRectF(w-57, h-22, 12, 9))
+            p.drawEllipse(QRectF(w-50, h-22, 12, 9))
         if v.active:
             p.setPen(QPen(QColor("#b88d43"), 3))
             p.drawLine(10, h-8, w-10, h-8)
@@ -163,6 +222,8 @@ class PlayerPanel(QPushButton):
             p.drawText(badge, Qt.AlignCenter, "出杀" if self.attack_role == "attacker" else "受击")
         if self.damage_flash:
             p.fillRect(outer, QColor(180, 43, 33, int(125*self.damage_flash)))
+        if self.recovery_flash:
+            p.fillRect(outer, QColor(103, 151, 91, int(100*self.recovery_flash)))
         if not v.alive:
             p.setPen(QColor("#a23831"))
             p.setFont(QFont("Microsoft YaHei UI", 18, QFont.Bold))

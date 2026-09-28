@@ -10,8 +10,10 @@ from PySide6.QtWidgets import (
 from sanguosha.engine.phases import END_PLAY_PHASE
 from sanguosha.engine.card_effects import SlashEffectAction
 from sanguosha.engine.card_use import UseCardAction
+from sanguosha.engine.events import CardUsedEvent, CardMovedEvent
 from sanguosha.engine.requests import PASS_RESPONSE, Decision, RequestType
 from sanguosha.model.ids import CardInstanceId, PlayerId
+from sanguosha.model.zones import ZoneType
 from sanguosha.model.state import GameStatus
 from sanguosha.projection import project_for_human
 from sanguosha.session import GameSession
@@ -343,6 +345,28 @@ class MainWindow(QMainWindow):
             self._render_request(human_request, view, attack)
         for event in session.events.events[self._seen_events:]:
             self.log.add_event(event, session.state, session.definitions)
+            if isinstance(event, CardUsedEvent):
+                definition_id = session.state.cards[event.card_id].definition_id
+                card_name = session.definitions.get(definition_id).name
+                source = next((p.name for p in view.players if p.player_id == event.player_id), "玩家")
+                self.table.play_public_event(f"{source} 使用【{card_name}】", str(definition_id))
+            elif (isinstance(event, CardMovedEvent) and
+                  event.from_zone.zone_type is ZoneType.JUDGMENT and
+                  event.to_zone.zone_type is ZoneType.JUDGMENT and event.card_ids):
+                cid = event.card_ids[0]
+                definition_id = session.state.cards[cid].definition_id
+                source = next((p.name for p in view.players if p.player_id == event.from_zone.player_id), "玩家")
+                target = next((p.name for p in view.players if p.player_id == event.to_zone.player_id), "玩家")
+                self.table.play_public_event(f"判定牌转移 · {source} → {target}", str(definition_id))
+            elif isinstance(event, CardMovedEvent) and event.reason == "discard":
+                self.table.play_public_event(f"弃置 {len(event.card_ids)} 张牌", "card_back")
+            if getattr(event, "event_type", None) == "judgment_result":
+                card_id = event.metadata.get("card_id")
+                if card_id in session.state.cards:
+                    definition_id = session.state.cards[card_id].definition_id
+                    self.table.play_judgment(
+                        session.definitions.get(definition_id).name,
+                        str(definition_id), bool(event.metadata.get("matched")))
         self._seen_events = len(session.events.events)
 
     def _attack_context(self) -> tuple[str, str] | None:

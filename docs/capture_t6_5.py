@@ -9,6 +9,7 @@ os.environ["SANGUOSHA_FAST_AI"] = "1"
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QFont, QFontDatabase
 from PySide6.QtTest import QTest
+from PySide6.QtCore import QPoint
 from sanguosha.content.cards.ids import DODGE_ID, SLASH_ID
 from sanguosha.engine.card_effects import SlashEffectAction
 from sanguosha.engine.card_moves import CardMove, CardMoveReason, CardMoveService
@@ -52,6 +53,15 @@ def main():
     for size in ((1280, 720), (1600, 900), (1920, 1080)):
         save(window, f"table_{size[0]}x{size[1]}", size)
     window.resize(1600, 900)
+    large = game()
+    for _ in range(18):
+        put(large, "basic.slash")
+    large.engine.start_action(PhaseAction("t65-capture-large-hand", "p1", Phase.PLAY))
+    window.session = large
+    window._render()
+    save(window, "large_hand")
+    window.session = session
+    window._render()
     window._card_clicked(slash)
     legal = sorted(window.interaction.legal_targets)
     if legal:
@@ -67,14 +77,25 @@ def main():
     session = game()
     gear(session, "weapon.kylin_bow", "p2")
     put(session, "delayed.lightning", "p2", ZoneType.JUDGMENT)
+    window.session = session
+    window._render()
+    save(window, "equipment_and_judgment")
+    panel = window.table.panels["p2"]
+    QTest.mouseMove(panel, QPoint(int(panel.width()*.53)+8, 108))
+    preview_path = OUT / "equipment_hover_preview.png"
+    assert panel._equipment_preview.grab().save(str(preview_path))
+    print(preview_path)
+    QTest.mouseMove(panel, QPoint(5, 5))
     session.state.players["p3"].chained = True
+    window._render()
+    save(window, "chain_state")
     session.state.players["p5"].status = PlayerStatus.DEAD
     session.state.players["p5"].hp = 0
     session.state.revealed_identities.add("p5")
     window.session = session
     window._render()
     QTest.qWait(450)
-    save(window, "equipment_judgment_chain_death")
+    save(window, "player_death")
 
     session = game()
     card = put(session, "basic.wine")
@@ -103,6 +124,22 @@ def main():
     window.session = session
     window._render()
     save(window, "judgment_waiting")
+    window.table.play_judgment("闪", "basic.dodge", False)
+    save(window, "judgment_card_back")
+    QTest.qWait(220)
+    save(window, "judgment_reveal")
+    QTest.qWait(330)
+    save(window, "judgment_result")
+
+    session = game()
+    lightning = put(session, "delayed.lightning", "p2", ZoneType.JUDGMENT)
+    window.session = session
+    window._seen_events = len(session.events.events)
+    CardMoveService(session.events).move(session.state, CardMove(
+        "t65-lightning-transfer", (lightning,), ZoneRef(ZoneType.JUDGMENT, "p2"),
+        ZoneRef(ZoneType.JUDGMENT, "p3"), CardMoveReason.SYSTEM))
+    window._render()
+    save(window, "judgment_transfer")
     window.close()
 
 

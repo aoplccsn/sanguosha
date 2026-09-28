@@ -36,6 +36,7 @@ class HandView(QWidget):
             widget.show()
             self.cards[key] = widget
         for widget in old.values():
+            widget.hide()
             widget.deleteLater()
         self._arrange()
 
