@@ -508,6 +508,34 @@ def test_lijian_discards_cost_and_starts_two_male_duel_without_counter_window():
     assert session.state.play_usage.count('skill.lijian') == 1
     assert session.engine.stack.is_empty()
 
+
+@pytest.mark.parametrize('suit,can_dodge', [(Suit.HEART, False), (Suit.SPADE, True)])
+def test_tieqi_red_judgment_blocks_dodge_black_allows_it(suit, can_dodge):
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'machao'
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    slash = put(session, 'basic.slash', 'p1')
+    dodge = put(session, 'basic.dodge', 'p2')
+    top = session.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    session.state.cards[top] = replace(session.state.cards[top], suit=suit)
+    session.engine.start_action(UseCardAction('tieqi-slash', 'p1', slash, ('p2',)))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.YES_NO and '铁骑' in request.prompt
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    if can_dodge:
+        request = session.engine.pending_request
+        assert request.request_type is RequestType.RESPOND_WITH_CARD
+        session.engine.submit_decision(Decision(request.request_id, 'p2', dodge))
+        assert session.state.players['p2'].hp == 4
+    else:
+        assert session.engine.pending_request is None
+        assert session.state.players['p2'].hp == 3
+        assert dodge in session.state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
+    assert session.engine.stack.is_empty()
+
 def test_double_sword_reads_character_gender_in_standard_mode():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p2'].character_id = 'zhenji'

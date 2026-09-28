@@ -282,6 +282,17 @@ class MilitarySlashHandler:
             if not ignore and (armor == 'equipment.armor.renwang_shield' and color is Color.BLACK
                                or armor == 'equipment.armor.vine' and nature is DamageNature.NORMAL):
                 return StepResult.complete('prevented')
+            if (self.skills is not None and self.skills.has(state,action.source_id,'tieqi')
+                    and not frame.local.get('tieqi_offered')):
+                frame.local['tieqi_offered'] = True
+                frame.step_index = 19
+                return StepResult.ask(PendingRequest(action.action_id+':tieqi',action.source_id,
+                    RequestType.YES_NO,'是否发动【铁骑】判定，使目标可能无法闪避？',
+                    action.action_id,frame.frame_id))
+            if frame.local.get('tieqi_unavoidable'):
+                frame.child_result = None
+                frame.step_index = 3
+                return StepResult.continue_()
             frame.step_index = 1
             if armor == 'equipment.armor.eight_trigrams' and not ignore:
                 return StepResult.ask(PendingRequest(action.action_id + ':eight-trigrams', action.target_id,
@@ -297,6 +308,20 @@ class MilitarySlashHandler:
             frame.step_index = 3
             return StepResult.push(RespondWithCardAction(action.action_id + ':response', action.target_id,
                 action.dodge_definition_id, action.action_id, '请打出闪响应杀', action.target_id, False))
+        if frame.step_index == 19:
+            wanted = frame.decision is True
+            frame.decision = None
+            if wanted:
+                frame.step_index = 20
+                return StepResult.push(JudgmentAction(action.action_id+':tieqi-judge',action.source_id,
+                    JudgmentPattern(color=Color.RED)))
+            frame.step_index = 0
+            return StepResult.continue_()
+        if frame.step_index == 20:
+            frame.local['tieqi_unavoidable'] = frame.child_result is True
+            frame.child_result = None
+            frame.step_index = 0
+            return StepResult.continue_()
         if frame.step_index == 2:
             if frame.child_result is True:
                 if self.skills is None or not self.skills.has(state,action.source_id,'wushuang'):
