@@ -415,7 +415,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             virtual=VirtualCard.spear(state,materials)
             for cid in materials:
                 self.moves.move(state,CardMove(action.action_id+':virtual:'+cid,(cid,),ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.RESPONSE,action.player_id))
-                self.recorder.record(CardRespondedEvent(action.action_id+':virtual-responded:'+cid,action.player_id,cid,action.source_action_id))
+                self.recorder.record(CardRespondedEvent(action.action_id+':virtual-responded:'+cid,action.player_id,cid,
+                                                        action.source_action_id,'basic.slash'))
             return StepResult.complete(virtual)
         if choice=='virtual:spear':
             frame.step_index=2
@@ -430,7 +431,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             virtual=VirtualCard('basic.slash',(material,),card.suit,card.color)
             self.moves.move(state,CardMove(action.action_id+':wusheng-processing',(material,),
                 ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.PROCESSING),CardMoveReason.RESPONSE,action.player_id))
-            self.recorder.record(CardRespondedEvent(action.action_id+':wusheng-responded',action.player_id,material,action.source_action_id))
+            self.recorder.record(CardRespondedEvent(action.action_id+':wusheng-responded',action.player_id,material,
+                                                    action.source_action_id,'basic.slash'))
             self.moves.move(state,CardMove(action.action_id+':wusheng-discard',(material,),
                 ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.RESPONSE,action.player_id))
             return StepResult.complete(virtual)
@@ -450,7 +452,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
         processing = ZoneRef(ZoneType.PROCESSING)
         self.moves.move(state, CardMove(action.action_id + ':processing', (card,),
             ZoneRef(ZoneType.HAND, action.player_id), processing, CardMoveReason.RESPONSE, action.player_id))
-        self.recorder.record(CardRespondedEvent(action.action_id + ':responded', action.player_id, card, action.source_action_id))
+        self.recorder.record(CardRespondedEvent(action.action_id + ':responded', action.player_id, card,
+                                                action.source_action_id,str(state.cards[card].definition_id)))
         self.moves.move(state, CardMove(action.action_id + ':discard', (card,), processing,
             ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.RESPONSE, action.player_id))
         return StepResult.complete(str(card))

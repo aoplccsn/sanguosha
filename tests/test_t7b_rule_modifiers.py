@@ -4,6 +4,8 @@ from sanguosha.engine.card_moves import CardMove, CardMoveReason, CardMoveServic
 from sanguosha.engine.card_use import UseCardAction
 from sanguosha.engine.distance import DistanceSystem
 from sanguosha.engine.phases import PhaseAction
+from sanguosha.engine.events import TurnStartedEvent, CardUsedEvent, CardRespondedEvent
+from sanguosha.engine.resolution import ResolutionFrame
 from sanguosha.engine.requests import Decision, RequestType
 from sanguosha.engine.skills import KurouAction, QingnangAction
 from sanguosha.engine.card_rules import InvalidCardUse
@@ -88,6 +90,31 @@ def test_yingzi_draw_and_biyue_optional_end_draw():
     session.engine.submit_decision(Decision(request.request_id, 'p1', True))
     assert len(session.state.cards_in(hand)) - before == 1
     assert session.engine.stack.is_empty()
+
+
+def test_keji_only_offered_without_slash_use_or_response_this_turn():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'lvmeng'
+    session.state.players['p1'].hp = 1
+    session.events.record(TurnStartedEvent('turn-1', 'p1', 1))
+    action = PhaseAction('discard-1', 'p1', Phase.DISCARD)
+    body = session.engine.registry.handler_for(action).bodies.body_for(Phase.DISCARD)
+    frame = ResolutionFrame('keji-frame', action, step_index=1)
+    outcome = body.step(session.state, frame)
+    assert outcome.request.request_type is RequestType.YES_NO
+    assert '克己' in outcome.request.prompt
+    frame.decision = True
+    assert body.step(session.state, frame).value == 0
+
+    slash = put(session, 'basic.slash', 'p1')
+    session.events.record(CardUsedEvent('used-slash', 'p1', slash, ('p2',)))
+    frame = ResolutionFrame('no-keji-use', action, step_index=1)
+    assert body.step(session.state, frame).request.request_type is RequestType.CHOOSE_CARDS
+
+    session.events.record(TurnStartedEvent('turn-2', 'p1', 2))
+    session.events.record(CardRespondedEvent('responded-slash', 'p1', slash, 'duel', 'basic.slash'))
+    frame = ResolutionFrame('no-keji-response', action, step_index=1)
+    assert body.step(session.state, frame).request.request_type is RequestType.CHOOSE_CARDS
 
 
 def test_double_sword_reads_character_gender_in_standard_mode():

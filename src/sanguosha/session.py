@@ -130,7 +130,7 @@ class GameSession:
         validator = CardUseValidator(definitions, card_rules, TargetValidator())
         bodies = standard_phase_bodies(LegalPlayActionProvider(validator))
         bodies.register(Phase.DRAW, DrawPhaseBody(skills))
-        bodies.register(Phase.DISCARD, DiscardPhaseBody(moves))
+        bodies.register(Phase.DISCARD, DiscardPhaseBody(moves, skills, events))
         registry = ActionHandlerRegistry()
         registry.register(TurnAction, TurnActionHandler(events))
         registry.register(PhaseAction, PhaseActionHandler(bodies, events))
