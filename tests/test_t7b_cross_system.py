@@ -10,6 +10,7 @@ from sanguosha.engine.military_tricks import ResolveDelayed
 from sanguosha.engine.military_basics import MilitaryDamageAction
 from sanguosha.engine.skills import LijianAction
 from sanguosha.engine.phases import PhaseAction
+from sanguosha.engine.response import RespondWithCardAction
 from sanguosha.engine.requests import Decision, PASS_RESPONSE, RequestType
 from sanguosha.model.enums import EquipmentSlot, Phase, Suit
 from sanguosha.model.usage import PlayUsageState
@@ -226,6 +227,23 @@ def test_xiaoji_draws_after_weapon_replacement():
     assert old in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
     assert new in session.state.cards_in(ZoneRef(ZoneType.EQUIPMENT, 'p1', EquipmentSlot.WEAPON))
     assert len(session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == before - 1 + 2
+
+
+def test_keji_rejects_skip_after_real_slash_response_this_turn():
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'lvmeng'
+    session.state.players['p1'].hp = 1
+    session.state.current_player_id = 'p1'
+    session.state.turn_number = 1
+    slash = put(session, 'basic.slash', 'p1')
+    session.engine.start_action(RespondWithCardAction('keji-real-response', 'p1',
+                                                     'basic.slash', 'duel'))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', slash))
+    session.engine.start_action(PhaseAction('keji-discard', 'p1', Phase.DISCARD))
+    request = session.engine.pending_request
+    assert request.request_type is RequestType.CHOOSE_CARDS
+    assert '克己' not in request.prompt
 
 
 def test_jijiu_uses_red_card_during_other_players_dying_resolution():

@@ -234,6 +234,22 @@ class CardVfxLayer(QWidget):
                     p.setPen(QPen(QColor(color), 4))
                     radius = 18 + self.progress*42
                     p.drawEllipse(target, radius, radius)
+                    if cue.kind == 'dodge':
+                        p.setPen(QPen(QColor('#d7eff2'), 3, Qt.SolidLine, Qt.RoundCap))
+                        p.drawLine(target + QPointF(-radius, radius*.55),
+                                   target + QPointF(radius*.8, -radius*.4))
+                        p.drawLine(target + QPointF(-radius*.6, radius*.7),
+                                   target + QPointF(radius, -radius*.25))
+                    elif cue.kind == 'damage':
+                        p.setPen(Qt.NoPen)
+                        p.setBrush(QColor(139, 40, 38, int(120 * (1-self.progress))))
+                        for dx, dy, size in ((-18, -10, 11), (21, 8, 7), (4, -25, 5)):
+                            p.drawEllipse(target + QPointF(dx, dy), size, size)
+                    elif cue.kind == 'death':
+                        p.setPen(Qt.NoPen)
+                        p.setBrush(QColor(31, 25, 33, int(130 * (1-self.progress*.7))))
+                        for dx, dy, scale in ((-17, 7, .65), (13, -13, .55), (0, 0, .8)):
+                            p.drawEllipse(target + QPointF(dx, dy), radius*scale, radius*scale)
                     p.setFont(QFont('Microsoft YaHei UI', 17, QFont.Bold))
                     label = cue.text or ('闪避' if cue.kind == 'dodge' else '')
                     p.drawText(QRectF(target.x()-80, target.y()-radius-40, 160, 34), Qt.AlignCenter, label)

@@ -204,6 +204,23 @@ def test_result_presentation_does_not_mutate_formal_winner_state():
     assert session.state.victory is result
 
 
+def test_installing_new_game_clears_kills_result_and_pending_animation():
+    from sanguosha.session import GameSession
+    from sanguosha.ui.main_window import MainWindow
+    window = MainWindow()
+    window._install_session(GameSession.new_game(military=True, five_generals=True))
+    window._tick_timer.stop()
+    layer = window.table.vfx
+    layer.consume(PlayerDiedEvent('death', 'p2', Identity.REBEL, 'p1'))
+    layer.consume(GameEndedEvent('end', '反贼胜利', ('p1',)), human_id='p1')
+    assert layer.director.kill_counts and layer.director.result is not None
+    window._install_session(GameSession.new_game(military=True, five_generals=True))
+    window._tick_timer.stop()
+    assert layer.director.kill_counts == {}
+    assert layer.director.result is None and layer.current is None and not layer._queue
+    window.close()
+
+
 def test_overlay_is_mouse_transparent_and_preview_cancels():
     app = QApplication.instance() or QApplication([])
     table = GameTable()
