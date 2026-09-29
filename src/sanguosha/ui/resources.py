@@ -4,7 +4,8 @@ import hashlib
 from pathlib import Path
 from PySide6.QtCore import Qt, QRectF
 from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPixmap
-ASSETS = Path(__file__).resolve().parents[3] / "assets"
+from sanguosha.paths import resource_path
+ASSETS = resource_path("assets")
 
 class ResourceManager:
     def __init__(self, root=None):

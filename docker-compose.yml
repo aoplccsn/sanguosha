@@ -1,0 +1,16 @@
+services:
+  relay:
+    build: .
+    restart: unless-stopped
+    environment:
+      RELAY_HOST: 0.0.0.0
+      RELAY_PORT: 8765
+      PUBLIC_BASE_URL: wss://relay.example.com
+      ROOM_TTL: 7200
+      HOST_RECONNECT_GRACE: 60
+      MAX_ROOMS: 1000
+      MAX_CONNECTIONS_PER_IP: 20
+      ROOM_CREATIONS_PER_MINUTE: 10
+      LOG_LEVEL: INFO
+    ports:
+      - "127.0.0.1:8765:8765"

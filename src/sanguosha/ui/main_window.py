@@ -17,6 +17,7 @@ from sanguosha.model.zones import ZoneType
 from sanguosha.model.state import GameStatus
 from sanguosha.projection import project_for_human
 from sanguosha.session import GameSession
+from sanguosha.version import APP_VERSION, PROTOCOL_VERSION
 from sanguosha.pregame import Pregame, SetupStage
 
 from .decision_controller import DecisionController
@@ -95,6 +96,9 @@ class MainWindow(QMainWindow):
         self.result_exit.hide()
         header.addWidget(self.result_exit)
         header.addStretch()
+        version_label = QLabel(f"v{APP_VERSION} · protocol {PROTOCOL_VERSION}")
+        version_label.setObjectName("build-version")
+        header.addWidget(version_label)
         layout.addLayout(header)
         self.table = GameTable()
         self.table.setMinimumHeight(400)

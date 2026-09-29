@@ -1,0 +1,4 @@
+{
+  "relay_url": "wss://relay.example.invalid",
+  "allow_insecure_development_relay": false
+}

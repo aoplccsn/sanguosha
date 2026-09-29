@@ -10,7 +10,8 @@ from sanguosha.engine.requests import Decision, PASS_RESPONSE, PendingRequest, R
 from sanguosha.model.ids import PlayerId
 from sanguosha.projection import CardView, PlayerView, TableView
 
-PROTOCOL_VERSION = 1
+from sanguosha.version import PROTOCOL_VERSION
+
 DEFAULT_GAME_PORT = 28765
 MAX_MESSAGE_BYTES = 256_000
 MESSAGE_TYPES = frozenset({

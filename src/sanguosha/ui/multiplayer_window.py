@@ -7,7 +7,7 @@ import socket
 
 from PySide6.QtCore import QThread, QTimer, Signal, Qt
 from PySide6.QtWidgets import (QDialog, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
-                               QPushButton, QScrollArea, QStackedWidget, QVBoxLayout, QWidget)
+                               QApplication, QMessageBox, QPushButton, QScrollArea, QStackedWidget, QVBoxLayout, QWidget)
 
 from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL, STANDARD_SKILL_CATALOGUE
 from sanguosha.engine.phases import END_PLAY_PHASE
@@ -25,6 +25,9 @@ from .hand_view import HandView
 from .pregame_dialog import GeneralChoiceCard
 from .theme import QSS
 from sanguosha.multiplayer.transport import GameClient, GameServer
+from sanguosha.relay.transport import HostRelayTransport, RelayGameClient
+from sanguosha.session_store import clear_session, load_session, save_session
+from sanguosha.settings import relay_url as default_relay_url
 
 
 class ServerThread(QThread):
@@ -59,6 +62,50 @@ class ServerThread(QThread):
     def stop(self):
         if self.loop and self.loop.is_running():
             self.loop.call_soon_threadsafe(lambda: [task.cancel() for task in asyncio.all_tasks(self.loop)])
+
+
+class PublicHostThread(QThread):
+    ready = Signal(int, str, str)
+    failed = Signal(str)
+    status = Signal(str)
+
+    def __init__(self, relay_url: str, parent=None):
+        super().__init__(parent)
+        self.relay_url = relay_url
+        self.loop = None
+        self.game_server = None
+        self.transport = None
+
+    def run(self):
+        async def main():
+            self.loop = asyncio.get_running_loop()
+            self.game_server = GameServer(host="127.0.0.1", port=0)
+            try:
+                await self.game_server.start()
+                self.transport = HostRelayTransport(
+                    self.relay_url, "127.0.0.1", self.game_server.port
+                )
+                code, token = await self.transport.start()
+                self.ready.emit(self.game_server.port, code, token)
+                self.status.emit("公网房间已建立")
+                await asyncio.Event().wait()
+            except Exception as exc:
+                self.failed.emit(str(exc))
+            finally:
+                if self.transport:
+                    await self.transport.close()
+                if self.game_server:
+                    await self.game_server.close()
+        try:
+            asyncio.run(main())
+        except asyncio.CancelledError:
+            pass
+
+    def stop(self):
+        if self.loop and self.loop.is_running():
+            self.loop.call_soon_threadsafe(
+                lambda: [task.cancel() for task in asyncio.all_tasks(self.loop)]
+            )
 
 
 class ClientThread(QThread):
@@ -121,6 +168,65 @@ class ClientThread(QThread):
             self.loop.call_soon_threadsafe(lambda: [task.cancel() for task in asyncio.all_tasks(self.loop)])
 
 
+class RelayClientThread(ClientThread):
+    def __init__(self, relay_url: str, room_code: str, name: str, token=None, parent=None):
+        super().__init__("", 0, name, parent)
+        self.relay_url = relay_url
+        self.room_code = room_code.strip().upper()
+        self.token = token
+
+    def run(self):
+        async def main():
+            self.loop = asyncio.get_running_loop()
+            self.queue = asyncio.Queue()
+            while not self.stopping:
+                client = RelayGameClient(self.relay_url, self.room_code)
+                try:
+                    self.status.emit("重连中" if self.token else "连接中")
+                    await client.connect(self.name, token=self.token)
+                    self.status.emit("已连接")
+
+                    async def receive():
+                        while True:
+                            msg = await client.receive()
+                            if msg["type"] == "WELCOME" and msg.get("reconnect_token"):
+                                self.token = msg["reconnect_token"]
+                                save_session(
+                                    relay_url=self.relay_url,
+                                    room_code=self.room_code,
+                                    player_id=msg.get("seat_id", ""),
+                                    reconnect_token=self.token,
+                                )
+                            if msg["type"] == "GAME_OVER":
+                                clear_session()
+                            self.message.emit(msg)
+
+                    async def send():
+                        while True:
+                            kind, fields = await self.queue.get()
+                            await client.send(kind, **fields)
+
+                    tasks = [asyncio.create_task(receive()), asyncio.create_task(send())]
+                    done, pending = await asyncio.wait(
+                        tasks, return_when=asyncio.FIRST_COMPLETED
+                    )
+                    for task in pending:
+                        task.cancel()
+                    for task in done:
+                        task.result()
+                except (OSError, ConnectionError, ValueError) as exc:
+                    self.status.emit("已断线")
+                    self.message.emit({"type": "ERROR", "message": str(exc)})
+                finally:
+                    await client.close()
+                if not self.stopping:
+                    await asyncio.sleep(1)
+        try:
+            asyncio.run(main())
+        except asyncio.CancelledError:
+            pass
+
+
 class MultiplayerWindow(QDialog):
     """Never receives GameState; host and guests use identical socket clients."""
 
@@ -130,7 +236,9 @@ class MultiplayerWindow(QDialog):
         self.resize(1380, 860)
         self.setStyleSheet(QSS)
         self.server_thread = None
+        self.public_host_thread = None
         self.client_thread = None
+        self.room_code = None
         self.seat_id = None
         self.host_id = None
         self.room_phase = "OPEN"
@@ -147,6 +255,7 @@ class MultiplayerWindow(QDialog):
         self._build_connect_page()
         self._build_lobby_page()
         self._build_game_page()
+        QTimer.singleShot(0, self._offer_reconnect)
 
     def _build_connect_page(self):
         page = QWidget()
@@ -154,23 +263,45 @@ class MultiplayerWindow(QDialog):
         title = QLabel("五人身份局 · 多人游戏")
         title.setAlignment(Qt.AlignCenter)
         box.addWidget(title)
-        self.address = QLineEdit("127.0.0.1")
-        self.address.setPlaceholderText("服务器地址 · 192.168.x.x")
-        self.port_edit = QLineEdit(str(DEFAULT_GAME_PORT))
-        self.port_edit.setPlaceholderText("端口")
         self.name_edit = QLineEdit("玩家")
         self.name_edit.setPlaceholderText("玩家名称")
-        for label, field in (("服务器地址", self.address), ("端口", self.port_edit), ("玩家名称", self.name_edit)):
+        self.room_code_edit = QLineEdit()
+        self.room_code_edit.setMaxLength(8)
+        self.room_code_edit.setPlaceholderText("房间码")
+        self.relay_url_edit = QLineEdit(default_relay_url())
+        for label, field in (("玩家名称", self.name_edit), ("房间码", self.room_code_edit)):
             row = QHBoxLayout()
             row.addWidget(QLabel(label))
             row.addWidget(field)
             box.addLayout(row)
-        create = QPushButton("创建房间")
+        create_public = QPushButton("创建公网房间")
+        create_public.clicked.connect(self._host_public)
+        join_public = QPushButton("加入公网房间")
+        join_public.clicked.connect(self._join_public)
+        box.addWidget(create_public)
+        box.addWidget(join_public)
+        box.addWidget(QLabel("高级选项 · 局域网直连"))
+        relay_row = QHBoxLayout()
+        relay_row.addWidget(QLabel("Relay URL"))
+        relay_row.addWidget(self.relay_url_edit)
+        box.addLayout(relay_row)
+        self.address = QLineEdit("127.0.0.1")
+        self.address.setPlaceholderText("服务器地址 · 192.168.x.x")
+        self.port_edit = QLineEdit(str(DEFAULT_GAME_PORT))
+        self.port_edit.setPlaceholderText("端口")
+        for label, field in (("服务器地址", self.address), ("端口", self.port_edit)):
+            row = QHBoxLayout()
+            row.addWidget(QLabel(label))
+            row.addWidget(field)
+            box.addLayout(row)
+        lan_row = QHBoxLayout()
+        create = QPushButton("创建局域网房间")
         create.clicked.connect(self._host)
-        join = QPushButton("加入房间")
+        join = QPushButton("加入局域网房间")
         join.clicked.connect(self._join)
-        box.addWidget(create)
-        box.addWidget(join)
+        lan_row.addWidget(create)
+        lan_row.addWidget(join)
+        box.addLayout(lan_row)
         self.connect_status = QLabel("等待连接")
         box.addWidget(self.connect_status)
         box.addStretch()
@@ -183,6 +314,16 @@ class MultiplayerWindow(QDialog):
         box.addWidget(self.lobby_title)
         self.connection_label = QLabel("连接中")
         box.addWidget(self.connection_label)
+        room_row = QHBoxLayout()
+        self.room_code_label = QLabel("")
+        room_row.addWidget(self.room_code_label, 1)
+        copy_button = QPushButton("复制房间码")
+        copy_button.clicked.connect(self._copy_room_code)
+        room_row.addWidget(copy_button)
+        close_button = QPushButton("关闭房间")
+        close_button.clicked.connect(self.close)
+        room_row.addWidget(close_button)
+        box.addLayout(room_row)
         self.seat_labels = []
         self.takeover_buttons = []
         for i in range(5):
@@ -238,6 +379,72 @@ class MultiplayerWindow(QDialog):
         self.hand.card_selected.connect(self._card_selected)
         box.addWidget(self.hand)
         self.pages.addWidget(page)
+
+    def _offer_reconnect(self):
+        saved = load_session()
+        if not saved:
+            return
+        answer = QMessageBox.question(
+            self, "重新连接", "检测到未完成对局，是否重新连接？"
+        )
+        if answer == QMessageBox.StandardButton.Yes:
+            self.relay_url_edit.setText(saved["relay_url"])
+            self.room_code_edit.setText(saved["room_code"])
+            self._connect_relay(saved["reconnect_token"])
+
+    def _host_public(self):
+        if self.public_host_thread or self.client_thread:
+            return
+        relay = self.relay_url_edit.text().strip()
+        if not relay.startswith(("wss://", "ws://127.0.0.1", "ws://localhost")):
+            self.connect_status.setText("生产 Relay 必须使用 wss://")
+            return
+        self.public_host_thread = PublicHostThread(relay, self)
+        self.public_host_thread.ready.connect(self._public_host_ready)
+        self.public_host_thread.failed.connect(self._public_host_failed)
+        self.public_host_thread.status.connect(self._set_status)
+        self.public_host_thread.start()
+        self.connect_status.setText("正在创建公网房间…")
+
+    def _public_host_ready(self, port, room_code, host_token):
+        self.room_code = room_code
+        self.room_code_edit.setText(room_code)
+        self.room_code_label.setText(f"公网房间码：{room_code}")
+        self.lobby_title.setText("公网房间 · 五人身份局")
+        self._connect("127.0.0.1", port)
+
+    def _public_host_failed(self, error):
+        self.connect_status.setText(error)
+        self.public_host_thread = None
+
+    def _join_public(self):
+        self._connect_relay()
+
+    def _connect_relay(self, token=None):
+        if self.client_thread:
+            return
+        code = self.room_code_edit.text().strip().upper()
+        if len(code) < 6:
+            self.connect_status.setText("请输入有效房间码")
+            return
+        self.room_code = code
+        self.client_thread = RelayClientThread(
+            self.relay_url_edit.text().strip(),
+            code,
+            self.name_edit.text().strip(),
+            token,
+            self,
+        )
+        self.client_thread.message.connect(self._on_message)
+        self.client_thread.status.connect(self._set_status)
+        self.client_thread.start()
+        self.room_code_label.setText(f"公网房间码：{code}")
+        self.lobby_title.setText("公网房间 · 五人身份局")
+        self.pages.setCurrentIndex(1)
+
+    def _copy_room_code(self):
+        if self.room_code:
+            QApplication.clipboard().setText(f"三国杀房间：{self.room_code}")
 
     def _host(self):
         try:
@@ -480,4 +687,7 @@ class MultiplayerWindow(QDialog):
         if self.server_thread:
             self.server_thread.stop()
             self.server_thread.wait(2000)
+        if self.public_host_thread:
+            self.public_host_thread.stop()
+            self.public_host_thread.wait(3000)
         super().closeEvent(event)

@@ -39,3 +39,10 @@ T6 正式验收：167 passed、0 failed、0 warnings；43 种卡牌渲染及 see
 ## Git baseline 范围
 
 提交正式 src、tests、assets（含美术源文件）、data（含 160 张牌清单）、scripts、docs 和项目配置。环境、缓存、恢复备份、staging 与历史验证副本由 .gitignore 排除，继续保留在本机。
+
+
+## 公网房间码与 Windows 分发
+
+多人游戏默认支持公网房间码；局域网 IP 和端口直连保留为高级选项。Relay 可用 python -m sanguosha.relay 或 docker compose up -d 启动。生产客户端必须在 config/defaults.json 中配置真实的 wss:// Relay 地址。
+
+Windows x64 便携版使用 scripts/build_windows.ps1 构建，输出 one-folder 客户端、ZIP 和 dist/release-manifest.json。
