@@ -50,3 +50,11 @@ Desktop.ini
 .env
 .env.*
 !.env.example
+
+# Web frontend generated files
+web/node_modules/
+web/dist/
+web/public/assets/
+web/*.tsbuildinfo
+web/vite.config.js
+web/vite.config.d.ts

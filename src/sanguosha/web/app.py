@@ -1,0 +1,242 @@
+"""FastAPI application exposing HTTP metadata and browser WebSockets."""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+from contextlib import asynccontextmanager, suppress
+from pathlib import Path
+from typing import Any
+
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+
+from sanguosha.engine.errors import InvalidDecision
+from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL, STANDARD_SKILL_CATALOGUE
+from sanguosha.model.ids import PlayerId
+from sanguosha.multiplayer.protocol import (
+    MAX_MESSAGE_BYTES, PROTOCOL_VERSION, ProtocolError, check_message,
+    decision_from_wire, envelope,
+)
+from sanguosha.multiplayer.room import RoomError
+from sanguosha.version import APP_VERSION, BUILD_COMMIT
+
+from .config import WebConfig
+from .rooms import ManagedRoom, RoomManager
+
+LOG = logging.getLogger(__name__)
+
+
+class BrowserConnection:
+    def __init__(self, websocket: WebSocket):
+        self.websocket = websocket
+        self.outgoing: asyncio.Queue[dict[str, Any]] = asyncio.Queue(maxsize=512)
+        self.managed: ManagedRoom | None = None
+        self.player_id: PlayerId | None = None
+
+    def send_nowait(self, message: dict[str, Any]) -> None:
+        try:
+            self.outgoing.put_nowait(message)
+        except asyncio.QueueFull:
+            LOG.warning("closing slow WebSocket client")
+            asyncio.create_task(self.websocket.close(code=1013))
+
+    async def sender(self) -> None:
+        while True:
+            await self.websocket.send_json(await self.outgoing.get())
+
+    def detach(self) -> None:
+        if self.managed is not None and self.player_id is not None:
+            seat = self.managed.game.seats[self.player_id]
+            if seat.connected:
+                self.managed.game.disconnect(self.player_id)
+            self.managed.touch()
+        self.managed = None
+        self.player_id = None
+
+
+async def _receive_message(websocket: WebSocket, limit: int) -> dict[str, Any]:
+    raw = await websocket.receive_text()
+    if len(raw.encode("utf-8")) > limit:
+        raise ProtocolError("message is too large")
+    try:
+        message = json.loads(raw)
+    except ValueError as exc:
+        raise ProtocolError("malformed JSON") from exc
+    check_message(message)
+    return message
+
+
+def create_app(config: WebConfig | None = None) -> FastAPI:
+    config = config or WebConfig.from_env()
+    config.validate_production()
+    manager = RoomManager(max_rooms=config.max_rooms, room_ttl=config.room_ttl,
+                          reconnect_grace=config.reconnect_grace)
+    active_connections: set[BrowserConnection] = set()
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI):
+        async def poll_rooms() -> None:
+            while True:
+                await asyncio.sleep(0.05)
+                try:
+                    manager.poll()
+                except Exception:
+                    LOG.exception("web room poll failed")
+        task = asyncio.create_task(poll_rooms())
+        try:
+            yield
+        finally:
+            task.cancel()
+            with suppress(asyncio.CancelledError):
+                await task
+
+    app = FastAPI(title="Sanguosha Web Edition", version=APP_VERSION, lifespan=lifespan)
+    app.state.room_manager = manager
+    app.state.web_config = config
+
+    @app.get("/health")
+    async def health() -> dict[str, Any]:
+        return {"status": "ok", "rooms": len(manager.rooms),
+                "websockets": len(active_connections)}
+
+    @app.get("/api/version")
+    async def version() -> dict[str, Any]:
+        return {"app_version": APP_VERSION, "build_commit": BUILD_COMMIT,
+                "protocol_version": PROTOCOL_VERSION}
+
+    @app.get("/api/catalog/generals")
+    async def general_catalog() -> list[dict[str, Any]]:
+        skills = {str(skill.id): skill for skill in STANDARD_SKILL_CATALOGUE}
+        return [
+            {
+                "id": str(character.id), "name": character.name,
+                "kingdom": character.kingdom.value, "max_hp": character.max_hp,
+                "gender": character.gender.value,
+                "portrait": f"/assets/generals/{character.kingdom.value}/{character.id}.png",
+                "skills": [
+                    {"id": str(skill_id), "name": skills[str(skill_id)].name,
+                     "description": skills[str(skill_id)].description,
+                     "type": skills[str(skill_id)].skill_type.value}
+                    for skill_id in character.skill_ids
+                ],
+            }
+            for character in STANDARD_25_GENERAL_POOL
+        ]
+
+    @app.websocket("/ws")
+    async def websocket_endpoint(websocket: WebSocket) -> None:
+        if len(active_connections) >= config.max_websockets:
+            await websocket.close(code=1013)
+            return
+        await websocket.accept()
+        connection = BrowserConnection(websocket)
+        active_connections.add(connection)
+        sender = asyncio.create_task(connection.sender())
+        try:
+            hello = await _receive_message(websocket, config.message_size_limit)
+            if hello["type"] != "HELLO":
+                raise ProtocolError("HELLO required")
+            connection.send_nowait(envelope(
+                "WELCOME", app_version=APP_VERSION, build_commit=BUILD_COMMIT,
+                protocol_version=PROTOCOL_VERSION,
+            ))
+            while True:
+                message = await _receive_message(websocket, config.message_size_limit)
+                kind = message["type"]
+                try:
+                    if kind == "CREATE_ROOM":
+                        if connection.managed is not None:
+                            raise RoomError("already joined")
+                        managed = manager.create(seed=message.get("seed"))
+                        connection.managed = managed
+                        connection.send_nowait(envelope("ROOM_CREATED", room_code=managed.code))
+                        pid, token = managed.game.join(message.get("name"), connection.send_nowait)
+                        connection.player_id = pid
+                        connection.send_nowait(envelope(
+                            "WELCOME", room_code=managed.code, seat_id=str(pid),
+                            reconnect_token=token, host_id=str(managed.game.host_id),
+                            app_version=APP_VERSION, build_commit=BUILD_COMMIT,
+                            protocol_version=PROTOCOL_VERSION,
+                        ))
+                        managed.game._send_current(pid)
+                        if message.get("single_player") is True:
+                            managed.game.start(pid)
+                    elif kind in ("JOIN_ROOM", "RECONNECT"):
+                        if connection.managed is not None:
+                            raise RoomError("already joined")
+                        managed = manager.get(message.get("room_code", ""))
+                        connection.managed = managed
+                        pid, token = managed.game.join(
+                            message.get("name", "玩家"), connection.send_nowait,
+                            token=message.get("token"),
+                        )
+                        connection.player_id = pid
+                        connection.send_nowait(envelope(
+                            "WELCOME", room_code=managed.code, seat_id=str(pid),
+                            reconnect_token=token, host_id=str(managed.game.host_id),
+                            app_version=APP_VERSION, build_commit=BUILD_COMMIT,
+                            protocol_version=PROTOCOL_VERSION,
+                        ))
+                        managed.game._send_current(pid)
+                    elif kind == "PING":
+                        connection.send_nowait(envelope("PONG"))
+                    elif kind == "LEAVE_ROOM":
+                        connection.detach()
+                    elif connection.managed is None or connection.player_id is None:
+                        raise RoomError("join room first")
+                    elif kind == "READY":
+                        connection.managed.game.ready(connection.player_id, message.get("ready"))
+                    elif kind == "START_GAME":
+                        connection.managed.game.start(connection.player_id)
+                    elif kind == "SUBMIT_DECISION":
+                        decision = decision_from_wire(message.get("decision"), connection.player_id)
+                        connection.managed.game.submit(connection.player_id, decision)
+                    elif kind == "TAKEOVER_AI":
+                        connection.managed.game.takeover_ai(
+                            connection.player_id, PlayerId(message.get("seat_id", "")))
+                    else:
+                        raise ProtocolError("unexpected client message")
+                    if connection.managed is not None:
+                        connection.managed.touch()
+                except (ProtocolError, RoomError, InvalidDecision, ValueError) as exc:
+                    LOG.info("browser request rejected: %s", exc)
+                    connection.send_nowait(envelope("ERROR", message=str(exc)))
+        except WebSocketDisconnect:
+            pass
+        except (ProtocolError, RoomError, ValueError) as exc:
+            connection.send_nowait(envelope("ERROR", message=str(exc)))
+            await asyncio.sleep(0)
+        except Exception:
+            LOG.exception("unexpected browser client error")
+            connection.send_nowait(envelope("ERROR", message="server error"))
+            await asyncio.sleep(0)
+        finally:
+            connection.detach()
+            active_connections.discard(connection)
+            sender.cancel()
+            with suppress(asyncio.CancelledError, RuntimeError):
+                await sender
+
+    dist = Path(__file__).resolve().parents[3] / "web" / "dist"
+    assets = dist / "assets"
+    if assets.is_dir():
+        app.mount("/assets", StaticFiles(directory=assets), name="assets")
+
+        @app.get("/{path:path}")
+        async def spa(path: str):
+            candidate = dist / path
+            if path and candidate.is_file() and dist in candidate.resolve().parents:
+                return FileResponse(candidate)
+            return FileResponse(dist / "index.html", headers={"Cache-Control": "no-cache"})
+    else:
+        @app.get("/")
+        async def development_root():
+            return JSONResponse({"message": "Run the Vite development server on http://localhost:5173"})
+
+    return app
+
+
+app = create_app()
