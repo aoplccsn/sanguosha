@@ -1,0 +1,57 @@
+services:
+  web-game:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+      args:
+        APP_VERSION: ${APP_VERSION:?Set APP_VERSION}
+        BUILD_COMMIT: ${BUILD_COMMIT:?Set BUILD_COMMIT to git rev-parse HEAD}
+    image: sanguosha-web:${BUILD_COMMIT}
+    restart: unless-stopped
+    env_file: .env.production
+    environment:
+      APP_ENV: production
+      BUILD_COMMIT: ${BUILD_COMMIT}
+    networks:
+      private:
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      options:
+        max-size: 10m
+        max-file: "5"
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    env_file: .env.production
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - caddy_logs:/var/log/caddy
+    depends_on:
+      web-game:
+        condition: service_healthy
+    networks:
+      private:
+        ipv4_address: 172.30.91.2
+    logging:
+      options:
+        max-size: 10m
+        max-file: "5"
+networks:
+  private:
+    ipam:
+      config:
+        - subnet: 172.30.91.0/24
+volumes:
+  caddy_data:
+  caddy_config:
+  caddy_logs:

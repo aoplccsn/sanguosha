@@ -7,12 +7,12 @@ export default defineConfig({
   fullyParallel: false,
   reporter: 'line',
   use: {
-    baseURL: 'http://127.0.0.1:5173',
+    baseURL: process.env.BASE_URL ?? 'http://127.0.0.1:5173',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  webServer: [
+  webServer: process.env.BASE_URL ? undefined : [
     {
       command: '.venv\\Scripts\\python.exe -m uvicorn sanguosha.web.app:app --host 127.0.0.1 --port 8000',
       cwd: '..',

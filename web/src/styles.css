@@ -189,3 +189,15 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 @keyframes eventReveal { from { opacity: 0; transform: translate(-50%, -50%) scale(.65); } }
 @media (max-width: 1000px) { .player-panel { width: 185px; padding-left: 76px; } .portrait-button { width: 58px; height: 78px; } .player-north-west { left: 2%; } .player-north-east { right: 2%; } .player-east { right: 1%; } .mini-skills, .player-zones { margin-left: -66px; } .decision-prompt { width: 94vw; bottom: 205px; } .game-general-detail { grid-template-columns: 180px 1fr; } }
 @media (max-width: 720px) { .game-board { min-height: 760px; transform-origin: top center; } .player-panel { width: 160px; min-height: 165px; font-size: 11px; } .player-north-west { left: 1%; top: 12%; } .player-north { top: 8%; } .player-north-east { right: 1%; top: 12%; } .player-east { right: 1%; top: 34%; } .player-self { flex-basis: 170px; } .self-area { left: 1%; right: 1%; } .skill-bar { display: none; } .decision-prompt { flex-wrap: wrap; bottom: 200px; } .prompt-copy { min-width: 100%; } .game-general-detail { grid-template-columns: 1fr; } .game-general-detail > img { max-height: 240px; } .pile-stats span { display: none; } }
+.connection-banner {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0.7rem 1rem;
+  text-align: center;
+  color: #fff;
+  background: #763c24;
+}
+.connection-banner button { margin-left: 1rem; cursor: pointer; }

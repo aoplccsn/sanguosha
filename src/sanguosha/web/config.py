@@ -8,6 +8,8 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class WebConfig:
+    production: bool = False
+    domain: str = ""
     host: str = "127.0.0.1"
     port: int = 8000
     public_origin: str = "http://localhost:5173"
@@ -17,12 +19,16 @@ class WebConfig:
     log_level: str = "INFO"
     max_rooms: int = 1000
     max_websockets: int = 5000
+    max_connections: int = 5000
+    room_creations_per_minute: int = 10
     message_size_limit: int = 256_000
     heartbeat_seconds: float = 20.0
 
     @classmethod
     def from_env(cls) -> "WebConfig":
         return cls(
+            production=os.getenv("APP_ENV", "development").lower() == "production",
+            domain=os.getenv("DOMAIN", "").strip().lower(),
             host=os.getenv("HOST", "127.0.0.1"),
             port=int(os.getenv("PORT", "8000")),
             public_origin=os.getenv("PUBLIC_ORIGIN", "http://localhost:5173"),
@@ -31,11 +37,19 @@ class WebConfig:
             reconnect_grace=float(os.getenv("RECONNECT_GRACE", "300")),
             log_level=os.getenv("LOG_LEVEL", "INFO"),
             max_rooms=int(os.getenv("MAX_ROOMS", "1000")),
-            max_websockets=int(os.getenv("MAX_WEBSOCKETS", "5000")),
+            max_websockets=int(os.getenv("MAX_CONNECTIONS", os.getenv("MAX_WEBSOCKETS", "5000"))),
+            max_connections=int(os.getenv("MAX_CONNECTIONS", "5000")),
+            room_creations_per_minute=int(os.getenv("ROOM_CREATIONS_PER_MINUTE", "10")),
             message_size_limit=int(os.getenv("MESSAGE_SIZE_LIMIT", "256000")),
             heartbeat_seconds=float(os.getenv("HEARTBEAT_SECONDS", "20")),
         )
 
     def validate_production(self) -> None:
-        if self.public_origin.startswith("https://") and self.secret_key == "development-only-change-me":
-            raise RuntimeError("SECRET_KEY must be configured in production")
+        if not self.production:
+            return
+        if not self.domain or ":" in self.domain or "/" in self.domain:
+            raise RuntimeError("DOMAIN must be a DNS hostname in production")
+        if self.public_origin != f"https://{self.domain}":
+            raise RuntimeError("PUBLIC_ORIGIN must equal https://DOMAIN in production")
+        if not self.secret_key or self.secret_key == "development-only-change-me" or len(self.secret_key) < 32:
+            raise RuntimeError("SECRET_KEY must be a unique secret of at least 32 characters in production")

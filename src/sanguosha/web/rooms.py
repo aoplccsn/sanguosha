@@ -19,6 +19,7 @@ class ManagedRoom:
     game: MultiplayerRoom
     created_at: float = field(default_factory=time.monotonic)
     last_active: float = field(default_factory=time.monotonic)
+    finish_logged: bool = False
 
     def touch(self) -> None:
         self.last_active = time.monotonic()
@@ -66,6 +67,9 @@ class RoomManager:
         now = time.monotonic()
         for code, managed in tuple(self.rooms.items()):
             managed.game.poll()
+            if managed.game.phase is RoomPhase.FINISHED and not managed.finish_logged:
+                LOG.info("game finished code=%s", code)
+                managed.finish_logged = True
             age = now - managed.last_active
             if managed.game.phase is RoomPhase.FINISHED and age >= self.reconnect_grace:
                 self.remove(code)

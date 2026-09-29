@@ -81,6 +81,9 @@ function reducer(state: ClientState, action: Action): ClientState {
       return { ...state, playerName: action.payload as string }
     case 'home':
       return { ...initialState, connection: state.connection, generals: state.generals }
+    case 'server-restarted':
+      return { ...initialState, connection: state.connection, generals: state.generals,
+        error: '服务器已重启，本局已结束。请返回首页创建新房间。' }
     default:
       return state
   }
@@ -114,11 +117,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState)
   const connectionRef = useRef(new GameConnection())
   const reconnectAttempted = useRef(false)
+  const recovering = useRef(false)
   const playerNameRef = useRef('玩家')
 
   useEffect(() => {
     const connection = connectionRef.current
-    const offStatus = connection.subscribeStatus((status) => dispatch({ type: 'connection', payload: status }))
+    const offStatus = connection.subscribeStatus((status) => {
+      dispatch({ type: 'connection', payload: status })
+      if (status === 'disconnected') reconnectAttempted.current = false
+    })
     const offMessage = connection.subscribe((message) => {
       const kind = String(message.type ?? '')
       if (kind === 'WELCOME') {
@@ -131,6 +138,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
           } })
         }
         if (message.seat_id && message.reconnect_token && message.room_code) {
+          recovering.current = false
           const record: SessionRecord = {
             roomCode: String(message.room_code),
             playerName: playerNameRef.current,
@@ -151,6 +159,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
                 name: session.playerName,
                 token: session.reconnectToken,
               })
+              recovering.current = true
             } catch {
               localStorage.removeItem(SESSION_KEY)
             }
@@ -173,6 +182,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       } else if (kind === 'GAME_OVER') {
         dispatch({ type: 'result', payload: String(message.result ?? '') })
       } else if (kind === 'ERROR') {
+        if (recovering.current && /room not found|invalid reconnect/i.test(String(message.message ?? ''))) {
+          localStorage.removeItem(SESSION_KEY)
+          recovering.current = false
+          dispatch({ type: 'server-restarted' })
+          return
+        }
         const friendly = friendlyError(String(message.message ?? ''))
         dispatch({ type: 'error', payload: friendly })
         if (friendly.includes('原对局已失效')) localStorage.removeItem(SESSION_KEY)
@@ -256,6 +271,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       connectionRef.current.send('LEAVE_ROOM')
       localStorage.removeItem(SESSION_KEY)
       reconnectAttempted.current = true
+      recovering.current = false
       dispatch({ type: 'home' })
     },
   }), [sendWhenConnected, state.draft, state.selectedGeneral])
