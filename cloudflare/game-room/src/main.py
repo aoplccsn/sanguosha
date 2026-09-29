@@ -186,7 +186,7 @@ class GameRoomDurableObject(DurableObject):
         previous_window, count = self.rate.get(session_id, (window, 0))
         count = count + 1 if previous_window == window else 1
         self.rate[session_id] = (window, count)
-        limit = int(getattr(self.env, "MESSAGE_RATE_PER_10_SECONDS", "40"))
+        limit = int(getattr(self.env, "MESSAGE_RATE_PER_10_SECONDS", "300"))
         if count > limit:
             raise ProtocolError("message rate limit exceeded")
 
@@ -218,6 +218,12 @@ class GameRoomDurableObject(DurableObject):
             requested = _normalize_room_code(message.get("room_code", self.room_code))
             if requested != self.room_code:
                 raise RoomError("room code mismatch")
+            if kind == "JOIN_ROOM" and message.get("created") and self.room.host_id is None:
+                seed = message.get("seed")
+                if seed is not None:
+                    if type(seed) is not int or seed < 0:
+                        raise ProtocolError("seed must be a non-negative integer")
+                    self.room.seed = seed
             token = message.get("token") if kind == "RECONNECT" else None
             pid, reconnect_token = self.room.join(message.get("name", "player"), self._sender(ws), token=token)
             attachment.update({
