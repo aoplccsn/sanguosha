@@ -26,7 +26,7 @@ class CardWidget(QPushButton):
         self._response_candidate = False
         self._lift = 0
         self._animation = QVariantAnimation(self)
-        self._animation.setDuration(130)
+        self._animation.setDuration(100)
         self._animation.valueChanged.connect(self._set_lift)
         self.setCursor(Qt.PointingHandCursor)
 

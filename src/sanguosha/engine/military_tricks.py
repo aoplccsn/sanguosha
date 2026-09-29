@@ -9,6 +9,7 @@ from .response import RespondWithCardAction
 from .card_effects import SlashEffectAction
 from .card_moves import CardMove, CardMoveReason
 from .card_rules import InvalidCardUse
+from .events import TrickTargetsDeclaredEvent
 from .deck import DrawCardsAction
 from .recovery import RecoverAction
 from .judgment import JudgmentAction, JudgmentPattern
@@ -128,9 +129,10 @@ class MilitaryTrickRule:
         return TrickAction(aid,user,card,self.definition,targets)
 
 class TrickHandler:
-    def __init__(self,moves,deck):
+    def __init__(self,moves,deck,recorder):
         self.moves=moves
         self.deck=deck
+        self.recorder=recorder
     def step(self,state,frame):
         a=frame.action
         d=a.definition_id
@@ -154,6 +156,9 @@ class TrickHandler:
             elif d in ('trick.god_salvation','trick.amazing_grace'):
                 targets=tuple(pid for pid in order if state.players[pid].is_alive)
             frame.local['targets']='|'.join(targets)
+            if len(targets) > 1 and not a.targets:
+                self.recorder.record(TrickTargetsDeclaredEvent(a.action_id+':targets',
+                    a.source_id, a.card_id, d, tuple(targets)))
             frame.local['pool']=a.action_id
             if d == 'trick.amazing_grace':
                 pool=ZoneRef(ZoneType.SPECIAL,special_key=a.action_id)
@@ -359,7 +364,7 @@ def register_military_tricks(definitions,rules,registry,moves,events,deck,bodies
     for key,_ in DELAYED:
         rules.register('delayed.'+key,MilitaryTrickRule('delayed.'+key,distance,skills))
     registry.register(NullificationWindow,NullificationHandler())
-    registry.register(TrickAction,TrickHandler(moves,deck))
+    registry.register(TrickAction,TrickHandler(moves,deck,events))
     registry.register(TargetTrick,TargetTrickHandler(moves,distance,skills))
     registry.register(ResolveDelayed,DelayedHandler(moves))
     bodies.register(Phase.JUDGMENT,JudgmentPhaseBody())

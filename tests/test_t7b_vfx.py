@@ -8,7 +8,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 
 from sanguosha.engine.events import (CardRespondedEvent, CardUsedEvent, DamageDealtEvent,
-                                      GameEndedEvent, PlayerDiedEvent, VirtualResponseEvent)
+                                      GameEndedEvent, PlayerDiedEvent, VirtualResponseEvent,
+                                      TrickTargetsDeclaredEvent)
 from sanguosha.model.enums import Identity
 from sanguosha.ui.card_vfx import CardVfxDirector
 from sanguosha.ui.game_table import GameTable
@@ -20,6 +21,27 @@ def test_multi_target_beam_and_slash_variant():
                             definition_id='basic.fire_slash')
     assert [cue.kind for cue in cues] == ['beam', 'fire_slash']
     assert all(cue.targets == ('p2', 'p3') for cue in cues)
+
+
+def test_global_trick_declares_actual_targets_for_multiple_beams():
+    from sanguosha.engine.card_use import UseCardAction
+    from sanguosha.model.enums import Phase
+    from sanguosha.model.usage import PlayUsageState
+    from sanguosha.session import GameSession
+    from test_t6_military_basics import put
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    card = put(session, 'trick.archery_attack', 'p1')
+    session.engine.start_action(UseCardAction('global-trick', 'p1', card))
+    event = next(event for event in session.events.events
+                 if isinstance(event, TrickTargetsDeclaredEvent))
+    assert event.target_ids == ('p2', 'p3', 'p4', 'p5')
+    cue = CardVfxDirector().consume(event)
+    assert len(cue) == 1 and cue[0].kind == 'beam'
+    assert cue[0].targets == event.target_ids
 
 
 def test_successful_dodge_does_not_invent_damage():
@@ -82,4 +104,21 @@ def test_overlay_is_mouse_transparent_and_preview_cancels():
     assert layer.preview.targets == ('p2', 'p3')
     layer.set_preview(None, ())
     assert layer.preview is None
+    table.close()
+
+
+def test_beam_anchors_at_panel_edges_and_renders_arrow():
+    app = QApplication.instance() or QApplication([])
+    table = GameTable()
+    table.resize(1200, 700)
+    table.show()
+    app.processEvents()
+    layer = table.vfx
+    geometry = layer._beam_geometry('p1', 'p2')
+    assert geometry is not None
+    start, end, _, _ = geometry
+    assert start != layer._point('p1') and end != layer._point('p2')
+    layer.set_preview('p1', ('p2', 'p3'))
+    image = layer.grab().toImage()
+    assert not image.isNull()
     table.close()

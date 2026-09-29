@@ -74,6 +74,15 @@ class CardUsedEvent:
 
 
 @dataclass(frozen=True, slots=True)
+class TrickTargetsDeclaredEvent:
+    event_id: str
+    player_id: PlayerId
+    card_id: CardInstanceId
+    definition_id: str
+    target_ids: tuple[PlayerId, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class CardRespondedEvent:
     event_id: str
     player_id: PlayerId
@@ -179,7 +188,7 @@ class GameEndedEvent:
 
 RecordedEvent = (
     Event | TurnStartedEvent | TurnEndedEvent | PhaseStartedEvent | PhaseEndedEvent | PhaseSkippedEvent
-    | CardMovedEvent | CardUsedEvent | CardRespondedEvent | VirtualResponseEvent | CardResolvedEvent
+    | CardMovedEvent | CardUsedEvent | TrickTargetsDeclaredEvent | CardRespondedEvent | VirtualResponseEvent | CardResolvedEvent
     | BeforeDamageEvent | DamageDealtEvent | AfterDamageEvent | DyingRequiredEvent | HpRecoveredEvent
     | DyingRescuedEvent | PlayerDiedEvent | KillRewardEvent | LordPenaltyEvent | GameEndedEvent
 )

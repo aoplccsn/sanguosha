@@ -1,14 +1,15 @@
 """Public-event driven combat presentation; no game rules live here."""
 
 from dataclasses import dataclass
+from math import hypot
 
 from PySide6.QtCore import Qt, QPointF, QRectF, QVariantAnimation
-from PySide6.QtGui import QColor, QFont, QPainter, QPen
+from PySide6.QtGui import QColor, QFont, QPainter, QPen, QPolygonF
 from PySide6.QtWidgets import QWidget
 
 from sanguosha.engine.events import (CardRespondedEvent, CardUsedEvent, DamageDealtEvent,
                                       GameEndedEvent, HpRecoveredEvent, PlayerDiedEvent,
-                                      VirtualResponseEvent)
+                                      VirtualResponseEvent, TrickTargetsDeclaredEvent)
 from .theme import Theme
 from .timing import (DAMAGE_FEEDBACK_MS, DEATH_VFX_MS, DODGE_VFX_MS,
                      GAME_RESULT_FADE_MS, KILL_ANNOUNCEMENT_MS, SLASH_VFX_MS,
@@ -41,6 +42,9 @@ class CardVfxDirector:
 
     def consume(self, event, *, definition_id: str = '', human_id: str = '', names=None):
         names = names or {}
+        if isinstance(event, TrickTargetsDeclaredEvent):
+            return (VfxCue('beam', str(event.player_id), tuple(map(str, event.target_ids)),
+                           duration_ms=TARGET_BEAM_MS),)
         if isinstance(event, CardUsedEvent):
             source, targets = str(event.player_id), tuple(map(str, event.target_ids))
             if not targets:
@@ -140,6 +144,26 @@ class CardVfxLayer(QWidget):
         panel = self.table.panels.get(player_id)
         return QPointF(panel.geometry().center()) if panel else None
 
+    def _beam_geometry(self, source_id, target_id, index=0, count=1):
+        source_panel = self.table.panels.get(source_id)
+        target_panel = self.table.panels.get(target_id)
+        if source_panel is None or target_panel is None:
+            return None
+        source = QPointF(source_panel.geometry().center())
+        target = QPointF(target_panel.geometry().center())
+        dx, dy = target.x() - source.x(), target.y() - source.y()
+        length = hypot(dx, dy)
+        if length < 1:
+            return None
+        ux, uy = dx / length, dy / length
+        offset = (index - (count - 1) / 2) * 7
+        lateral = QPointF(-uy * offset, ux * offset)
+        source_radius = min(source_panel.width(), source_panel.height()) * .38
+        target_radius = min(target_panel.width(), target_panel.height()) * .38
+        start = source + QPointF(ux * source_radius, uy * source_radius) + lateral
+        end = target - QPointF(ux * target_radius, uy * target_radius) + lateral
+        return start, end, ux, uy
+
     def _beam(self, p, cue, alpha):
         source = self._point(cue.source)
         if source is None:
@@ -149,12 +173,19 @@ class CardVfxLayer(QWidget):
         color = QColor(colors.get(cue.kind, Theme.accent))
         color.setAlpha(alpha)
         p.setPen(QPen(color, 3 if cue.kind == 'beam' else 2, Qt.SolidLine if cue.kind == 'beam' else Qt.DashLine))
-        for target_id in cue.targets:
-            target = self._point(target_id)
-            if target:
-                p.drawLine(source, target)
+        for index, target_id in enumerate(cue.targets):
+            geometry = self._beam_geometry(cue.source, target_id, index, len(cue.targets))
+            if geometry:
+                start, end, ux, uy = geometry
+                p.drawLine(start, end)
                 p.setBrush(color)
-                p.drawEllipse(target, 5, 5)
+                p.drawPolygon(QPolygonF((end, end - QPointF(ux * 13, uy * 13)
+                                          + QPointF(-uy * 5, ux * 5),
+                                        end - QPointF(ux * 13, uy * 13)
+                                          - QPointF(-uy * 5, ux * 5))))
+                if cue.kind == 'beam':
+                    flow = start + (end - start) * self.progress
+                    p.drawEllipse(flow, 4, 4)
 
     def paintEvent(self, event):
         p = QPainter(self)
