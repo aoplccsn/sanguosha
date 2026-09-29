@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(6, 5, 6, 5)
         layout.setSpacing(3)
         header = QHBoxLayout()
-        self.standard_game_button = QPushButton('标准开局预览 · 随机身份与十选一')
+        self.standard_game_button = QPushButton('开始标准身份局 · 随机身份与十选一')
         self.standard_game_button.setObjectName('standard-new-game')
         self.standard_game_button.clicked.connect(lambda checked=False: self.start_standard_game())
         if military:
@@ -76,6 +76,8 @@ class MainWindow(QMainWindow):
         self.new_game_button.setObjectName("new-game")
         self.new_game_button.clicked.connect(self.start_new_game)
         header.addWidget(self.new_game_button)
+        if military:
+            self.new_game_button.hide()
         self.status_label = QLabel("五人身份局 · 军争 160 张" if military else "五人身份局 · 普通杀 / 闪 / 桃")
         self.status_label.setObjectName("status")
         header.addWidget(self.status_label)
@@ -531,8 +533,12 @@ class MainWindow(QMainWindow):
                              getattr(event, 'response_definition_id', '') or
                              (str(session.state.cards[card_id].definition_id) if card_id in session.state.cards else ''))
             names = {str(player.player_id): player.name for player in view.players}
+            human = next(player for player in view.players if player.player_id == session.human_id)
             self.table.vfx.consume(event, definition_id=definition_id,
-                                   human_id=str(session.human_id), names=names)
+                                   human_id=str(session.human_id), names=names,
+                                   identity_label=human.identity_label,
+                                   survivor_names=tuple(player.name for player in view.players if player.alive),
+                                   reason=session.state.victory.reason if session.state.victory else '')
             if isinstance(event, CardUsedEvent):
                 definition_id = event.virtual_definition_id or session.state.cards[event.card_id].definition_id
                 card_name = session.definitions.get(definition_id).name

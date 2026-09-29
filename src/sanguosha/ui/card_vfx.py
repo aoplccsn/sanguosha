@@ -40,7 +40,8 @@ class CardVfxDirector:
         self.kill_counts.clear()
         self.result = None
 
-    def consume(self, event, *, definition_id: str = '', human_id: str = '', names=None):
+    def consume(self, event, *, definition_id: str = '', human_id: str = '', names=None,
+                identity_label: str = '', survivor_names=(), reason: str = ''):
         names = names or {}
         if isinstance(event, TrickTargetsDeclaredEvent):
             return (VfxCue('beam', str(event.player_id), tuple(map(str, event.target_ids)),
@@ -78,8 +79,12 @@ class CardVfxDirector:
             return tuple(cues)
         if isinstance(event, GameEndedEvent):
             outcome = '胜利' if human_id in tuple(map(str, event.winner_ids)) else '失败'
+            details = [f'身份：{identity_label}' if identity_label else '', event.label,
+                       '存活：' + '、'.join(survivor_names) if survivor_names else '',
+                       reason]
             self.result = VfxCue('result', None, tuple(map(str, event.winner_ids)),
-                                 f'{outcome} · {event.label}', GAME_RESULT_FADE_MS)
+                                 '\n'.join([outcome, *(detail for detail in details if detail)]),
+                                 GAME_RESULT_FADE_MS)
             return (self.result,)
         return ()
 
@@ -199,13 +204,24 @@ class CardVfxLayer(QWidget):
             elif cue.kind in ('slash', 'fire_slash', 'thunder_slash'):
                 colors = {'slash': Theme.slash, 'fire_slash': '#e86a32', 'thunder_slash': '#6ca8df'}
                 color = QColor(colors[cue.kind]); color.setAlpha(int(220 * (1-self.progress*.55)))
-                p.setPen(QPen(color, 5))
                 for target_id in cue.targets:
                     target = self._point(target_id)
                     if target:
-                        radius = 12 + 36*self.progress
+                        radius = 34 + 35*self.progress
+                        p.setPen(QPen(color, 8, Qt.SolidLine, Qt.RoundCap))
+                        p.drawLine(target + QPointF(-radius*.7, radius*.55),
+                                   target + QPointF(radius*.7, -radius*.55))
+                        highlight = QColor('#f6e5bf' if cue.kind != 'thunder_slash' else '#d8e9ff')
+                        highlight.setAlpha(int(190 * (1-self.progress*.6)))
+                        p.setPen(QPen(highlight, 2, Qt.SolidLine, Qt.RoundCap))
+                        p.drawLine(target + QPointF(-radius*.7, radius*.55-5),
+                                   target + QPointF(radius*.7, -radius*.55-5))
+                        p.setPen(QPen(color, 4))
                         p.drawArc(QRectF(target.x()-radius, target.y()-radius,
                                          radius*2, radius*2), 20*16, 135*16)
+                        if cue.kind == 'fire_slash':
+                            p.drawArc(QRectF(target.x()-radius*.65, target.y()-radius*.65,
+                                             radius*1.3, radius*1.3), 195*16, 105*16)
                         if cue.kind == 'thunder_slash':
                             p.drawLine(target + QPointF(-radius, -radius), target + QPointF(0, 0))
                             p.drawLine(target, target + QPointF(radius*.5, radius))
@@ -225,12 +241,25 @@ class CardVfxLayer(QWidget):
                 p.setPen(QPen(QColor(Theme.accent), 2))
                 p.setBrush(QColor(30, 20, 20, 210))
                 p.drawRoundedRect(rect, 13, 13)
+                p.setPen(QPen(QColor('#a54936'), 2))
+                p.setBrush(QColor(128, 42, 32, 210))
+                seal = QRectF(rect.right()-52, rect.top()+10, 42, 42)
+                p.drawRect(seal)
+                p.setFont(QFont('Microsoft YaHei UI', 15, QFont.Bold))
+                p.drawText(seal, Qt.AlignCenter, '破')
+                p.setPen(QPen(QColor(Theme.accent), 2))
                 p.setFont(QFont('Microsoft YaHei UI', 21, QFont.Bold))
-                p.drawText(rect, Qt.AlignCenter, cue.text)
+                p.drawText(QRectF(rect.left()+20, rect.top(), rect.width()-80, rect.height()),
+                           Qt.AlignCenter, cue.text)
         if self.director.result:
             rect = QRectF(self.width()*.18, self.height()*.26, self.width()*.64, self.height()*.40)
             p.setPen(QPen(QColor(Theme.accent), 3))
             p.setBrush(QColor(29, 22, 22, 225))
             p.drawRoundedRect(rect, 18, 18)
-            p.setFont(QFont('Microsoft YaHei UI', 30, QFont.Bold))
-            p.drawText(rect, Qt.AlignCenter | Qt.TextWordWrap, self.director.result.text)
+            lines = self.director.result.text.splitlines()
+            p.setFont(QFont('Microsoft YaHei UI', 34, QFont.Bold))
+            p.drawText(QRectF(rect.left(), rect.top() + 20, rect.width(), 70), Qt.AlignCenter, lines[0])
+            p.setFont(QFont('Microsoft YaHei UI', 16))
+            p.drawText(QRectF(rect.left() + 24, rect.top() + 105, rect.width() - 48,
+                              rect.height() - 120), Qt.AlignCenter | Qt.TextWordWrap,
+                       '\n'.join(lines[1:]))
