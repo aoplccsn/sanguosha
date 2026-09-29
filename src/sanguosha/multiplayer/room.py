@@ -72,7 +72,7 @@ class NetworkDecisionProvider:
         room = self.room
         if request.request_id != room._last_request_id:
             room._last_request_id = request.request_id
-            room.request_deadline = time.monotonic() + room.timeout_seconds
+            room.request_deadline = time.time() + room.timeout_seconds
             room._sync()
 
     def validate(self, pid: PlayerId, decision: Decision) -> PendingRequest:
@@ -80,7 +80,7 @@ class NetworkDecisionProvider:
         request = room.session.engine.pending_request
         if request is None or request.player_id != pid or request.request_id != decision.request_id:
             raise RoomError("stale, duplicate, or wrong-player decision")
-        if room.request_deadline is not None and time.monotonic() >= room.request_deadline:
+        if room.request_deadline is not None and time.time() >= room.request_deadline:
             room.poll()
             raise RoomError("request timed out")
         request.validate(decision.value)
@@ -106,6 +106,8 @@ class MultiplayerRoom:
         self._ai = AIDecisionProvider(SEATS[0])
         self.network_decisions = NetworkDecisionProvider(self)
         self._revision = 0
+        self.auto_step_budget = 20_000
+        self.suspend_on_budget = False
 
     def join(self, name: str, send: Send, *, token: str | None = None) -> tuple[PlayerId, str]:
         if token:
@@ -187,14 +189,14 @@ class MultiplayerRoom:
         request = PendingRequest(f"draft:{pid}:{serial}", pid, RequestType.CHOOSE_OPTION,
                                  "选择武将并确认", "draft", "draft", choices=candidates)
         self.draft_requests[pid] = request
-        self.draft_deadlines[pid] = time.monotonic() + self.timeout_seconds
+        self.draft_deadlines[pid] = time.time() + self.timeout_seconds
         self._send_draft(pid)
 
     def _send_draft(self, pid: PlayerId) -> None:
         assert self.pregame is not None
         request = self.draft_requests[pid]
         self._send(pid, envelope("DRAFT_REQUEST", request=serialize_request(
-            request, max(0, int((self.draft_deadlines[pid] - time.monotonic()) * 1000))),
+            request, max(0, int((self.draft_deadlines[pid] - time.time()) * 1000))),
             identity=self.pregame.identities[pid].value, lord_id=str(self.pregame.lord_id)))
 
     def submit(self, pid: PlayerId, decision: Decision) -> None:
@@ -242,13 +244,16 @@ class MultiplayerRoom:
         self._broadcast_lobby()
         self.pump()
 
-    def pump(self, max_steps: int = 20_000) -> None:
+    def pump(self, max_steps: int | None = None) -> None:
         if self.session is None:
             return
+        max_steps = self.auto_step_budget if max_steps is None else max_steps
         steps = 0
         while self.session.state.status is not GameStatus.FINISHED:
             steps += 1
             if steps > max_steps:
+                if self.suspend_on_budget:
+                    return
                 raise RuntimeError("multiplayer match step limit exceeded")
             request = self.session.engine.pending_request
             if request is not None and self.seats[request.player_id].controller is Controller.HUMAN:
@@ -264,7 +269,7 @@ class MultiplayerRoom:
         self._broadcast(envelope("GAME_OVER", result=self.session.state.victory.label if self.session.state.victory else ""))
 
     def poll(self) -> None:
-        now = time.monotonic()
+        now = time.time()
         if self.phase is RoomPhase.DRAFT:
             for pid, deadline in tuple(self.draft_deadlines.items()):
                 if now >= deadline:
@@ -316,7 +321,7 @@ class MultiplayerRoom:
         request = self.session.engine.pending_request
         if request is not None and self.seats[request.player_id].controller is Controller.HUMAN:
             self._send(request.player_id, envelope("PENDING_REQUEST", request=serialize_request(
-                request, max(0, int((self.request_deadline - time.monotonic()) * 1000)))))
+                request, max(0, int((self.request_deadline - time.time()) * 1000)))))
 
     def _send_current(self, pid: PlayerId) -> None:
         self._send(pid, envelope("LOBBY_STATE", **self.lobby_state()))
@@ -329,7 +334,7 @@ class MultiplayerRoom:
             request = self.session.engine.pending_request
             if request is not None and request.player_id == pid and self.request_deadline is not None:
                 self._send(pid, envelope("PENDING_REQUEST", request=serialize_request(
-                    request, max(0, int((self.request_deadline - time.monotonic()) * 1000)))))
+                    request, max(0, int((self.request_deadline - time.time()) * 1000)))))
 
     def lobby_state(self) -> dict:
         return {"phase": self.phase.value, "host_id": self.host_id,

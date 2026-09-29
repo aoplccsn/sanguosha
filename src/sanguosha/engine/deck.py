@@ -29,7 +29,13 @@ def classic_military_deck(rng: RandomSource) -> tuple[dict[CardInstanceId, CardI
     """Load the fixed Standard + EX + Military physical prints, then shuffle order."""
     from collections import Counter
 
-    manifest = json.loads(CLASSIC_MILITARY_MANIFEST.read_text(encoding="utf-8"))
+    if CLASSIC_MILITARY_MANIFEST.is_file():
+        manifest = json.loads(CLASSIC_MILITARY_MANIFEST.read_text(encoding="utf-8"))
+    else:
+        # The Cloudflare Python bundle contains modules, not the repository JSON file.
+        # Its build step generates this module directly from the same manifest.
+        from .cloudflare_deck_data import MANIFEST
+        manifest = MANIFEST
     prints = manifest["cards"]
     if len(prints) != 160 or Counter(item["set"] for item in prints) != {"standard": 104, "military": 52, "ex": 4}:
         raise ValueError("classic military manifest has the wrong print count")
