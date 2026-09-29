@@ -34,6 +34,8 @@ class Pregame:
         rng = PythonRandomSource(seed)
         roles = list(ROLE_SET)
         rng.shuffle(roles)
+        # Preserve the established standard-mode draft; T10 clients can opt
+        # into ALL_65_GENERAL_POOL through the pack-aware multiplayer path.
         roster = list(STANDARD_25_GENERAL_POOL)
         rng.shuffle(roster)
         return cls(rng, dict(zip(SEATS, roles)), tuple(c.id for c in roster[:10]))
@@ -78,3 +80,4 @@ class Pregame:
         if request is None:
             raise ValueError('general choice is not pending')
         self.submit(Decision(request.request_id, self.human_id, request.timeout_value()))
+

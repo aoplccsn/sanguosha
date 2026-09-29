@@ -9,7 +9,7 @@ from PySide6.QtCore import QThread, QTimer, Signal, Qt
 from PySide6.QtWidgets import (QDialog, QGridLayout, QHBoxLayout, QLabel, QLineEdit,
                                QApplication, QMessageBox, QPushButton, QScrollArea, QStackedWidget, QVBoxLayout, QWidget)
 
-from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL, STANDARD_SKILL_CATALOGUE
+from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL, ALL_SKILL_CATALOGUE
 from sanguosha.engine.phases import END_PLAY_PHASE
 from sanguosha.engine.events import (CardUsedEvent, TrickTargetsDeclaredEvent, CardRespondedEvent,
                                      VirtualResponseEvent, DamageDealtEvent, HpRecoveredEvent,
@@ -586,8 +586,8 @@ class MultiplayerWindow(QDialog):
         self.game_status.setText(f"你的身份：{message['identity']} · 主公座位：{message['lord_id']}")
         self.prompt.setText("十选一 · 请选择武将")
         self._clear_actions()
-        characters = {str(c.id): c for c in STANDARD_25_GENERAL_POOL}
-        skills = {s.id: s for s in STANDARD_SKILL_CATALOGUE}
+        characters = {str(c.id): c for c in ALL_65_GENERAL_POOL}
+        skills = {s.id: s for s in ALL_SKILL_CATALOGUE}
         for cid in self.request["choices"]:
             character = characters[cid]
             card = GeneralChoiceCard(character, [skills[sid].name for sid in character.skill_ids])
@@ -691,3 +691,5 @@ class MultiplayerWindow(QDialog):
             self.public_host_thread.stop()
             self.public_host_thread.wait(3000)
         super().closeEvent(event)
+
+

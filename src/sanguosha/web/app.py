@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from sanguosha.engine.errors import InvalidDecision
-from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL, STANDARD_SKILL_CATALOGUE
+from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL, ALL_SKILL_CATALOGUE
 from sanguosha.model.ids import PlayerId
 from sanguosha.multiplayer.protocol import (
     MAX_MESSAGE_BYTES, PROTOCOL_VERSION, ProtocolError, check_message,
@@ -130,7 +130,7 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
 
     @app.get("/api/catalog/generals")
     async def general_catalog() -> list[dict[str, Any]]:
-        skills = {str(skill.id): skill for skill in STANDARD_SKILL_CATALOGUE}
+        skills = {str(skill.id): skill for skill in ALL_SKILL_CATALOGUE}
         return [
             {
                 "id": str(character.id), "name": character.name,
@@ -144,7 +144,7 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                     for skill_id in character.skill_ids
                 ],
             }
-            for character in STANDARD_25_GENERAL_POOL
+            for character in ALL_65_GENERAL_POOL
         ]
 
     @app.websocket("/ws")
@@ -281,3 +281,5 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
 
 
 app = create_app()
+
+

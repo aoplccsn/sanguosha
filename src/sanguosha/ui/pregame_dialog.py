@@ -6,7 +6,7 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (QDialog, QGridLayout, QHBoxLayout, QLabel,
                                QPushButton, QVBoxLayout, QWidget)
 
-from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL, STANDARD_SKILL_CATALOGUE
+from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL, ALL_SKILL_CATALOGUE
 from sanguosha.engine.requests import Decision
 from sanguosha.pregame import Pregame, SetupStage
 from sanguosha.projection import IDENTITY_LABELS
@@ -116,8 +116,8 @@ class PregameDialog(QDialog):
         self.setup.acknowledge_identity()
         self.title.setText('十选一 · 点击武将查看技能，再确认选择')
         self._replace_content()
-        characters = {character.id: character for character in STANDARD_25_GENERAL_POOL}
-        skills = {skill.id: skill for skill in STANDARD_SKILL_CATALOGUE}
+        characters = {character.id: character for character in ALL_65_GENERAL_POOL}
+        skills = {skill.id: skill for skill in ALL_SKILL_CATALOGUE}
         outer = QVBoxLayout(self.content)
         grid = QGridLayout()
         outer.addLayout(grid)
@@ -140,8 +140,8 @@ class PregameDialog(QDialog):
         self.selected_id = cid
         for candidate_id, card in self.cards.items():
             card.setChecked(candidate_id == cid)
-        character = next(character for character in STANDARD_25_GENERAL_POOL if character.id == cid)
-        skills = {skill.id: skill for skill in STANDARD_SKILL_CATALOGUE}
+        character = next(character for character in ALL_65_GENERAL_POOL if character.id == cid)
+        skills = {skill.id: skill for skill in ALL_SKILL_CATALOGUE}
         descriptions = '\n'.join(f'【{skills[sid].name}】{skills[sid].description}' for sid in character.skill_ids)
         self.details.setText(f'{character.name} · {FACTIONS[character.kingdom.value]} · {character.max_hp} 体力\n{descriptions}')
         self.confirm_button.setEnabled(True)
@@ -163,3 +163,5 @@ class PregameDialog(QDialog):
     def closeEvent(self, event):
         self._timer.stop()
         super().closeEvent(event)
+
+

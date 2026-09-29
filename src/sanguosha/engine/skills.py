@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 import json
 
-from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL as CHARACTERS, STANDARD_SKILL_CATALOGUE as SKILLS
+from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL as CHARACTERS, ALL_SKILL_CATALOGUE as SKILLS
 from sanguosha.model.enums import Identity, Phase, Color, Kingdom, EquipmentSlot, Suit, Gender
 from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.model.virtual_card import VirtualCard
@@ -1091,3 +1091,5 @@ class SkillPlayOptions:
         if option.startswith('virtual:longdan:'):
             return LongdanUse(aid+':longdan',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)
+
+

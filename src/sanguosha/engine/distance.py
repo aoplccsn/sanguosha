@@ -7,7 +7,7 @@ small DistanceModifier protocol.
 
 from typing import Protocol
 
-from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL
+from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL
 from sanguosha.model.enums import EquipmentSlot
 from sanguosha.model.ids import PlayerId
 from sanguosha.model.state import GameState
@@ -43,7 +43,7 @@ class CharacterDistanceModifier:
         return current
 
 
-_CHARACTERS = {character.id: character for character in STANDARD_25_GENERAL_POOL}
+_CHARACTERS = {character.id: character for character in ALL_65_GENERAL_POOL}
 
 
 class DistanceSystem:
@@ -81,3 +81,4 @@ class DistanceSystem:
             return self.distance_between(state, source, target) <= self.attack_range(state, source)
         except ValueError:
             return False
+

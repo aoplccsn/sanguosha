@@ -72,3 +72,13 @@ STANDARD_25_GENERAL_POOL = FIRST_FIVE + ADDITIONAL_CHARACTERS
 STANDARD_SKILL_CATALOGUE = FIRST_SKILLS + ADDITIONAL_SKILLS
 assert len(STANDARD_25_GENERAL_POOL) == 25
 assert len({character.id for character in STANDARD_25_GENERAL_POOL}) == 25
+
+# T10 keeps the original constant for compatibility while exposing the full
+# 65-general catalogue to draft, web, and desktop clients.
+from sanguosha.content.characters.myth import MYTH_40_GENERAL_POOL, MYTH_SKILL_CATALOGUE
+ALL_65_GENERAL_POOL = STANDARD_25_GENERAL_POOL + MYTH_40_GENERAL_POOL
+ALL_SKILL_CATALOGUE = STANDARD_SKILL_CATALOGUE + MYTH_SKILL_CATALOGUE
+assert len(ALL_65_GENERAL_POOL) == 65
+assert len({character.id for character in ALL_65_GENERAL_POOL}) == 65
+
+

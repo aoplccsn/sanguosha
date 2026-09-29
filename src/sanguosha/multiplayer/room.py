@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Callable
 
-from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL
+from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL
 from sanguosha.decisions.ai import AIDecisionProvider
 from sanguosha.engine.requests import Decision, PendingRequest, RequestType
 from sanguosha.engine.events import (CardUsedEvent, CardRespondedEvent, TrickTargetsDeclaredEvent,
@@ -181,7 +181,7 @@ class MultiplayerRoom:
 
     def _new_draft_request(self, pid: PlayerId) -> None:
         assert self.pregame is not None
-        remaining = [c.id for c in STANDARD_25_GENERAL_POOL if c.id not in self.pregame.generals.values()]
+        remaining = [c.id for c in ALL_65_GENERAL_POOL if c.id not in self.pregame.generals.values()]
         self.pregame.rng.shuffle(remaining)
         candidates = tuple(map(str, remaining[:10]))
         old = self.draft_requests.get(pid)
@@ -232,7 +232,7 @@ class MultiplayerRoom:
         if self.draft_requests:
             return
         assert self.pregame is not None
-        available = [c.id for c in STANDARD_25_GENERAL_POOL if c.id not in self.pregame.generals.values()]
+        available = [c.id for c in ALL_65_GENERAL_POOL if c.id not in self.pregame.generals.values()]
         for seat in self.seats.values():
             if seat.controller is Controller.AI:
                 selected = self.pregame.rng.choice(available)
@@ -385,3 +385,4 @@ class MultiplayerRoom:
         seat = self.seats[pid]
         if seat.connected and seat.send:
             seat.send(message)
+
