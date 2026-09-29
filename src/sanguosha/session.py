@@ -49,6 +49,7 @@ class GameSession:
     character_names: dict[PlayerId, str]
     skills: object | None = None
     declined_nullification_windows: set[str] = field(default_factory=set)
+    rng: PythonRandomSource | None = None
 
     def nullification_window_id(self, request=None) -> str | None:
         request = request or self.engine.pending_request
@@ -204,6 +205,7 @@ class GameSession:
             AIDecisionProvider(ids[0]),
             {pid: characters[index].name for index, pid in enumerate(ids)} if setup is not None else dict(zip(ids, CHARACTER_NAMES)),
             skills,
+            rng=rng,
         )
 
     @property
