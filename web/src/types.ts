@@ -110,6 +110,12 @@ export interface SessionRecord {
   reconnectToken: string
 }
 
+export interface ServerVersion {
+  app_version: string
+  build_commit: string
+  protocol_version: number
+}
+
 export interface ClientState {
   page: Page
   connection: ConnectionStatus
@@ -126,4 +132,6 @@ export interface ClientState {
   error: string
   result: string | null
   selectedGeneral: string
+  serverVersion: ServerVersion | null
+  updateAvailable: boolean
 }

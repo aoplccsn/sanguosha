@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from 'react'
 import { GameConnection } from '../connection/GameConnection'
-import type { ClientState, DraftState, GeneralInfo, LobbyState, PendingRequest, Projection, PublicEvent, SessionRecord } from '../types'
+import type { ClientState, DraftState, GeneralInfo, LobbyState, PendingRequest, Projection, PublicEvent, ServerVersion, SessionRecord } from '../types'
 
 const SESSION_KEY = 'sanguosha.web.session.v1'
 
@@ -20,6 +20,8 @@ const initialState: ClientState = {
   error: '',
   result: null,
   selectedGeneral: '',
+  serverVersion: null,
+  updateAvailable: false,
 }
 
 type Action = { type: string; payload?: unknown }
@@ -30,6 +32,14 @@ function reducer(state: ClientState, action: Action): ClientState {
       return { ...state, connection: action.payload as ClientState['connection'] }
     case 'catalog':
       return { ...state, generals: action.payload as Record<string, GeneralInfo> }
+    case 'server-version': {
+      const version = action.payload as ServerVersion
+      const local = __APP_VERSION__.split('.').map(Number)
+      const remote = version.app_version.split('.').map(Number)
+      const updateAvailable = remote.some((part, index) => part > (local[index] ?? 0)
+        && remote.slice(0, index).every((earlier, earlierIndex) => earlier === (local[earlierIndex] ?? 0)))
+      return { ...state, serverVersion: version, updateAvailable }
+    }
     case 'room-created':
       return { ...state, roomCode: action.payload as string, error: '' }
     case 'welcome': {
@@ -113,6 +123,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const kind = String(message.type ?? '')
       if (kind === 'WELCOME') {
         dispatch({ type: 'welcome', payload: message })
+        if (message.app_version && message.build_commit && message.protocol_version) {
+          dispatch({ type: 'server-version', payload: {
+            app_version: String(message.app_version),
+            build_commit: String(message.build_commit),
+            protocol_version: Number(message.protocol_version),
+          } })
+        }
         if (message.seat_id && message.reconnect_token && message.room_code) {
           const record: SessionRecord = {
             roomCode: String(message.room_code),
@@ -172,6 +189,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'catalog', payload: Object.fromEntries(items.map((item) => [item.id, item])) })
       })
       .catch(() => undefined)
+    fetch('/api/version')
+      .then((response) => {
+        if (!response.ok) throw new Error('version unavailable')
+        return response.json()
+      })
+      .then((version: ServerVersion) => dispatch({ type: 'server-version', payload: version }))
+      .catch(() => undefined)
 
     return () => {
       offStatus()
@@ -192,7 +216,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       playerNameRef.current = clean
       dispatch({ type: 'set-name', payload: clean })
       localStorage.removeItem(SESSION_KEY)
-      sendWhenConnected('CREATE_ROOM', { name: clean, single_player: singlePlayer })
+      const requestedSeed = Number(new URLSearchParams(window.location.search).get('seed'))
+      sendWhenConnected('CREATE_ROOM', {
+        name: clean,
+        single_player: singlePlayer,
+        ...(Number.isInteger(requestedSeed) && requestedSeed >= 0 ? { seed: requestedSeed } : {}),
+      })
     },
     joinRoom(name, roomCode) {
       const clean = name.trim() || '玩家'

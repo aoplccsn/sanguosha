@@ -39,9 +39,10 @@ export function HomePage() {
         <button className="brush-button compact" disabled={!roomCode.trim()} onClick={() => actions.joinRoom(remember(), roomCode)}>加入房间</button>
       </div>
       {state.error && <div className="error-banner" role="alert">{state.error}<button onClick={actions.clearError}>×</button></div>}
+      {state.updateAvailable && <div className="version-banner" role="status">新版本可用：v{state.serverVersion?.app_version}</div>}
       <footer>
         <span><i className={`connection-dot ${state.connection}`} /> {state.connection === 'connected' ? '服务器已连接' : '正在连接服务器'}</span>
-        <span>v{__APP_VERSION__} · {__BUILD_COMMIT__.slice(0, 8)}</span>
+        <span>v{__APP_VERSION__} · {__BUILD_COMMIT__.slice(0, 8)} · 协议 {state.serverVersion?.protocol_version ?? __PROTOCOL_VERSION__}</span>
       </footer>
     </section>
   </main>

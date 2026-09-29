@@ -5,9 +5,10 @@ import { HomePage } from './HomePage'
 
 const createRoom = vi.fn()
 const joinRoom = vi.fn()
+let mockState: any
 vi.mock('../state/GameContext', () => ({
   useGame: () => ({
-    state: { connection: 'connected', error: '' },
+    state: mockState,
     actions: { createRoom, joinRoom, clearError: vi.fn() },
   }),
 }))
@@ -18,6 +19,7 @@ describe('HomePage', () => {
     joinRoom.mockClear()
     localStorage.clear()
     window.history.pushState({}, '', '/')
+    mockState = { connection: 'connected', error: '', updateAvailable: false, serverVersion: null }
   })
 
   it('creates a single-player cloud room', async () => {
@@ -31,5 +33,12 @@ describe('HomePage', () => {
     window.history.pushState({}, '', '/room/7KQ9MX')
     render(<HomePage />)
     expect(screen.getByLabelText('房间码')).toHaveValue('7KQ9MX')
+  })
+
+  it('shows a non-blocking new version prompt from server state', () => {
+    mockState = { connection: 'connected', error: '', updateAvailable: true, serverVersion: { app_version: '0.4.0', build_commit: 'next', protocol_version: 2 } }
+    render(<HomePage />)
+    expect(screen.getByRole('status')).toHaveTextContent('新版本可用：v0.4.0')
+    expect(screen.getByText(/协议 2/)).toBeInTheDocument()
   })
 })

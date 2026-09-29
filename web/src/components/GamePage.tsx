@@ -211,7 +211,7 @@ export function GamePage() {
   const detailGeneral = detailPlayer ? state.generals[detailPlayer.character_id] : undefined
 
   return <main className="game-page table-background">
-    <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong></div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><button onClick={actions.returnHome}>离开牌局</button></div></header>
+    <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><button onClick={actions.returnHome}>离开牌局</button></div></header>
     <section className="game-board">
       <TargetBeam targets={selectedOpponentIndexes} mode={beamMode} />
       {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={positions[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}

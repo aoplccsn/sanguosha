@@ -30,6 +30,7 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .connection-dot.connected { background: #48763f; box-shadow: 0 0 8px #4b8a3d; }
 .error-banner { position: relative; z-index: 3; margin-top: 14px; padding: 11px 36px 11px 14px; color: #f8e4cd; background: #77251f; border: 1px solid #c98c59; text-align: left; }
 .error-banner button { position: absolute; right: 8px; top: 5px; color: inherit; background: none; border: 0; font-size: 24px; }
+.version-banner { margin-top: 10px; padding: 8px 12px; color: #654019; background: rgba(222,180,91,.28); border: 1px solid rgba(142,92,34,.45); font-size: 13px; }
 .ink-mist { position: absolute; border-radius: 50%; filter: blur(12px); opacity: .34; background: #0b0907; }
 .ink-mist-one { width: 42vw; height: 20vw; left: -8vw; top: 10vh; transform: rotate(18deg); }
 .ink-mist-two { width: 38vw; height: 16vw; right: -8vw; bottom: 8vh; transform: rotate(-12deg); }
@@ -95,6 +96,7 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .game-hud { position: fixed; z-index: 20; inset: 0 0 auto; height: 54px; padding: 8px 18px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(180deg, rgba(19,14,10,.94), rgba(19,14,10,.56)); border-bottom: 1px solid rgba(201,155,74,.35); }
 .game-hud > div { display: flex; align-items: center; gap: 12px; }
 .game-hud strong { color: #e9bc64; font-size: 20px; }
+.game-update-note { padding: 2px 7px; color: #cbb68f; border: 1px solid rgba(203,182,143,.35); font-weight: 400; }
 .pile-stats span, .pile-stats button { padding: 5px 9px; color: #d7c29a; background: rgba(38,27,18,.72); border: 1px solid rgba(183,133,63,.35); }
 .game-board { position: relative; width: min(1500px, 100vw); height: 100vh; min-height: 700px; margin: auto; }
 .player-panel { position: absolute; z-index: 5; width: 220px; min-height: 205px; padding: 9px 10px 10px 90px; color: #e8d8b5; background: linear-gradient(135deg, rgba(40,29,19,.96), rgba(20,16,12,.94)); border: 1px solid #74552f; box-shadow: 0 9px 30px rgba(0,0,0,.42), inset 0 0 30px rgba(178,126,51,.06); transition: .18s ease; }
