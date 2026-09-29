@@ -28,6 +28,7 @@ from .theme import QSS
 from .resources import RESOURCES
 from .general_detail import GeneralDetailPanel, SkillBar
 from .pregame_dialog import PregameDialog
+from .multiplayer_window import MultiplayerWindow
 from .timing import HUMAN_DECISION_TIMEOUT_MS, DECISION_TIMER_TICK_MS
 
 NORMAL_AI_DELAY_MS = 500
@@ -48,6 +49,7 @@ class MainWindow(QMainWindow):
         self._skill_mode: str | None = None
         self._detail_dialog = None
         self._pregame_dialog = None
+        self._multiplayer_dialog = None
         self.interaction = InteractionState()
         self._tick_scheduled = False
         self._closed = False
@@ -67,11 +69,14 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(6, 5, 6, 5)
         layout.setSpacing(3)
         header = QHBoxLayout()
-        self.standard_game_button = QPushButton('开始标准身份局 · 随机身份与十选一')
+        self.standard_game_button = QPushButton('单人游戏 · 标准身份局')
         self.standard_game_button.setObjectName('standard-new-game')
         self.standard_game_button.clicked.connect(lambda checked=False: self.start_standard_game())
         if military:
             header.addWidget(self.standard_game_button)
+            self.multiplayer_button = QPushButton('多人游戏')
+            self.multiplayer_button.clicked.connect(self.start_multiplayer)
+            header.addWidget(self.multiplayer_button)
         self.new_game_button = QPushButton("五将练习")
         self.new_game_button.setObjectName("new-game")
         self.new_game_button.clicked.connect(self.start_new_game)
@@ -115,6 +120,13 @@ class MainWindow(QMainWindow):
         header.addWidget(self.log_toggle)
         layout.addWidget(self.log, alignment=Qt.AlignRight)
         self.log.setVisible(False)
+
+    def start_multiplayer(self) -> None:
+        if self._multiplayer_dialog is None:
+            self._multiplayer_dialog = MultiplayerWindow(self)
+            self._multiplayer_dialog.finished.connect(lambda _: setattr(self, '_multiplayer_dialog', None))
+        self._multiplayer_dialog.show()
+        self._multiplayer_dialog.raise_()
 
     def start_new_game(self) -> None:
         """Keep the five-general practice match for the existing T7-A tests."""
@@ -170,6 +182,8 @@ class MainWindow(QMainWindow):
         self._tick_scheduled = False
         if self._pregame_dialog is not None:
             self._pregame_dialog.close()
+        if self._multiplayer_dialog is not None:
+            self._multiplayer_dialog.close()
         for animation in self.findChildren(QAbstractAnimation):
             animation.stop()
         super().closeEvent(event)
