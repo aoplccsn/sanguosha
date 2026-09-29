@@ -7,7 +7,8 @@ from PySide6.QtGui import QColor, QFont, QPainter, QPen
 from PySide6.QtWidgets import QWidget
 
 from sanguosha.engine.events import (CardRespondedEvent, CardUsedEvent, DamageDealtEvent,
-                                      GameEndedEvent, HpRecoveredEvent, PlayerDiedEvent)
+                                      GameEndedEvent, HpRecoveredEvent, PlayerDiedEvent,
+                                      VirtualResponseEvent)
 from .theme import Theme
 from .timing import (DAMAGE_FEEDBACK_MS, DEATH_VFX_MS, DODGE_VFX_MS,
                      GAME_RESULT_FADE_MS, KILL_ANNOUNCEMENT_MS, SLASH_VFX_MS,
@@ -50,7 +51,7 @@ class CardVfxDirector:
             return (VfxCue('beam', source, targets, duration_ms=TARGET_BEAM_MS),
                     VfxCue(kind, source, targets, duration_ms=SLASH_VFX_MS)) if kind != 'target' else (
                         VfxCue('beam', source, targets, duration_ms=TARGET_BEAM_MS),)
-        if isinstance(event, CardRespondedEvent) and definition_id == 'basic.dodge':
+        if isinstance(event, (CardRespondedEvent, VirtualResponseEvent)) and definition_id == 'basic.dodge':
             return (VfxCue('dodge', str(event.player_id), (str(event.player_id),),
                            '第二张闪' if event.response_number == 2 else '闪避',
                            duration_ms=DODGE_VFX_MS),)

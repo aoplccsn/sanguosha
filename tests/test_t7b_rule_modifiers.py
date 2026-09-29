@@ -8,7 +8,7 @@ from sanguosha.engine.military_basics import MilitaryDamageAction
 from sanguosha.engine.judgment import JudgmentAction, JudgmentPattern
 from sanguosha.engine.response import RespondWithCardAction
 from sanguosha.engine.events import CardRespondedEvent as RecordedResponse
-from sanguosha.engine.events import TurnStartedEvent, CardUsedEvent, CardRespondedEvent
+from sanguosha.engine.events import TurnStartedEvent, CardUsedEvent, CardRespondedEvent, VirtualResponseEvent
 from sanguosha.engine.resolution import ResolutionFrame
 from sanguosha.engine.requests import Decision, RequestType
 from sanguosha.engine.skills import KurouAction, QingnangAction, JieyinAction, QixiUse, GuoseUse, FanjianAction, LijianAction, LongdanUse
@@ -130,6 +130,28 @@ def test_view_as_can_use_equipped_material(character, suit, action_type, destina
         resolve(session, choose)
     assert not session.state.cards_in(ZoneRef(ZoneType.EQUIPMENT, 'p1', EquipmentSlot.ARMOR))
     assert material in session.state.cards_in(ZoneRef(destination, 'p2' if destination is ZoneType.JUDGMENT else None))
+
+
+def test_eight_trigrams_success_records_virtual_dodge_for_vfx():
+    from sanguosha.engine.requests import PASS_RESPONSE
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    slash = put(session, 'basic.slash', 'p1')
+    put(session, 'equipment.armor.eight_trigrams', 'p2', ZoneType.EQUIPMENT, EquipmentSlot.ARMOR)
+    top = session.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    session.state.cards[top] = replace(session.state.cards[top], suit=Suit.HEART)
+    before = session.state.players['p2'].hp
+    session.engine.start_action(UseCardAction('armor-slash', 'p1', slash, ('p2',)))
+    while session.engine.pending_request:
+        request = session.engine.pending_request
+        value = True if request.request_type is RequestType.YES_NO else PASS_RESPONSE
+        session.engine.submit_decision(Decision(request.request_id, request.player_id, value))
+    assert session.state.players['p2'].hp == before
+    assert any(isinstance(event, VirtualResponseEvent) and event.player_id == 'p2'
+               for event in session.events.events)
 
 
 def test_paoxiao_removes_slash_count_limit_without_changing_range():

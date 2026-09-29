@@ -17,7 +17,7 @@ from .card_moves import CardMove, CardMoveReason
 from .damage import DamageAction, DamageActionHandler
 from .distance import DistanceSystem
 from .dying import DyingAction
-from .events import BeforeDamageEvent, DamageDealtEvent, AfterDamageEvent, DyingRequiredEvent, Event
+from .events import BeforeDamageEvent, DamageDealtEvent, AfterDamageEvent, DyingRequiredEvent, Event, VirtualResponseEvent
 from .judgment import JudgmentAction, JudgmentPattern, JudgmentHandler
 from .response import RespondWithCardAction, RespondWithCardHandler
 from .requests import PendingRequest, RequestType
@@ -383,6 +383,8 @@ class MilitarySlashHandler:
             return StepResult.continue_()
         if frame.step_index == 2:
             if frame.child_result is True:
+                self.recorder.record(VirtualResponseEvent(action.action_id+':armor-dodge',
+                    action.target_id, action.action_id, 'basic.dodge'))
                 if self.skills is None or not self.skills.has(state,action.source_id,'wushuang'):
                     return StepResult.complete('avoided')
                 frame.child_result = VirtualCard('basic.dodge',(),None,None)
@@ -484,10 +486,11 @@ class MilitarySlashHandler:
             return StepResult.push(MilitaryStrike(action.action_id+':green-dragon-strike',action.source_id,action.target_id,cid,action.dodge_definition_id,virtual_card=result if isinstance(result,VirtualCard) else None))
         return StepResult.complete('hit')
 
-    def __init__(self,moves, skills=None, distance=None):
+    def __init__(self,moves, skills=None, distance=None, recorder=None):
         self.moves=moves
         self.skills=skills
         self.distance=distance
+        self.recorder=recorder
 
 class MilitaryResponseHandler(RespondWithCardHandler):
     """All Slash prints respond as Slash; Wine only saves its own dying owner."""
@@ -512,6 +515,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 return StepResult.push(JudgmentAction(action.action_id+':judgment',action.player_id,JudgmentPattern(color=Color.RED)))
         if frame.step_index==9:
             if frame.child_result is True:
+                self.recorder.record(VirtualResponseEvent(action.action_id+':armor-dodge',
+                    action.player_id, action.source_action_id, 'basic.dodge', action.response_number))
                 return StepResult.complete(VirtualCard('basic.dodge',(),None,None))
             frame.step_index=0
         if frame.step_index == 0:
@@ -674,8 +679,8 @@ def register_military_basics(definitions, rules, registry, moves, events, bodies
     rules.register('basic.wine', WineRule())
     register_equipment_rules(definitions, rules)
     registry.register(WineAction, WineHandler())
-    registry.register(SlashEffectAction, MilitarySlashHandler(moves, skills, distance))
-    registry.register(MilitaryStrike, MilitarySlashHandler(moves, skills, distance))
+    registry.register(SlashEffectAction, MilitarySlashHandler(moves, skills, distance, events))
+    registry.register(MilitaryStrike, MilitarySlashHandler(moves, skills, distance, events))
     registry.register(SlashSequence, SlashSequenceHandler())
     from .military_equipment import WeaponChoice,WeaponChoiceHandler
     registry.register(WeaponChoice,WeaponChoiceHandler(moves))

@@ -84,6 +84,15 @@ class CardRespondedEvent:
 
 
 @dataclass(frozen=True, slots=True)
+class VirtualResponseEvent:
+    event_id: str
+    player_id: PlayerId
+    source_action_id: str
+    response_definition_id: str
+    response_number: int = 1
+
+
+@dataclass(frozen=True, slots=True)
 class CardResolvedEvent:
     event_id: str
     player_id: PlayerId
@@ -170,7 +179,7 @@ class GameEndedEvent:
 
 RecordedEvent = (
     Event | TurnStartedEvent | TurnEndedEvent | PhaseStartedEvent | PhaseEndedEvent | PhaseSkippedEvent
-    | CardMovedEvent | CardUsedEvent | CardRespondedEvent | CardResolvedEvent
+    | CardMovedEvent | CardUsedEvent | CardRespondedEvent | VirtualResponseEvent | CardResolvedEvent
     | BeforeDamageEvent | DamageDealtEvent | AfterDamageEvent | DyingRequiredEvent | HpRecoveredEvent
     | DyingRescuedEvent | PlayerDiedEvent | KillRewardEvent | LordPenaltyEvent | GameEndedEvent
 )
