@@ -246,6 +246,15 @@ class SlashSequenceHandler:
             'basic.dodge',int(f.local['wine']),a.virtual_card))
 
 class MilitarySlashHandler:
+    def liuli_targets(self, state, action, cost):
+        owner = action.target_id
+        loses_weapon = cost in state.cards_in(ZoneRef(ZoneType.EQUIPMENT, owner, EquipmentSlot.WEAPON))
+        loses_horse = cost in state.cards_in(ZoneRef(ZoneType.EQUIPMENT, owner, EquipmentSlot.OFFENSIVE_HORSE))
+        reach = 1 if loses_weapon else self.distance.attack_range(state, owner)
+        return tuple(pid for pid in state.seat_order
+                     if pid not in (action.source_id, owner) and state.players[pid].is_alive
+                     and self.distance.distance_between(state, owner, pid) + int(loses_horse) <= reach)
+
     def step(self, state, frame):
         action = frame.action
         armor = equipped(state, action.target_id, EquipmentSlot.ARMOR)
@@ -260,6 +269,16 @@ class MilitarySlashHandler:
             if 'amount' not in frame.local:
                 wine = action.wine_bonus if isinstance(action,MilitaryStrike) else state.players[action.source_id].marks.pop('wine', 0)
                 frame.local['amount'] = 1 + wine
+            if (self.skills is not None and self.skills.has(state, action.target_id, 'liuli')
+                    and not frame.local.get('liuli_offered')):
+                from .military_equipment import discardable
+                if any(self.liuli_targets(state, action, cid)
+                       for cid in discardable(state, action.target_id)):
+                    frame.local['liuli_offered'] = True
+                    frame.step_index = 21
+                    return StepResult.ask(PendingRequest(action.action_id+':liuli', action.target_id,
+                        RequestType.YES_NO, '是否发动【流离】弃一张牌，转移【杀】的目标？',
+                        action.action_id, frame.frame_id))
             if not frame.local.get('fan_handled') and weapon=='equipment.weapon.vermilion_fan' and nature is DamageNature.NORMAL:
                 frame.local['fan_handled']=True
                 frame.step_index=9
@@ -317,6 +336,46 @@ class MilitarySlashHandler:
                     JudgmentPattern(color=Color.RED)))
             frame.step_index = 0
             return StepResult.continue_()
+        if frame.step_index == 21:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted:
+                frame.step_index = 0
+                return StepResult.continue_()
+            from .military_equipment import discardable
+            frame.step_index = 22
+            eligible = tuple(cid for cid in discardable(state, action.target_id)
+                             if self.liuli_targets(state, action, cid))
+            return StepResult.ask(PendingRequest(action.action_id+':liuli-cost', action.target_id,
+                RequestType.CHOOSE_CARD, '流离：选择要弃置的牌', action.action_id,
+                frame.frame_id, eligible_card_ids=eligible))
+        if frame.step_index == 22:
+            card_id = frame.decision
+            frame.decision = None
+            from .military_equipment import discardable
+            if card_id not in discardable(state, action.target_id):
+                raise InvalidCardUse('流离弃牌已不可用')
+            frame.local['liuli_cost'] = card_id
+            targets = self.liuli_targets(state, action, card_id)
+            frame.step_index = 23
+            return StepResult.ask(PendingRequest(action.action_id+':liuli-target', action.target_id,
+                RequestType.CHOOSE_PLAYER, '流离：选择【杀】的新目标', action.action_id,
+                frame.frame_id, allowed_player_ids=targets))
+        if frame.step_index == 23:
+            target = frame.decision
+            frame.decision = None
+            if target not in self.liuli_targets(state, action, frame.local['liuli_cost']):
+                raise InvalidCardUse('流离新目标已不可用')
+            cost = frame.local['liuli_cost']
+            source = next(ref for ref, zone in state.zones.items() if cost in zone.card_ids)
+            self.moves.move(state, CardMove(action.action_id+':liuli-cost', (cost,), source,
+                ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD, action.target_id))
+            frame.step_index = 24
+            return StepResult.push(MilitaryStrike(action.action_id+':liuli-strike', action.source_id,
+                target, action.card_id, action.dodge_definition_id,
+                int(frame.local['amount'])-1, virtual))
+        if frame.step_index == 24:
+            return StepResult.complete(frame.child_result)
         if frame.step_index == 20:
             frame.local['tieqi_unavoidable'] = frame.child_result is True
             frame.child_result = None
@@ -410,7 +469,6 @@ class MilitarySlashHandler:
             return StepResult.ask(PendingRequest(action.action_id+':axe-cost',action.source_id,RequestType.CHOOSE_CARDS,
                 '贯石斧：选择弃置两张牌',action.action_id,frame.frame_id,eligible_card_ids=discardable(state,action.source_id),min_count=2,max_count=2))
         if frame.step_index==17:
-            from .card_moves import CardMove,CardMoveReason
             for cid in frame.decision:
                 ref=next(ref for ref,z in state.zones.items() if cid in z.card_ids)
                 self.moves.move(state,CardMove(action.action_id+':axe:'+cid,(cid,),ref,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,action.source_id))
@@ -426,9 +484,10 @@ class MilitarySlashHandler:
             return StepResult.push(MilitaryStrike(action.action_id+':green-dragon-strike',action.source_id,action.target_id,cid,action.dodge_definition_id,virtual_card=result if isinstance(result,VirtualCard) else None))
         return StepResult.complete('hit')
 
-    def __init__(self,moves, skills=None):
+    def __init__(self,moves, skills=None, distance=None):
         self.moves=moves
         self.skills=skills
+        self.distance=distance
 
 class MilitaryResponseHandler(RespondWithCardHandler):
     """All Slash prints respond as Slash; Wine only saves its own dying owner."""
@@ -615,8 +674,8 @@ def register_military_basics(definitions, rules, registry, moves, events, bodies
     rules.register('basic.wine', WineRule())
     register_equipment_rules(definitions, rules)
     registry.register(WineAction, WineHandler())
-    registry.register(SlashEffectAction, MilitarySlashHandler(moves, skills))
-    registry.register(MilitaryStrike, MilitarySlashHandler(moves, skills))
+    registry.register(SlashEffectAction, MilitarySlashHandler(moves, skills, distance))
+    registry.register(MilitaryStrike, MilitarySlashHandler(moves, skills, distance))
     registry.register(SlashSequence, SlashSequenceHandler())
     from .military_equipment import WeaponChoice,WeaponChoiceHandler
     registry.register(WeaponChoice,WeaponChoiceHandler(moves))

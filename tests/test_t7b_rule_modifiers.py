@@ -81,6 +81,32 @@ def test_guose_diamond_becomes_indulgence_until_judgment_then_reverts():
     assert material not in session.state.metadata['virtual_delayed_cards']
 
 
+def test_liuli_discards_card_and_redirects_slash_damage():
+    from sanguosha.engine.requests import PASS_RESPONSE
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p2'].character_id = 'daqiao'
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    slash = put(session, 'basic.slash', 'p1')
+    cost = put(session, 'basic.peach', 'p2')
+    before_p2 = session.state.players['p2'].hp
+    before_p3 = session.state.players['p3'].hp
+    session.engine.start_action(UseCardAction('liuli-slash', 'p1', slash, ('p2',)))
+    while session.engine.pending_request:
+        request = session.engine.pending_request
+        value = (True if request.request_type is RequestType.YES_NO and '流离' in request.prompt else
+                 cost if request.request_type is RequestType.CHOOSE_CARD else
+                 'p3' if request.request_type is RequestType.CHOOSE_PLAYER else PASS_RESPONSE)
+        session.engine.submit_decision(Decision(request.request_id, request.player_id, value))
+    assert session.state.players['p2'].hp == before_p2
+    assert session.state.players['p3'].hp == before_p3 - 1
+    assert cost in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert slash in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert session.engine.stack.is_empty()
+
+
 def test_paoxiao_removes_slash_count_limit_without_changing_range():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p1'].character_id = 'zhangfei'
