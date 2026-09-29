@@ -502,7 +502,7 @@ class MainWindow(QMainWindow):
             if human_request.request_type is RequestType.CHOOSE_OPTION:
                 selectable = {choice[4:] for choice in human_request.choices if choice.startswith("use:")}
                 selectable.update(choice.split(':', 2)[2] for choice in human_request.choices
-                                  if choice.startswith(('virtual:wusheng:', 'virtual:qixi:', 'virtual:longdan:')))
+                                  if choice.startswith(('virtual:wusheng:', 'virtual:qixi:', 'virtual:guose:', 'virtual:longdan:')))
             elif human_request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD, RequestType.CHOOSE_CARDS):
                 selectable = set(map(str, human_request.eligible_card_ids))
                 selectable.update(choice.split(':',2)[2] for choice in human_request.eligible_card_ids
@@ -619,6 +619,10 @@ class MainWindow(QMainWindow):
                         material = choice.split(':',2)[2]
                         card = next((card for card in view.hand if str(card.card_id) == material), None)
                         return f'奇袭 · {card.name} {card.suit}{card.rank}' if card else '奇袭 · 黑牌'
+                    if choice.startswith('virtual:guose:'):
+                        material = choice.split(':',2)[2]
+                        card = next((card for card in view.hand if str(card.card_id) == material), None)
+                        return f'国色 · {card.name} {card.suit}{card.rank}' if card else '国色 · 方块牌'
                     if choice.startswith('virtual:longdan:'):
                         material = choice.split(':',2)[2]
                         card = next((card for card in view.hand if str(card.card_id) == material), None)

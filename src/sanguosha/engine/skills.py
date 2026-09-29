@@ -588,6 +588,52 @@ class QixiUseHandler:
 
 
 @dataclass(frozen=True, slots=True)
+class GuoseUse(Action):
+    player_id: str
+    material_id: str
+
+
+class GuoseUseHandler:
+    def __init__(self, skills, moves, recorder, trick_rule):
+        self.skills, self.moves, self.recorder, self.trick_rule = skills, moves, recorder, trick_rule
+
+    def validate_start(self, state, action):
+        hand = ZoneRef(ZoneType.HAND, action.player_id)
+        if (not self.skills.has(state, action.player_id, 'guose')
+                or state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY
+                or action.material_id not in state.cards_in(hand)
+                or state.cards[action.material_id].suit is not Suit.DIAMOND
+                or not self.trick_rule.target_candidates(state, action.player_id)):
+            raise InvalidCardUse('国色不可用')
+
+    def step(self, state, frame):
+        from .military_tricks import TrickAction
+        action = frame.action
+        if frame.step_index == 0:
+            self.validate_start(state, action)
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(action.action_id + ':target', action.player_id,
+                RequestType.CHOOSE_PLAYER, '国色：选择【乐不思蜀】目标', action.action_id,
+                frame.frame_id, allowed_player_ids=self.trick_rule.target_candidates(state, action.player_id)))
+        if frame.step_index == 1:
+            target = frame.decision
+            frame.decision = None
+            self.validate_start(state, action)
+            self.trick_rule.validate_targets(state, action.player_id, (target,))
+            self.moves.move(state, CardMove(action.action_id + ':processing', (action.material_id,),
+                ZoneRef(ZoneType.HAND, action.player_id), ZoneRef(ZoneType.PROCESSING),
+                CardMoveReason.USE, action.player_id, action.action_id))
+            state.metadata.setdefault('virtual_delayed_cards', {})[action.material_id] = 'delayed.indulgence'
+            state.play_usage.record('delayed.indulgence')
+            self.recorder.record(CardUsedEvent(action.action_id + ':used', action.player_id,
+                action.material_id, (target,), 'delayed.indulgence'))
+            frame.step_index = 2
+            return StepResult.push(TrickAction(action.action_id + ':trick', action.player_id,
+                action.material_id, 'delayed.indulgence', (target,)))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
 class LongdanUse(Action):
     player_id: str
     material_id: str
@@ -981,6 +1027,11 @@ class SkillPlayOptions:
             dismantlement = self.validator.rules.get('trick.dismantlement')
             if dismantlement.target_candidates(state,pid):
                 extra.extend(f'virtual:qixi:{cid}' for cid in hand if state.cards[cid].color is Color.BLACK)
+        if self.skills.has(state,pid,'guose'):
+            indulgence = self.validator.rules.get('delayed.indulgence')
+            if indulgence.target_candidates(state,pid):
+                extra.extend(f'virtual:guose:{cid}' for cid in hand
+                             if state.cards[cid].suit is Suit.DIAMOND)
         if (self.skills.has(state,pid,'fanjian') and not state.play_usage.count('skill.fanjian')
                 and hand and any(q != pid and p.is_alive for q,p in state.players.items())):
             extra.append('skill:fanjian')
@@ -1024,6 +1075,8 @@ class SkillPlayOptions:
             return WushengUse(aid+':wusheng',pid,option.split(':',2)[2])
         if option.startswith('virtual:qixi:'):
             return QixiUse(aid+':qixi',pid,option.split(':',2)[2])
+        if option.startswith('virtual:guose:'):
+            return GuoseUse(aid+':guose',pid,option.split(':',2)[2])
         if option.startswith('virtual:longdan:'):
             return LongdanUse(aid+':longdan',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)

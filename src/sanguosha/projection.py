@@ -75,9 +75,11 @@ def project_for_human(
     state: GameState, definitions: CardDefinitionRegistry,
     human_id: PlayerId, character_names: dict[PlayerId, str],
 ) -> TableView:
-    def card_view(cid, equipment_slot=""):
+    def card_view(cid, equipment_slot="", judgment=False):
         card=state.cards[cid]
-        definition=definitions.get(card.definition_id)
+        definition_id=(state.metadata.get('virtual_delayed_cards', {}).get(cid, card.definition_id)
+                       if judgment else card.definition_id)
+        definition=definitions.get(definition_id)
         detail = ""
         if definition.equipment_slot is not None:
             slot_name = {"weapon": "武器", "armor": "防具", "defensive_horse": "+1 坐骑",
@@ -88,7 +90,7 @@ def project_for_human(
             summary = definition.metadata.get("effect_summary", "暂无效果说明")
             detail += f"\n效果：{summary}"
         return CardView(cid,definition.name,SUIT_SYMBOLS[card.suit],RANK_LABELS.get(card.rank,str(card.rank)),
-                        str(card.definition_id),definition.category.value, equipment_slot, detail)
+                        str(definition_id),definition.category.value, equipment_slot, detail)
     players = []
     distance = DistanceSystem(definitions)
     from sanguosha.engine.skills import SkillRegistry
@@ -107,7 +109,7 @@ def project_for_human(
             {"wei":"魏", "shu":"蜀", "wu":"吴", "qun":"群"}[skills.characters[player.character_id].kingdom.value]
             if player.character_id in skills.characters else GENERAL_PRESENTATION.get(str(player.character_id), ("", "群"))[1], player.chained,
             tuple(card_view(cid, ref.equipment_slot.value) for ref,z in state.zones.items() if ref.player_id==pid and ref.zone_type is ZoneType.EQUIPMENT for cid in z.card_ids),
-            tuple(card_view(cid) for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid))),
+            tuple(card_view(cid, judgment=True) for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid))),
             distance.base_distance(state,human_id,pid) if pid != human_id and state.players[human_id].is_alive and player.is_alive else None,
             distance.distance_between(state,human_id,pid) if pid != human_id and state.players[human_id].is_alive and player.is_alive else None,
             distance.attack_range(state,pid) if player.is_alive else 1,

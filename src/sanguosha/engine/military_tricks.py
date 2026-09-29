@@ -21,6 +21,9 @@ def personal_cards(state, pid):
 def locate(state, cid):
     return next(ref for ref, zone in state.zones.items() if cid in zone.card_ids)
 
+def delayed_definition(state, cid):
+    return state.metadata.get('virtual_delayed_cards', {}).get(cid, state.cards[cid].definition_id)
+
 @dataclass(frozen=True, slots=True)
 class NullificationWindow(Action):
     target_id: str
@@ -80,7 +83,8 @@ class MilitaryTrickRule:
             return not self._duplicate(state, user)
         return True
     def _duplicate(self, state, pid):
-        return any(state.cards[cid].definition_id == self.definition for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid)))
+        return any(delayed_definition(state, cid) == self.definition
+                   for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid)))
     def target_candidates(self, state, user):
         d = self.definition
         def valid(pid):
@@ -296,7 +300,7 @@ class DelayedHandler:
         self.moves=moves
     def step(self,state,f):
         a=f.action
-        d=state.cards[a.card_id].definition_id
+        d=delayed_definition(state, a.card_id)
         if f.step_index == 0:
             f.step_index=1
             return StepResult.push(NullificationWindow(a.action_id+':window',a.player_id))

@@ -69,6 +69,10 @@ class CardMoveService:
             state.zones[move.to_zone] = CardZone(move.to_zone, new_destination)
         else:
             destination.card_ids[:] = new_destination
+        if move.from_zone.zone_type is ZoneType.JUDGMENT and move.to_zone.zone_type is not ZoneType.JUDGMENT:
+            virtual_delayed = state.metadata.get('virtual_delayed_cards', {})
+            for card_id in ids:
+                virtual_delayed.pop(card_id, None)
         self.recorder.record(CardMovedEvent(
             move.move_id, ids, move.from_zone, move.to_zone,
             move.reason.value, move.actor_id, move.related_action_id,

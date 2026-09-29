@@ -11,7 +11,7 @@ from sanguosha.engine.events import CardRespondedEvent as RecordedResponse
 from sanguosha.engine.events import TurnStartedEvent, CardUsedEvent, CardRespondedEvent
 from sanguosha.engine.resolution import ResolutionFrame
 from sanguosha.engine.requests import Decision, RequestType
-from sanguosha.engine.skills import KurouAction, QingnangAction, JieyinAction, QixiUse, FanjianAction, LijianAction, LongdanUse
+from sanguosha.engine.skills import KurouAction, QingnangAction, JieyinAction, QixiUse, GuoseUse, FanjianAction, LijianAction, LongdanUse
 from sanguosha.engine.card_rules import InvalidCardUse
 from sanguosha.model.enums import Phase
 from sanguosha.model.enums import EquipmentSlot, Gender
@@ -49,6 +49,36 @@ def test_guanxing_reorders_top_and_bottom_without_losing_cards():
     assert session.state.cards_in(draw) == (original[2], original[1], original[4],
                                              *original[5:], original[0], original[3])
     assert session.engine.stack.is_empty()
+
+
+def test_guose_diamond_becomes_indulgence_until_judgment_then_reverts():
+    from sanguosha.engine.military_tricks import ResolveDelayed
+    from sanguosha.projection import project_for_human
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'daqiao'
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    material = put(session, 'basic.peach', 'p1')
+    session.state.cards[material] = replace(session.state.cards[material], suit=Suit.DIAMOND)
+    session.engine.start_action(GuoseUse('guose-use', 'p1', material))
+    request = session.engine.pending_request
+    assert 'p2' in request.allowed_player_ids
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'p2'))
+    judgment = ZoneRef(ZoneType.JUDGMENT, 'p2')
+    assert material in session.state.cards_in(judgment)
+    assert session.state.cards[material].definition_id == 'basic.peach'
+    assert 'p2' not in rules_for(session).get('delayed.indulgence').target_candidates(session.state, 'p1')
+    view = project_for_human(session.state, session.definitions, 'p1', session.character_names)
+    assert next(player for player in view.players if player.player_id == 'p2').judgments[0].name == '乐不思蜀'
+    top = session.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    session.state.cards[top] = replace(session.state.cards[top], suit=Suit.SPADE)
+    session.engine.start_action(ResolveDelayed('guose-resolve', 'p2', material))
+    resolve(session)
+    assert session.state.players['p2'].marks['skip_play'] == 1
+    assert material in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert material not in session.state.metadata['virtual_delayed_cards']
 
 
 def test_paoxiao_removes_slash_count_limit_without_changing_range():

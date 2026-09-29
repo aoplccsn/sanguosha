@@ -165,7 +165,7 @@ class GameSession:
                     LianyingAction, LianyingHandler, XiaojiAction, XiaojiHandler,
                     GanglieAction, GanglieHandler, TuxiAction, TuxiHandler,
                     YijiAction, YijiHandler, JieyinAction, JieyinHandler,
-                    QixiUse, QixiUseHandler, FanjianAction, FanjianHandler,
+                    QixiUse, QixiUseHandler, GuoseUse, GuoseUseHandler, FanjianAction, FanjianHandler,
                     LijianAction, LijianHandler, LongdanUse, LongdanUseHandler)
                 slash_rule = card_rules.get('basic.slash')
                 provider = SkillPlayOptions(provider, skills, slash_rule)
@@ -184,6 +184,8 @@ class GameSession:
                 registry.register(JieyinAction, JieyinHandler(skills, moves))
                 registry.register(QixiUse, QixiUseHandler(skills, moves, events,
                     card_rules.get('trick.dismantlement')))
+                registry.register(GuoseUse, GuoseUseHandler(skills, moves, events,
+                    card_rules.get('delayed.indulgence')))
                 registry.register(FanjianAction, FanjianHandler(skills, moves, rng))
                 registry.register(LijianAction, LijianHandler(skills, moves, events))
                 registry.register(LongdanUse, LongdanUseHandler(skills, moves, events, slash_rule))
