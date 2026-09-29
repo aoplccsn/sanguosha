@@ -46,3 +46,7 @@ T6 正式验收：167 passed、0 failed、0 warnings；43 种卡牌渲染及 see
 多人游戏默认支持公网房间码；局域网 IP 和端口直连保留为高级选项。Relay 可用 python -m sanguosha.relay 或 docker compose up -d 启动。生产客户端必须在 config/defaults.json 中配置真实的 wss:// Relay 地址。
 
 Windows x64 便携版使用 scripts/build_windows.ps1 构建，输出 one-folder 客户端、ZIP 和 dist/release-manifest.json。
+
+## T9 网页版
+
+网页玩家只需按 [快速开始](docs/WEB_QUICKSTART.md) 打开网站、创建或加入房间。部署者可选择 [Render Free 部署](docs/T9_1_RENDER_DEPLOYMENT.md)获得 `onrender.com` HTTPS 地址，或使用 [VPS + Docker + Caddy 部署](docs/T9_1_PRODUCTION_DEPLOYMENT.md)。两种部署都使用单个内存房间进程；重启会结束当前对局。

@@ -4,6 +4,7 @@ from starlette.websockets import WebSocketDisconnect
 
 from sanguosha.web.app import create_app
 from sanguosha.web.config import WebConfig
+from sanguosha.web import __main__ as web_main
 from sanguosha.version import PROTOCOL_VERSION
 
 
@@ -44,3 +45,43 @@ def test_production_limits_room_creations_per_client():
             assert second.receive_json()["type"] == "WELCOME"
             second.send_json({"type": "CREATE_ROOM", "version": PROTOCOL_VERSION, "name": "two"})
             assert second.receive_json()["type"] == "ERROR"
+
+
+def test_render_uses_platform_port_and_one_worker(monkeypatch):
+    monkeypatch.setenv("RENDER", "true")
+    monkeypatch.setenv("RENDER_EXTERNAL_HOSTNAME", "friends.onrender.com")
+    monkeypatch.setenv("RENDER_EXTERNAL_URL", "https://friends.onrender.com")
+    monkeypatch.setenv("PORT", "12345")
+    monkeypatch.setenv("SECRET_KEY", "s" * 48)
+    monkeypatch.delenv("DOMAIN", raising=False)
+    monkeypatch.delenv("PUBLIC_ORIGIN", raising=False)
+    config = WebConfig.from_env()
+    assert (config.host, config.port, config.domain, config.public_origin) == (
+        "0.0.0.0", 12345, "friends.onrender.com", "https://friends.onrender.com")
+    config.validate_production()
+    calls = []
+    monkeypatch.setattr(web_main.uvicorn, "run", lambda *args, **kwargs: calls.append((args, kwargs)))
+    web_main.main()
+    assert calls[0][1]["host"] == "0.0.0.0"
+    assert calls[0][1]["port"] == 12345
+    assert calls[0][1]["workers"] == 1
+    assert calls[0][1]["proxy_headers"] is False
+
+
+def test_render_host_and_origin_are_exact(monkeypatch):
+    monkeypatch.setenv("RENDER", "true")
+    monkeypatch.setenv("RENDER_EXTERNAL_HOSTNAME", "friends.onrender.com")
+    monkeypatch.setenv("RENDER_EXTERNAL_URL", "https://friends.onrender.com")
+    monkeypatch.setenv("SECRET_KEY", "s" * 48)
+    monkeypatch.delenv("DOMAIN", raising=False)
+    monkeypatch.delenv("PUBLIC_ORIGIN", raising=False)
+    with TestClient(create_app(WebConfig.from_env())) as client:
+        assert client.get("/health", headers={"host": "friends.onrender.com"}).status_code == 200
+        assert client.get("/api/version", headers={"host": "friends.onrender.com"}).status_code == 200
+        assert client.get("/health", headers={"host": "other.onrender.com"}).status_code == 400
+        with pytest.raises(WebSocketDisconnect):
+            with client.websocket_connect("/ws", headers={"host": "friends.onrender.com", "origin": "https://other.onrender.com"}):
+                pass
+        with client.websocket_connect("/ws", headers={"host": "friends.onrender.com", "origin": "https://friends.onrender.com"}) as socket:
+            socket.send_json({"type": "HELLO", "version": PROTOCOL_VERSION})
+            assert socket.receive_json()["type"] == "WELCOME"

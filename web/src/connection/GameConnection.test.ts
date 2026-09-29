@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { GameConnection } from './GameConnection'
+import { GameConnection, websocketUrl } from './GameConnection'
 
 class FakeSocket {
   static OPEN = 1
@@ -19,6 +19,11 @@ class FakeSocket {
 }
 
 describe('GameConnection', () => {
+  it('uses same-origin WSS for an HTTPS Render page', () => {
+    expect(websocketUrl('https:', 'sanguosha-web.onrender.com'))
+      .toBe('wss://sanguosha-web.onrender.com/ws')
+    expect(websocketUrl('http:', 'localhost:5173')).toBe('ws://localhost:5173/ws')
+  })
   beforeEach(() => {
     vi.useFakeTimers()
     FakeSocket.instances = []

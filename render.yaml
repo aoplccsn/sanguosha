@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: sanguosha-web
+    plan: free
+    runtime: docker
+    dockerfilePath: ./Dockerfile.production
+    dockerContext: .
+    dockerCommand: python -m sanguosha.web
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_VERSION
+        value: 0.3.0
+      - key: LOG_LEVEL
+        value: INFO
+      - key: SECRET_KEY
+        generateValue: true

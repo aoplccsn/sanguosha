@@ -83,7 +83,7 @@ function reducer(state: ClientState, action: Action): ClientState {
       return { ...initialState, connection: state.connection, generals: state.generals }
     case 'server-restarted':
       return { ...initialState, connection: state.connection, generals: state.generals,
-        error: '服务器已重启，本局已结束。请返回首页创建新房间。' }
+        error: '服务器已重新启动，本局已结束。请返回首页创建新房间。' }
     default:
       return state
   }

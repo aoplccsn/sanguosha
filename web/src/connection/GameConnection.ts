@@ -2,6 +2,11 @@ type Listener = (message: Record<string, unknown>) => void
 type Status = 'connecting' | 'connected' | 'disconnected' | 'reconnecting'
 type StatusListener = (status: Status) => void
 
+export function websocketUrl(protocol: string, host: string): string {
+  const scheme = protocol === 'https:' ? 'wss:' : 'ws:'
+  return String(new URL('/ws', `${scheme}//${host}`))
+}
+
 export class GameConnection {
   private socket: WebSocket | null = null
   private listeners = new Set<Listener>()
@@ -28,10 +33,7 @@ export class GameConnection {
     if (this.socket?.readyState === WebSocket.OPEN || this.socket?.readyState === WebSocket.CONNECTING) return
     this.intentionallyClosed = false
     this.setStatus(this.reconnectDelay > 800 ? 'reconnecting' : 'connecting')
-    const scheme = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    this.socket = new WebSocket(
-      String(new URL('/ws', scheme + '//' + window.location.host)),
-    )
+    this.socket = new WebSocket(websocketUrl(window.location.protocol, window.location.host))
     this.socket.addEventListener('open', () => {
       this.reconnectDelay = 800
       this.setStatus('connected')

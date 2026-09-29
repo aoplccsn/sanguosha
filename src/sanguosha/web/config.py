@@ -26,12 +26,13 @@ class WebConfig:
 
     @classmethod
     def from_env(cls) -> "WebConfig":
+        render = os.getenv("RENDER", "").lower() == "true"
         return cls(
-            production=os.getenv("APP_ENV", "development").lower() == "production",
-            domain=os.getenv("DOMAIN", "").strip().lower(),
-            host=os.getenv("HOST", "127.0.0.1"),
-            port=int(os.getenv("PORT", "8000")),
-            public_origin=os.getenv("PUBLIC_ORIGIN", "http://localhost:5173"),
+            production=render or os.getenv("APP_ENV", "development").lower() == "production",
+            domain=(os.getenv("DOMAIN") or (os.getenv("RENDER_EXTERNAL_HOSTNAME") if render else "") or "").strip().lower(),
+            host="0.0.0.0" if render else os.getenv("HOST", "127.0.0.1"),
+            port=int(os.getenv("PORT", "10000" if render else "8000")),
+            public_origin=os.getenv("PUBLIC_ORIGIN") or (os.getenv("RENDER_EXTERNAL_URL") if render else None) or "http://localhost:5173",
             secret_key=os.getenv("SECRET_KEY", "development-only-change-me"),
             room_ttl=float(os.getenv("ROOM_TTL", "7200")),
             reconnect_grace=float(os.getenv("RECONNECT_GRACE", "300")),
@@ -49,6 +50,8 @@ class WebConfig:
             return
         if not self.domain or ":" in self.domain or "/" in self.domain:
             raise RuntimeError("DOMAIN must be a DNS hostname in production")
+        if not 1 <= self.port <= 65535:
+            raise RuntimeError("PORT must be between 1 and 65535 in production")
         if self.public_origin != f"https://{self.domain}":
             raise RuntimeError("PUBLIC_ORIGIN must equal https://DOMAIN in production")
         if not self.secret_key or self.secret_key == "development-only-change-me" or len(self.secret_key) < 32:

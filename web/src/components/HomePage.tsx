@@ -38,7 +38,7 @@ export function HomePage() {
         <input aria-label="房间码" value={roomCode} onChange={(event) => setRoomCode(event.target.value.toUpperCase())} placeholder="输入房间码" maxLength={8} />
         <button className="brush-button compact" disabled={!roomCode.trim()} onClick={() => actions.joinRoom(remember(), roomCode)}>加入房间</button>
       </div>
-      {state.error && <div className="error-banner" role="alert">{state.error}<button onClick={actions.clearError}>×</button></div>}
+      {state.error && !state.error.includes('服务器已重新启动') && <div className="error-banner" role="alert">{state.error}<button onClick={actions.clearError}>×</button></div>}
       {state.updateAvailable && <div className="version-banner" role="status">新版本可用：v{state.serverVersion?.app_version}</div>}
       <footer>
         <span><i className={`connection-dot ${state.connection}`} /> {state.connection === 'connected' ? '服务器已连接' : '正在连接服务器'}</span>
