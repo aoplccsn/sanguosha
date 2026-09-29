@@ -146,13 +146,13 @@ def test_successful_dodge_does_not_invent_damage():
 
 def test_armor_virtual_dodge_and_second_wushuang_dodge_have_distinct_cues():
     director = CardVfxDirector()
-    first = director.consume(VirtualResponseEvent('armor', 'p2', 'slash', 'basic.dodge'),
+    first = director.consume(VirtualResponseEvent('armor', 'p2', 'slash', 'basic.dodge', 1, 2),
                              definition_id='basic.dodge')
-    second = director.consume(CardRespondedEvent('second', 'p2', 'c2', 'slash', 'basic.dodge', 2),
+    second = director.consume(CardRespondedEvent('second', 'p2', 'c2', 'slash', 'basic.dodge', 2, 2),
                               definition_id='basic.dodge')
     assert first[0].kind == second[0].kind == 'dodge'
-    assert first[0].text == '闪避'
-    assert second[0].text == '第二张闪'
+    assert first[0].text == '第1张闪'
+    assert second[0].text == '第2张闪'
 
 
 def test_hit_is_only_from_actual_damage_event():

@@ -27,6 +27,7 @@ class RespondWithCardAction(Action):
     subject_player_id: PlayerId | None = None
     allow_armor: bool = True
     response_number: int = 1
+    response_total: int = 1
 
 
 class RespondWithCardHandler:
@@ -66,6 +67,6 @@ class RespondWithCardHandler:
         self.moves.move(state, CardMove(f"{action.action_id}:to-processing", (card_id,), hand, processing, CardMoveReason.RESPONSE, action.player_id, action.action_id))
         self.recorder.record(CardRespondedEvent(f"{action.action_id}:responded", action.player_id, card_id,
                                                 action.source_action_id, str(action.required_definition_id),
-                                                action.response_number))
+                                                action.response_number, action.response_total))
         self.moves.move(state, CardMove(f"{action.action_id}:to-discard", (card_id,), processing, discard, CardMoveReason.RESPONSE, action.player_id, action.action_id))
         return StepResult.complete(str(card_id))

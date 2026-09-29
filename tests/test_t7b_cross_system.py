@@ -57,7 +57,24 @@ def test_wushuang_requires_two_real_virtual_dodge_responses(defender, prefix, ma
     responses = [event for event in session.events.events if isinstance(event, CardRespondedEvent)
                  and event.card_id in costs]
     assert [event.response_number for event in responses] == [1, 2]
+    assert [event.response_total for event in responses] == [2, 2]
     assert not session.state.cards_in(ZoneRef(ZoneType.PROCESSING))
+
+
+def test_wushuang_numbers_two_physical_dodges_for_vfx():
+    session = GameSession.new_game(military=True, five_generals=True)
+    play_state(session)
+    session.state.players['p1'].character_id = 'lvbu'
+    slash = put(session, 'basic.slash', 'p1')
+    dodges = [put(session, 'basic.dodge', 'p2') for _ in range(2)]
+    session.engine.start_action(UseCardAction('wushuang-physical', 'p1', slash, ('p2',)))
+    while session.engine.pending_request:
+        request = session.engine.pending_request
+        choice = next((cid for cid in dodges if cid in request.eligible_card_ids), PASS_RESPONSE)
+        session.engine.submit_decision(Decision(request.request_id, request.player_id, choice))
+    responses = [event for event in session.events.events if isinstance(event, CardRespondedEvent)
+                 and event.card_id in dodges]
+    assert [(event.response_number, event.response_total) for event in responses] == [(1, 2), (2, 2)]
 
 
 def test_tieqi_red_judgment_prevents_eight_trigrams_dodge():

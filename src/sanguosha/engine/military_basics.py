@@ -326,7 +326,8 @@ class MilitarySlashHandler:
                     JudgmentPattern(color=Color.RED)))
             frame.step_index = 3
             return StepResult.push(RespondWithCardAction(action.action_id + ':response', action.target_id,
-                action.dodge_definition_id, action.action_id, '请打出闪响应杀', action.target_id, False))
+                action.dodge_definition_id, action.action_id, '请打出闪响应杀', action.target_id, False,
+                response_total=2 if self.skills is not None and self.skills.has(state, action.source_id, 'wushuang') else 1))
         if frame.step_index == 19:
             wanted = frame.decision is True
             frame.decision = None
@@ -384,7 +385,8 @@ class MilitarySlashHandler:
         if frame.step_index == 2:
             if frame.child_result is True:
                 self.recorder.record(VirtualResponseEvent(action.action_id+':armor-dodge',
-                    action.target_id, action.action_id, 'basic.dodge'))
+                    action.target_id, action.action_id, 'basic.dodge', 1,
+                    2 if self.skills is not None and self.skills.has(state, action.source_id, 'wushuang') else 1))
                 if self.skills is None or not self.skills.has(state,action.source_id,'wushuang'):
                     return StepResult.complete('avoided')
                 frame.child_result = VirtualCard('basic.dodge',(),None,None)
@@ -392,7 +394,8 @@ class MilitarySlashHandler:
                 return StepResult.continue_()
             frame.step_index = 3
             return StepResult.push(RespondWithCardAction(action.action_id + ':response', action.target_id,
-                action.dodge_definition_id, action.action_id, '八卦阵未生效，请打出闪', action.target_id, False))
+                action.dodge_definition_id, action.action_id, '八卦阵未生效，请打出闪', action.target_id, False,
+                response_total=2 if self.skills is not None and self.skills.has(state, action.source_id, 'wushuang') else 1))
         if frame.step_index == 3:
             if frame.child_result is not None:
                 if self.skills is not None and self.skills.has(state,action.source_id,'wushuang') and not frame.local.get('dodge_complete'):
@@ -400,7 +403,7 @@ class MilitarySlashHandler:
                     frame.step_index = 18
                     return StepResult.push(RespondWithCardAction(action.action_id+':wushuang-second',action.target_id,
                         action.dodge_definition_id,action.action_id,'无双：第一张闪已响应，还需第二张闪',
-                        action.target_id,not ignore,2))
+                        action.target_id,not ignore,2,2))
                 if weapon=='equipment.weapon.green_dragon_blade':
                     frame.step_index=14
                     return StepResult.push(RespondWithCardAction(action.action_id+':green-dragon',action.source_id,
@@ -516,7 +519,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
         if frame.step_index==9:
             if frame.child_result is True:
                 self.recorder.record(VirtualResponseEvent(action.action_id+':armor-dodge',
-                    action.player_id, action.source_action_id, 'basic.dodge', action.response_number))
+                    action.player_id, action.source_action_id, 'basic.dodge',
+                    action.response_number, action.response_total))
                 return StepResult.complete(VirtualCard('basic.dodge',(),None,None))
             frame.step_index=0
         if frame.step_index == 0:
@@ -599,7 +603,7 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.RESPONSE,action.player_id))
             self.recorder.record(CardRespondedEvent(action.action_id+':qingguo-responded',action.player_id,
-                material,action.source_action_id,'basic.dodge',action.response_number))
+                material,action.source_action_id,'basic.dodge',action.response_number,action.response_total))
             self.moves.move(state,CardMove(action.action_id+':qingguo-discard',(material,),
                 ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE,action.player_id))
@@ -634,7 +638,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.RESPONSE,action.player_id))
             self.recorder.record(CardRespondedEvent(action.action_id+':longdan-responded',action.player_id,
-                material,action.source_action_id,action.required_definition_id,action.response_number))
+                material,action.source_action_id,action.required_definition_id,
+                action.response_number,action.response_total))
             self.moves.move(state,CardMove(action.action_id+':longdan-discard',(material,),
                 ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE,action.player_id))
@@ -656,7 +661,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
         self.moves.move(state, CardMove(action.action_id + ':processing', (card,),
             ZoneRef(ZoneType.HAND, action.player_id), processing, CardMoveReason.RESPONSE, action.player_id))
         self.recorder.record(CardRespondedEvent(action.action_id + ':responded', action.player_id, card,
-                                                action.source_action_id,str(state.cards[card].definition_id)))
+                                                action.source_action_id,str(state.cards[card].definition_id),
+                                                action.response_number, action.response_total))
         self.moves.move(state, CardMove(action.action_id + ':discard', (card,), processing,
             ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.RESPONSE, action.player_id))
         return StepResult.complete(str(card))

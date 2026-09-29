@@ -2,7 +2,7 @@
 
 - 基线：`c05305509ee7bdce0476c428a4d0883e47da43eb`，分支：`t7-standard-generals`。保留 `master` 与 `t7-five-generals`。
 - 已提交检查点：`b6c6d0f`（开局与 UI 基础）、`772e071`（部分正式技能规则）、`828c920`（20 张原创武将美术）、`0a9f7b7`（30 秒决策）、`2c69fdb`（事件驱动战斗表现）、`a9a18bd`（克己）、`12ab8e2`（集智）、`4f77e98`（连营）、`c9cc28b`（枭姬）、`3a6cf68`（反馈）、`d687ce6`（裸衣）、`b5b5188`（倾国与 GUI 响应）、`679f095`（天妒）、`54ea397`（鬼才）、`4467f72`（刚烈）、`181e222`（突袭）、`5a54705`（遗计）、`aa932c4`（洛神）、`ccb3a17`（结姻）、`1b063c3`（奇袭）、`9d10f68`（反间）、`3555c58`（急救）。
-- 最新完整测试：`301 passed`，0 warnings；`tests/test_t7b_draft_smoke.py` 的 seed 1–20 可走到胜负且无栈、PendingRequest、processing 残留。`tests/test_t7b_ui.py` 的 seed 1–10 离屏选将检查通过。现已在完整技能规则下复跑，并保存 `T7_STANDARD_SMOKE.json` 的逐局记录；另有 seed 1–10 的 Qt 离屏完整对局测试。视觉验收仍未完成。
+- 最新完整测试：`302 passed`，0 warnings；`tests/test_t7b_draft_smoke.py` 的 seed 1–20 可走到胜负且无栈、PendingRequest、processing 残留。`tests/test_t7b_ui.py` 的 seed 1–10 离屏选将检查通过。现已在完整技能规则下复跑，并保存 `T7_STANDARD_SMOKE.json` 的逐局记录；另有 seed 1–10 的 Qt 离屏完整对局测试。视觉验收图已完成，仍需最终综合核对。
 
 ## 已完成
 

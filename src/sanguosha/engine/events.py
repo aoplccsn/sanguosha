@@ -90,6 +90,7 @@ class CardRespondedEvent:
     source_action_id: str
     response_definition_id: str = ''
     response_number: int = 1
+    response_total: int = 1
 
 
 @dataclass(frozen=True, slots=True)
@@ -99,6 +100,7 @@ class VirtualResponseEvent:
     source_action_id: str
     response_definition_id: str
     response_number: int = 1
+    response_total: int = 1
 
 
 @dataclass(frozen=True, slots=True)

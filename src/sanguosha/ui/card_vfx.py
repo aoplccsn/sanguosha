@@ -57,8 +57,9 @@ class CardVfxDirector:
                     VfxCue(kind, source, targets, duration_ms=SLASH_VFX_MS)) if kind != 'target' else (
                         VfxCue('beam', source, targets, duration_ms=TARGET_BEAM_MS),)
         if isinstance(event, (CardRespondedEvent, VirtualResponseEvent)) and definition_id == 'basic.dodge':
+            label = (f'第{event.response_number}张闪' if event.response_total > 1 else '闪避')
             return (VfxCue('dodge', str(event.player_id), (str(event.player_id),),
-                           '第二张闪' if event.response_number == 2 else '闪避',
+                           label,
                            duration_ms=DODGE_VFX_MS),)
         if isinstance(event, DamageDealtEvent) and event.amount > 0:
             return (VfxCue('damage', str(event.source_id) if event.source_id else None,
