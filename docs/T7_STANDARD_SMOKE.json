@@ -1,0 +1,2084 @@
+{
+  "branch": "t7-standard-generals",
+  "matches": [
+    {
+      "seed": 1,
+      "identity_assignment": {
+        "p1": "rebel",
+        "p2": "rebel",
+        "p3": "renegade",
+        "p4": "lord",
+        "p5": "loyalist"
+      },
+      "general_assignment": {
+        "p1": "zhenji",
+        "p2": "zhaoyun",
+        "p3": "huatuo",
+        "p4": "xiahou_dun",
+        "p5": "ganning"
+      },
+      "skill_activations": [
+        {
+          "skill": "qingguo",
+          "action_id": "frame-57-play-0:use:effect:target:1:response:qingguo",
+          "first_effect_event_id": "frame-57-play-0:use:effect:target:1:response:qingguo-processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-57-play-1:qixi",
+          "first_effect_event_id": "frame-57-play-1:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-57-play-2:qixi",
+          "first_effect_event_id": "frame-57-play-2:qixi:processing"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-3:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-3:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "qingguo",
+          "action_id": "frame-106-play-0:use:effect:target:1:response:qingguo",
+          "first_effect_event_id": "frame-106-play-0:use:effect:target:1:response:qingguo-processing"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-178-play-0:use:effect:target:1:damage:ganglie",
+          "first_effect_event_id": "frame-178-play-0:use:effect:target:1:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-178-play-4:qingnang",
+          "first_effect_event_id": "frame-178-play-4:qingnang:discard"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-214-play-0:qixi",
+          "first_effect_event_id": "frame-214-play-0:qixi:processing"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-8:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-8:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "qingguo",
+          "action_id": "frame-267-play-0:use:effect:effect:3:response:0:qingguo",
+          "first_effect_event_id": "frame-267-play-0:use:effect:effect:3:response:0:qingguo-processing"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-392-play-1:qingnang",
+          "first_effect_event_id": "frame-392-play-1:qingnang:discard"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-448-play-0:qingnang",
+          "first_effect_event_id": "frame-448-play-0:qingnang:discard"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-522-play-0:qingnang",
+          "first_effect_event_id": "frame-522-play-0:qingnang:discard"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-554-play-0:qixi",
+          "first_effect_event_id": "frame-554-play-0:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-554-play-2:qixi",
+          "first_effect_event_id": "frame-554-play-2:qixi:processing"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p4",
+          "p5"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 30
+    },
+    {
+      "seed": 2,
+      "identity_assignment": {
+        "p1": "rebel",
+        "p2": "loyalist",
+        "p3": "rebel",
+        "p4": "renegade",
+        "p5": "lord"
+      },
+      "general_assignment": {
+        "p1": "lvbu",
+        "p2": "zhangfei",
+        "p3": "machao",
+        "p4": "ganning",
+        "p5": "daqiao"
+      },
+      "skill_activations": [
+        {
+          "skill": "guose",
+          "action_id": "frame-6-play-1:guose",
+          "first_effect_event_id": "frame-6-play-1:guose:processing"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-121-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-121-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-121-play-0:use:effect:target:1:liuli-strike:tieqi",
+          "first_effect_event_id": "frame-121-play-0:use:effect:target:1:liuli-strike:tieqi-judge:reveal"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-145-play-0:qixi",
+          "first_effect_event_id": "frame-145-play-0:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-145-play-4:qixi",
+          "first_effect_event_id": "frame-145-play-4:qixi:processing"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-355-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-355-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-404-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-404-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-464-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-464-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-464-play-1:qixi",
+          "first_effect_event_id": "frame-464-play-1:qixi:processing"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p2",
+          "p5"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 23
+    },
+    {
+      "seed": 3,
+      "identity_assignment": {
+        "p1": "lord",
+        "p2": "rebel",
+        "p3": "rebel",
+        "p4": "renegade",
+        "p5": "loyalist"
+      },
+      "general_assignment": {
+        "p1": "guojia",
+        "p2": "sunshangxiang",
+        "p3": "sunquan",
+        "p4": "xiahou_dun",
+        "p5": "luxun"
+      },
+      "skill_activations": [
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-48-play-2:zhiheng",
+          "first_effect_event_id": "frame-48-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-167-play-0:use:effect:target:1:damage:ganglie",
+          "first_effect_event_id": "frame-167-play-0:use:effect:target:1:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-167-play-2:zhiheng",
+          "first_effect_event_id": "frame-167-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "yiji",
+          "action_id": "frame-267-play-0:use:effect:target:1:damage:yiji",
+          "first_effect_event_id": "frame-267-play-0:use:effect:target:1:damage:yiji:draw:0:draw:0"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-267-play-2:zhiheng",
+          "first_effect_event_id": "frame-267-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-442-play-1:zhiheng",
+          "first_effect_event_id": "frame-442-play-1:zhiheng:discard:0"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-575-play-5:zhiheng",
+          "first_effect_event_id": "frame-575-play-5:zhiheng:discard:0"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-698-play-5:use:effect:effect:3:damage:ganglie",
+          "first_effect_event_id": "frame-698-play-5:use:effect:effect:3:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-785-play-2:zhiheng",
+          "first_effect_event_id": "frame-785-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-833-play-3:use:effect:effect:2:damage:ganglie",
+          "first_effect_event_id": "frame-833-play-3:use:effect:effect:2:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-970-play-0:use:effect:target:1:damage:ganglie",
+          "first_effect_event_id": "frame-970-play-0:use:effect:target:1:damage:ganglie:judge:reveal"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p1",
+          "p5"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 38
+    },
+    {
+      "seed": 4,
+      "identity_assignment": {
+        "p1": "rebel",
+        "p2": "renegade",
+        "p3": "lord",
+        "p4": "rebel",
+        "p5": "loyalist"
+      },
+      "general_assignment": {
+        "p1": "huanggai",
+        "p2": "guojia",
+        "p3": "zhenji",
+        "p4": "huatuo",
+        "p5": "zhaoyun"
+      },
+      "skill_activations": [
+        {
+          "skill": "luoshen",
+          "action_id": "turn-1:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-1:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-26-play-4:qingnang",
+          "first_effect_event_id": "frame-26-play-4:qingnang:discard"
+        },
+        {
+          "skill": "yiji",
+          "action_id": "frame-130-play-0:use:effect:target:1:damage:yiji",
+          "first_effect_event_id": "frame-130-play-0:use:effect:target:1:damage:yiji:draw:0:draw:0"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-6:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-6:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-209-play-2:qingnang",
+          "first_effect_event_id": "frame-209-play-2:qingnang:discard"
+        },
+        {
+          "skill": "kurou",
+          "action_id": "frame-249-play-2:kurou",
+          "first_effect_event_id": "frame-249-play-2:kurou:draw:draw:0"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-11:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-11:phase:1:preparation:luoshen-judge:0:reveal"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p3",
+          "p5"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 13
+    },
+    {
+      "seed": 5,
+      "identity_assignment": {
+        "p1": "lord",
+        "p2": "loyalist",
+        "p3": "rebel",
+        "p4": "rebel",
+        "p5": "renegade"
+      },
+      "general_assignment": {
+        "p1": "guanyu",
+        "p2": "xiahou_dun",
+        "p3": "sunquan",
+        "p4": "zhangliao",
+        "p5": "huatuo"
+      },
+      "skill_activations": [
+        {
+          "skill": "ganglie",
+          "action_id": "frame-63-play-0:use:effect:target:1:damage:ganglie",
+          "first_effect_event_id": "frame-63-play-0:use:effect:target:1:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-63-play-1:zhiheng",
+          "first_effect_event_id": "frame-63-play-1:zhiheng:discard:0"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-4:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-4:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-101-play-4:qingnang",
+          "first_effect_event_id": "frame-101-play-4:qingnang:discard"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-146-play-2:zhiheng",
+          "first_effect_event_id": "frame-146-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-9:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-9:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "wusheng",
+          "action_id": "frame-177-play-1:use:effect:effect:1:response:0:wusheng",
+          "first_effect_event_id": "frame-177-play-1:use:effect:effect:1:response:0:wusheng-processing"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-177-play-4:qingnang",
+          "first_effect_event_id": "frame-177-play-4:qingnang:discard"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-272-play-2:zhiheng",
+          "first_effect_event_id": "frame-272-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-272-play-3:use:effect:effect:4:damage:ganglie",
+          "first_effect_event_id": "frame-272-play-3:use:effect:effect:4:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-347-play-0:qingnang",
+          "first_effect_event_id": "frame-347-play-0:qingnang:discard"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-19:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-19:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-422-play-2:qingnang",
+          "first_effect_event_id": "frame-422-play-2:qingnang:discard"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-23:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-23:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-531-play-2:qingnang",
+          "first_effect_event_id": "frame-531-play-2:qingnang:discard"
+        },
+        {
+          "skill": "wusheng",
+          "action_id": "frame-552-play-0:wusheng",
+          "first_effect_event_id": "frame-552-play-0:wusheng:processing"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-27:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-27:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-31:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-31:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-717-play-0:qingnang",
+          "first_effect_event_id": "frame-717-play-0:qingnang:discard"
+        },
+        {
+          "skill": "wusheng",
+          "action_id": "frame-727-play-0:wusheng",
+          "first_effect_event_id": "frame-727-play-0:wusheng:processing"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-39:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-39:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-769-play-1:qingnang",
+          "first_effect_event_id": "frame-769-play-1:qingnang:discard"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-43:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-43:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-816-play-4:qingnang",
+          "first_effect_event_id": "frame-816-play-4:qingnang:discard"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-47:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-47:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-1089-play-2:qingnang",
+          "first_effect_event_id": "frame-1089-play-2:qingnang:discard"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-1132-play-1:qingnang",
+          "first_effect_event_id": "frame-1132-play-1:qingnang:discard"
+        },
+        {
+          "skill": "wusheng",
+          "action_id": "frame-1183-play-0:wusheng",
+          "first_effect_event_id": "frame-1183-play-0:wusheng:processing"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-1256-play-1:qingnang",
+          "first_effect_event_id": "frame-1256-play-1:qingnang:discard"
+        },
+        {
+          "skill": "wusheng",
+          "action_id": "frame-1268-play-0:wusheng",
+          "first_effect_event_id": "frame-1268-play-0:wusheng:processing"
+        },
+        {
+          "skill": "jijiu",
+          "action_id": "frame-1371-play-0:use:effect:target:1:damage:rescue:ask:0:1:p5:jijiu",
+          "first_effect_event_id": "frame-1371-play-0:use:effect:target:1:damage:rescue:ask:0:1:p5:jijiu-processing"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p1",
+          "p2"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 69
+    },
+    {
+      "seed": 6,
+      "identity_assignment": {
+        "p1": "rebel",
+        "p2": "rebel",
+        "p3": "loyalist",
+        "p4": "lord",
+        "p5": "renegade"
+      },
+      "general_assignment": {
+        "p1": "lvmeng",
+        "p2": "zhaoyun",
+        "p3": "zhenji",
+        "p4": "sunquan",
+        "p5": "machao"
+      },
+      "skill_activations": [
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-6-play-3:zhiheng",
+          "first_effect_event_id": "frame-6-play-3:zhiheng:discard:0"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-25-play-1:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-25-play-1:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-5:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-5:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-239-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-239-play-0:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-9:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-9:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-321-play-4:zhiheng",
+          "first_effect_event_id": "frame-321-play-4:zhiheng:discard:0"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-343-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-343-play-0:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-13:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-13:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-411-play-2:zhiheng",
+          "first_effect_event_id": "frame-411-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-17:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-17:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "longdan",
+          "action_id": "frame-497-play-0:use:effect:target:1:response:longdan",
+          "first_effect_event_id": "frame-497-play-0:use:effect:target:1:response:longdan-processing"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-497-play-4:zhiheng",
+          "first_effect_event_id": "frame-497-play-4:zhiheng:discard:0"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-528-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-528-play-0:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "longdan",
+          "action_id": "frame-548-play-0:longdan",
+          "first_effect_event_id": "frame-548-play-0:longdan:processing"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-567-play-4:zhiheng",
+          "first_effect_event_id": "frame-567-play-4:zhiheng:discard:0"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-630-play-2:zhiheng",
+          "first_effect_event_id": "frame-630-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-729-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-729-play-0:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "longdan",
+          "action_id": "frame-749-play-0:longdan",
+          "first_effect_event_id": "frame-749-play-0:longdan:processing"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-766-play-1:zhiheng",
+          "first_effect_event_id": "frame-766-play-1:zhiheng:discard:0"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-782-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-782-play-0:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-823-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-823-play-0:use:effect:target:1:tieqi-judge:reveal"
+        }
+      ],
+      "winner": {
+        "label": "内奸胜利",
+        "winner_ids": [
+          "p5"
+        ],
+        "reason": "主公死亡且内奸独存"
+      },
+      "turn_count": 33
+    },
+    {
+      "seed": 7,
+      "identity_assignment": {
+        "p1": "renegade",
+        "p2": "lord",
+        "p3": "rebel",
+        "p4": "loyalist",
+        "p5": "rebel"
+      },
+      "general_assignment": {
+        "p1": "luxun",
+        "p2": "huanggai",
+        "p3": "zhouyu",
+        "p4": "zhugeliang",
+        "p5": "liubei"
+      },
+      "skill_activations": [
+        {
+          "skill": "fanjian",
+          "action_id": "frame-25-play-6:fanjian",
+          "first_effect_event_id": "frame-25-play-6:fanjian:give"
+        },
+        {
+          "skill": "lianying",
+          "action_id": "frame-189-play-2:use:effect:target:1:response:processing:lianying",
+          "first_effect_event_id": "frame-189-play-2:use:effect:target:1:response:processing:lianying:draw:draw:0"
+        },
+        {
+          "skill": "kurou",
+          "action_id": "frame-189-play-6:kurou",
+          "first_effect_event_id": "frame-189-play-6:kurou:draw:draw:0"
+        },
+        {
+          "skill": "kurou",
+          "action_id": "frame-189-play-8:kurou",
+          "first_effect_event_id": "frame-189-play-8:kurou:draw:draw:0"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p2",
+          "p4"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 14
+    },
+    {
+      "seed": 8,
+      "identity_assignment": {
+        "p1": "rebel",
+        "p2": "lord",
+        "p3": "renegade",
+        "p4": "rebel",
+        "p5": "loyalist"
+      },
+      "general_assignment": {
+        "p1": "simayi",
+        "p2": "lvmeng",
+        "p3": "machao",
+        "p4": "huanggai",
+        "p5": "zhaoyun"
+      },
+      "skill_activations": [
+        {
+          "skill": "fankui",
+          "action_id": "frame-6-play-0:use:effect:target:1:damage:fankui",
+          "first_effect_event_id": "frame-6-play-0:use:effect:target:1:damage:fankui-gain"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-29-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-29-play-0:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "fankui",
+          "action_id": "frame-29-play-0:use:effect:target:1:damage:fankui",
+          "first_effect_event_id": "frame-29-play-0:use:effect:target:1:damage:fankui-gain"
+        },
+        {
+          "skill": "fankui",
+          "action_id": "frame-58-play-0:use:effect:target:1:damage:fankui",
+          "first_effect_event_id": "frame-58-play-0:use:effect:target:1:damage:fankui-gain"
+        },
+        {
+          "skill": "fankui",
+          "action_id": "frame-58-play-2:use:effect:target:1:damage:fankui",
+          "first_effect_event_id": "frame-58-play-2:use:effect:target:1:damage:fankui-gain"
+        },
+        {
+          "skill": "fankui",
+          "action_id": "frame-58-play-3:use:effect:target:1:damage:fankui",
+          "first_effect_event_id": "frame-58-play-3:use:effect:target:1:damage:fankui-gain"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-155-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-155-play-0:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "fankui",
+          "action_id": "frame-155-play-0:use:effect:target:1:damage:fankui",
+          "first_effect_event_id": "frame-155-play-0:use:effect:target:1:damage:fankui-gain"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-246-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-246-play-0:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "longdan",
+          "action_id": "frame-403-play-0:longdan",
+          "first_effect_event_id": "frame-403-play-0:longdan:processing"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p2",
+          "p5"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 22
+    },
+    {
+      "seed": 9,
+      "identity_assignment": {
+        "p1": "renegade",
+        "p2": "lord",
+        "p3": "loyalist",
+        "p4": "rebel",
+        "p5": "rebel"
+      },
+      "general_assignment": {
+        "p1": "huangyueying",
+        "p2": "diaochan",
+        "p3": "lvbu",
+        "p4": "zhenji",
+        "p5": "zhangliao"
+      },
+      "skill_activations": [
+        {
+          "skill": "qingguo",
+          "action_id": "frame-6-play-1:use:effect:effect:2:response:0:qingguo",
+          "first_effect_event_id": "frame-6-play-1:use:effect:effect:2:response:0:qingguo-processing"
+        },
+        {
+          "skill": "lijian",
+          "action_id": "frame-6-play-2:lijian",
+          "first_effect_event_id": "frame-6-play-2:lijian:discard"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-1:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-1:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-3:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-3:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-4:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-4:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "lijian",
+          "action_id": "frame-147-play-2:lijian",
+          "first_effect_event_id": "frame-147-play-2:lijian:discard"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-6:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-6:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-8:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-8:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-9:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-9:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "lijian",
+          "action_id": "frame-239-play-3:lijian",
+          "first_effect_event_id": "frame-239-play-3:lijian:discard"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-11:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-11:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-13:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-13:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-298-play-1:use:jizhi",
+          "first_effect_event_id": "frame-298-play-1:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-298-play-3:use:jizhi",
+          "first_effect_event_id": "frame-298-play-3:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-15:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-15:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-18:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-18:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "wushuang",
+          "action_id": "frame-457-play-0:use:effect:target:1:wushuang",
+          "first_effect_event_id": "frame-457-play-0:use:effect:target:1:wushuang-second:judgment:reveal"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-479-play-0:use:jizhi",
+          "first_effect_event_id": "frame-479-play-0:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-21:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-21:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "wushuang",
+          "action_id": "frame-525-play-0:use:effect:target:1:wushuang",
+          "first_effect_event_id": "frame-525-play-0:use:effect:target:1:wushuang-second:judgment:reveal"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-548-play-0:use:jizhi",
+          "first_effect_event_id": "frame-548-play-0:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-24:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-24:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "wushuang",
+          "action_id": "frame-587-play-1:use:effect:target:1:wushuang",
+          "first_effect_event_id": "frame-587-play-1:use:effect:target:1:wushuang-second:judgment:reveal"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-27:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-27:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-30:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-30:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-33:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-33:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "wushuang",
+          "action_id": "frame-759-play-0:use:effect:target:1:wushuang",
+          "first_effect_event_id": "frame-759-play-0:use:effect:target:1:wushuang-second:judgment:reveal"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-776-play-1:use:jizhi",
+          "first_effect_event_id": "frame-776-play-1:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-36:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-36:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "wushuang",
+          "action_id": "frame-811-play-0:use:effect:target:1:wushuang",
+          "first_effect_event_id": "frame-811-play-0:use:effect:target:1:wushuang-second:judgment:reveal"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-826-play-1:use:jizhi",
+          "first_effect_event_id": "frame-826-play-1:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-826-play-2:use:jizhi",
+          "first_effect_event_id": "frame-826-play-2:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-39:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-39:phase:6:finish:biyue-draw:draw:0"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p2",
+          "p3"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 42
+    },
+    {
+      "seed": 10,
+      "identity_assignment": {
+        "p1": "rebel",
+        "p2": "rebel",
+        "p3": "loyalist",
+        "p4": "lord",
+        "p5": "renegade"
+      },
+      "general_assignment": {
+        "p1": "guojia",
+        "p2": "huangyueying",
+        "p3": "simayi",
+        "p4": "diaochan",
+        "p5": "zhangfei"
+      },
+      "skill_activations": [
+        {
+          "skill": "lijian",
+          "action_id": "frame-6-play-5:lijian",
+          "first_effect_event_id": "frame-6-play-5:lijian:discard"
+        },
+        {
+          "skill": "yiji",
+          "action_id": "frame-6-play-5:lijian:duel:damage:yiji",
+          "first_effect_event_id": "frame-6-play-5:lijian:duel:damage:yiji:draw:0:draw:0"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-1:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-1:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "yiji",
+          "action_id": "frame-99-play-1:use:effect:target:1:damage:yiji",
+          "first_effect_event_id": "frame-99-play-1:use:effect:target:1:damage:yiji:draw:0:draw:0"
+        },
+        {
+          "skill": "guicai",
+          "action_id": "turn-3:phase:2:judgment:delayed:1:judgment:guicai",
+          "first_effect_event_id": "turn-3:phase:2:judgment:delayed:1:judgment:guicai-old"
+        },
+        {
+          "skill": "lijian",
+          "action_id": "frame-185-play-4:lijian",
+          "first_effect_event_id": "frame-185-play-4:lijian:discard"
+        },
+        {
+          "skill": "fankui",
+          "action_id": "frame-185-play-4:lijian:duel:damage:fankui",
+          "first_effect_event_id": "frame-185-play-4:lijian:duel:damage:fankui-gain"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-5:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-5:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "lijian",
+          "action_id": "frame-261-play-2:lijian",
+          "first_effect_event_id": "frame-261-play-2:lijian:discard"
+        },
+        {
+          "skill": "fankui",
+          "action_id": "frame-261-play-2:lijian:duel:damage:fankui",
+          "first_effect_event_id": "frame-261-play-2:lijian:duel:damage:fankui-gain"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-8:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-8:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "lijian",
+          "action_id": "frame-318-play-2:lijian",
+          "first_effect_event_id": "frame-318-play-2:lijian:discard"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-11:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-11:phase:6:finish:biyue-draw:draw:0"
+        },
+        {
+          "skill": "lijian",
+          "action_id": "frame-382-play-1:lijian",
+          "first_effect_event_id": "frame-382-play-1:lijian:discard"
+        },
+        {
+          "skill": "biyue",
+          "action_id": "turn-14:phase:6:finish:biyue",
+          "first_effect_event_id": "turn-14:phase:6:finish:biyue-draw:draw:0"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p3",
+          "p4"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 17
+    },
+    {
+      "seed": 11,
+      "identity_assignment": {
+        "p1": "rebel",
+        "p2": "lord",
+        "p3": "loyalist",
+        "p4": "renegade",
+        "p5": "rebel"
+      },
+      "general_assignment": {
+        "p1": "huanggai",
+        "p2": "ganning",
+        "p3": "sunquan",
+        "p4": "liubei",
+        "p5": "lvbu"
+      },
+      "skill_activations": [
+        {
+          "skill": "qixi",
+          "action_id": "frame-6-play-1:qixi",
+          "first_effect_event_id": "frame-6-play-1:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-6-play-2:qixi",
+          "first_effect_event_id": "frame-6-play-2:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-6-play-4:qixi",
+          "first_effect_event_id": "frame-6-play-4:qixi:processing"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-65-play-4:zhiheng",
+          "first_effect_event_id": "frame-65-play-4:zhiheng:discard:0"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-238-play-1:qixi",
+          "first_effect_event_id": "frame-238-play-1:qixi:processing"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-271-play-2:zhiheng",
+          "first_effect_event_id": "frame-271-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-364-play-1:qixi",
+          "first_effect_event_id": "frame-364-play-1:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-364-play-2:qixi",
+          "first_effect_event_id": "frame-364-play-2:qixi:processing"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p2",
+          "p3"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 11
+    },
+    {
+      "seed": 12,
+      "identity_assignment": {
+        "p1": "lord",
+        "p2": "loyalist",
+        "p3": "renegade",
+        "p4": "rebel",
+        "p5": "rebel"
+      },
+      "general_assignment": {
+        "p1": "huanggai",
+        "p2": "liubei",
+        "p3": "huatuo",
+        "p4": "lvmeng",
+        "p5": "xuchu"
+      },
+      "skill_activations": [
+        {
+          "skill": "rende",
+          "action_id": "frame-32-play-4:rende",
+          "first_effect_event_id": "frame-32-play-4:rende:give"
+        },
+        {
+          "skill": "kurou",
+          "action_id": "frame-169-play-4:kurou",
+          "first_effect_event_id": "frame-169-play-4:kurou:draw:draw:0"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-198-play-1:rende",
+          "first_effect_event_id": "frame-198-play-1:rende:give"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-381-play-0:rende",
+          "first_effect_event_id": "frame-381-play-0:rende:give"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-550-play-1:rende",
+          "first_effect_event_id": "frame-550-play-1:rende:give"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-569-play-1:qingnang",
+          "first_effect_event_id": "frame-569-play-1:qingnang:discard"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-608-play-1:rende",
+          "first_effect_event_id": "frame-608-play-1:rende:give"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-827-play-1:rende",
+          "first_effect_event_id": "frame-827-play-1:rende:give"
+        },
+        {
+          "skill": "jijiu",
+          "action_id": "frame-897-play-1:use:effect:effect:1:damage:rescue:ask:0:1:p3:jijiu",
+          "first_effect_event_id": "frame-897-play-1:use:effect:effect:1:damage:rescue:ask:0:1:p3:jijiu-processing"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-927-play-2:qingnang",
+          "first_effect_event_id": "frame-927-play-2:qingnang:discard"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-961-play-5:rende",
+          "first_effect_event_id": "frame-961-play-5:rende:give"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-1097-play-0:qingnang",
+          "first_effect_event_id": "frame-1097-play-0:qingnang:discard"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-1119-play-0:rende",
+          "first_effect_event_id": "frame-1119-play-0:rende:give"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-1128-play-2:qingnang",
+          "first_effect_event_id": "frame-1128-play-2:qingnang:discard"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-1181-play-1:qingnang",
+          "first_effect_event_id": "frame-1181-play-1:qingnang:discard"
+        }
+      ],
+      "winner": {
+        "label": "反贼胜利",
+        "winner_ids": [
+          "p4",
+          "p5"
+        ],
+        "reason": "主公死亡"
+      },
+      "turn_count": 60
+    },
+    {
+      "seed": 13,
+      "identity_assignment": {
+        "p1": "loyalist",
+        "p2": "lord",
+        "p3": "rebel",
+        "p4": "renegade",
+        "p5": "rebel"
+      },
+      "general_assignment": {
+        "p1": "zhouyu",
+        "p2": "zhangfei",
+        "p3": "zhangliao",
+        "p4": "lvmeng",
+        "p5": "luxun"
+      },
+      "skill_activations": [
+        {
+          "skill": "fanjian",
+          "action_id": "frame-176-play-6:fanjian",
+          "first_effect_event_id": "frame-176-play-6:fanjian:give"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-7:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-7:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "fanjian",
+          "action_id": "frame-393-play-1:fanjian",
+          "first_effect_event_id": "frame-393-play-1:fanjian:give"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-12:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-12:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "lianying",
+          "action_id": "frame-563-play-0:use:effect:target:1:response:processing:lianying",
+          "first_effect_event_id": "frame-563-play-0:use:effect:target:1:response:processing:lianying:draw:draw:0"
+        },
+        {
+          "skill": "fanjian",
+          "action_id": "frame-563-play-2:fanjian",
+          "first_effect_event_id": "frame-563-play-2:fanjian:give"
+        },
+        {
+          "skill": "fanjian",
+          "action_id": "frame-651-play-0:fanjian",
+          "first_effect_event_id": "frame-651-play-0:fanjian:give"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p1",
+          "p2"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 18
+    },
+    {
+      "seed": 14,
+      "identity_assignment": {
+        "p1": "renegade",
+        "p2": "rebel",
+        "p3": "rebel",
+        "p4": "loyalist",
+        "p5": "lord"
+      },
+      "general_assignment": {
+        "p1": "zhaoyun",
+        "p2": "lvbu",
+        "p3": "luxun",
+        "p4": "zhangfei",
+        "p5": "caocao"
+      },
+      "skill_activations": [
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-132-play-2:use:effect:effect:2:damage:jianxiong",
+          "first_effect_event_id": "frame-132-play-2:use:effect:effect:2:damage:jianxiong:0"
+        },
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-223-play-0:use:effect:target:1:damage:jianxiong",
+          "first_effect_event_id": "frame-223-play-0:use:effect:target:1:damage:jianxiong:0"
+        },
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-223-play-1:use:effect:target:1:damage:jianxiong",
+          "first_effect_event_id": "frame-223-play-1:use:effect:target:1:damage:jianxiong:0"
+        },
+        {
+          "skill": "longdan",
+          "action_id": "frame-223-play-2:use:effect:effect:1:borrow-response:longdan",
+          "first_effect_event_id": "frame-223-play-2:use:effect:effect:1:borrow-response:longdan-processing"
+        },
+        {
+          "skill": "longdan",
+          "action_id": "frame-502-play-1:longdan",
+          "first_effect_event_id": "frame-502-play-1:longdan:processing"
+        },
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-502-play-2:use:effect:effect:1:damage:jianxiong",
+          "first_effect_event_id": "frame-502-play-2:use:effect:effect:1:damage:jianxiong:0"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p4",
+          "p5"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 17
+    },
+    {
+      "seed": 15,
+      "identity_assignment": {
+        "p1": "renegade",
+        "p2": "rebel",
+        "p3": "rebel",
+        "p4": "lord",
+        "p5": "loyalist"
+      },
+      "general_assignment": {
+        "p1": "sunshangxiang",
+        "p2": "zhangliao",
+        "p3": "zhouyu",
+        "p4": "huangyueying",
+        "p5": "machao"
+      },
+      "skill_activations": [
+        {
+          "skill": "jizhi",
+          "action_id": "frame-6-play-1:use:jizhi",
+          "first_effect_event_id": "frame-6-play-1:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-30-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-30-play-0:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "jieyin",
+          "action_id": "frame-58-play-3:jieyin",
+          "first_effect_event_id": "frame-58-play-3:jieyin:discard"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-4:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-4:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-9:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-9:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "fanjian",
+          "action_id": "frame-167-play-2:fanjian",
+          "first_effect_event_id": "frame-167-play-2:fanjian:give"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-201-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-201-play-0:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "jieyin",
+          "action_id": "frame-228-play-1:jieyin",
+          "first_effect_event_id": "frame-228-play-1:jieyin:discard"
+        },
+        {
+          "skill": "tuxi",
+          "action_id": "turn-14:phase:3:draw:tuxi",
+          "first_effect_event_id": "turn-14:phase:3:draw:tuxi:gain:1"
+        },
+        {
+          "skill": "fanjian",
+          "action_id": "frame-255-play-2:fanjian",
+          "first_effect_event_id": "frame-255-play-2:fanjian:give"
+        },
+        {
+          "skill": "tieqi",
+          "action_id": "frame-300-play-0:use:effect:target:1:tieqi",
+          "first_effect_event_id": "frame-300-play-0:use:effect:target:1:tieqi-judge:reveal"
+        },
+        {
+          "skill": "xiaoji",
+          "action_id": "frame-324-play-1:use:effect:replace:xiaoji",
+          "first_effect_event_id": "frame-324-play-1:use:effect:replace:xiaoji:draw:draw:0"
+        },
+        {
+          "skill": "jieyin",
+          "action_id": "frame-324-play-4:jieyin",
+          "first_effect_event_id": "frame-324-play-4:jieyin:discard"
+        },
+        {
+          "skill": "fanjian",
+          "action_id": "frame-378-play-4:fanjian",
+          "first_effect_event_id": "frame-378-play-4:fanjian:give"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-417-play-1:use:jizhi",
+          "first_effect_event_id": "frame-417-play-1:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-417-play-2:use:jizhi",
+          "first_effect_event_id": "frame-417-play-2:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-417-play-3:use:jizhi",
+          "first_effect_event_id": "frame-417-play-3:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-417-play-4:use:jizhi",
+          "first_effect_event_id": "frame-417-play-4:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-620-play-1:use:jizhi",
+          "first_effect_event_id": "frame-620-play-1:use:jizhi-draw:draw:0"
+        }
+      ],
+      "winner": {
+        "label": "反贼胜利",
+        "winner_ids": [
+          "p2",
+          "p3"
+        ],
+        "reason": "主公死亡"
+      },
+      "turn_count": 30
+    },
+    {
+      "seed": 16,
+      "identity_assignment": {
+        "p1": "lord",
+        "p2": "renegade",
+        "p3": "loyalist",
+        "p4": "rebel",
+        "p5": "rebel"
+      },
+      "general_assignment": {
+        "p1": "zhugeliang",
+        "p2": "daqiao",
+        "p3": "huatuo",
+        "p4": "sunshangxiang",
+        "p5": "caocao"
+      },
+      "skill_activations": [
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-6-play-1:use:effect:effect:4:damage:jianxiong",
+          "first_effect_event_id": "frame-6-play-1:use:effect:effect:4:damage:jianxiong:0"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-110-play-3:qingnang",
+          "first_effect_event_id": "frame-110-play-3:qingnang:discard"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-274-play-1:qingnang",
+          "first_effect_event_id": "frame-274-play-1:qingnang:discard"
+        },
+        {
+          "skill": "xiaoji",
+          "action_id": "frame-380-play-1:use:effect:effect:1:move:std-spade-12-1:xiaoji",
+          "first_effect_event_id": "frame-380-play-1:use:effect:effect:1:move:std-spade-12-1:xiaoji:draw:draw:0"
+        },
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-407-play-0:use:effect:target:1:damage:chain:1:jianxiong",
+          "first_effect_event_id": "frame-407-play-0:use:effect:target:1:damage:chain:1:jianxiong:0"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-407-play-1:qingnang",
+          "first_effect_event_id": "frame-407-play-1:qingnang:discard"
+        },
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-457-play-0:use:effect:target:1:damage:jianxiong",
+          "first_effect_event_id": "frame-457-play-0:use:effect:target:1:damage:jianxiong:0"
+        },
+        {
+          "skill": "xiaoji",
+          "action_id": "frame-499-play-2:use:effect:effect:1:move:std-spade-05-2:xiaoji",
+          "first_effect_event_id": "frame-499-play-2:use:effect:effect:1:move:std-spade-05-2:xiaoji:draw:draw:0"
+        },
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-565-play-0:use:effect:target:1:damage:jianxiong",
+          "first_effect_event_id": "frame-565-play-0:use:effect:target:1:damage:jianxiong:0"
+        },
+        {
+          "skill": "jieyin",
+          "action_id": "frame-565-play-3:jieyin",
+          "first_effect_event_id": "frame-565-play-3:jieyin:discard"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-676-play-3:qingnang",
+          "first_effect_event_id": "frame-676-play-3:qingnang:discard"
+        },
+        {
+          "skill": "guose",
+          "action_id": "frame-757-play-0:guose",
+          "first_effect_event_id": "frame-757-play-0:guose:processing"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-781-play-4:qingnang",
+          "first_effect_event_id": "frame-781-play-4:qingnang:discard"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-842-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-842-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-842-play-3:qingnang",
+          "first_effect_event_id": "frame-842-play-3:qingnang:discard"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-892-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-892-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-892-play-1:qingnang",
+          "first_effect_event_id": "frame-892-play-1:qingnang:discard"
+        },
+        {
+          "skill": "guose",
+          "action_id": "frame-930-play-1:guose",
+          "first_effect_event_id": "frame-930-play-1:guose:processing"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-943-play-1:qingnang",
+          "first_effect_event_id": "frame-943-play-1:qingnang:discard"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-984-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-984-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-1070-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-1070-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "guose",
+          "action_id": "frame-1171-play-0:guose",
+          "first_effect_event_id": "frame-1171-play-0:guose:processing"
+        },
+        {
+          "skill": "guose",
+          "action_id": "frame-1237-play-0:guose",
+          "first_effect_event_id": "frame-1237-play-0:guose:processing"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-1260-play-1:qingnang",
+          "first_effect_event_id": "frame-1260-play-1:qingnang:discard"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-1316-play-3:qingnang",
+          "first_effect_event_id": "frame-1316-play-3:qingnang:discard"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-1397-play-2:qingnang",
+          "first_effect_event_id": "frame-1397-play-2:qingnang:discard"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-1461-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-1461-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-1461-play-1:qingnang",
+          "first_effect_event_id": "frame-1461-play-1:qingnang:discard"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p1",
+          "p3"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 61
+    },
+    {
+      "seed": 17,
+      "identity_assignment": {
+        "p1": "lord",
+        "p2": "rebel",
+        "p3": "loyalist",
+        "p4": "rebel",
+        "p5": "renegade"
+      },
+      "general_assignment": {
+        "p1": "ganning",
+        "p2": "huatuo",
+        "p3": "luxun",
+        "p4": "sunquan",
+        "p5": "zhenji"
+      },
+      "skill_activations": [
+        {
+          "skill": "qixi",
+          "action_id": "frame-6-play-1:qixi",
+          "first_effect_event_id": "frame-6-play-1:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-6-play-3:qixi",
+          "first_effect_event_id": "frame-6-play-3:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-6-play-4:qixi",
+          "first_effect_event_id": "frame-6-play-4:qixi:processing"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-115-play-2:zhiheng",
+          "first_effect_event_id": "frame-115-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-5:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-5:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-229-play-1:qixi",
+          "first_effect_event_id": "frame-229-play-1:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-229-play-2:qixi",
+          "first_effect_event_id": "frame-229-play-2:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-229-play-3:qixi",
+          "first_effect_event_id": "frame-229-play-3:qixi:processing"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-306-play-3:zhiheng",
+          "first_effect_event_id": "frame-306-play-3:zhiheng:discard:0"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-10:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-10:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "qingnang",
+          "action_id": "frame-349-play-3:qingnang",
+          "first_effect_event_id": "frame-349-play-3:qingnang:discard"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-396-play-2:zhiheng",
+          "first_effect_event_id": "frame-396-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-15:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-15:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-533-play-1:zhiheng",
+          "first_effect_event_id": "frame-533-play-1:zhiheng:discard:0"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-19:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-19:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-626-play-1:qixi",
+          "first_effect_event_id": "frame-626-play-1:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-626-play-2:qixi",
+          "first_effect_event_id": "frame-626-play-2:qixi:processing"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-22:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-22:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "qingguo",
+          "action_id": "frame-722-play-0:use:effect:target:1:response:qingguo",
+          "first_effect_event_id": "frame-722-play-0:use:effect:target:1:response:qingguo-processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-722-play-2:qixi",
+          "first_effect_event_id": "frame-722-play-2:qixi:processing"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-25:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-25:phase:1:preparation:luoshen-judge:0:reveal"
+        },
+        {
+          "skill": "qingguo",
+          "action_id": "frame-813-play-0:use:effect:target:1:response:qingguo",
+          "first_effect_event_id": "frame-813-play-0:use:effect:target:1:response:qingguo-processing"
+        },
+        {
+          "skill": "luoshen",
+          "action_id": "turn-28:phase:1:preparation:luoshen",
+          "first_effect_event_id": "turn-28:phase:1:preparation:luoshen-judge:0:reveal"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p1",
+          "p3"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 30
+    },
+    {
+      "seed": 18,
+      "identity_assignment": {
+        "p1": "rebel",
+        "p2": "renegade",
+        "p3": "rebel",
+        "p4": "lord",
+        "p5": "loyalist"
+      },
+      "general_assignment": {
+        "p1": "huatuo",
+        "p2": "huanggai",
+        "p3": "ganning",
+        "p4": "xiahou_dun",
+        "p5": "lvmeng"
+      },
+      "skill_activations": [
+        {
+          "skill": "ganglie",
+          "action_id": "frame-6-play-6:use:effect:effect:1:damage:ganglie",
+          "first_effect_event_id": "frame-6-play-6:use:effect:effect:1:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-77-play-4:use:effect:effect:4:damage:ganglie",
+          "first_effect_event_id": "frame-77-play-4:use:effect:effect:4:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "kurou",
+          "action_id": "frame-149-play-6:kurou",
+          "first_effect_event_id": "frame-149-play-6:kurou:draw:draw:0"
+        },
+        {
+          "skill": "kurou",
+          "action_id": "frame-149-play-9:kurou",
+          "first_effect_event_id": "frame-149-play-9:kurou:draw:draw:0"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-210-play-1:qixi",
+          "first_effect_event_id": "frame-210-play-1:qixi:processing"
+        },
+        {
+          "skill": "qixi",
+          "action_id": "frame-210-play-2:qixi",
+          "first_effect_event_id": "frame-210-play-2:qixi:processing"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p4",
+          "p5"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 10
+    },
+    {
+      "seed": 19,
+      "identity_assignment": {
+        "p1": "loyalist",
+        "p2": "rebel",
+        "p3": "rebel",
+        "p4": "renegade",
+        "p5": "lord"
+      },
+      "general_assignment": {
+        "p1": "sunquan",
+        "p2": "guanyu",
+        "p3": "huangyueying",
+        "p4": "caocao",
+        "p5": "xiahou_dun"
+      },
+      "skill_activations": [
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-6-play-0:use:effect:target:1:damage:jianxiong",
+          "first_effect_event_id": "frame-6-play-0:use:effect:target:1:damage:jianxiong:0"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-19-play-1:zhiheng",
+          "first_effect_event_id": "frame-19-play-1:zhiheng:discard:0"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-66-play-1:use:jizhi",
+          "first_effect_event_id": "frame-66-play-1:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-96-play-3:use:effect:effect:1:damage:jianxiong",
+          "first_effect_event_id": "frame-96-play-3:use:effect:effect:1:damage:jianxiong:0"
+        },
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-96-play-6:use:effect:effect:1:damage:jianxiong",
+          "first_effect_event_id": "frame-96-play-6:use:effect:effect:1:damage:jianxiong:0"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-196-play-1:zhiheng",
+          "first_effect_event_id": "frame-196-play-1:zhiheng:discard:0"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-218-play-1:use:jizhi",
+          "first_effect_event_id": "frame-218-play-1:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-218-play-2:use:jizhi",
+          "first_effect_event_id": "frame-218-play-2:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-218-play-3:use:jizhi",
+          "first_effect_event_id": "frame-218-play-3:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-218-play-3:use:effect:effect:1:fire:ganglie",
+          "first_effect_event_id": "frame-218-play-3:use:effect:effect:1:fire:ganglie:judge:reveal"
+        },
+        {
+          "skill": "jizhi",
+          "action_id": "frame-218-play-4:use:jizhi",
+          "first_effect_event_id": "frame-218-play-4:use:jizhi-draw:draw:0"
+        },
+        {
+          "skill": "zhiheng",
+          "action_id": "frame-450-play-2:zhiheng",
+          "first_effect_event_id": "frame-450-play-2:zhiheng:discard:0"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-496-play-0:use:effect:effect:1:damage:ganglie",
+          "first_effect_event_id": "frame-496-play-0:use:effect:effect:1:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-621-play-0:use:effect:target:1:damage:ganglie",
+          "first_effect_event_id": "frame-621-play-0:use:effect:target:1:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "jianxiong",
+          "action_id": "frame-812-play-3:use:effect:target:1:damage:jianxiong",
+          "first_effect_event_id": "frame-812-play-3:use:effect:target:1:damage:jianxiong:0"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-848-play-3:use:effect:effect:1:damage:ganglie",
+          "first_effect_event_id": "frame-848-play-3:use:effect:effect:1:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-935-play-0:use:effect:effect:1:damage:ganglie",
+          "first_effect_event_id": "frame-935-play-0:use:effect:effect:1:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-1003-play-0:use:effect:target:1:damage:ganglie",
+          "first_effect_event_id": "frame-1003-play-0:use:effect:target:1:damage:ganglie:judge:reveal"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p1",
+          "p5"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 52
+    },
+    {
+      "seed": 20,
+      "identity_assignment": {
+        "p1": "renegade",
+        "p2": "lord",
+        "p3": "rebel",
+        "p4": "rebel",
+        "p5": "loyalist"
+      },
+      "general_assignment": {
+        "p1": "zhangfei",
+        "p2": "xiahou_dun",
+        "p3": "daqiao",
+        "p4": "xuchu",
+        "p5": "liubei"
+      },
+      "skill_activations": [
+        {
+          "skill": "liuli",
+          "action_id": "frame-6-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-6-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-6-play-2:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-6-play-2:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-144-play-2:rende",
+          "first_effect_event_id": "frame-144-play-2:rende:give"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-144-play-3:rende",
+          "first_effect_event_id": "frame-144-play-3:rende:give"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-144-play-4:rende",
+          "first_effect_event_id": "frame-144-play-4:rende:give"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-144-play-5:rende",
+          "first_effect_event_id": "frame-144-play-5:rende:give"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-203-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-203-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-272-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-272-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "guose",
+          "action_id": "frame-373-play-1:guose",
+          "first_effect_event_id": "frame-373-play-1:guose:processing"
+        },
+        {
+          "skill": "ganglie",
+          "action_id": "frame-373-play-3:use:effect:effect:4:damage:ganglie",
+          "first_effect_event_id": "frame-373-play-3:use:effect:effect:4:damage:ganglie:judge:reveal"
+        },
+        {
+          "skill": "liuli",
+          "action_id": "frame-515-play-0:use:effect:target:1:liuli",
+          "first_effect_event_id": "frame-515-play-0:use:effect:target:1:liuli-cost"
+        },
+        {
+          "skill": "guose",
+          "action_id": "frame-579-play-0:guose",
+          "first_effect_event_id": "frame-579-play-0:guose:processing"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-589-play-4:rende",
+          "first_effect_event_id": "frame-589-play-4:rende:give"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-640-play-1:rende",
+          "first_effect_event_id": "frame-640-play-1:rende:give"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-739-play-1:rende",
+          "first_effect_event_id": "frame-739-play-1:rende:give"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-790-play-0:rende",
+          "first_effect_event_id": "frame-790-play-0:rende:give"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-790-play-1:rende",
+          "first_effect_event_id": "frame-790-play-1:rende:give"
+        },
+        {
+          "skill": "rende",
+          "action_id": "frame-1084-play-1:rende",
+          "first_effect_event_id": "frame-1084-play-1:rende:give"
+        }
+      ],
+      "winner": {
+        "label": "主公与忠臣胜利",
+        "winner_ids": [
+          "p2",
+          "p5"
+        ],
+        "reason": "反贼与内奸全部死亡"
+      },
+      "turn_count": 54
+    }
+  ]
+}
