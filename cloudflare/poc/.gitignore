@@ -1,0 +1,7 @@
+.venv/
+.venv-workers/
+.wrangler/
+node_modules/
+python_modules/
+uv.lock
+pylock.toml

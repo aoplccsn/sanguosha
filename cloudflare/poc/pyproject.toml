@@ -1,0 +1,8 @@
+[project]
+name = "sanguosha-cloudflare-poc"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = ["fastapi"]
+
+[dependency-groups]
+dev = ["workers-py", "workers-runtime-sdk"]

@@ -1,0 +1,20 @@
+{
+  "name": "sanguosha-t92-poc",
+  "main": "src/main.py",
+  "compatibility_date": "2026-09-29",
+  "compatibility_flags": ["python_workers"],
+  "assets": {
+    "directory": "../../web/dist",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "durable_objects": {
+    "bindings": [
+      {"name": "ROOM", "class_name": "Room"}
+    ]
+  },
+  "migrations": [
+    {"tag": "v1", "new_sqlite_classes": ["Room"]}
+  ]
+}
+
