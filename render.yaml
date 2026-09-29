@@ -3,7 +3,7 @@ services:
     name: sanguosha-web
     plan: free
     runtime: docker
-    dockerfilePath: ./Dockerfile.production
+    dockerfilePath: ./Dockerfile
     dockerContext: .
     dockerCommand: python -m sanguosha.web
     healthCheckPath: /health

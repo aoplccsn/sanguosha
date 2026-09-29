@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-if [ "${ZEABUR:-}" = "true" ]; then
+if [ "${ZEABUR:-}" = "true" ] || [ "${BACK4APP:-}" = "true" ]; then
     exec python -m sanguosha.web
 fi
 

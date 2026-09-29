@@ -23,6 +23,8 @@ describe('GameConnection', () => {
     expect(websocketUrl('https:', 'sanguosha-web.onrender.com'))
       .toBe('wss://sanguosha-web.onrender.com/ws')
     expect(websocketUrl('http:', 'localhost:5173')).toBe('ws://localhost:5173/ws')
+    expect(websocketUrl('https:', 'friends.example.b4a.run'))
+      .toBe('wss://friends.example.b4a.run/ws')
   })
   beforeEach(() => {
     vi.useFakeTimers()

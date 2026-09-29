@@ -1,5 +1,5 @@
 {
   "dockerfile": {
-    "path": "Dockerfile.production"
+    "path": "Dockerfile"
   }
 }

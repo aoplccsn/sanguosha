@@ -2,7 +2,7 @@ services:
   web-game:
     build:
       context: .
-      dockerfile: Dockerfile.production
+      dockerfile: Dockerfile
       args:
         APP_VERSION: ${APP_VERSION:?Set APP_VERSION}
         BUILD_COMMIT: ${BUILD_COMMIT:?Set BUILD_COMMIT to git rev-parse HEAD}

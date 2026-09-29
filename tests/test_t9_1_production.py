@@ -128,3 +128,41 @@ def test_zeabur_exact_host_origin_and_explicit_override(monkeypatch):
         with client.websocket_connect("/ws", headers={"host": "friends.zeabur.app", "origin": "https://friends.zeabur.app"}) as socket:
             socket.send_json({"type": "HELLO", "version": PROTOCOL_VERSION})
             assert socket.receive_json()["type"] == "WELCOME"
+
+
+def test_back4app_uses_default_port_one_worker_and_strict_host_origin(monkeypatch):
+    monkeypatch.delenv("RENDER", raising=False)
+    monkeypatch.delenv("ZEABUR", raising=False)
+    monkeypatch.setenv("BACK4APP", "true")
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("DOMAIN", "friends.example.b4a.run")
+    monkeypatch.setenv("PUBLIC_ORIGIN", "https://friends.example.b4a.run")
+    monkeypatch.setenv("SECRET_KEY", "s" * 48)
+    monkeypatch.delenv("PORT", raising=False)
+    config = WebConfig.from_env()
+    assert (config.production, config.host, config.port) == (True, "0.0.0.0", 8000)
+    calls = []
+    monkeypatch.setattr(web_main.uvicorn, "run", lambda *args, **kwargs: calls.append((args, kwargs)))
+    web_main.main()
+    assert calls[0][1]["workers"] == 1
+    assert calls[0][1]["proxy_headers"] is False
+    with TestClient(create_app(config)) as client:
+        headers = {"host": config.domain, "origin": config.public_origin}
+        assert client.get("/health", headers=headers).status_code == 200
+        assert client.get("/api/version", headers=headers).status_code == 200
+        assert client.get("/health", headers={"host": "other.b4a.run"}).status_code == 400
+        with pytest.raises(WebSocketDisconnect):
+            with client.websocket_connect("/ws", headers={"host": config.domain, "origin": "https://other.b4a.run"}):
+                pass
+        with client.websocket_connect("/ws", headers=headers) as socket:
+            socket.send_json({"type": "HELLO", "version": PROTOCOL_VERSION})
+            assert socket.receive_json()["type"] == "WELCOME"
+
+
+def test_back4app_requires_assigned_domain_before_first_start(monkeypatch):
+    monkeypatch.setenv("BACK4APP", "true")
+    monkeypatch.setenv("SECRET_KEY", "s" * 48)
+    monkeypatch.delenv("DOMAIN", raising=False)
+    monkeypatch.delenv("PUBLIC_ORIGIN", raising=False)
+    with pytest.raises(RuntimeError, match="DOMAIN"):
+        WebConfig.from_env().validate_production()

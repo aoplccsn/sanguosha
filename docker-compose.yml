@@ -1,6 +1,8 @@
 services:
   relay:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.relay
     restart: unless-stopped
     environment:
       RELAY_HOST: 0.0.0.0

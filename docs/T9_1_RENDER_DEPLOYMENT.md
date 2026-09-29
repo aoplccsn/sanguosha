@@ -14,14 +14,14 @@
    git push -u origin t9.1-production-deploy
    ```
 
-   当前本地仓库没有配置 Git remote；如果你后来已添加 `origin`，先运行 `git remote -v` 核对地址，不要重复添加。推送时按 GitHub 提示登录。确认 GitHub 网页中能看到 `render.yaml`、`Dockerfile.production`、`web/` 和 `src/`。不要上传 `.env.production`、`SECRET_KEY` 或登录凭据。
+   当前本地仓库没有配置 Git remote；如果你后来已添加 `origin`，先运行 `git remote -v` 核对地址，不要重复添加。推送时按 GitHub 提示登录。确认 GitHub 网页中能看到 `render.yaml`、`Dockerfile`、`web/` 和 `src/`。不要上传 `.env.production`、`SECRET_KEY` 或登录凭据。
 
 ## 二、创建 Render Web Service（推荐：Blueprint）
 
 1. 打开 [Render Dashboard](https://dashboard.render.com/) 并注册/登录。点击右上角 `+ New` → `Blueprint`。
 2. 若尚未连接 GitHub，按页面提示授权 Render 访问刚创建的仓库。选中该仓库，点击 `Connect`。
 3. Blueprint 分支选择 `t9.1-production-deploy`，Blueprint Path 保持仓库根目录的 `render.yaml`。检查预览只包含 **一个**名为 `sanguosha-web` 的 Free Web Service，不包含数据库或 Caddy，然后点击 `Deploy Blueprint`。
-4. `render.yaml` 会指定 Docker 构建文件 `Dockerfile.production`、启动命令 `python -m sanguosha.web`、健康检查 `/health`、单个 Free 服务，并让 Render 自动生成 `SECRET_KEY`。Render 在部署日志中显示构建与启动进度。名称冲突时可以在创建界面选择可用的服务名。
+4. `render.yaml` 会指定根目录生产构建文件 `Dockerfile`、启动命令 `python -m sanguosha.web`、健康检查 `/health`、单个 Free 服务，并让 Render 自动生成 `SECRET_KEY`。Render 在部署日志中显示构建与启动进度。名称冲突时可以在创建界面选择可用的服务名。
 
 ## 三、手动创建 Web Service（不使用 Blueprint 时）
 
@@ -33,7 +33,7 @@
 | Branch | `t9.1-production-deploy` |
 | Root Directory | 留空（项目根目录） |
 | Language / Runtime | `Docker` |
-| Dockerfile Path | `./Dockerfile.production` |
+| Dockerfile Path | `./Dockerfile` |
 | Docker Build Context | `.` |
 | Build Command | Docker 模式无需填写；Render 按 Dockerfile 执行 Node/Vite 和 Python 构建 |
 | Docker Command / Start Command | `python -m sanguosha.web` |

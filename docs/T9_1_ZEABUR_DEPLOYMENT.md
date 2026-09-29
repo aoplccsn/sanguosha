@@ -2,13 +2,13 @@
 
 > **先看平台限制（核对日期：2026-09-29）**：Zeabur 的 [Free Plan 说明](https://zeabur.com/docs/en-US/pricing/free-plan) 写着无需信用卡，但 [官方变更公告](https://zeabur.com/changelogs/phasing-out-shared-cluster) 写明：2026-03-15 起不能再在共享集群建新项目，原有免费共享集群也改为需要付费订阅；[创建项目说明](https://zeabur.com/docs/en-US/deploy/create/create-project) 现在要求选择已有服务器、购买服务器或绑定外部服务器。因此，**按现有官方政策，新用户无法仅凭 Free Plan、零服务器费用完成此部署**。本指南把代码和操作准备好；若你的实际控制台以后提供新的免费计算资源，可以继续。若只看到付费或自有服务器选项，就停在这一步，不要为了照做而付款。本项目尚未完成 Zeabur 公网实测。
 
-部署后若平台允许，应得到 `https://你的名字.zeabur.app`。这个地址由 Zeabur 生成，不需购买域名。容器复用 `Dockerfile.production`，构建 React/Vite 页面并用单 worker FastAPI 提供网页、`/api` 和 `/ws`；不运行 Caddy。现有 VPS 和 Render 部署文件仍保留。
+部署后若平台允许，应得到 `https://你的名字.zeabur.app`。这个地址由 Zeabur 生成，不需购买域名。容器复用根目录生产 `Dockerfile`，构建 React/Vite 页面并用单 worker FastAPI 提供网页、`/api` 和 `/ws`；不运行 Caddy。现有 VPS 和 Render 部署文件仍保留。
 
 ## 1. 把项目放到 GitHub
 
 1. 打开 [GitHub](https://github.com/)，注册或登录。右上角点 `+` → `New repository`，输入仓库名，例如 `Sanguosha`。不要勾选自动添加 README、`.gitignore` 或 License；本地仓库已有这些内容。点 `Create repository`。
 2. 在电脑上打开 PowerShell，进入 `C:\Sanguosha`，运行 `git status` 和 `git remote -v`。当前仓库可能有**示例占位 remote**，必须先核对它是否真是你自己的 GitHub 地址。若不是，在 GitHub 新仓库页面复制实际 HTTPS 地址，然后运行 `git remote set-url origin https://github.com/你的用户名/Sanguosha.git`；若没有 origin，运行 `git remote add origin https://github.com/你的用户名/Sanguosha.git`。
-3. 确认代码已测试并提交后，运行 `git push -u origin t9.1-production-deploy`。按 GitHub 提示完成登录。刷新 GitHub 仓库页面，确认能看到 `Dockerfile.production`、`zbpack.json`、`web/`、`src/`。不要把 `SECRET_KEY`、`.env.production` 或密码放进仓库。
+3. 确认代码已测试并提交后，运行 `git push -u origin t9.1-production-deploy`。按 GitHub 提示完成登录。刷新 GitHub 仓库页面，确认能看到 `Dockerfile`、`zbpack.json`、`web/`、`src/`。不要把 `SECRET_KEY`、`.env.production` 或密码放进仓库。
 
 ## 2. 注册 Zeabur，检查能否创建免费项目
 
@@ -19,7 +19,7 @@
 ## 3. 连接 GitHub 仓库并创建服务
 
 1. 在项目中点 `Add Service` / `Create Service` → `Git Repository` / `GitHub`。首次使用时点连接 GitHub，授权 Zeabur 读取刚创建的仓库；如果只授权选定仓库，确保勾选 `Sanguosha`。选择该仓库与 `t9.1-production-deploy` 分支。不要选择预制镜像或仅填写公开 Git URL，否则后续自动部署能力可能不同。详见 [GitHub 集成说明](https://zeabur.com/docs/en-US/deploy/methods/github-integration)。
-2. Root Directory 保持仓库根目录。仓库内的 `zbpack.json` 明确指定 `Dockerfile.production`，避免 Zeabur误用根目录另一个 `Dockerfile`。Zeabur 的 [Dockerfile 说明](https://zeabur.com/docs/en-US/deploy/methods/dockerfile) 支持这种路径配置。构建命令和启动命令可留空，使用 Dockerfile：启动脚本在 `ZEABUR=true` 时执行 `python -m sanguosha.web`，监听 `0.0.0.0:$PORT`，固定 **1 worker**。如果控制台要求手填启动命令，填 `python -m sanguosha.web`。
+2. Root Directory 保持仓库根目录。仓库内的 `zbpack.json` 明确指定根目录 `Dockerfile`；它也是 Back4app、Render 和 VPS 使用的同一份生产构建文件。Zeabur 的 [Dockerfile 说明](https://zeabur.com/docs/en-US/deploy/methods/dockerfile) 支持这种路径配置。构建命令和启动命令可留空，使用 Dockerfile：启动脚本在 `ZEABUR=true` 时执行 `python -m sanguosha.web`，监听 `0.0.0.0:$PORT`，固定 **1 worker**。如果控制台要求手填启动命令，填 `python -m sanguosha.web`。
 3. 先创建服务。首次构建或启动可能因尚未生成公网域名而失败；这是严格 Host/Origin 校验阻止未知域名，并非需要关闭校验。继续生成域名和填写变量，然后重部署。
 
 ## 4. Generate Domain，填写环境变量
