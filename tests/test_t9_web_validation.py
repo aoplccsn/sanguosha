@@ -59,7 +59,7 @@ async def start_server():
     raise AssertionError("web server did not start")
 
 
-async def play_web_match(url: str, humans: int, seed: int):
+async def play_web_match(url: str, humans: int, seed: int, audit_app=None, audit_seen=None):
     clients = [await websockets.connect(url) for _ in range(humans)]
     seats: list[str] = []
     try:
@@ -83,6 +83,25 @@ async def play_web_match(url: str, humans: int, seed: int):
             while True:
                 message = json.loads(await asyncio.wait_for(ws.recv(), 60))
                 kind = message["type"]
+                if audit_app is not None:
+                    audit_seen.add(kind)
+                    room = audit_app.state.room_manager.rooms[room_code].game
+                    if room.session is not None:
+                        raw = json.dumps(message, ensure_ascii=False)
+                        for opponent_id in seats:
+                            if opponent_id != seats[index]:
+                                private_ids = room.session.state.cards_in(ZoneRef(ZoneType.HAND, opponent_id))
+                                assert all(str(card_id) not in raw for card_id in private_ids)
+                        assert "deck_order" not in raw and "draw_pile" not in raw
+                        if kind == "PROJECTION_UPDATE":
+                            for player in message["projection"]["players"]:
+                                if player["player_id"] != seats[index]:
+                                    assert "hand" not in player
+                                    actual = room.session.state.players[player["player_id"]]
+                                    if actual.is_alive and actual.identity.value != "lord":
+                                        assert player["identity_label"] == "未知"
+                    if kind in {"DRAFT_REQUEST", "PENDING_REQUEST"}:
+                        assert message["request"]["player_id"] == seats[index]
                 if kind == "DRAFT_REQUEST":
                     request = message["request"]
                     await ws.send(json.dumps(wire("SUBMIT_DECISION", decision={
@@ -115,7 +134,12 @@ def test_fastapi_websocket_full_game_smoke(humans, seed):
     async def scenario():
         app, server, task, url = await start_server()
         try:
-            room_code, seen = await play_web_match(url, humans, seed)
+            audit_seen = set() if (humans, seed) == (2, 0) else None
+            room_code, seen = await play_web_match(
+                url, humans, seed, app if audit_seen is not None else None, audit_seen,
+            )
+            if audit_seen is not None:
+                assert {"LOBBY_STATE", "PROJECTION_UPDATE", "PUBLIC_EVENT", "PENDING_REQUEST", "GAME_OVER"} <= audit_seen
             room = app.state.room_manager.rooms[room_code].game
             assert room.phase.value == "FINISHED"
             assert room.session is not None

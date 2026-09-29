@@ -53,7 +53,10 @@ function PlayerPanel({ player, position, selected, selectable, responding, onSel
     </div>
     <div className="player-zones">
       <span className="hand-count">手牌 {player.hand_count}</span>
-      {player.equipment.map((card) => <span key={card.card_id} className="zone-token equipment-token" title={card.details}>{card.name}</span>)}
+      {player.equipment.map((card) => <span key={card.card_id} className="zone-token equipment-token" tabIndex={0} aria-label={'装备 ' + card.name}>
+        {card.name}
+        <span className="equipment-preview" role="tooltip"><img src={assetForCard(card)} alt={card.name} /><small>{card.details}</small></span>
+      </span>)}
       {player.judgments.map((card) => <span key={card.card_id} className="zone-token judgment-token" title={card.details}>{card.name}</span>)}
     </div>
     <div className="mini-skills">{player.skill_labels.map((skill) => <span key={skill}>{skill}</span>)}</div>
@@ -76,15 +79,16 @@ function HandCard({ card, selected, eligible, onClick }: { card: CardView; selec
   </button>
 }
 
-function SkillBar({ player, request, chosen, onChoose }: { player: PlayerView; request: PendingRequest | null; chosen: string; onChoose(value: string): void }) {
+function SkillBar({ player, general, request, chosen, onChoose }: { player: PlayerView; general?: GeneralInfo; request: PendingRequest | null; chosen: string; onChoose(value: string): void }) {
   const skillOptions = request?.choices.filter((choice) => choice.startsWith('skill:') || choice.startsWith('virtual:')) ?? []
   return <div className="skill-bar" aria-label="技能栏">
     {player.skill_labels.map((label) => {
       const plain = label.split(' · ')[0]
-      const option = skillOptions.find((item) => item.includes(plain))
+      const skill = general?.skills.find((item) => item.name === plain)
+      const option = skillOptions.find((item) => skill && item.split(':')[1] === skill.id)
       return <button key={label} disabled={!option} className={chosen === option ? 'selected' : ''} onClick={() => option && onChoose(option)}>{label}</button>
     })}
-    {skillOptions.filter((option) => !player.skill_labels.some((label) => option.includes(label.split(' · ')[0]))).map((option) =>
+    {skillOptions.filter((option) => !general?.skills.some((skill) => skill.id === option.split(':')[1])).map((option) =>
       <button key={option} className={chosen === option ? 'selected' : ''} onClick={() => onChoose(option)}>{option.split(':')[1]}</button>)}
   </div>
 }
@@ -97,8 +101,13 @@ function DecisionPrompt({ request, canConfirm, onConfirm, onPass, onBoolean, onO
   onBoolean(value: boolean): void
   onOption(value: string): void
 }) {
+  const prompt = ({
+    'Choose a play action or end the play phase': '请选择出牌操作，或结束出牌阶段',
+    'Choose a target': '请选择目标',
+    'Respond with a card or pass': '请打出响应牌，或选择不出',
+  } as Record<string, string>)[request.prompt] ?? request.prompt
   if (request.request_type === 'yes_no') return <section className="decision-prompt">
-    <div className="prompt-copy"><strong>{request.prompt}</strong><small>服务器正在等待你的决定</small></div>
+    <div className="prompt-copy"><strong>{prompt}</strong><small>服务器正在等待你的决定</small></div>
     <Timer remainingMs={request.remaining_ms} />
     <button className="brush-button primary compact" onClick={() => onBoolean(true)}>发动 / 是</button>
     <button className="brush-button subtle compact" onClick={() => onBoolean(false)}>不发动 / 否</button>
@@ -107,7 +116,7 @@ function DecisionPrompt({ request, canConfirm, onConfirm, onPass, onBoolean, onO
     ? request.choices.filter((choice) => !choice.startsWith('use:') && !choice.startsWith('skill:') && !choice.startsWith('virtual:'))
     : []
   return <section className="decision-prompt">
-    <div className="prompt-copy"><strong>{request.prompt}</strong><small>选择后点击确认，操作才会提交</small></div>
+    <div className="prompt-copy"><strong>{prompt}</strong><small>选择后点击确认，操作才会提交</small></div>
     <Timer remainingMs={request.remaining_ms} />
     {directOptions.map((choice) => <button key={choice} className="brush-button compact" onClick={() => onOption(choice)}>{choice === 'end_play_phase' ? '结束出牌' : choice}</button>)}
     {request.allow_pass && <button className="brush-button subtle compact" onClick={onPass}>{request.required_definition_id === 'trick.nullification' ? '本次均不响应' : '不出'}</button>}
@@ -157,10 +166,13 @@ function EventStage({ event, players }: { event?: PublicEvent; players: PlayerVi
   return <div className={'event-stage event-' + kind.toLowerCase()}><strong>{text}</strong></div>
 }
 
-export function ResultOverlay({ result, onHome }: { result: string; onHome(): void }) {
-  return <div className="result-overlay victory" role="dialog" aria-label="对局结果"><div>
-    <p className="eyebrow">对局终了</p><h1>胜负已定</h1><p>{result || '本局已经结束'}</p>
-    <button className="brush-button primary" onClick={() => window.location.reload()}>再来一局</button>
+export function ResultOverlay({ result, identity, onHome, onReplay }: { result: string; identity?: string; onHome(): void; onReplay(): void }) {
+  const won = identity === '主公' || identity === '忠臣'
+    ? result.includes('主公') || result.includes('忠臣')
+    : identity === '反贼' ? result.includes('反贼') : identity === '内奸' ? result.includes('内奸') : false
+  return <div className={'result-overlay ' + (won ? 'victory' : 'defeat')} role="dialog" aria-label="对局结果"><div>
+    <p className="eyebrow">对局终了 · {identity ?? '身份未知'}</p><h1>{won ? '胜利' : '败北'}</h1><p>{result || '本局已经结束'}</p>
+    <button className="brush-button primary" onClick={onReplay}>再来一局</button>
     <button className="brush-button subtle" onClick={onHome}>返回首页</button>
   </div></div>
 }
@@ -225,12 +237,12 @@ export function GamePage() {
       <div className="self-area">
         {request && <DecisionPrompt request={request} canConfirm={canConfirm} onConfirm={confirm} onPass={() => actions.submitDecision(request.request_id, { pass: true })} onBoolean={(value) => actions.submitDecision(request.request_id, value)} onOption={(value) => actions.submitDecision(request.request_id, value)} />}
         <PlayerPanel player={self} position="self" selected={false} selectable={false} responding={request?.player_id === self.player_id} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
-        <SkillBar player={self} request={request} chosen={selectedOption} onChoose={setSelectedOption} />
+        <SkillBar player={self} general={state.generals[self.character_id]} request={request} chosen={selectedOption} onChoose={setSelectedOption} />
         <div className="hand" aria-label="手牌区">{projection.hand.map((card) => <HandCard key={card.card_id} card={card} selected={selectedCards.includes(card.card_id)} eligible={cardEligible(card.card_id)} onClick={() => toggleCard(card.card_id)} />)}</div>
       </div>
     </section>
     {state.error && <div className="game-error">{state.error}<button onClick={actions.clearError}>×</button></div>}
     {detailPlayer && <GeneralDetailPanel player={detailPlayer} general={detailGeneral} onClose={() => setDetailPlayer(null)} />}
-    {(state.result || projection.result) && <ResultOverlay result={state.result || projection.result || ''} onHome={actions.returnHome} />}
+    {(state.result || projection.result) && <ResultOverlay result={state.result || projection.result || ''} identity={self.identity_label} onHome={actions.returnHome} onReplay={() => { actions.returnHome(); actions.createRoom(state.playerName || '玩家', true) }} />}
   </main>
 }

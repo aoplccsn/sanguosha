@@ -216,7 +216,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       playerNameRef.current = clean
       dispatch({ type: 'set-name', payload: clean })
       localStorage.removeItem(SESSION_KEY)
-      const requestedSeed = Number(new URLSearchParams(window.location.search).get('seed'))
+      const seedParameter = new URLSearchParams(window.location.search).get('seed')
+      const requestedSeed = seedParameter === null ? NaN : Number(seedParameter)
       sendWhenConnected('CREATE_ROOM', {
         name: clean,
         single_player: singlePlayer,

@@ -3,6 +3,7 @@
 Validation date: 2026-09-29
 
 The automated audit uses real FastAPI WebSocket connections and inspects the raw JSON messages delivered to each client. It does not rely only on rendered DOM state.
+The 2H seed-0 full-game smoke also audits each received message throughout the match for opponent hand card IDs, hidden living identities, deck structure, and private request ownership.
 
 ## Hand privacy — PASS
 

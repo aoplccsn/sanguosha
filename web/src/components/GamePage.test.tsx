@@ -48,8 +48,9 @@ describe('GamePage', () => {
   })
 
   it('selects a target before submitting it', async () => {
-    request = { request_id: 'r2', player_id: 'p1', request_type: 'choose_player', prompt: '选择目标', choices: [], allowed_player_ids: ['p2'], required_definition_id: 'basic.slash', eligible_card_ids: [], allow_pass: false, min_count: 1, max_count: 1, subject_player_id: null, remaining_ms: 30000 }
+    request = { request_id: 'r2', player_id: 'p1', request_type: 'choose_player', prompt: 'Choose a target', choices: [], allowed_player_ids: ['p2'], required_definition_id: 'basic.slash', eligible_card_ids: [], allow_pass: false, min_count: 1, max_count: 1, subject_player_id: null, remaining_ms: 30000 }
     render(<GamePage />)
+    expect(screen.getByText('请选择目标')).toBeInTheDocument()
     await userEvent.click(screen.getByText('来宾'))
     expect(submitDecision).not.toHaveBeenCalled()
     await userEvent.click(screen.getByRole('button', { name: '确定' }))
@@ -59,9 +60,13 @@ describe('GamePage', () => {
 
 describe('ResultOverlay', () => {
   it('returns to home from the result screen', async () => {
-    render(<ResultOverlay result="主公与忠臣胜利" onHome={returnHome} />)
+    render(<ResultOverlay result="主公与忠臣胜利" identity="主公" onHome={returnHome} onReplay={vi.fn()} />)
     expect(screen.getByRole('dialog', { name: '对局结果' })).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: '返回首页' }))
     expect(returnHome).toHaveBeenCalled()
+  })
+  it('shows defeat when the server winning side differs from the player identity', () => {
+    render(<ResultOverlay result="反贼胜利" identity="主公" onHome={returnHome} onReplay={vi.fn()} />)
+    expect(screen.getByRole('heading', { name: '败北' })).toBeInTheDocument()
   })
 })
