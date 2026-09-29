@@ -23,10 +23,11 @@ WORKDIR /app
 ENV PYTHONUNBUFFERED=1 APP_ENV=production
 COPY pyproject.toml README.md ./
 COPY src ./src
+COPY scripts/start_production_web.sh ./start_production_web.sh
 RUN pip install --no-cache-dir 'fastapi>=0.115,<1' 'uvicorn[standard]>=0.32,<1' 'websockets>=12,<16' && pip install --no-cache-dir --no-deps .
 COPY --from=frontend /build/web/dist ./web/dist
 RUN useradd --system --uid 10001 --home /app app && chown -R app:app /app
 USER app
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 CMD python -c "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:' + os.getenv('PORT', '10000' if os.getenv('RENDER') == 'true' else '8000') + '/health', timeout=3)"
-CMD ["uvicorn", "sanguosha.web.app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1", "--ws-max-size", "256000", "--timeout-graceful-shutdown", "20", "--proxy-headers", "--forwarded-allow-ips", "172.30.91.2"]
+CMD ["sh", "/app/start_production_web.sh"]

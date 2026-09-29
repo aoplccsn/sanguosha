@@ -27,12 +27,15 @@ class WebConfig:
     @classmethod
     def from_env(cls) -> "WebConfig":
         render = os.getenv("RENDER", "").lower() == "true"
+        zeabur = os.getenv("ZEABUR", "").lower() == "true"
         return cls(
-            production=render or os.getenv("APP_ENV", "development").lower() == "production",
-            domain=(os.getenv("DOMAIN") or (os.getenv("RENDER_EXTERNAL_HOSTNAME") if render else "") or "").strip().lower(),
-            host="0.0.0.0" if render else os.getenv("HOST", "127.0.0.1"),
+            production=render or zeabur or os.getenv("APP_ENV", "development").lower() == "production",
+            domain=(os.getenv("DOMAIN") or (os.getenv("RENDER_EXTERNAL_HOSTNAME") if render else None)
+                    or (os.getenv("ZEABUR_WEB_DOMAIN") if zeabur else None) or "").strip().lower(),
+            host="0.0.0.0" if render or zeabur else os.getenv("HOST", "127.0.0.1"),
             port=int(os.getenv("PORT", "10000" if render else "8000")),
-            public_origin=os.getenv("PUBLIC_ORIGIN") or (os.getenv("RENDER_EXTERNAL_URL") if render else None) or "http://localhost:5173",
+            public_origin=os.getenv("PUBLIC_ORIGIN") or (os.getenv("RENDER_EXTERNAL_URL") if render else None)
+                          or (os.getenv("ZEABUR_WEB_URL") if zeabur else None) or "http://localhost:5173",
             secret_key=os.getenv("SECRET_KEY", "development-only-change-me"),
             room_ttl=float(os.getenv("ROOM_TTL", "7200")),
             reconnect_grace=float(os.getenv("RECONNECT_GRACE", "300")),

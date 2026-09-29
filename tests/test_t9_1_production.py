@@ -85,3 +85,46 @@ def test_render_host_and_origin_are_exact(monkeypatch):
         with client.websocket_connect("/ws", headers={"host": "friends.onrender.com", "origin": "https://friends.onrender.com"}) as socket:
             socket.send_json({"type": "HELLO", "version": PROTOCOL_VERSION})
             assert socket.receive_json()["type"] == "WELCOME"
+
+
+def test_zeabur_uses_port_and_one_worker(monkeypatch):
+    monkeypatch.delenv("RENDER", raising=False)
+    monkeypatch.setenv("ZEABUR", "true")
+    monkeypatch.setenv("ZEABUR_WEB_DOMAIN", "friends.zeabur.app")
+    monkeypatch.setenv("ZEABUR_WEB_URL", "https://friends.zeabur.app")
+    monkeypatch.setenv("PORT", "31876")
+    monkeypatch.setenv("SECRET_KEY", "s" * 48)
+    monkeypatch.delenv("DOMAIN", raising=False)
+    monkeypatch.delenv("PUBLIC_ORIGIN", raising=False)
+    config = WebConfig.from_env()
+    assert config.production
+    assert (config.host, config.port, config.domain, config.public_origin) == (
+        "0.0.0.0", 31876, "friends.zeabur.app", "https://friends.zeabur.app")
+    config.validate_production()
+    calls = []
+    monkeypatch.setattr(web_main.uvicorn, "run", lambda *args, **kwargs: calls.append((args, kwargs)))
+    web_main.main()
+    assert calls[0][1]["host"] == "0.0.0.0"
+    assert calls[0][1]["port"] == 31876
+    assert calls[0][1]["workers"] == 1
+    assert calls[0][1]["proxy_headers"] is False
+
+
+def test_zeabur_exact_host_origin_and_explicit_override(monkeypatch):
+    monkeypatch.delenv("RENDER", raising=False)
+    monkeypatch.setenv("ZEABUR", "true")
+    monkeypatch.setenv("ZEABUR_WEB_DOMAIN", "wrong.zeabur.app")
+    monkeypatch.setenv("ZEABUR_WEB_URL", "https://wrong.zeabur.app")
+    monkeypatch.setenv("DOMAIN", "friends.zeabur.app")
+    monkeypatch.setenv("PUBLIC_ORIGIN", "https://friends.zeabur.app")
+    monkeypatch.setenv("SECRET_KEY", "s" * 48)
+    with TestClient(create_app(WebConfig.from_env())) as client:
+        assert client.get("/health", headers={"host": "friends.zeabur.app"}).status_code == 200
+        assert client.get("/api/version", headers={"host": "friends.zeabur.app"}).status_code == 200
+        assert client.get("/health", headers={"host": "wrong.zeabur.app"}).status_code == 400
+        with pytest.raises(WebSocketDisconnect):
+            with client.websocket_connect("/ws", headers={"host": "friends.zeabur.app", "origin": "https://wrong.zeabur.app"}):
+                pass
+        with client.websocket_connect("/ws", headers={"host": "friends.zeabur.app", "origin": "https://friends.zeabur.app"}) as socket:
+            socket.send_json({"type": "HELLO", "version": PROTOCOL_VERSION})
+            assert socket.receive_json()["type"] == "WELCOME"
