@@ -618,11 +618,17 @@ class MainWindow(QMainWindow):
                     if choice.startswith('virtual:qixi:'):
                         material = choice.split(':',2)[2]
                         card = next((card for card in view.hand if str(card.card_id) == material), None)
-                        return f'奇袭 · {card.name} {card.suit}{card.rank}' if card else '奇袭 · 黑牌'
+                        if card:
+                            return f'奇袭 · {card.name} {card.suit}{card.rank}'
+                        physical = self.session.state.cards[material]
+                        return f'奇袭 · {self.session.definitions.get(physical.definition_id).name} {physical.suit.value}{physical.rank}'
                     if choice.startswith('virtual:guose:'):
                         material = choice.split(':',2)[2]
                         card = next((card for card in view.hand if str(card.card_id) == material), None)
-                        return f'国色 · {card.name} {card.suit}{card.rank}' if card else '国色 · 方块牌'
+                        if card:
+                            return f'国色 · {card.name} {card.suit}{card.rank}'
+                        physical = self.session.state.cards[material]
+                        return f'国色 · {self.session.definitions.get(physical.definition_id).name} {physical.suit.value}{physical.rank}'
                     if choice.startswith('virtual:longdan:'):
                         material = choice.split(':',2)[2]
                         card = next((card for card in view.hand if str(card.card_id) == material), None)

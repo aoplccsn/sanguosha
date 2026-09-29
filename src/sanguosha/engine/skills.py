@@ -549,10 +549,12 @@ class QixiUseHandler:
         self.skills, self.moves, self.recorder, self.trick_rule = skills, moves, recorder, trick_rule
 
     def validate_start(self, state, action):
-        hand = ZoneRef(ZoneType.HAND, action.player_id)
+        source = next((ref for ref, zone in state.zones.items()
+                       if action.material_id in zone.card_ids), None)
         if (not self.skills.has(state, action.player_id, 'qixi')
                 or state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY
-                or action.material_id not in state.cards_in(hand)
+                or source is None or source.player_id != action.player_id
+                or source.zone_type not in (ZoneType.HAND, ZoneType.EQUIPMENT)
                 or state.cards[action.material_id].color is not Color.BLACK
                 or not self.trick_rule.target_candidates(state, action.player_id)):
             raise InvalidCardUse('奇袭不可用')
@@ -571,8 +573,10 @@ class QixiUseHandler:
             frame.decision = None
             self.validate_start(state, action)
             self.trick_rule.validate_targets(state, action.player_id, (target,))
+            source = next(ref for ref, zone in state.zones.items()
+                          if action.material_id in zone.card_ids)
             self.moves.move(state, CardMove(action.action_id + ':processing', (action.material_id,),
-                ZoneRef(ZoneType.HAND, action.player_id), ZoneRef(ZoneType.PROCESSING),
+                source, ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.USE, action.player_id, action.action_id))
             state.play_usage.record('trick.dismantlement')
             self.recorder.record(CardUsedEvent(action.action_id + ':used', action.player_id,
@@ -598,10 +602,12 @@ class GuoseUseHandler:
         self.skills, self.moves, self.recorder, self.trick_rule = skills, moves, recorder, trick_rule
 
     def validate_start(self, state, action):
-        hand = ZoneRef(ZoneType.HAND, action.player_id)
+        source = next((ref for ref, zone in state.zones.items()
+                       if action.material_id in zone.card_ids), None)
         if (not self.skills.has(state, action.player_id, 'guose')
                 or state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY
-                or action.material_id not in state.cards_in(hand)
+                or source is None or source.player_id != action.player_id
+                or source.zone_type not in (ZoneType.HAND, ZoneType.EQUIPMENT)
                 or state.cards[action.material_id].suit is not Suit.DIAMOND
                 or not self.trick_rule.target_candidates(state, action.player_id)):
             raise InvalidCardUse('国色不可用')
@@ -620,8 +626,10 @@ class GuoseUseHandler:
             frame.decision = None
             self.validate_start(state, action)
             self.trick_rule.validate_targets(state, action.player_id, (target,))
+            source = next(ref for ref, zone in state.zones.items()
+                          if action.material_id in zone.card_ids)
             self.moves.move(state, CardMove(action.action_id + ':processing', (action.material_id,),
-                ZoneRef(ZoneType.HAND, action.player_id), ZoneRef(ZoneType.PROCESSING),
+                source, ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.USE, action.player_id, action.action_id))
             state.metadata.setdefault('virtual_delayed_cards', {})[action.material_id] = 'delayed.indulgence'
             state.play_usage.record('delayed.indulgence')
@@ -1008,6 +1016,9 @@ class SkillPlayOptions:
         ordinary = self.base.options(state,pid)
         extra = []
         hand = state.cards_in(ZoneRef(ZoneType.HAND,pid))
+        materials = tuple(cid for ref, zone in state.zones.items()
+                          if ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
+                          for cid in zone.card_ids)
         if self.skills.has(state,pid,'rende') and hand and any(state.players[q].is_alive for q in state.seat_order if q != pid):
             extra.append('skill:rende')
         if self.skills.has(state,pid,'zhiheng') and not state.play_usage.count('skill.zhiheng') and any(
@@ -1026,11 +1037,11 @@ class SkillPlayOptions:
         if self.skills.has(state,pid,'qixi'):
             dismantlement = self.validator.rules.get('trick.dismantlement')
             if dismantlement.target_candidates(state,pid):
-                extra.extend(f'virtual:qixi:{cid}' for cid in hand if state.cards[cid].color is Color.BLACK)
+                extra.extend(f'virtual:qixi:{cid}' for cid in materials if state.cards[cid].color is Color.BLACK)
         if self.skills.has(state,pid,'guose'):
             indulgence = self.validator.rules.get('delayed.indulgence')
             if indulgence.target_candidates(state,pid):
-                extra.extend(f'virtual:guose:{cid}' for cid in hand
+                extra.extend(f'virtual:guose:{cid}' for cid in materials
                              if state.cards[cid].suit is Suit.DIAMOND)
         if (self.skills.has(state,pid,'fanjian') and not state.play_usage.count('skill.fanjian')
                 and hand and any(q != pid and p.is_alive for q,p in state.players.items())):

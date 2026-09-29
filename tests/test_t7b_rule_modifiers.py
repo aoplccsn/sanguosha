@@ -107,6 +107,31 @@ def test_liuli_discards_card_and_redirects_slash_damage():
     assert session.engine.stack.is_empty()
 
 
+@pytest.mark.parametrize('character,suit,action_type,destination', [
+    ('ganning', Suit.SPADE, QixiUse, ZoneType.DISCARD_PILE),
+    ('daqiao', Suit.DIAMOND, GuoseUse, ZoneType.JUDGMENT),
+])
+def test_view_as_can_use_equipped_material(character, suit, action_type, destination):
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = character
+    session.state.current_player_id = 'p1'
+    session.state.current_phase = Phase.PLAY
+    session.state.turn_number = 1
+    session.state.play_usage = PlayUsageState('p1', 1)
+    material = put(session, 'equipment.armor.vine', 'p1', ZoneType.EQUIPMENT, EquipmentSlot.ARMOR)
+    session.state.cards[material] = replace(session.state.cards[material], suit=suit)
+    provider = session.engine.registry.handler_for(PhaseAction('probe', 'p1', Phase.PLAY)).bodies.body_for(Phase.PLAY).provider
+    option = f'virtual:{"qixi" if character == "ganning" else "guose"}:{material}'
+    assert option in provider.options(session.state, 'p1')
+    session.engine.start_action(action_type('equipment-view-as', 'p1', material))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'p2'))
+    if session.engine.pending_request:
+        resolve(session, choose)
+    assert not session.state.cards_in(ZoneRef(ZoneType.EQUIPMENT, 'p1', EquipmentSlot.ARMOR))
+    assert material in session.state.cards_in(ZoneRef(destination, 'p2' if destination is ZoneType.JUDGMENT else None))
+
+
 def test_paoxiao_removes_slash_count_limit_without_changing_range():
     session = GameSession.new_game(military=True, five_generals=True)
     session.state.players['p1'].character_id = 'zhangfei'
