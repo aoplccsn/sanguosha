@@ -48,6 +48,8 @@ test('T9 visual screenshot matrix', async ({ browser }) => {
     await guest.locator('.general-card').filter({ hasText: '张辽' }).click()
     await guest.getByRole('button', { name: '确认武将' }).click()
     await expect(host.locator('.game-page')).toBeVisible()
+    await host.locator('.player-panel img').evaluateAll((images) => Promise.all(images.map((image) =>
+      image.complete ? Promise.resolve() : new Promise<void>((resolve) => { image.addEventListener('load', () => resolve(), { once: true }); image.addEventListener('error', () => resolve(), { once: true }) }))))
     for (const size of [[1366, 768], [1600, 900], [1920, 1080]]) {
       await host.setViewportSize({ width: size[0], height: size[1] })
       await host.screenshot({ path: path.join(screenshotDir, 'table_' + size[0] + 'x' + size[1] + '.png'), fullPage: true })
