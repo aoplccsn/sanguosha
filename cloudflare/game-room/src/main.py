@@ -63,6 +63,10 @@ class Default(WorkerEntrypoint):
         if path == "/api/rooms" and request.method == "POST":
             for _ in range(32):
                 code = _room_code()
+                index = self.env.ACTIVE_ROOMS.getByName("global")
+                reserved = await index.fetch(f"https://room-index/reserve/{code}", method="POST")
+                if reserved.status != 201:
+                    return Response.json({"error": "active room limit reached"}, status=429)
                 stub = self.env.GAME_ROOMS.getByName(code)
                 response = await stub.fetch(f"https://room.internal/init/{code}", method="POST")
                 if response.status == 201:
@@ -288,3 +292,24 @@ class GameRoomDurableObject(DurableObject):
             return
         self.room.poll()
         await self._persist()
+
+
+class RoomIndex(DurableObject):
+    """SQLite-backed leases enforce a global active-room cap."""
+
+    async def fetch(self, request):
+        parsed = urlparse(request.url)
+        if not parsed.path.startswith("/reserve/") or request.method != "POST":
+            return Response.json({"error": "not found"}, status=404)
+        code = parsed.path.rsplit("/", 1)[-1]
+        now = time.time()
+        leases = await self.ctx.storage.get("leases") or {}
+        ttl = int(getattr(self.env, "ROOM_TTL_SECONDS", "7200"))
+        leases = {key: value for key, value in leases.items() if now - value < ttl}
+        maximum = int(getattr(self.env, "MAX_ACTIVE_ROOMS", "100"))
+        if len(leases) >= maximum and code not in leases:
+            await self.ctx.storage.put("leases", leases)
+            return Response.json({"error": "active room limit reached"}, status=429)
+        leases[code] = now
+        await self.ctx.storage.put("leases", leases)
+        return Response.json({"room_code": code}, status=201)

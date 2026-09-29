@@ -10,14 +10,16 @@
   },
   "durable_objects": {
     "bindings": [
-      {"name": "GAME_ROOMS", "class_name": "GameRoomDurableObject"}
+      {"name": "GAME_ROOMS", "class_name": "GameRoomDurableObject"},
+      {"name": "ACTIVE_ROOMS", "class_name": "RoomIndex"}
     ]
   },
   "migrations": [
-    {"tag": "v1", "new_sqlite_classes": ["GameRoomDurableObject"]}
+    {"tag": "v1", "new_sqlite_classes": ["GameRoomDurableObject", "RoomIndex"]}
   ],
   "vars": {
     "ROOM_TTL_SECONDS": "7200",
+    "MAX_ACTIVE_ROOMS": "100",
     "MAX_CONNECTIONS_PER_ROOM": "5",
     "MESSAGE_RATE_PER_10_SECONDS": "300"
   }
