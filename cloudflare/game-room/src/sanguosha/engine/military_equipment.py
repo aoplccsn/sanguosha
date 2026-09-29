@@ -1,0 +1,93 @@
+"""Physical equipment loss reactions and explicit weapon choices."""
+from dataclasses import dataclass
+from .actions import Action,StepResult
+from .card_moves import CardMoveService,CardMove,CardMoveReason
+from .requests import PendingRequest,RequestType
+from .recovery import RecoverAction
+from .deck import DrawCardsAction
+from sanguosha.model.enums import EquipmentSlot
+from sanguosha.model.zones import ZoneRef,ZoneType
+
+class MilitaryMoveService(CardMoveService):
+    def __init__(self,events,skills=None):
+        super().__init__(events)
+        self.reactions=[]
+        self.skills=skills
+    def move(self,state,move):
+        owner=move.from_zone.player_id
+        lost_last_hand=(move.from_zone.zone_type is ZoneType.HAND and owner is not None
+                        and self.skills is not None and self.skills.has(state,owner,'lianying')
+                        and len(state.cards_in(move.from_zone))==len(move.card_ids))
+        lost_equipment=(move.from_zone.zone_type is ZoneType.EQUIPMENT and owner is not None
+                        and self.skills is not None and self.skills.has(state,owner,'xiaoji'))
+        silver=move.from_zone.zone_type is ZoneType.EQUIPMENT and any(
+            state.cards[cid].definition_id=='equipment.armor.silver_lion' for cid in move.card_ids)
+        super().move(state,move)
+        if silver and state.players[owner].is_alive:
+            self.reactions.append(RecoverAction(move.move_id+':silver-lion-loss',owner,owner,1))
+        if lost_last_hand and state.players[owner].is_alive:
+            from .skills import LianyingAction
+            self.reactions.append(LianyingAction(move.move_id+':lianying',owner))
+        if lost_equipment and state.players[owner].is_alive:
+            from .skills import XiaojiAction
+            self.reactions.append(XiaojiAction(move.move_id+':xiaoji',owner,len(move.card_ids)))
+    def next_reaction(self,state):
+        while self.reactions:
+            action=self.reactions.pop(0)
+            target=getattr(action,'target_id',getattr(action,'player_id',None))
+            if target is not None and state.players[target].is_alive:
+                return action
+        return None
+
+def discardable(state,pid):
+    return tuple(cid for ref,z in state.zones.items() if ref.player_id==pid and ref.zone_type in (ZoneType.HAND,ZoneType.EQUIPMENT) for cid in z.card_ids)
+
+@dataclass(frozen=True,slots=True)
+class WeaponChoice(Action):
+    owner_id: str
+    target_id: str
+    weapon: str
+
+class WeaponChoiceHandler:
+    def __init__(self,moves):
+        self.moves=moves
+    def step(self,state,f):
+        a=f.action
+        if a.weapon=='double_sword':
+            if f.step_index==0:
+                f.step_index=1
+                choices=('draw', 'discard') if state.cards_in(ZoneRef(ZoneType.HAND,a.target_id)) else ('draw',)
+                return StepResult.ask(PendingRequest(a.action_id+':option',a.target_id,RequestType.CHOOSE_OPTION,
+                    '雌雄双股剑：弃一张手牌或令使用者摸牌',a.action_id,f.frame_id,choices=choices))
+            if f.step_index==1:
+                choice=f.decision
+                f.decision=None
+                f.step_index=2
+                if choice=='draw':
+                    return StepResult.push(DrawCardsAction(a.action_id+':draw',a.owner_id,1))
+                return StepResult.ask(PendingRequest(a.action_id+':discard',a.target_id,RequestType.CHOOSE_CARD,
+                    '雌雄双股剑：选择弃牌',a.action_id,f.frame_id,
+                    eligible_card_ids=state.cards_in(ZoneRef(ZoneType.HAND,a.target_id))))
+            if f.decision is not None:
+                cid=f.decision
+                f.decision=None
+                self.moves.move(state,CardMove(a.action_id+':move',(cid,),ZoneRef(ZoneType.HAND,a.target_id),
+                    ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,a.target_id))
+            return StepResult.complete()
+        if f.step_index==0:
+            cards=discardable(state,a.target_id)
+            if a.weapon=='kylin_bow':
+                cards=tuple(cid for ref,z in state.zones.items() if ref.player_id==a.target_id and ref.equipment_slot in
+                    (EquipmentSlot.OFFENSIVE_HORSE,EquipmentSlot.DEFENSIVE_HORSE) for cid in z.card_ids)
+            count=min(2,len(cards)) if a.weapon=='ice_sword' else 1
+            if not cards:
+                return StepResult.complete()
+            f.step_index=1
+            return StepResult.ask(PendingRequest(a.action_id+':cards',a.owner_id,RequestType.CHOOSE_CARDS,
+                '寒冰剑：弃置目标两张牌' if a.weapon=='ice_sword' else '麒麟弓：弃置目标一张马',
+                a.action_id,f.frame_id,eligible_card_ids=cards,min_count=count,max_count=count,subject_player_id=a.target_id))
+        for cid in f.decision:
+            ref=next(ref for ref,z in state.zones.items() if cid in z.card_ids)
+            self.moves.move(state,CardMove(a.action_id+':move:'+cid,(cid,),ref,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,a.owner_id))
+        f.decision=None
+        return StepResult.complete()

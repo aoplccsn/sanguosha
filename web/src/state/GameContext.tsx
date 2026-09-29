@@ -194,7 +194,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
     })
 
-    connection.connect()
+    const savedSession = localStorage.getItem(SESSION_KEY)
+    if (__CLOUDFLARE_ROOMS__ && savedSession) {
+      try {
+        const session = JSON.parse(savedSession) as SessionRecord
+        playerNameRef.current = session.playerName
+        dispatch({ type: 'set-name', payload: session.playerName })
+        reconnectAttempted.current = true
+        recovering.current = true
+        connection.openRoom(session.roomCode, 'RECONNECT', {
+          room_code: session.roomCode,
+          name: session.playerName,
+          token: session.reconnectToken,
+        })
+      } catch {
+        localStorage.removeItem(SESSION_KEY)
+      }
+    } else if (!__CLOUDFLARE_ROOMS__) {
+      connection.connect()
+    }
     fetch('/api/catalog/generals')
       .then((response) => {
         if (!response.ok) throw new Error('catalog unavailable')
@@ -233,18 +251,39 @@ export function GameProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(SESSION_KEY)
       const seedParameter = new URLSearchParams(window.location.search).get('seed')
       const requestedSeed = seedParameter === null ? NaN : Number(seedParameter)
-      sendWhenConnected('CREATE_ROOM', {
+      const fields = {
         name: clean,
         single_player: singlePlayer,
         ...(Number.isInteger(requestedSeed) && requestedSeed >= 0 ? { seed: requestedSeed } : {}),
-      })
+      }
+      if (__CLOUDFLARE_ROOMS__) {
+        fetch('/api/rooms', { method: 'POST' })
+          .then((response) => {
+            if (!response.ok) throw new Error('room creation failed')
+            return response.json() as Promise<{ room_code: string }>
+          })
+          .then(({ room_code }) => {
+            dispatch({ type: 'room-created', payload: room_code })
+            connectionRef.current.openRoom(room_code, 'JOIN_ROOM', {
+              ...fields, room_code, created: true,
+            })
+          })
+          .catch(() => dispatch({ type: 'error', payload: '无法创建房间，请稍后重试。' }))
+      } else {
+        sendWhenConnected('CREATE_ROOM', fields)
+      }
     },
     joinRoom(name, roomCode) {
       const clean = name.trim() || '玩家'
       playerNameRef.current = clean
       dispatch({ type: 'set-name', payload: clean })
       localStorage.removeItem(SESSION_KEY)
-      sendWhenConnected('JOIN_ROOM', { name: clean, room_code: roomCode.trim().toUpperCase() })
+      const normalized = roomCode.trim().toUpperCase()
+      if (__CLOUDFLARE_ROOMS__) {
+        connectionRef.current.openRoom(normalized, 'JOIN_ROOM', { name: clean, room_code: normalized })
+      } else {
+        sendWhenConnected('JOIN_ROOM', { name: clean, room_code: normalized })
+      }
     },
     setReady(ready) {
       sendWhenConnected('READY', { ready })

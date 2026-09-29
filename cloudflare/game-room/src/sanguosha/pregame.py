@@ -1,0 +1,80 @@
+"""Seeded identity and general draft before any engine turn begins."""
+
+from dataclasses import dataclass, field
+from enum import StrEnum
+
+from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL
+from sanguosha.engine.requests import Decision, PendingRequest, RequestType
+from sanguosha.engine.rng import PythonRandomSource, RandomSource
+from sanguosha.model.enums import Identity
+from sanguosha.model.ids import CharacterId, PlayerId
+
+
+SEATS = tuple(PlayerId(f'p{i}') for i in range(1, 6))
+ROLE_SET = (Identity.LORD, Identity.LOYALIST, Identity.REBEL, Identity.REBEL, Identity.RENEGADE)
+
+
+class SetupStage(StrEnum):
+    IDENTITY_REVEAL = 'identity_reveal'
+    CHOOSE_GENERAL = 'choose_general'
+    COMPLETE = 'complete'
+
+
+@dataclass(slots=True)
+class Pregame:
+    rng: RandomSource
+    identities: dict[PlayerId, Identity]
+    candidates: tuple[CharacterId, ...]
+    stage: SetupStage = SetupStage.IDENTITY_REVEAL
+    generals: dict[PlayerId, CharacterId] = field(default_factory=dict)
+    human_id: PlayerId = SEATS[0]
+
+    @classmethod
+    def create(cls, seed: int | None = None) -> 'Pregame':
+        rng = PythonRandomSource(seed)
+        roles = list(ROLE_SET)
+        rng.shuffle(roles)
+        roster = list(STANDARD_25_GENERAL_POOL)
+        rng.shuffle(roster)
+        return cls(rng, dict(zip(SEATS, roles)), tuple(c.id for c in roster[:10]))
+
+    @property
+    def lord_id(self) -> PlayerId:
+        return next(pid for pid, identity in self.identities.items() if identity is Identity.LORD)
+
+    @property
+    def human_identity(self) -> Identity:
+        return self.identities[self.human_id]
+
+    def acknowledge_identity(self) -> None:
+        if self.stage is not SetupStage.IDENTITY_REVEAL:
+            raise ValueError('identity reveal is not pending')
+        self.stage = SetupStage.CHOOSE_GENERAL
+
+    @property
+    def pending_request(self) -> PendingRequest | None:
+        if self.stage is not SetupStage.CHOOSE_GENERAL:
+            return None
+        return PendingRequest('setup:general', self.human_id, RequestType.CHOOSE_OPTION,
+                              '选择武将并确认', 'setup', 'setup',
+                              choices=tuple(map(str, self.candidates)))
+
+    def submit(self, decision: Decision) -> None:
+        request = self.pending_request
+        if request is None or decision.request_id != request.request_id or decision.player_id != self.human_id:
+            raise ValueError('no matching general choice is pending')
+        request.validate(decision.value)
+        chosen = CharacterId(decision.value)
+        self.generals[self.human_id] = chosen
+        available = [character.id for character in STANDARD_25_GENERAL_POOL if character.id != chosen]
+        for pid in SEATS[1:]:
+            selected = self.rng.choice(available)
+            available.remove(selected)
+            self.generals[pid] = selected
+        self.stage = SetupStage.COMPLETE
+
+    def timeout(self) -> None:
+        request = self.pending_request
+        if request is None:
+            raise ValueError('general choice is not pending')
+        self.submit(Decision(request.request_id, self.human_id, request.timeout_value()))

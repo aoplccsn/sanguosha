@@ -25,6 +25,8 @@ describe('GameConnection', () => {
     expect(websocketUrl('http:', 'localhost:5173')).toBe('ws://localhost:5173/ws')
     expect(websocketUrl('https:', 'friends.example.b4a.run'))
       .toBe('wss://friends.example.b4a.run/ws')
+    expect(websocketUrl('https:', 'game.example', 'ABC234'))
+      .toBe('wss://game.example/room/ABC234')
   })
   beforeEach(() => {
     vi.useFakeTimers()
@@ -55,5 +57,15 @@ describe('GameConnection', () => {
     expect(statuses).toContain('disconnected')
     vi.advanceTimersByTime(800)
     expect(FakeSocket.instances).toHaveLength(2)
+  })
+
+  it('opens a room route and sends the queued join after connecting', () => {
+    const connection = new GameConnection()
+    connection.openRoom('abc234', 'JOIN_ROOM', { room_code: 'ABC234', name: '玩家' })
+    const socket = FakeSocket.instances[0]
+    expect(socket.url).toContain('/room/ABC234')
+    socket.readyState = FakeSocket.OPEN
+    socket.emit('open')
+    expect(socket.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'JOIN_ROOM'])
   })
 })

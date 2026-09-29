@@ -2,9 +2,10 @@ type Listener = (message: Record<string, unknown>) => void
 type Status = 'connecting' | 'connected' | 'disconnected' | 'reconnecting'
 type StatusListener = (status: Status) => void
 
-export function websocketUrl(protocol: string, host: string): string {
+export function websocketUrl(protocol: string, host: string, roomCode = ''): string {
   const scheme = protocol === 'https:' ? 'wss:' : 'ws:'
-  return String(new URL('/ws', `${scheme}//${host}`))
+  const path = roomCode ? `/room/${encodeURIComponent(roomCode)}` : '/ws'
+  return String(new URL(path, `${scheme}//${host}`))
 }
 
 export class GameConnection {
@@ -14,6 +15,8 @@ export class GameConnection {
   private heartbeat: number | null = null
   private intentionallyClosed = false
   private reconnectDelay = 800
+  private roomCode = ''
+  private pendingMessage: { type: string; fields: Record<string, unknown> } | null = null
 
   subscribe(listener: Listener) {
     this.listeners.add(listener)
@@ -29,16 +32,24 @@ export class GameConnection {
     this.statusListeners.forEach((listener) => listener(status))
   }
 
-  connect() {
+  connect(roomCode = this.roomCode) {
     if (this.socket?.readyState === WebSocket.OPEN || this.socket?.readyState === WebSocket.CONNECTING) return
+    this.roomCode = roomCode
     this.intentionallyClosed = false
     this.setStatus(this.reconnectDelay > 800 ? 'reconnecting' : 'connecting')
-    this.socket = new WebSocket(websocketUrl(window.location.protocol, window.location.host))
+    this.socket = new WebSocket(websocketUrl(window.location.protocol, window.location.host, this.roomCode))
     this.socket.addEventListener('open', () => {
       this.reconnectDelay = 800
       this.setStatus('connected')
       this.send('HELLO')
-      this.heartbeat = window.setInterval(() => this.send('PING'), 15000)
+      if (this.pendingMessage) {
+        const pending = this.pendingMessage
+        this.pendingMessage = null
+        this.send(pending.type, pending.fields)
+      }
+      if (!__CLOUDFLARE_ROOMS__) {
+        this.heartbeat = window.setInterval(() => this.send('PING'), 15000)
+      }
     })
     this.socket.addEventListener('message', (event) => {
       try {
@@ -63,6 +74,19 @@ export class GameConnection {
     })
   }
 
+  openRoom(roomCode: string, type: string, fields: Record<string, unknown>) {
+    this.intentionallyClosed = true
+    if (this.heartbeat !== null) window.clearInterval(this.heartbeat)
+    this.heartbeat = null
+    this.socket?.close()
+    this.socket = null
+    this.intentionallyClosed = false
+    this.roomCode = roomCode.trim().toUpperCase()
+    this.pendingMessage = { type, fields }
+    this.reconnectDelay = 800
+    this.connect(this.roomCode)
+  }
+
   send(type: string, fields: Record<string, unknown> = {}) {
     if (this.socket?.readyState !== WebSocket.OPEN) return false
     this.socket.send(JSON.stringify({ type, version: __PROTOCOL_VERSION__, ...fields }))
@@ -74,5 +98,6 @@ export class GameConnection {
     if (this.heartbeat !== null) window.clearInterval(this.heartbeat)
     this.socket?.close()
     this.socket = null
+    this.pendingMessage = null
   }
 }

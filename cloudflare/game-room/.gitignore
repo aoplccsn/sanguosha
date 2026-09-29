@@ -1,0 +1,5 @@
+/.wrangler/
+/node_modules/
+/python_modules/
+/uv.lock
+/.venv/

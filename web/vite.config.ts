@@ -7,6 +7,7 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(process.env.APP_VERSION ?? '0.3.0'),
     __BUILD_COMMIT__: JSON.stringify(process.env.BUILD_COMMIT ?? 'development'),
     __PROTOCOL_VERSION__: JSON.stringify(Number(process.env.PROTOCOL_VERSION ?? 2)),
+    __CLOUDFLARE_ROOMS__: JSON.stringify(process.env.CLOUDFLARE_ROOMS === '1'),
   },
   server: {
     host: '127.0.0.1',
