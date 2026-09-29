@@ -110,7 +110,7 @@ function DecisionPrompt({ request, canConfirm, onConfirm, onPass, onBoolean, onO
     <div className="prompt-copy"><strong>{request.prompt}</strong><small>选择后点击确认，操作才会提交</small></div>
     <Timer remainingMs={request.remaining_ms} />
     {directOptions.map((choice) => <button key={choice} className="brush-button compact" onClick={() => onOption(choice)}>{choice === 'end_play_phase' ? '结束出牌' : choice}</button>)}
-    {request.allow_pass && <button className="brush-button subtle compact" onClick={onPass}>不出</button>}
+    {request.allow_pass && <button className="brush-button subtle compact" onClick={onPass}>{request.required_definition_id === 'trick.nullification' ? '本次均不响应' : '不出'}</button>}
     <button className="brush-button primary compact" disabled={!canConfirm} onClick={onConfirm}>确定</button>
   </section>
 }
@@ -146,6 +146,10 @@ function EventStage({ event, players }: { event?: PublicEvent; players: PlayerVi
   const kind = String(event.kind ?? '')
   let text = kind
   if (kind.includes('CardUsed') || kind.includes('TrickTargets')) text = name(event.source_id) + ' 使用【' + String(event.card_name ?? '卡牌') + '】'
+  else if (kind.includes('Responded') || kind.includes('VirtualResponse')) {
+    const responseNames: Record<string, string> = { 'basic.dodge': '闪', 'basic.slash': '杀', 'basic.peach': '桃', 'trick.nullification': '无懈可击' }
+    text = name(event.source_id) + ' 打出【' + (responseNames[String(event.definition_id)] ?? '响应牌') + '】'
+  }
   else if (kind.includes('Damage')) text = name(event.source_id) + ' 对 ' + name(event.target_id) + ' 造成 ' + String(event.amount ?? 1) + ' 点伤害'
   else if (kind.includes('Recovered')) text = name(event.target_id ?? event.source_id) + ' 恢复体力'
   else if (kind.includes('Death')) text = name(event.player_id ?? event.target_id) + ' 阵亡'
