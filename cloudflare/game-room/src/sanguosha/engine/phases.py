@@ -110,6 +110,9 @@ class PhaseActionHandler:
         if frame.step_index == 0:
             if state.current_player_id != action.player_id:
                 raise ResolutionError("phase player differs from current turn player")
+            # A dead player can have a phase already queued by a parent turn.
+            if state.status is GameStatus.FINISHED or not state.players[action.player_id].is_alive:
+                return StepResult.complete()
             state.current_phase = action.phase
             if action.phase is Phase.PLAY:
                 state.play_usage = PlayUsageState(action.player_id, state.turn_number)
@@ -120,6 +123,9 @@ class PhaseActionHandler:
             self.recorder.record(PhaseEndedEvent(f"{action.action_id}:end", action.player_id, action.phase))
             state.current_phase = None
             return StepResult.complete()
+        if state.status is GameStatus.FINISHED or not state.players[action.player_id].is_alive:
+            frame.step_index = 4
+            return StepResult.continue_()
         outcome = self.bodies.body_for(action.phase).step(state, frame)
         if outcome.kind is StepKind.COMPLETE:
             frame.step_index = 4

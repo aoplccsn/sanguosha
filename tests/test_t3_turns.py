@@ -134,6 +134,27 @@ def test_full_empty_turn_order_and_state():
     assert [event.event_id for event in recorder.events] == list(dict.fromkeys(event.event_id for event in recorder.events))
 
 
+def test_dead_player_ends_turn_after_phase_resolution():
+    class KillInJudgment:
+        def step(self, game, frame):
+            game.players[P[0]].status = PlayerStatus.DEAD
+            return StepResult.complete()
+
+    e, recorder, _ = setup()
+    phase_handler = e.registry.handler_for(PhaseAction("probe", P[0], Phase.JUDGMENT))
+    phase_handler.bodies.register(Phase.JUDGMENT, KillInJudgment())
+
+    assert e.start_action(TurnAction("turn", P[0])) is EngineStatus.COMPLETED
+    assert [type(event).__name__ for event in recorder.events] == [
+        "TurnStartedEvent",
+        "PhaseStartedEvent", "PhaseEndedEvent",
+        "PhaseStartedEvent", "PhaseEndedEvent",
+        "TurnEndedEvent",
+    ]
+    assert e.state.current_phase is None
+    assert e.state.players[P[0]].status is PlayerStatus.DEAD
+
+
 def test_multiple_play_actions_and_repeat_requests():
     e, recorder, trace = setup(MockOptions())
     e.start_action(TurnAction("turn", P[0]))

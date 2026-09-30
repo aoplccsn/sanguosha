@@ -51,7 +51,9 @@ class TurnActionHandler:
             self.recorder.record(TurnStartedEvent(f"{action.action_id}:start", action.player_id, state.turn_number))
             frame.step_index = 1
             return StepResult.continue_()
-        if frame.cursor == len(action.phases) or state.status is GameStatus.FINISHED:
+        # A player who dies during a phase must not continue the rest of the turn.
+        if (frame.cursor == len(action.phases) or state.status is GameStatus.FINISHED
+                or not state.players[action.player_id].is_alive):
             if state.ruleset_id == 'classic-military':
                 state.players[action.player_id].marks.pop('wine', None)
             state.current_phase = None
