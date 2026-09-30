@@ -56,6 +56,10 @@ class PlayerView:
     effective_distance: int | None = None
     attack_range: int = 1
     skill_labels: tuple[str, ...] = ()
+    # Presentation state is deliberately read-only and derived from runtime
+    # state so Web and PySide can share the same avatar semantics.
+    face_up: bool = True
+    marks: dict[str, int] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -118,6 +122,7 @@ def project_for_human(
                   (" · 主公技" if skills.skills[sid].metadata.get('lord') else "")
                   for sid in skills.characters[player.character_id].skill_ids)
             if player.character_id in skills.characters else (),
+            player.face_up, dict(player.marks),
         ))
     hand = tuple(card_view(card_id) for card_id in state.cards_in(ZoneRef(ZoneType.HAND, human_id)))
     discard = state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))

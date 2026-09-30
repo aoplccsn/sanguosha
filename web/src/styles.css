@@ -105,6 +105,11 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .player-panel.selectable { cursor: crosshair; border-color: #dbaf58; transform: translateY(-3px); }
 .player-panel.selectable:hover, .player-panel.selected-target { box-shadow: 0 0 0 3px rgba(231,178,70,.4), 0 0 30px rgba(209,111,38,.6); }
 .player-panel.dead { filter: grayscale(1); opacity: .5; }
+.player-panel.face-down .portrait-button img { filter: brightness(.48) saturate(.35); transform: scaleX(-1); }
+.player-panel.dying { animation: dyingPulse .72s ease-in-out infinite alternate; }
+.player-panel.damage-flash .portrait-button { animation: damageFlash .42s ease-out; }
+.player-panel.healing-flash .portrait-button { animation: healingFlash .58s ease-out; }
+.player-panel.chained .chain-mark { animation: chainPulse 1.2s ease-in-out infinite; }
 .player-north-west { left: 7%; top: 15%; }
 .player-north { left: calc(50% - 110px); top: 8%; }
 .player-north-east { right: 7%; top: 15%; }
@@ -113,6 +118,8 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .portrait-button { position: absolute; inset: 9px auto auto 9px; width: 70px; height: 92px; padding: 0; overflow: hidden; background: #21180f; border: 1px solid #a97939; }
 .portrait-button img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
 .chain-mark { position: absolute; right: 2px; bottom: 2px; padding: 2px 5px; color: #bce8ec; background: #244a51; border-radius: 50%; }
+.face-down-mark { position: absolute; inset: 34px 0 auto; padding: 3px; color: #f4d99c; background: rgba(35,21,14,.82); text-align: center; font-size: 10px; letter-spacing: .2em; }
+.mark-badge { position: relative; display: inline-block; margin: 3px 2px 0 0; padding: 2px 5px; color: #f4d99c; background: rgba(105,54,31,.85); border: 1px solid rgba(226,173,67,.5); border-radius: 10px; font-size: 10px; }
 .player-heading { display: flex; justify-content: space-between; gap: 6px; }
 .player-heading span { padding: 1px 5px; color: #f3d894; background: #772a22; font-size: 11px; }
 .general-line b, .general-line small { display: block; }
@@ -187,6 +194,10 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 @keyframes activeGlow { to { box-shadow: 0 0 0 2px rgba(226,173,67,.55), 0 0 38px rgba(222,166,51,.72); } }
 @keyframes beamFlow { to { stroke-dashoffset: -25; } }
 @keyframes eventReveal { from { opacity: 0; transform: translate(-50%, -50%) scale(.65); } }
+@keyframes damageFlash { 0%, 100% { filter: none; box-shadow: none; } 25% { filter: sepia(1) saturate(4); box-shadow: 0 0 0 4px #d14a3e, 0 0 26px #e04b35; } }
+@keyframes healingFlash { 0%, 100% { filter: none; } 35% { filter: sepia(.6) saturate(2) hue-rotate(65deg); box-shadow: 0 0 0 3px #74d0a0, 0 0 24px #6bd6aa; } }
+@keyframes dyingPulse { from { box-shadow: 0 0 0 2px rgba(172,44,39,.35), 0 0 12px rgba(172,44,39,.3); } to { box-shadow: 0 0 0 4px rgba(221,66,48,.85), 0 0 30px rgba(221,66,48,.7); } }
+@keyframes chainPulse { 50% { box-shadow: 0 0 10px #67c7d2; transform: rotate(-8deg) scale(1.12); } }
 @media (max-width: 1000px) { .player-panel { width: 185px; padding-left: 76px; } .portrait-button { width: 58px; height: 78px; } .player-north-west { left: 2%; } .player-north-east { right: 2%; } .player-east { right: 1%; } .mini-skills, .player-zones { margin-left: -66px; } .decision-prompt { width: 94vw; bottom: 205px; } .game-general-detail { grid-template-columns: 180px 1fr; } }
 @media (max-width: 720px) { .game-board { min-height: 760px; transform-origin: top center; } .player-panel { width: 160px; min-height: 165px; font-size: 11px; } .player-north-west { left: 1%; top: 12%; } .player-north { top: 8%; } .player-north-east { right: 1%; top: 12%; } .player-east { right: 1%; top: 34%; } .player-self { flex-basis: 170px; } .self-area { left: 1%; right: 1%; } .skill-bar { display: none; } .decision-prompt { flex-wrap: wrap; bottom: 200px; } .prompt-copy { min-width: 100%; } .game-general-detail { grid-template-columns: 1fr; } .game-general-detail > img { max-height: 240px; } .pile-stats span { display: none; } }
 .connection-banner {

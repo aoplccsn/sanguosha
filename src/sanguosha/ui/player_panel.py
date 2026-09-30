@@ -174,6 +174,11 @@ class PlayerPanel(QPushButton):
         clip.addRoundedRect(art, 3, 3)
         p.setClipPath(clip)
         p.drawPixmap(art.toRect(), RESOURCES.general_portrait(v.character_id, v.character_name))
+        if not v.face_up:
+            p.fillRect(art, QColor(20, 16, 13, 145))
+            p.setPen(QColor("#f0d18c"))
+            p.setFont(QFont("Microsoft YaHei UI", 10, QFont.Bold))
+            p.drawText(art, Qt.AlignCenter, "翻面")
         if not v.alive:
             p.fillRect(art, QColor(24, 21, 19, int(185*self.death_opacity)))
         p.setClipping(False)
@@ -249,6 +254,12 @@ class PlayerPanel(QPushButton):
             p.setBrush(Qt.NoBrush)
             p.drawEllipse(QRectF(w-57, h-22, 12, 9))
             p.drawEllipse(QRectF(w-50, h-22, 12, 9))
+        if v.marks:
+            p.setPen(QColor("#f0d18c"))
+            p.setFont(QFont("Microsoft YaHei UI", 7, QFont.Bold))
+            marks = "  ".join(f"{key} {value}" for key, value in v.marks.items() if value)
+            if marks:
+                p.drawText(QRectF(x, h-42, rw, 14), Qt.AlignRight, marks)
         if v.active:
             p.setPen(QPen(QColor("#b88d43"), 3))
             p.drawLine(10, h-8, w-10, h-8)

@@ -84,6 +84,23 @@ export interface PlayerView {
   effective_distance: number | null
   attack_range: number
   skill_labels: string[]
+  face_up?: boolean
+  marks?: Record<string, number>
+}
+
+export interface PortraitState {
+  currentTurn: boolean
+  selectableTarget: boolean
+  selectedTarget: boolean
+  waitingResponse: boolean
+  damaged: boolean
+  healing: boolean
+  dying: boolean
+  dead: boolean
+  chained: boolean
+  faceDown: boolean
+  judgment: boolean
+  skillName?: string
 }
 
 export interface Projection {

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { GamePage, ResultOverlay } from './GamePage'
+import { GamePage, ResultOverlay, portraitState } from './GamePage'
 
 const submitDecision = vi.fn()
 const returnHome = vi.fn()
@@ -30,6 +30,11 @@ vi.mock('../state/GameContext', () => ({
 
 describe('GamePage', () => {
   beforeEach(() => { submitDecision.mockClear(); request = null })
+
+  it('maps shared portrait state for turn, target, response and chain feedback', () => {
+    const state = portraitState({ ...players[1], face_up: false, chained: true }, true, true, true)
+    expect(state).toMatchObject({ currentTurn: false, selectableTarget: true, selectedTarget: true, waitingResponse: true, chained: true, faceDown: true })
+  })
 
   it('renders the five-player table, hand and skill bar', () => {
     render(<GamePage />)

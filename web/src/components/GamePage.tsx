@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { CardView, GeneralInfo, PendingRequest, PlayerView, PublicEvent } from '../types'
+import type { CardView, GeneralInfo, PendingRequest, PlayerView, PublicEvent, PortraitState } from '../types'
 import { useGame } from '../state/GameContext'
 import { Timer } from './Timer'
 
@@ -26,24 +26,39 @@ function portraitFor(player: PlayerView) {
   return '/assets/generals/' + kingdom + '/' + player.character_id + '.png'
 }
 
-function PlayerPanel({ player, position, selected, selectable, responding, onSelect, onDetail }: {
+export function portraitState(player: PlayerView, selected: boolean, selectable: boolean, responding: boolean): PortraitState {
+  return { currentTurn: player.active, selectableTarget: selectable, selectedTarget: selected,
+    waitingResponse: responding, damaged: false, healing: false, dying: player.alive && player.hp <= 0,
+    dead: !player.alive, chained: player.chained, faceDown: player.face_up === false,
+    judgment: false }
+}
+
+function PlayerPanel({ player, position, selected, selectable, responding, eventKind, onSelect, onDetail }: {
   player: PlayerView
   position: string
   selected: boolean
   selectable: boolean
   responding: boolean
+  eventKind?: string
   onSelect(): void
   onDetail(): void
 }) {
+  const portrait = portraitState(player, selected, selectable, responding)
   const classes = 'player-panel player-' + position
     + (player.active ? ' active' : '')
     + (selected ? ' selected-target' : '')
     + (selectable ? ' selectable' : '')
     + (responding ? ' responding' : '')
+    + (portrait.faceDown ? ' face-down' : '')
+    + (portrait.dying ? ' dying' : '')
+    + (portrait.chained ? ' chained' : '')
+    + (eventKind?.includes('Damage') ? ' damage-flash' : '')
+    + (eventKind?.includes('Recover') ? ' healing-flash' : '')
     + (!player.alive ? ' dead' : '')
   return <article data-player-id={player.player_id} className={classes} onClick={selectable ? onSelect : undefined}>
     <button className="portrait-button" onClick={(event) => { event.stopPropagation(); onDetail() }} aria-label={'查看' + player.character_name + '详情'}>
       <img src={portraitFor(player)} onError={(event) => { event.currentTarget.src = '/assets/generals/default_general.png' }} alt={player.character_name} />
+      {portrait.faceDown && <span className="face-down-mark">翻面</span>}
       {player.chained && <span className="chain-mark">锁</span>}
     </button>
     <div className="player-heading"><strong>{player.name}</strong><span>{player.identity_label}</span></div>
@@ -62,6 +77,7 @@ function PlayerPanel({ player, position, selected, selectable, responding, onSel
     <div className="mini-skills">{player.skill_labels.map((skill) => <span key={skill}>{skill}</span>)}</div>
     {player.active && <span className="turn-badge">当前回合</span>}
     {responding && <span className="response-badge">正在响应</span>}
+    {!!player.marks && Object.entries(player.marks).filter(([, count]) => count > 0).map(([mark, count]) => <span key={mark} className="mark-badge">{mark} {count}</span>)}
   </article>
 }
 
@@ -225,18 +241,21 @@ export function GamePage() {
   const selectedOpponentIndexes = selectedTargets.map((id) => opponents.findIndex((player) => player.player_id === id)).filter((index) => index >= 0)
   const beamMode = request?.request_type === 'respond_with_card' ? 'protect' : selectedOption.includes('slash') || request?.required_definition_id?.includes('slash') ? 'attack' : 'normal'
   const detailGeneral = detailPlayer ? state.generals[detailPlayer.character_id] : undefined
+  const latestEvent = state.publicEvents[state.publicEvents.length - 1]
+  const eventTarget = String(latestEvent?.target_id ?? latestEvent?.player_id ?? '')
+  const eventKind = String(latestEvent?.kind ?? '')
 
   return <main className="game-page table-background">
     <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><button onClick={actions.returnHome}>离开牌局</button></div></header>
     <section className="game-board">
       <TargetBeam targets={selectedOpponentIndexes} mode={beamMode} />
-      {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={positions[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
+      {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={positions[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} eventKind={eventTarget === player.player_id ? eventKind : undefined} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
       <EventStage event={state.publicEvents[state.publicEvents.length - 1]} players={projection.players} />
       <SharedCards cards={projection.shared_cards} selected={selectedCards} eligible={eligibleCards} onSelect={toggleCard} />
       {projection.discard_top && <div className="discard-top"><HandCard card={projection.discard_top} selected={false} eligible={false} onClick={() => undefined} /></div>}
       <div className="self-area">
         {request && <DecisionPrompt request={request} canConfirm={canConfirm} onConfirm={confirm} onPass={() => actions.submitDecision(request.request_id, { pass: true })} onBoolean={(value) => actions.submitDecision(request.request_id, value)} onOption={(value) => actions.submitDecision(request.request_id, value)} />}
-        <PlayerPanel player={self} position="self" selected={false} selectable={false} responding={request?.player_id === self.player_id} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
+        <PlayerPanel player={self} position="self" selected={false} selectable={false} responding={request?.player_id === self.player_id} eventKind={eventTarget === self.player_id ? eventKind : undefined} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
         <SkillBar player={self} general={state.generals[self.character_id]} request={request} chosen={selectedOption} onChoose={setSelectedOption} />
         <div className="hand" aria-label="手牌区">{projection.hand.map((card) => <HandCard key={card.card_id} card={card} selected={selectedCards.includes(card.card_id)} eligible={cardEligible(card.card_id)} onClick={() => toggleCard(card.card_id)} />)}</div>
       </div>
