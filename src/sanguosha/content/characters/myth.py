@@ -13,12 +13,17 @@ _F = Gender.FEMALE
 _W, _S, _U, _Q, _GOD = Kingdom.WEI, Kingdom.SHU, Kingdom.WU, Kingdom.QUN, Kingdom.QUN
 
 def _c(cid, name, kingdom, hp, gender, skills):
-    return CharacterDefinition(cid, name, kingdom, hp, gender, tuple(skills), {"pack": cid.split("_", 1)[0], "resource_id": f"general.{cid}"})
+    disabled = "_god_" in f"_{cid}_"
+    return CharacterDefinition(cid, name, kingdom, hp, gender, tuple(skills), {
+        "pack": cid.split("_", 1)[0], "resource_id": f"general.{cid}",
+        "implemented": not disabled, "playable": not disabled,
+        "portrait_mode": "animated" if disabled else "static",
+    })
 
 MYTH_CHARACTERS = (
     _c('wind_xiahou_yuan','夏侯渊',_W,4,_G,('shensu',)), _c('wind_cao_ren','曹仁',_W,4,_G,('jushou',)),
     _c('wind_huang_zhong','黄忠',_S,4,_G,('liegong',)), _c('wind_wei_yan','魏延',_S,4,_G,('kuanggu',)),
-    _c('wind_xiao_qiao','小乔',_U,3,_F,('tianxiang','hongyan')), _c('wind_zhou_tai','周泰',_U,4,_G,('buj屈'.replace('屈','qu'),)),
+    _c('wind_xiao_qiao','小乔',_U,3,_F,('tianxiang','hongyan')), _c('wind_zhou_tai','周泰',_U,4,_G,('buqu',)),
     _c('wind_zhang_jiao','张角',_Q,3,_G,('leiji','guidao','huangtian')), _c('wind_yuji','于吉',_Q,3,_G,('guhuo',)),
     _c('wind_god_guanyu','神关羽',_GOD,5,_G,('wushen','wuhun')), _c('wind_god_lvmeng','神吕蒙',_GOD,3,_G,('shelie','gongxin')),
     _c('fire_dian_wei','典韦',_W,4,_G,('qiangxi',)), _c('fire_xun_yu','荀彧',_W,3,_G,('quhu','jieming')),
@@ -33,7 +38,7 @@ MYTH_CHARACTERS = (
     _c('forest_god_caocao','神曹操',_GOD,3,_G,('guixin','feiying')), _c('forest_god_lvbu','神吕布',_GOD,5,_G,('kuangbao','wumou','wuwei','shenfen')),
     _c('mountain_zhang_he','张郃',_W,4,_G,('qiaobian',)), _c('mountain_deng_ai','邓艾',_W,4,_G,('tuntian','zaoxian')),
     _c('mountain_liushan','刘禅',_S,3,_G,('xiangle','fangquan','ruoyu')), _c('mountain_jiang_wei','姜维',_S,4,_G,('tiaoxin','zhiji','guanxing')),
-    _c('mountain_sunce','孙策',_U,4,_G,('jiang','hunzi','zhi霸'.replace('霸','ba'))), _c('mountain_zhang_zhaozhang','张昭张纮',_U,3,_G,('zhijian','guzheng')),
+    _c('mountain_sunce','孙策',_U,4,_G,('jiang','hunzi','zhiba')), _c('mountain_zhang_zhaozhang','张昭张纮',_U,3,_G,('zhijian','guzheng')),
     _c('mountain_zuoci','左慈',_Q,3,_G,('huashen','xinsheng')), _c('mountain_cai_wenji','蔡文姬',_Q,3,_F,('beige','duanchang')),
     _c('mountain_god_zhaoyun','神赵云',_GOD,2,_G,('juejing','longhun')), _c('mountain_god_simayi','神司马懿',_GOD,4,_G,('renjie','baoyin','lianpo')),
 )

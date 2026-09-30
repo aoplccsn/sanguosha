@@ -136,6 +136,10 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                 "id": str(character.id), "name": character.name,
                 "kingdom": character.kingdom.value, "max_hp": character.max_hp,
                 "gender": character.gender.value,
+                "pack": character.metadata.get("pack", "standard"),
+                "implemented": character.metadata.get("implemented", True),
+                "playable": character.metadata.get("playable", True),
+                "portrait_mode": character.metadata.get("portrait_mode", "static"),
                 "portrait": f"/assets/generals/{character.kingdom.value}/{character.id}.png",
                 "skills": [
                     {"id": str(skill_id), "name": skills[str(skill_id)].name,

@@ -68,7 +68,12 @@ ADDITIONAL_SKILLS = (
     SkillDefinition('biyue', '闭月', '结束阶段可摸一张牌。', SkillType.TRIGGERED),
 )
 
-STANDARD_25_GENERAL_POOL = FIRST_FIVE + ADDITIONAL_CHARACTERS
+STANDARD_25_GENERAL_POOL = tuple(
+    CharacterDefinition(c.id, c.name, c.kingdom, c.max_hp, c.gender, c.skill_ids,
+                        {"pack": "standard", "implemented": True, "playable": True,
+                         "portrait_mode": "static", "resource_id": f"general.{c.id}"})
+    for c in FIRST_FIVE + ADDITIONAL_CHARACTERS
+)
 STANDARD_SKILL_CATALOGUE = FIRST_SKILLS + ADDITIONAL_SKILLS
 assert len(STANDARD_25_GENERAL_POOL) == 25
 assert len({character.id for character in STANDARD_25_GENERAL_POOL}) == 25
@@ -78,7 +83,11 @@ assert len({character.id for character in STANDARD_25_GENERAL_POOL}) == 25
 from sanguosha.content.characters.myth import MYTH_40_GENERAL_POOL, MYTH_SKILL_CATALOGUE
 ALL_65_GENERAL_POOL = STANDARD_25_GENERAL_POOL + MYTH_40_GENERAL_POOL
 ALL_SKILL_CATALOGUE = STANDARD_SKILL_CATALOGUE + MYTH_SKILL_CATALOGUE
+PLAYABLE_57_GENERAL_POOL = tuple(c for c in ALL_65_GENERAL_POOL if c.metadata.get("playable", True))
+DISABLED_GOD_POOL = tuple(c for c in ALL_65_GENERAL_POOL if not c.metadata.get("playable", True))
 assert len(ALL_65_GENERAL_POOL) == 65
 assert len({character.id for character in ALL_65_GENERAL_POOL}) == 65
+assert len(PLAYABLE_57_GENERAL_POOL) == 57
+assert len(DISABLED_GOD_POOL) == 8
 
 
