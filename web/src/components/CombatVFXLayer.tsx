@@ -39,6 +39,7 @@ export function CombatVFXLayer({ players, targets, mode, events, quality, reduce
     }
   }, [])
   useEffect(() => { runtime.current?.setQuality(quality) }, [quality])
+  useEffect(() => { runtime.current?.setPaused(cinematics.length > 0) }, [cinematics.length])
   useEffect(() => { runtime.current?.setReducedMotion(reducedMotion ?? null) }, [reducedMotion])
   useEffect(() => { runtime.current?.setBeam(targetKey ? targetKey.split('|') : [], mode) }, [targetKey, mode])
   useEffect(() => {

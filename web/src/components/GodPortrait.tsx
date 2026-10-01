@@ -13,6 +13,7 @@ const CLOTH_FRONT = 'M256 470 L609 497 L744 826 L589 1182 L295 1123 L185 797 Z'
 const ARM = 'M625 260 L811 315 L860 622 L778 762 L645 624 L578 374 Z'
 const WEAPON = 'M742 519 L830 532 L850 714 L1004 762 L1024 1536 L779 1536 L686 1007 L717 710 Z'
 const EYES = 'M468 225 L580 214 L588 278 L476 293 Z'
+const STRIKE = ARM + ' ' + WEAPON
 const PARTS = [HEAD, HAIR_BACK, HAIR_FRONT, CLOTH_BACK, CLOTH_FRONT, ARM, WEAPON]
 
 function useNaturalBlink(enabled: boolean) {
@@ -38,8 +39,8 @@ function useNaturalBlink(enabled: boolean) {
   return blinking
 }
 
-export function GodPortrait({ characterId, name, quality, mode = 'idle', cue, forceBlink = false, reducedMotion = false }: {
-  characterId: string; name: string; quality: VfxQuality; mode?: GodPortraitMode; cue?: unknown; forceBlink?: boolean; reducedMotion?: boolean
+export function GodPortrait({ characterId, name, quality, mode = 'idle', cue, forceBlink = false, reducedMotion = false, compact = false }: {
+  characterId: string; name: string; quality: VfxQuality; mode?: GodPortraitMode; cue?: unknown; forceBlink?: boolean; reducedMotion?: boolean; compact?: boolean
 }) {
   const ids = useId().replace(/:/g, '')
   const [visibleMode, setVisibleMode] = useState(mode)
@@ -54,35 +55,37 @@ export function GodPortrait({ characterId, name, quality, mode = 'idle', cue, fo
   const blink = useNaturalBlink(characterId === 'forest_god_lvbu' && quality !== 'low' && visibleMode === 'idle' && !reducedMotion)
   if (characterId !== 'forest_god_lvbu') return null
   if (quality === 'low') return <img className="god-portrait-static" src={LU_BU + (visibleMode === 'hit' || visibleMode === 'dying' || visibleMode === 'victory' ? visibleMode + '.png' : 'portrait.png')} alt={name} />
-  const imageName = (name: string) => LU_BU + name + (quality === 'medium' ? '_medium.webp' : '.png')
+  const imageName = (name: string) => LU_BU + name + (quality === 'medium' && name === 'background' ? '_medium.webp' : '.png')
   const body = imageName('body')
   const clip = (part: string) => 'url(#' + ids + '-' + part + ')'
-  return <div className={'god-portrait god-portrait-' + visibleMode + ' god-portrait-' + quality + (reducedMotion ? ' god-portrait-reduced' : '')} role="img" aria-label={name}>
+  return <div className={'god-portrait god-portrait-' + visibleMode + ' god-portrait-' + quality + (reducedMotion ? ' god-portrait-reduced' : '') + (compact ? ' god-portrait-compact' : '')} role="img" aria-label={name}>
     <img className="god-portrait-background" src={imageName('background')} alt="" />
     <svg key={motionKey} className="god-portrait-puppet" viewBox="0 0 1024 1536" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
         <mask id={ids + '-body-mask'} maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1536">
           <rect width="1024" height="1536" fill="white" />
-          {PARTS.map((path, index) => <path key={index} d={path} fill="black" />)}
+          {(compact ? [HEAD, ARM, WEAPON] : PARTS).map((path, index) => <path key={index} d={path} fill="black" />)}
         </mask>
         {[
           ['head', HEAD], ['hair-back', HAIR_BACK], ['hair-front', HAIR_FRONT],
           ['cloth-back', CLOTH_BACK], ['cloth-front', CLOTH_FRONT],
-          ['arm', ARM], ['weapon', WEAPON], ['eyes', EYES],
+          ['arm', ARM], ['weapon', WEAPON], ['strike', STRIKE], ['eyes', EYES],
         ].map(([part, path]) => <clipPath id={ids + '-' + part} key={part}><path d={path} /></clipPath>)}
       </defs>
-      <g className="god-part god-hair-back" clipPath={clip('hair-back')}><image href={body} width="1024" height="1536" /></g>
-      <g className="god-part god-cloth-back" clipPath={clip('cloth-back')}><image href={body} width="1024" height="1536" /></g>
-      <g className="god-part god-body"><image href={body} width="1024" height="1536" /></g>
+      {!compact && <g className="god-part god-hair-back" clipPath={clip('hair-back')}><image href={body} width="1024" height="1536" /></g>}
+      {!compact && <g className="god-part god-cloth-back" clipPath={clip('cloth-back')}><image href={body} width="1024" height="1536" /></g>}
+      <g className="god-part god-body" mask={'url(#' + ids + '-body-mask)'}><image href={body} width="1024" height="1536" /></g>
       <g className="god-part god-head" clipPath={clip('head')}><image href={body} width="1024" height="1536" />
         <image className={'god-blink-frame' + (blink || forceBlink ? ' visible' : '')} href={imageName('blink')} width="1024" height="1536" clipPath={clip('eyes')} />
       </g>
-      <g className="god-part god-hair-front" clipPath={clip('hair-front')}><image href={body} width="1024" height="1536" /></g>
+      {!compact && <g className="god-part god-hair-front" clipPath={clip('hair-front')}><image href={body} width="1024" height="1536" /></g>}
       <g className="god-strike-limb">
-        <g className="god-part god-arm" clipPath={clip('arm')}><image href={body} width="1024" height="1536" /></g>
-        <g className="god-part god-weapon" clipPath={clip('weapon')}><image href={body} width="1024" height="1536" /></g>
+        {compact ? <g className="god-part god-strike" clipPath={clip('strike')}><image href={body} width="1024" height="1536" /></g> : <>
+          <g className="god-part god-arm" clipPath={clip('arm')}><image href={body} width="1024" height="1536" /></g>
+          <g className="god-part god-weapon" clipPath={clip('weapon')}><image href={body} width="1024" height="1536" /></g>
+        </>}
       </g>
-      <g className="god-part god-cloth-front" clipPath={clip('cloth-front')}><image href={body} width="1024" height="1536" /></g>
+      {!compact && <g className="god-part god-cloth-front" clipPath={clip('cloth-front')}><image href={body} width="1024" height="1536" /></g>}
     </svg>
     {(['attack', 'hit', 'dying', 'victory'] as const).includes(visibleMode as 'attack' | 'hit' | 'dying' | 'victory') &&
       <img className="god-portrait-pose" src={imageName(visibleMode === 'attack' ? 'attack_close' : visibleMode)} alt="" />}

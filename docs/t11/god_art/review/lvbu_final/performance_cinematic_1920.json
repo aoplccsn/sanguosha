@@ -6,11 +6,11 @@
         "height": 1080
       },
       "scene": "slash",
-      "frames": 38,
-      "fps": 42,
-      "medianFrameMs": 16.7,
-      "p95FrameMs": 33.4,
-      "longFrames": 1
+      "frames": 33,
+      "fps": 37,
+      "medianFrameMs": 33.2,
+      "p95FrameMs": 50,
+      "longFrames": 3
     },
     {
       "size": {
@@ -18,11 +18,11 @@
         "height": 1080
       },
       "scene": "shenfen",
-      "frames": 23,
-      "fps": 11,
-      "medianFrameMs": 83.3,
-      "p95FrameMs": 150,
-      "longFrames": 22
+      "frames": 57,
+      "fps": 27,
+      "medianFrameMs": 33.3,
+      "p95FrameMs": 50.1,
+      "longFrames": 18
     }
   ]
 }

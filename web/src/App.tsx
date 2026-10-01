@@ -5,6 +5,7 @@ import { GamePage } from './components/GamePage'
 import { GodShowcase } from './components/GodShowcase'
 import { useGame } from './state/GameContext'
 import './styles.css'
+import './god-lvbu-motion.css'
 
 export default function App() {
   const { state, actions } = useGame()

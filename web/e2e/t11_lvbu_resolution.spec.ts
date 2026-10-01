@@ -7,6 +7,7 @@ test('1920x1080 medium cinematic keeps full resolution artwork and sharp vector 
   await page.setViewportSize({ width: 1920, height: 1080 })
   await page.goto('/t11/god-lvbu-preview?t11_capture=1')
   await page.getByLabel('Quality').selectOption('medium')
+  await expect(page.locator('.god-preview-hero .god-body image')).toHaveAttribute('href', /body\.png$/)
   for (const [button, file, frame] of [
     ['Normal Slash', 't11_3_attack_1920.png', 550],
     ['Shenfen', 't11_3_shenfen_1920.png', 1150],
@@ -14,6 +15,7 @@ test('1920x1080 medium cinematic keeps full resolution artwork and sharp vector 
     await page.getByRole('button', { name: button }).click()
     const overlay = page.locator('.god-cinematic')
     await expect(overlay).toBeVisible()
+    await expect(overlay.locator('.god-cinematic-attack-pose')).toHaveAttribute('src', /attack_cutout\.png$/)
     await overlay.locator('img').evaluateAll(async (images) => {
       await Promise.all(images.map((node) => (node as HTMLImageElement).decode()))
     })

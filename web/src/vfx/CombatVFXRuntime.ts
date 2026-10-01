@@ -21,6 +21,7 @@ export class CombatVFXRuntime {
   private observer: ResizeObserver | null = null
   private raf = 0
   private hidden = document.hidden
+  private paused = false
   private motionQuery = matchMedia('(prefers-reduced-motion: reduce)')
   private reduced = this.motionQuery.matches
   private reducedOverride: boolean | null = null
@@ -101,8 +102,15 @@ export class CombatVFXRuntime {
 
   setQuality(value: VfxQuality) { this.quality = value; this.resize() }
 
+  setPaused(value: boolean) {
+    if (this.paused === value) return
+    this.paused = value
+    if (value) { cancelAnimationFrame(this.raf); this.raf = 0; this.effects.length = 0; this.ctx?.clearRect(0, 0, this.width, this.height) }
+    else this.ensureFrame()
+  }
+
   trigger(kind: Effect['kind'], sourceId: string, targetId: string, color = '#f2b858', style?: string) {
-    if (this.hidden || !this.ctx) return
+    if (this.hidden || this.paused || !this.ctx) return
     const to = this.anchor(targetId)
     if (!to) return
     const from = this.anchor(sourceId) ?? to
@@ -124,13 +132,13 @@ export class CombatVFXRuntime {
   }
 
   private ensureFrame() {
-    if (!this.raf && !this.hidden && this.ctx && (this.effects.length || this.beamPoints.length)) this.raf = requestAnimationFrame(this.frame)
+    if (!this.raf && !this.hidden && !this.paused && this.ctx && (this.effects.length || this.beamPoints.length)) this.raf = requestAnimationFrame(this.frame)
   }
 
   private frame = (now: number) => {
     this.raf = 0
     const ctx = this.ctx
-    if (!ctx || this.hidden) return
+    if (!ctx || this.hidden || this.paused) return
     ctx.clearRect(0, 0, this.width, this.height)
     const beamColor = this.beamMode === 'attack' ? '#f0804b' : this.beamMode === 'protect' ? '#78dfe4' : '#e8bb69'
     for (const to of this.beamPoints) {

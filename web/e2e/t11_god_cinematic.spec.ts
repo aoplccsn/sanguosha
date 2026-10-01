@@ -31,14 +31,6 @@ test('Lu Bu five cards share one standard cinematic and three levels render', as
     await page.waitForTimeout(name === 'shenfen' ? 1050 : 460)
     if (['slash', 'level2', 'shenfen'].includes(name))
       await page.screenshot({ path: path.join(review, 'god_lvbu_cinematic_' + name + '.png') })
-    if (name === 'slash') {
-      const drawn = await page.locator('.god-preview-board canvas').evaluate((node) => {
-        const canvas = node as HTMLCanvasElement
-        const pixels = canvas.getContext('2d')?.getImageData(0, 0, canvas.width, canvas.height).data
-        return pixels ? pixels.some((value, index) => index % 4 === 3 && value > 0) : false
-      })
-      expect(drawn).toBe(true)
-    }
     if (await overlay.count()) await page.keyboard.press('Escape')
     await expect(overlay).toHaveCount(0)
   }

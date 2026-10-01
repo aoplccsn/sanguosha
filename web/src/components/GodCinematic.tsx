@@ -44,10 +44,10 @@ export function GodCinematic({ cue, quality, reducedMotion, onComplete }: {
     <div className="god-cinematic-stage">
       <div className="god-cinematic-backdrop" />
       {cue.level === 3 && <img className="god-cinematic-crest" src={asset('shenfen')} alt="" />}
-      {cue.level >= 2 && <div className="god-cinematic-war-spirit" aria-hidden="true"><img src={asset('attack')} alt="" /></div>}
+      {cue.level >= 2 && <div className="god-cinematic-war-spirit" aria-hidden="true"><img src={asset(quality === 'low' ? 'attack' : 'attack_cutout')} alt="" /></div>}
       <div className="god-cinematic-figure">
-        <div className="god-cinematic-ready">{quality === 'high' ? <GodPortrait characterId="forest_god_lvbu" name="神吕布" quality="high" mode="idle" cue={cue.id} reducedMotion={reduced} /> : <img className="god-cinematic-ready-image" src={asset('body')} alt="" />}</div>
-        <img className="god-cinematic-attack-pose" src={asset('attack')} alt="" />
+        <div className="god-cinematic-ready">{quality === 'low' ? <img className="god-cinematic-ready-image" src={asset('body')} alt="" /> : <GodPortrait characterId="forest_god_lvbu" name="神吕布" quality="high" mode="idle" cue={cue.id} reducedMotion={reduced} compact={quality === 'medium'} />}</div>
+        <img className="god-cinematic-attack-pose" src={asset(quality === 'low' ? 'attack' : 'attack_cutout')} alt="" />
       </div>
       <svg className="god-cinematic-blade" viewBox="0 0 1600 700" preserveAspectRatio="none" aria-hidden="true">
         <path className="god-cinematic-blade-outer" d="M 95 590 L 420 360 L 960 158 L 1510 90" />

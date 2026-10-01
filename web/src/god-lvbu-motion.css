@@ -1,0 +1,124 @@
+/* Four core animations. Movement starts in the figure, then travels into hair,
+   cape and halberd. The existing particles remain secondary. */
+.god-portrait-idle .god-body { animation: lvbuStance 6.4s ease-in-out infinite; }
+.god-portrait-idle .god-head { animation: lvbuGaze 6.4s ease-in-out infinite; }
+.god-portrait-idle .god-strike-limb { transform-box: view-box; transform-origin: 680px 385px; animation: lvbuGrip 7.6s ease-in-out infinite; }
+.god-portrait-idle .god-arm, .god-portrait-idle .god-weapon { animation: none; }
+.god-portrait-idle .god-hair-back { animation: lvbuHair 6.4s ease-in-out infinite; }
+.god-portrait-idle .god-hair-front { animation: lvbuFringe 6.4s ease-in-out infinite; }
+.god-portrait-idle .god-cloth-back { animation: lvbuCape 6.4s ease-in-out infinite; }
+.god-portrait-idle .god-cloth-front { animation: lvbuHem 6.4s ease-in-out infinite; }
+@keyframes lvbuStance {
+  0%, 13%, 100% { transform: none; }
+  27% { transform: translate(-9px,-7px) rotate(-.7deg); }
+  39% { transform: translate(-12px,-5px) rotate(-1deg); }
+  55% { transform: translate(7px,3px) rotate(.45deg); }
+  74% { transform: translate(4px,0) rotate(.2deg); }
+}
+@keyframes lvbuGaze {
+  0%, 18%, 100% { transform: none; }
+  32% { transform: translate(-5px,-4px) rotate(-1.9deg); }
+  49% { transform: translate(3px,2px) rotate(1deg); }
+  72% { transform: translate(2px,-1px) rotate(.5deg); }
+}
+@keyframes lvbuGrip {
+  0%, 20%, 100% { transform: none; }
+  34% { transform: translate(-7px,-10px) rotate(-3.8deg); }
+  48% { transform: translate(-9px,-13px) rotate(-4.8deg); }
+  67% { transform: translate(3px,3px) rotate(1deg); }
+  82% { transform: translate(1px,1px) rotate(.3deg); }
+}
+@keyframes lvbuHair {
+  0%, 18%, 100% { transform: none; }
+  37% { transform: translate(-10px,-5px) rotate(-2deg); }
+  59% { transform: translate(8px,3px) rotate(1.3deg); }
+  79% { transform: translate(-3px,1px) rotate(-.4deg); }
+}
+@keyframes lvbuFringe {
+  0%, 20%, 100% { transform: none; }
+  39% { transform: translate(6px,-3px) rotate(1.6deg); }
+  63% { transform: translate(-4px,2px) rotate(-.8deg); }
+}
+@keyframes lvbuCape {
+  0%, 22%, 100% { transform: none; }
+  43% { transform: translate(-15px,-1px) rotate(-2.6deg); }
+  65% { transform: translate(10px,4px) rotate(1.5deg); }
+  83% { transform: translate(-4px,1px) rotate(-.5deg); }
+}
+@keyframes lvbuHem {
+  0%, 25%, 100% { transform: none; }
+  47% { transform: translate(10px,-3px) rotate(1.6deg); }
+  68% { transform: translate(-7px,4px) rotate(-1deg); }
+}
+
+/* Entry: the weight lands first; the weapon and fabric catch up before idle. */
+.god-portrait-entry .god-portrait-puppet { animation: lvbuEntryWeight 1.45s cubic-bezier(.2,.7,.22,1) both; }
+.god-portrait-entry .god-body { animation: none; }
+.god-portrait-entry .god-part:not(.god-body) { animation: none; opacity: 1; }
+.god-portrait-entry .god-head { animation: lvbuEntryHead 1.45s ease-out both !important; }
+.god-portrait-entry .god-strike-limb { animation: lvbuEntryHalberd 1.45s cubic-bezier(.14,.72,.22,1) both; }
+.god-portrait-entry .god-hair-back, .god-portrait-entry .god-hair-front { animation: lvbuEntryHair 1.45s ease-out both !important; }
+.god-portrait-entry .god-cloth-back, .god-portrait-entry .god-cloth-front { animation: lvbuEntryCape 1.45s ease-out both !important; }
+@keyframes lvbuEntryWeight { 0% { opacity: 0; transform: translate(-5%,9%) scale(.95); } 31% { opacity: 1; transform: translate(1%,-2%) scale(1.025); } 57% { transform: translate(0,1%) scale(.997); } 100% { opacity: 1; transform: none; } }
+@keyframes lvbuEntryHead { 0%, 18% { transform: translateY(16px) rotate(-4deg); } 58% { transform: translateY(-4px) rotate(1deg); } 100% { transform: none; } }
+@keyframes lvbuEntryHalberd { 0% { transform: translate(-13px,37px) rotate(-11deg); } 44% { transform: translate(5px,-9px) rotate(2deg); } 72% { transform: translate(-2px,2px) rotate(-.8deg); } 100% { transform: none; } }
+@keyframes lvbuEntryHair { 0%, 21% { transform: translate(-20px,4px) rotate(-4deg); } 59% { transform: translate(9px,-2px) rotate(2deg); } 100% { transform: none; } }
+@keyframes lvbuEntryCape { 0%, 18% { transform: translate(-23px,13px) rotate(-4deg); } 62% { transform: translate(12px,-4px) rotate(2deg); } 100% { transform: none; } }
+
+/* Death: body and weapon lose support, then the kneeling pose settles once. */
+.god-portrait-dying { filter: none; }
+.god-portrait-dying .god-portrait-puppet { opacity: 1; animation: lvbuDeathWeight 1.3s ease-in both; }
+.god-portrait-dying .god-head { animation: lvbuDeathHead 1.3s ease-in both; }
+.god-portrait-dying .god-strike-limb { animation: lvbuDeathWeapon 1.3s ease-in both; }
+.god-portrait-dying .god-portrait-pose { opacity: 0; animation: lvbuDeathPose 1.3s cubic-bezier(.32,.7,.32,1) both; transform-origin: 52% 76%; }
+.god-portrait-dying .god-portrait-embers { animation: lvbuDeathEmbers 1.3s ease-out both; }
+@keyframes lvbuDeathWeight { 0%, 17% { opacity: 1; transform: none; } 39% { opacity: 1; transform: translate(2%,3%) rotate(2deg); } 54% { opacity: 0; transform: translate(2%,7%) rotate(3deg); } 100% { opacity: 0; transform: translate(1%,10%) rotate(4deg); } }
+@keyframes lvbuDeathHead { 0%, 16% { transform: none; } 62%,100% { transform: translate(3px,18px) rotate(6deg); } }
+@keyframes lvbuDeathWeapon { 0%, 21% { transform: none; } 57% { transform: translate(8px,29px) rotate(13deg); } 100% { transform: translate(11px,45px) rotate(18deg); } }
+@keyframes lvbuDeathPose { 0%, 37% { opacity: 0; transform: translate(3%,-4%) scale(1.04); } 68% { opacity: .86; transform: translate(0,2%) scale(1.005); } 100% { opacity: 1; transform: none; } }
+@keyframes lvbuDeathEmbers { to { opacity: 0; } }
+
+/* Attack: rise, strike, short hit stop, recover. The blade appears at the strike. */
+.god-cinematic-standard .god-cinematic-figure { animation: lvbuAttackCamera var(--cinematic-ms) cubic-bezier(.17,.72,.23,1) both; }
+.god-cinematic-standard .god-cinematic-ready { animation: lvbuAttackReady var(--cinematic-ms) linear both; }
+.god-cinematic-standard .god-cinematic-attack-pose { animation: lvbuAttackBody var(--cinematic-ms) cubic-bezier(.16,.74,.25,1) both; }
+.god-cinematic-standard .god-cinematic-figure .god-strike-limb { animation: lvbuAttackRaise var(--cinematic-ms) cubic-bezier(.14,.7,.22,1) both; }
+.god-cinematic-standard .god-cinematic-figure .god-body { animation: lvbuAttackLoad var(--cinematic-ms) ease-in-out both; }
+.god-cinematic-standard .god-cinematic-blade { animation: lvbuAttackEdge var(--cinematic-ms) cubic-bezier(.13,.72,.22,1) both; }
+@keyframes lvbuAttackCamera { 0% { opacity: 0; transform: translate(-10%,2%) scale(.93); } 15% { opacity: 1; transform: none; } 37% { transform: translate(-2%,-2%) scale(1.015); } 51%,57% { transform: translate(7%,1%) scale(1.075); } 62% { transform: translate(6%,0) scale(1.055); } 86% { opacity: 1; transform: translate(2%,0) scale(1.01); } 100% { opacity: 0; transform: none; } }
+@keyframes lvbuAttackReady { 0%,37% { opacity: 1; } 49%,74% { opacity: 0; } 87% { opacity: .9; } 100% { opacity: 0; } }
+@keyframes lvbuAttackBody { 0%,35% { opacity: 0; transform: translate(-9%,4%) scale(.93) rotate(-4deg); } 47% { opacity: 1; transform: translate(1%,-2%) scale(1.04) rotate(0); } 52%,58% { opacity: 1; transform: translate(5%,0) scale(1.08) rotate(1deg); } 68% { opacity: 1; transform: translate(6%,1%) scale(1.07) rotate(1deg); } 86%,100% { opacity: 0; transform: translate(1%,0) scale(1.01); } }
+@keyframes lvbuAttackRaise { 0%,16% { transform: none; } 35% { transform: translate(-17px,-15px) rotate(-13deg); } 48% { transform: translate(22px,-31px) rotate(19deg); } 53%,58% { transform: translate(28px,-27px) rotate(24deg); } 83% { transform: translate(-4px,2px) rotate(-3deg); } 100% { transform: none; } }
+@keyframes lvbuAttackLoad { 0%,17% { transform: none; } 35% { transform: translate(-11px,-10px) rotate(-2deg); } 53%,58% { transform: translate(19px,10px) rotate(3deg); } 84%,100% { transform: none; } }
+@keyframes lvbuAttackEdge { 0%,42% { opacity: 0; transform: translate(-8%,-4%) scale(.35,.8); } 51% { opacity: 1; transform: none; } 57% { opacity: 1; transform: none; } 72%,100% { opacity: 0; transform: translate(8%,2%) scale(1.12,1.02); } }
+
+.god-portrait-reduced .god-portrait-puppet, .god-portrait-reduced .god-part,
+.god-portrait-reduced .god-strike-limb, .god-portrait-reduced .god-portrait-pose,
+.god-cinematic-reduced .god-cinematic-ready, .god-cinematic-reduced .god-cinematic-attack-pose,
+.god-cinematic-reduced .god-cinematic-figure, .god-cinematic-reduced .god-cinematic-blade { animation: none !important; }
+.god-portrait-reduced.god-portrait-dying .god-portrait-pose { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .god-portrait-puppet, .god-portrait-puppet .god-part, .god-portrait-puppet .god-strike-limb,
+  .god-portrait-pose, .god-cinematic-ready, .god-cinematic-attack-pose,
+  .god-cinematic-figure, .god-cinematic-blade { animation: none !important; }
+  .god-portrait-dying .god-portrait-pose { opacity: 1; transform: none; }
+}
+
+/* The blade begins at the moving halberd, and the hit reads as sharp metal. */
+.god-cinematic-standard .god-cinematic-blade { left: 55%; top: 35%; width: 35%; height: 43%; }
+.god-cinematic-standard .god-cinematic-impact { right: 10%; top: 35%; width: min(20vw, 280px); height: min(20vw, 280px); }
+.god-cinematic-standard .god-cinematic-impact::before {
+  inset: 44%; border: 3px solid #fff2cd; border-radius: 0;
+  background: #c46538; box-shadow: 0 0 8px #e6ae71; transform: rotate(45deg);
+}
+.god-cinematic-standard .god-cinematic-impact i {
+  left: 3%; top: calc(50% - 2px); width: 94%; height: 4px; border-radius: 0;
+  background: linear-gradient(90deg, transparent 0%, #b54d2f 25%, #fff5d1 50%, #b54d2f 75%, transparent 100%);
+  clip-path: polygon(0 50%, 48% 0, 100% 50%, 48% 100%);
+}
+.god-cinematic-standard .god-cinematic-impact i:nth-child(1) { transform: rotate(0deg); }
+.god-cinematic-standard .god-cinematic-impact i:nth-child(2) { transform: rotate(47deg); }
+.god-cinematic-standard .god-cinematic-impact i:nth-child(3) { transform: rotate(92deg); }
+.god-cinematic-standard .god-cinematic-impact i:nth-child(4) { transform: rotate(137deg); }
+.god-cinematic-standard .god-cinematic-impact i:nth-child(5) { display: none; }
+
