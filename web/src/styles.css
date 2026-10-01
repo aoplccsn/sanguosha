@@ -206,3 +206,27 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
   background: #763c24;
 }
 .connection-banner button { margin-left: 1rem; cursor: pointer; }
+
+.god-portrait, .god-portrait-static { display: block; width: 100%; height: 100%; overflow: hidden; }
+.god-portrait { position: relative; isolation: isolate; background: #1c0f0e; }
+.god-portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; pointer-events: none; }
+.god-portrait-background { animation: godBackgroundBreath 8s ease-in-out infinite alternate; }
+.god-portrait-body { transform-origin: center 72%; animation: godBodyBreath 5.8s ease-in-out infinite alternate; }
+.god-portrait-embers { position: absolute; inset: 0; pointer-events: none; opacity: .58; background: radial-gradient(circle at 14% 85%, #f24c28 0 1px, transparent 3px), radial-gradient(circle at 84% 28%, #f68c3c 0 1px, transparent 3px), radial-gradient(circle at 65% 76%, #e93625 0 1px, transparent 3px); background-size: 73px 91px, 113px 127px, 141px 157px; animation: godEmbers 11s linear infinite; }
+.god-portrait-entry { animation: godEnter .9s ease-out both; }
+.god-portrait-attack .god-portrait-body { animation: godAttack .36s ease-out both; }
+.god-portrait-hit .god-portrait-body { animation: godHit .3s ease-out both; }
+.god-portrait-dying { filter: saturate(.45) brightness(.58); }
+.god-portrait-victory .god-portrait-body { animation: godVictory 1.2s ease-out both; }
+.game-general-detail .god-portrait, .game-general-detail .god-portrait-static { max-height: 430px; min-height: 360px; border: 2px solid #74502c; }
+@keyframes godBackgroundBreath { to { transform: scale(1.035) translateX(-.5%); } }
+@keyframes godBodyBreath { to { transform: translateY(-.7%) scale(1.012); } }
+@keyframes godEmbers { to { background-position: 0 -91px, 0 -127px, 0 -157px; } }
+@keyframes godEnter { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: scale(1); } }
+@keyframes godAttack { 45% { transform: translate(1.5%, -1%) scale(1.035); } }
+@keyframes godHit { 30% { transform: translateX(-2%); opacity: .68; } 65% { transform: translateX(1%); } }
+@keyframes godVictory { 50% { transform: translateY(-2%) scale(1.02); } }
+@media (prefers-reduced-motion: reduce) {
+  .god-portrait, .god-portrait img, .god-portrait-embers { animation: none !important; }
+}
+.god-portrait-static { object-fit: cover; object-position: center top; }

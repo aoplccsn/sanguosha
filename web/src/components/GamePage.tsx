@@ -3,6 +3,7 @@ import type { CardView, GeneralInfo, PendingRequest, PlayerView, PublicEvent, Po
 import { useGame } from '../state/GameContext'
 import { Timer } from './Timer'
 import { CombatVFXLayer } from './CombatVFXLayer'
+import { GodPortrait, type GodPortraitMode } from './GodPortrait'
 import { readVfxQuality, saveVfxQuality, type VfxQuality } from '../vfx/CombatVFXRuntime'
 
 const positions = ['north-west', 'north', 'north-east', 'east']
@@ -35,17 +36,19 @@ export function portraitState(player: PlayerView, selected: boolean, selectable:
     judgment: false }
 }
 
-function PlayerPanel({ player, position, selected, selectable, responding, eventKind, onSelect, onDetail }: {
+function PlayerPanel({ player, position, selected, selectable, responding, eventKind, vfxQuality, onSelect, onDetail }: {
   player: PlayerView
   position: string
   selected: boolean
   selectable: boolean
   responding: boolean
   eventKind?: string
+  vfxQuality: VfxQuality
   onSelect(): void
   onDetail(): void
 }) {
   const portrait = portraitState(player, selected, selectable, responding)
+  const godMode: GodPortraitMode = portrait.dying ? 'dying' : eventKind?.includes('Damage') ? 'hit' : eventKind?.includes('CardUsed') ? 'attack' : 'idle'
   const classes = 'player-panel player-' + position
     + (player.active ? ' active' : '')
     + (selected ? ' selected-target' : '')
@@ -59,7 +62,7 @@ function PlayerPanel({ player, position, selected, selectable, responding, event
     + (!player.alive ? ' dead' : '')
   return <article data-player-id={player.player_id} className={classes} onClick={selectable ? onSelect : undefined}>
     <button className="portrait-button" onClick={(event) => { event.stopPropagation(); onDetail() }} aria-label={'查看' + player.character_name + '详情'}>
-      <img src={portraitFor(player)} onError={(event) => { event.currentTarget.src = '/assets/generals/default_general.png' }} alt={player.character_name} />
+      {player.character_id === 'forest_god_lvbu' ? <GodPortrait characterId={player.character_id} name={player.character_name} quality={vfxQuality} mode={godMode} /> : <img src={portraitFor(player)} onError={(event) => { event.currentTarget.src = '/assets/generals/default_general.png' }} alt={player.character_name} />}
       {portrait.faceDown && <span className="face-down-mark">翻面</span>}
       {player.chained && <span className="chain-mark">锁</span>}
     </button>
@@ -142,10 +145,10 @@ function DecisionPrompt({ request, canConfirm, onConfirm, onPass, onBoolean, onO
   </section>
 }
 
-function GeneralDetailPanel({ player, general, onClose }: { player: PlayerView; general?: GeneralInfo; onClose(): void }) {
+function GeneralDetailPanel({ player, general, quality, onClose }: { player: PlayerView; general?: GeneralInfo; quality: VfxQuality; onClose(): void }) {
   return <div className="modal-backdrop" onClick={onClose}><aside className="game-general-detail paper-panel" onClick={(event) => event.stopPropagation()}>
     <button className="modal-close" onClick={onClose}>×</button>
-    <img src={portraitFor(player)} onError={(event) => { event.currentTarget.src = '/assets/generals/default_general.png' }} alt={player.character_name} />
+    {player.character_id === 'forest_god_lvbu' ? <GodPortrait characterId={player.character_id} name={player.character_name} quality={quality} /> : <img src={portraitFor(player)} onError={(event) => { event.currentTarget.src = '/assets/generals/default_general.png' }} alt={player.character_name} />}
     <div><p className="eyebrow">武将详情</p><h2>{player.character_name}<span>{player.faction}</span></h2><p>{player.hp} / {player.max_hp} 体力 · {player.identity_label}</p>
       {(general?.skills ?? []).map((skill) => <section key={skill.id}><h3>{skill.name}<em>{skill.type}</em></h3><p>{skill.description}</p>{skill.type === 'lord' && player.identity_label !== '主公' && <small>当前身份未启用</small>}</section>)}
       {!general && player.skill_labels.map((skill) => <section key={skill}><h3>{skill}</h3><p>详细说明可在武将目录载入后查看。</p></section>)}
@@ -237,25 +240,26 @@ export function GamePage() {
   const detailGeneral = detailPlayer ? state.generals[detailPlayer.character_id] : undefined
   const latestEvent = state.publicEvents[state.publicEvents.length - 1]
   const eventTarget = String(latestEvent?.target_id ?? latestEvent?.player_id ?? '')
+  const eventSource = String(latestEvent?.source_id ?? '')
   const eventKind = String(latestEvent?.kind ?? '')
 
   return <main className="game-page table-background">
     <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><label className="vfx-quality-control">画质 <select aria-label="战斗特效画质" value={vfxQuality} onChange={(event) => { const value = event.target.value as VfxQuality; setVfxQuality(value); saveVfxQuality(value) }}><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></label><button onClick={actions.returnHome}>离开牌局</button></div></header>
     <section className="game-board">
       <CombatVFXLayer players={projection.players} targets={selectedTargets} mode={beamMode} event={latestEvent} quality={vfxQuality} />
-      {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={positions[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} eventKind={eventTarget === player.player_id ? eventKind : undefined} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
+      {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={positions[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} eventKind={eventTarget === player.player_id || eventSource === player.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} vfxQuality={vfxQuality} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
       <EventStage event={state.publicEvents[state.publicEvents.length - 1]} players={projection.players} />
       <SharedCards cards={projection.shared_cards} selected={selectedCards} eligible={eligibleCards} onSelect={toggleCard} />
       {projection.discard_top && <div className="discard-top"><HandCard card={projection.discard_top} selected={false} eligible={false} onClick={() => undefined} /></div>}
       <div className="self-area">
         {request && <DecisionPrompt request={request} canConfirm={canConfirm} onConfirm={confirm} onPass={() => actions.submitDecision(request.request_id, { pass: true })} onBoolean={(value) => actions.submitDecision(request.request_id, value)} onOption={(value) => actions.submitDecision(request.request_id, value)} />}
-        <PlayerPanel player={self} position="self" selected={false} selectable={false} responding={request?.player_id === self.player_id} eventKind={eventTarget === self.player_id ? eventKind : undefined} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
+        <PlayerPanel player={self} position="self" selected={false} selectable={false} responding={request?.player_id === self.player_id} eventKind={eventTarget === self.player_id || eventSource === self.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} vfxQuality={vfxQuality} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
         <SkillBar player={self} general={state.generals[self.character_id]} request={request} chosen={selectedOption} onChoose={setSelectedOption} />
         <div className="hand" aria-label="手牌区">{projection.hand.map((card) => <HandCard key={card.card_id} card={card} selected={selectedCards.includes(card.card_id)} eligible={cardEligible(card.card_id)} onClick={() => toggleCard(card.card_id)} />)}</div>
       </div>
     </section>
     {state.error && <div className="game-error">{state.error}<button onClick={actions.clearError}>×</button></div>}
-    {detailPlayer && <GeneralDetailPanel player={detailPlayer} general={detailGeneral} onClose={() => setDetailPlayer(null)} />}
+    {detailPlayer && <GeneralDetailPanel player={detailPlayer} general={detailGeneral} quality={vfxQuality} onClose={() => setDetailPlayer(null)} />}
     {(state.result || projection.result) && <ResultOverlay result={state.result || projection.result || ''} identity={self.identity_label} onHome={actions.returnHome} onReplay={() => { actions.returnHome(); actions.createRoom(state.playerName || '玩家', true) }} />}
   </main>
 }

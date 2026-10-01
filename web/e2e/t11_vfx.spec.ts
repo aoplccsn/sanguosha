@@ -14,6 +14,10 @@ test('Canvas combat layer loads, resizes and persists quality without browser er
     await page.locator('.general-card').first().click()
     await page.getByRole('button', { name: '确认武将' }).click()
     await expect(page.locator('.game-board')).toBeVisible()
+    for (const file of ['portrait.png', 'background.png', 'body.png']) {
+      const response = await page.request.get('/assets/gods/forest_god_lvbu/' + file)
+      expect(response.ok()).toBe(true)
+    }
     const canvas = page.locator('.combat-vfx-layer')
     await expect(canvas).toBeVisible()
     await expect.poll(() => canvas.evaluate((node: HTMLCanvasElement) => node.width)).toBeGreaterThan(0)
