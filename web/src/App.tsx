@@ -8,7 +8,7 @@ import './styles.css'
 
 export default function App() {
   const { state, actions } = useGame()
-  if (window.location.pathname === '/t11/god-lvbu-preview') return <GodShowcase />
+  if (import.meta.env.DEV && window.location.pathname === '/t11/god-lvbu-preview') return <GodShowcase />
   const page = state.page === 'lobby' ? <LobbyPage />
     : state.page === 'pregame' ? <PregamePage />
       : state.page === 'game' ? <GamePage /> : <HomePage />

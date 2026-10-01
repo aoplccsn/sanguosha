@@ -23,6 +23,7 @@ export class CombatVFXRuntime {
   private hidden = document.hidden
   private motionQuery = matchMedia('(prefers-reduced-motion: reduce)')
   private reduced = this.motionQuery.matches
+  private reducedOverride: boolean | null = null
   private quality: VfxQuality
   private beamIds: string[] = []
   private beamMode: BeamMode = 'normal'
@@ -50,7 +51,9 @@ export class CombatVFXRuntime {
     this.motionQuery.addEventListener?.('change', this.motionChanged)
   }
 
-  private motionChanged = () => { this.reduced = this.motionQuery.matches }
+  private motionChanged = () => { this.reduced = this.reducedOverride ?? this.motionQuery.matches }
+
+  setReducedMotion(value: boolean | null) { this.reducedOverride = value; this.reduced = value ?? this.motionQuery.matches }
 
   private visibility = () => {
     this.hidden = document.hidden

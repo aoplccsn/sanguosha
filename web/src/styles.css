@@ -406,3 +406,48 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .god-cinematic-medium .god-cinematic-elemental, .god-cinematic-low .god-cinematic-elemental { filter: none; }
 .god-cinematic-medium .god-cinematic-figure, .god-cinematic-low .god-cinematic-figure,
 .god-cinematic-medium .god-cinematic-attack-pose, .god-cinematic-low .god-cinematic-attack-pose { will-change: transform, opacity; }
+
+/* Local-only God Lü Bu presentation page; all motion comes from game runtimes. */
+.god-presentation-preview { padding: 24px clamp(18px, 3vw, 42px) 34px; }
+.god-presentation-preview header h1 { font-size: clamp(30px, 3.3vw, 46px); }
+.god-preview-entry { display: block; width: fit-content; margin: 12px 0; color: #8b3024; font-weight: 700; }
+.god-preview-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 20px 0 18px; }
+.god-preview-controls button, .god-preview-controls select { padding: 9px 13px; color: #f2dcc1; background: #38231e; border: 1px solid #a77649; border-radius: 3px; cursor: pointer; font: inherit; }
+.god-preview-controls button:hover, .god-preview-controls select:hover { background: #65302a; }
+.god-preview-controls button:focus-visible, .god-preview-controls select:focus-visible, .god-preview-controls input:focus-visible { outline: 2px solid #f9ce83; outline-offset: 2px; }
+.god-preview-controls button:disabled { opacity: .45; cursor: not-allowed; }
+.god-preview-controls label { display: inline-flex; align-items: center; gap: 7px; color: #f2dcc1; }
+.god-preview-toggle { padding: 5px 8px; border: 1px solid #75503a; border-radius: 3px; cursor: pointer; }
+.god-preview-toggle input { accent-color: #b84932; width: 17px; height: 17px; }
+.god-preview-layout { display: grid; grid-template-columns: minmax(250px, 350px) minmax(600px, 1fr); gap: 22px; align-items: stretch; }
+.god-preview-hero { position: relative; height: min(61vw, 550px); min-height: 440px; border: 2px solid #a77140; background: #1b1010; overflow: hidden; }
+.god-preview-hero .god-portrait, .god-preview-hero .god-portrait-static { height: calc(100% - 32px); }
+.god-preview-hero p { margin: 0; padding: 7px 10px; height: 32px; font-size: 12px; background: #201314; }
+.god-preview-board { position: relative; min-height: 550px; overflow: hidden; border: 2px solid #a77140; border-radius: 10px; background: radial-gradient(ellipse at center, #a18e70 0%, #7f6c51 38%, #40301f 100%); box-shadow: inset 0 0 80px #211411; }
+.god-preview-board::before { content: ''; position: absolute; inset: 13% 16%; border: 2px solid rgba(56,36,20,.4); border-radius: 50%; box-shadow: 0 0 0 12px rgba(203,169,110,.08); }
+.god-preview-board-title { position: absolute; top: 12px; left: 16px; z-index: 6; color: #281812; font-weight: 700; letter-spacing: .08em; }
+.god-preview-seat { width: 150px; min-height: 118px; padding: 10px 8px 8px 82px; transition: none; }
+.god-preview-seat .portrait-button { width: 64px; height: 88px; }
+.god-preview-seat strong, .god-preview-seat small { display: block; white-space: nowrap; }
+.god-preview-seat strong { margin: 12px 0 7px; font-size: 15px; }
+.god-preview-seat small { color: #c8ad86; font-size: 11px; }
+.god-preview-p2 { left: 8%; top: 16%; }
+.god-preview-p3 { right: 8%; top: 16%; }
+.god-preview-p4 { left: 8%; top: 50%; }
+.god-preview-p5 { right: 8%; top: 50%; }
+.god-preview-p1 { position: absolute; left: calc(50% - 92px); bottom: 5%; width: 184px; min-height: 110px; border-color: #dfad58; box-shadow: 0 0 24px rgba(196,77,45,.4); }
+.god-preview-p1 .portrait-button { width: 64px; height: 88px; }
+.god-preview-seat-hit { animation: godPreviewHit .46s ease-out; }
+@keyframes godPreviewHit { 0%,100% { box-shadow: 0 9px 30px rgba(0,0,0,.42); } 35% { box-shadow: 0 0 0 5px #fff2b4, 0 0 35px #e94e30; } }
+.god-preview-note { margin: 14px 0 0; color: #c7afa2; font-size: 13px; }
+.god-portrait-reduced .god-portrait-puppet, .god-portrait-reduced .god-part, .god-portrait-reduced .god-strike-limb,
+.god-portrait-reduced .god-portrait-background, .god-portrait-reduced .god-portrait-embers,
+.god-portrait-reduced .god-portrait-pose, .god-portrait-reduced.god-portrait-entry { animation: none !important; transform: none !important; }
+.god-portrait-reduced.god-portrait-hit .god-portrait-pose, .god-portrait-reduced.god-portrait-dying .god-portrait-pose,
+.god-portrait-reduced.god-portrait-victory .god-portrait-pose { opacity: 1; }
+@media (max-width: 850px) { .god-preview-layout { grid-template-columns: 1fr; } .god-preview-hero { width: min(350px, 100%); } .god-preview-board { min-height: 540px; } }
+@media (max-width: 620px) { .god-preview-seat { transform: scale(.78); transform-origin: top left; } .god-preview-p3, .god-preview-p5 { transform-origin: top right; } .god-preview-p1 { transform-origin: bottom center; } }
+
+
+/* Keep all five seats visible at the common 1366×768 review viewport. */
+.god-preview-hero, .god-preview-board { height: clamp(440px, 52vh, 570px); min-height: 0; }

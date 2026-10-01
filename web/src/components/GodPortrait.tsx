@@ -38,8 +38,8 @@ function useNaturalBlink(enabled: boolean) {
   return blinking
 }
 
-export function GodPortrait({ characterId, name, quality, mode = 'idle', cue }: {
-  characterId: string; name: string; quality: VfxQuality; mode?: GodPortraitMode; cue?: unknown
+export function GodPortrait({ characterId, name, quality, mode = 'idle', cue, forceBlink = false, reducedMotion = false }: {
+  characterId: string; name: string; quality: VfxQuality; mode?: GodPortraitMode; cue?: unknown; forceBlink?: boolean; reducedMotion?: boolean
 }) {
   const ids = useId().replace(/:/g, '')
   const [visibleMode, setVisibleMode] = useState(mode)
@@ -51,13 +51,13 @@ export function GodPortrait({ characterId, name, quality, mode = 'idle', cue }: 
     const timer = window.setTimeout(() => setVisibleMode('idle'), mode === 'entry' ? 1450 : mode === 'victory' ? 1600 : mode === 'attack' ? 900 : 480)
     return () => window.clearTimeout(timer)
   }, [mode, cue])
-  const blink = useNaturalBlink(characterId === 'forest_god_lvbu' && quality !== 'low' && visibleMode === 'idle')
+  const blink = useNaturalBlink(characterId === 'forest_god_lvbu' && quality !== 'low' && visibleMode === 'idle' && !reducedMotion)
   if (characterId !== 'forest_god_lvbu') return null
   if (quality === 'low') return <img className="god-portrait-static" src={LU_BU + (visibleMode === 'hit' || visibleMode === 'dying' || visibleMode === 'victory' ? visibleMode + '.png' : 'portrait.png')} alt={name} />
   const imageName = (name: string) => LU_BU + name + (quality === 'medium' ? '_medium.webp' : '.png')
   const body = imageName('body')
   const clip = (part: string) => 'url(#' + ids + '-' + part + ')'
-  return <div className={'god-portrait god-portrait-' + visibleMode + ' god-portrait-' + quality} role="img" aria-label={name}>
+  return <div className={'god-portrait god-portrait-' + visibleMode + ' god-portrait-' + quality + (reducedMotion ? ' god-portrait-reduced' : '')} role="img" aria-label={name}>
     <img className="god-portrait-background" src={imageName('background')} alt="" />
     <svg key={motionKey} className="god-portrait-puppet" viewBox="0 0 1024 1536" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
@@ -75,7 +75,7 @@ export function GodPortrait({ characterId, name, quality, mode = 'idle', cue }: 
       <g className="god-part god-cloth-back" clipPath={clip('cloth-back')}><image href={body} width="1024" height="1536" /></g>
       <g className="god-part god-body"><image href={body} width="1024" height="1536" /></g>
       <g className="god-part god-head" clipPath={clip('head')}><image href={body} width="1024" height="1536" />
-        <image className={'god-blink-frame' + (blink ? ' visible' : '')} href={imageName('blink')} width="1024" height="1536" clipPath={clip('eyes')} />
+        <image className={'god-blink-frame' + (blink || forceBlink ? ' visible' : '')} href={imageName('blink')} width="1024" height="1536" clipPath={clip('eyes')} />
       </g>
       <g className="god-part god-hair-front" clipPath={clip('hair-front')}><image href={body} width="1024" height="1536" /></g>
       <g className="god-strike-limb">

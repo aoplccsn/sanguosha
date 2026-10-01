@@ -13,15 +13,17 @@ export type GodCinematicCue = {
 
 const duration = { 1: 900, 2: 1200, 3: 2100 } as const
 
-export function GodCinematic({ cue, quality, onComplete }: {
+export function GodCinematic({ cue, quality, reducedMotion, onComplete }: {
   cue: GodCinematicCue
   quality: VfxQuality
+  reducedMotion?: boolean
   onComplete(): void
 }) {
-  const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  const [systemReduced, setSystemReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  const reduced = reducedMotion ?? systemReduced
   useEffect(() => {
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const update = () => setReduced(preference.matches)
+    const update = () => setSystemReduced(preference.matches)
     preference.addEventListener('change', update)
     return () => preference.removeEventListener('change', update)
   }, [])

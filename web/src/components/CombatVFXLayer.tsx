@@ -14,8 +14,8 @@ function locateTargets(ids: string[]): GodCinematicTarget[] {
   })
 }
 
-export function CombatVFXLayer({ players, targets, mode, events, quality }: {
-  players: PlayerView[]; targets: string[]; mode: BeamMode; events: PublicEvent[]; quality: VfxQuality
+export function CombatVFXLayer({ players, targets, mode, events, quality, reducedMotion }: {
+  players: PlayerView[]; targets: string[]; mode: BeamMode; events: PublicEvent[]; quality: VfxQuality; reducedMotion?: boolean
 }) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const runtime = useRef<CombatVFXRuntime | null>(null)
@@ -39,6 +39,7 @@ export function CombatVFXLayer({ players, targets, mode, events, quality }: {
     }
   }, [])
   useEffect(() => { runtime.current?.setQuality(quality) }, [quality])
+  useEffect(() => { runtime.current?.setReducedMotion(reducedMotion ?? null) }, [reducedMotion])
   useEffect(() => { runtime.current?.setBeam(targetKey ? targetKey.split('|') : [], mode) }, [targetKey, mode])
   useEffect(() => {
     for (const [index, event] of events.entries()) {
@@ -85,6 +86,6 @@ export function CombatVFXLayer({ players, targets, mode, events, quality }: {
   }, [events, players])
   return <>
     <canvas ref={canvas} className="combat-vfx-layer" aria-hidden="true" />
-    {cinematics[0] && <GodCinematic key={cinematics[0].id} cue={cinematics[0]} quality={quality} onComplete={dismiss} />}
+    {cinematics[0] && <GodCinematic key={cinematics[0].id} cue={cinematics[0]} quality={quality} reducedMotion={reducedMotion} onComplete={dismiss} />}
   </>
 }

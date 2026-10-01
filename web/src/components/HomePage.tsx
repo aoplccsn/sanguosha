@@ -34,6 +34,7 @@ export function HomePage() {
         <button className="brush-button primary" onClick={() => actions.createRoom(remember(), true)}>单人游戏</button>
         <button className="brush-button" onClick={() => actions.createRoom(remember())}>创建多人房间</button>
       </div>
+      {import.meta.env.DEV && <a className="god-preview-entry" href="/t11/god-lvbu-preview">God Lü Bu Presentation Preview · 神吕布视觉验收</a>}
       <div className="join-row">
         <input aria-label="房间码" value={roomCode} onChange={(event) => setRoomCode(event.target.value.toUpperCase())} placeholder="输入房间码" maxLength={8} />
         <button className="brush-button compact" disabled={!roomCode.trim()} onClick={() => actions.joinRoom(remember(), roomCode)}>加入房间</button>
