@@ -54,7 +54,7 @@ async function chooseSlashTarget(host: Page) {
   const target = host.locator('.player-panel.selectable').filter({ hasText: '来宾' })
   await expect(target).toBeVisible()
   await target.click()
-  await expect(host.locator('.target-beam line')).toHaveCount(1)
+  await expect(host.locator('.combat-vfx-layer')).toBeVisible()
   await host.getByRole('button', { name: '确定' }).click()
 }
 

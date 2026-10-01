@@ -21,13 +21,15 @@ export class CombatVFXRuntime {
   private observer: ResizeObserver | null = null
   private raf = 0
   private hidden = document.hidden
-  private reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+  private motionQuery = matchMedia('(prefers-reduced-motion: reduce)')
+  private reduced = this.motionQuery.matches
   private quality: VfxQuality
   private beamIds: string[] = []
   private beamMode: BeamMode = 'normal'
   private beamPoints: Point[] = []
   private source: Point = { x: 0, y: 0 }
   private effects: Effect[] = []
+  private effectPool: Effect[] = []
   private width = 0
   private height = 0
 
@@ -45,7 +47,10 @@ export class CombatVFXRuntime {
     window.addEventListener('resize', this.resize)
     window.addEventListener('scroll', this.resize, { passive: true })
     document.addEventListener('visibilitychange', this.visibility)
+    this.motionQuery.addEventListener?.('change', this.motionChanged)
   }
+
+  private motionChanged = () => { this.reduced = this.motionQuery.matches }
 
   private visibility = () => {
     this.hidden = document.hidden
@@ -92,10 +97,21 @@ export class CombatVFXRuntime {
     const to = this.anchor(targetId)
     if (!to) return
     const from = this.anchor(sourceId) ?? to
-    if (this.effects.length >= 16) this.effects.shift()
+    if (this.effects.length >= 16) {
+      const recycled = this.effects.shift()
+      if (recycled) this.effectPool.push(recycled)
+    }
     const duration = this.reduced ? 120 : kind === 'slash' ? 340 : kind === 'dodge' ? 260 : 300
-    this.effects.push({ kind, from, to, color, start: performance.now(), duration })
+    const effect = this.effectPool.pop() ?? { kind, from, to, color, start: 0, duration }
+    Object.assign(effect, { kind, from, to, color, start: performance.now(), duration })
+    this.effects.push(effect)
     this.ensureFrame()
+  }
+
+  clearEffects() {
+    this.effectPool.push(...this.effects)
+    this.effects.length = 0
+    if (!this.beamPoints.length) { cancelAnimationFrame(this.raf); this.raf = 0; this.ctx?.clearRect(0, 0, this.width, this.height) }
   }
 
   private ensureFrame() {
@@ -127,7 +143,12 @@ export class CombatVFXRuntime {
         ctx.beginPath(); ctx.arc(this.source.x + dx * t, this.source.y + dy * t, 3.5, 0, Math.PI * 2); ctx.fill()
       }
     }
-    this.effects = this.effects.filter((effect) => now - effect.start < effect.duration)
+    for (let index = this.effects.length - 1; index >= 0; index--) {
+      if (now - this.effects[index].start >= this.effects[index].duration) {
+        this.effectPool.push(this.effects[index])
+        this.effects.splice(index, 1)
+      }
+    }
     for (const effect of this.effects) this.drawEffect(ctx, effect, (now - effect.start) / effect.duration)
     ctx.globalAlpha = 1
     if (this.beamPoints.length || this.effects.length) this.ensureFrame()
@@ -168,10 +189,12 @@ export class CombatVFXRuntime {
     cancelAnimationFrame(this.raf)
     this.raf = 0
     this.effects = []
+    this.effectPool = []
     this.observer?.disconnect()
     window.removeEventListener('resize', this.resize)
     window.removeEventListener('scroll', this.resize)
     document.removeEventListener('visibilitychange', this.visibility)
+    this.motionQuery.removeEventListener?.('change', this.motionChanged)
     this.ctx?.clearRect(0, 0, this.width, this.height)
   }
 }

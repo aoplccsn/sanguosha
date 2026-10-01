@@ -69,6 +69,16 @@ describe('CombatVFXRuntime', () => {
     runtime.destroy()
   })
 
+  it('cancels queued effects without leaving an animation loop', () => {
+    const { board, canvas } = boardWithPlayers()
+    const runtime = new CombatVFXRuntime(canvas, board, 'medium')
+    runtime.trigger('slash', 'p1', 'p2')
+    const active = frameId
+    runtime.clearEffects()
+    expect(cancelled).toContain(active)
+    runtime.destroy()
+  })
+
   it('persists the selected quality without accepting unknown values', () => {
     saveVfxQuality('high')
     expect(readVfxQuality()).toBe('high')
