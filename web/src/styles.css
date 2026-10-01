@@ -230,3 +230,4 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
   .god-portrait, .god-portrait img, .god-portrait-embers { animation: none !important; }
 }
 .god-portrait-static { object-fit: cover; object-position: center top; }
+.portrait-button .god-portrait img, .portrait-button .god-portrait-static { width: 240%; height: 240%; max-width: none; left: -70%; top: -20%; }
