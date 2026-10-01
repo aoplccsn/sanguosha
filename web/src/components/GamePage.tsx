@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import type { CardView, GeneralInfo, PendingRequest, PlayerView, PublicEvent, PortraitState } from '../types'
 import { useGame } from '../state/GameContext'
 import { Timer } from './Timer'
+import { CombatVFXLayer } from './CombatVFXLayer'
+import { readVfxQuality, saveVfxQuality, type VfxQuality } from '../vfx/CombatVFXRuntime'
 
 const positions = ['north-west', 'north', 'north-east', 'east']
 const phaseNames: Record<string, string> = {
@@ -140,14 +142,6 @@ function DecisionPrompt({ request, canConfirm, onConfirm, onPass, onBoolean, onO
   </section>
 }
 
-function TargetBeam({ targets, mode }: { targets: number[]; mode: 'attack' | 'normal' | 'protect' }) {
-  const points = [[210, 190], [500, 105], [790, 190], [855, 385]]
-  return <svg className={'target-beam beam-' + mode} viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true">
-    <defs><filter id="beam-glow"><feGaussianBlur stdDeviation="4" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>
-    {targets.map((index) => <g key={index}><line x1="500" y1="610" x2={points[index][0]} y2={points[index][1]} /><circle cx={points[index][0]} cy={points[index][1]} r="10" /></g>)}
-  </svg>
-}
-
 function GeneralDetailPanel({ player, general, onClose }: { player: PlayerView; general?: GeneralInfo; onClose(): void }) {
   return <div className="modal-backdrop" onClick={onClose}><aside className="game-general-detail paper-panel" onClick={(event) => event.stopPropagation()}>
     <button className="modal-close" onClick={onClose}>×</button>
@@ -201,6 +195,7 @@ export function GamePage() {
   const [selectedTargets, setSelectedTargets] = useState<string[]>([])
   const [selectedOption, setSelectedOption] = useState('')
   const [detailPlayer, setDetailPlayer] = useState<PlayerView | null>(null)
+  const [vfxQuality, setVfxQuality] = useState<VfxQuality>(readVfxQuality)
 
   useEffect(() => { setSelectedCards([]); setSelectedTargets([]); setSelectedOption('') }, [request?.request_id])
   if (!projection) return <main className="game-page table-background"><section className="paper-panel loading-panel">正在恢复牌桌……</section></main>
@@ -238,7 +233,6 @@ export function GamePage() {
   const minimum = request?.min_count ?? 1
   const selectionCount = isTargetRequest ? selectedTargets.length : selectedOption ? 1 : selectedCards.length
   const canConfirm = !!request && selectionCount >= minimum && selectionCount <= (request.max_count || 1)
-  const selectedOpponentIndexes = selectedTargets.map((id) => opponents.findIndex((player) => player.player_id === id)).filter((index) => index >= 0)
   const beamMode = request?.request_type === 'respond_with_card' ? 'protect' : selectedOption.includes('slash') || request?.required_definition_id?.includes('slash') ? 'attack' : 'normal'
   const detailGeneral = detailPlayer ? state.generals[detailPlayer.character_id] : undefined
   const latestEvent = state.publicEvents[state.publicEvents.length - 1]
@@ -246,9 +240,9 @@ export function GamePage() {
   const eventKind = String(latestEvent?.kind ?? '')
 
   return <main className="game-page table-background">
-    <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><button onClick={actions.returnHome}>离开牌局</button></div></header>
+    <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><label className="vfx-quality-control">画质 <select aria-label="战斗特效画质" value={vfxQuality} onChange={(event) => { const value = event.target.value as VfxQuality; setVfxQuality(value); saveVfxQuality(value) }}><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></label><button onClick={actions.returnHome}>离开牌局</button></div></header>
     <section className="game-board">
-      <TargetBeam targets={selectedOpponentIndexes} mode={beamMode} />
+      <CombatVFXLayer players={projection.players} targets={selectedTargets} mode={beamMode} event={latestEvent} quality={vfxQuality} />
       {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={positions[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} eventKind={eventTarget === player.player_id ? eventKind : undefined} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
       <EventStage event={state.publicEvents[state.publicEvents.length - 1]} players={projection.players} />
       <SharedCards cards={projection.shared_cards} selected={selectedCards} eligible={eligibleCards} onSelect={toggleCard} />
