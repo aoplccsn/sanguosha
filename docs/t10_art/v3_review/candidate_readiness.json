@@ -1,0 +1,605 @@
+{
+  "total": 57,
+  "packs": {
+    "standard": {
+      "ready_count": 25,
+      "total": 25,
+      "candidates": [
+        {
+          "general_id": "standard_caocao",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_caocao.png",
+          "sha256": "47cc6d5ac76ef6404aca7aed17718b22b833b9e333f7631dacbadf85a2ac256b",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2590774
+        },
+        {
+          "general_id": "standard_liubei",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_liubei.png",
+          "sha256": "e91aa0ed7e1b81ad0a6838083ea9ae3e65f01ece4fcca8211d6f39e077225e7a",
+          "dimensions": [
+            1106,
+            1422
+          ],
+          "bytes": 2925514
+        },
+        {
+          "general_id": "standard_sunquan",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_sunquan.png",
+          "sha256": "b4793264a45c69fcff934b7e1b2ddfd8a350df4147953c7763f65ddd2aa87d13",
+          "dimensions": [
+            1106,
+            1422
+          ],
+          "bytes": 2899347
+        },
+        {
+          "general_id": "standard_lvbu",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_lvbu.png",
+          "sha256": "6f82698321fd9b1d8fa2c6bb866e20b6f5b048e82a5f25b8cd619b2c30887b37",
+          "dimensions": [
+            1106,
+            1422
+          ],
+          "bytes": 3143550
+        },
+        {
+          "general_id": "standard_guanyu",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_guanyu.png",
+          "sha256": "3977155a9e7387b71489e52728df9c022b8a16fcf5dd91aca35f34ee48de7f6c",
+          "dimensions": [
+            1106,
+            1422
+          ],
+          "bytes": 3345754
+        },
+        {
+          "general_id": "standard_simayi",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_simayi.png",
+          "sha256": "9273d8ff640a6f693ae667ec11335e7d9399696c8945e3b86dc5b967f4acfdcd",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3105364
+        },
+        {
+          "general_id": "standard_xiahou_dun",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_xiahou_dun.png",
+          "sha256": "79c8d7470d566e1e7807258206ffd83e9526b0f39f54bfc57a15d0d1992aa888",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3572882
+        },
+        {
+          "general_id": "standard_zhangliao",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_zhangliao.png",
+          "sha256": "7cdfc33ee4ee86e03c05bbc6b35f12c716e14be706133026eb80dfbad866b65b",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3395534
+        },
+        {
+          "general_id": "standard_xuchu",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_xuchu.png",
+          "sha256": "5a6df2b609301ae576315ae0a3d9dbc1e4c972a787f234cfcbf726173bdbc288",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3279572
+        },
+        {
+          "general_id": "standard_guojia",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_guojia.png",
+          "sha256": "e3bf9cec0519cb85852399bac5632c7690db4e951ffbe7d869380b94f58e960e",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 2691979
+        },
+        {
+          "general_id": "standard_zhenji",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_zhenji.png",
+          "sha256": "f2e319010ba1565fc3062191f155b1543e5c6c5b6d6b662e5955531bc5e4ec48",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3263096
+        },
+        {
+          "general_id": "standard_zhangfei",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_zhangfei.png",
+          "sha256": "a86e2baf376cc5b54242fc931065ce7d17c7194ece254564850ef713f1559389",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3366336
+        },
+        {
+          "general_id": "standard_zhugeliang",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_zhugeliang.png",
+          "sha256": "2ab972655ba94cd2e77198935e94283638b79f77cb31793afc73d6101b4ac777",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3128843
+        },
+        {
+          "general_id": "standard_zhaoyun",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_zhaoyun.png",
+          "sha256": "8ca4a4fe58c142079506072e74bfca2e6d5f5887d857d89ec1260f56ccf51b53",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3485679
+        },
+        {
+          "general_id": "standard_machao",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_machao.png",
+          "sha256": "3240bc2ccb2cba806e89f533ba118f7a390a0fc291a47a4708f29b8ab56d077e",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3671524
+        },
+        {
+          "general_id": "standard_huangyueying",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_huangyueying.png",
+          "sha256": "77fd4febf054328c1b0ed084d0596a79b86ae3c92666dc22d0651defab4ee3ae",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3268215
+        },
+        {
+          "general_id": "standard_ganning",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_ganning.png",
+          "sha256": "33cc9065c9eff001162fbe27d8f872cabcf04e35eae65ece300a1b1c991c415e",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3121696
+        },
+        {
+          "general_id": "standard_lvmeng",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_lvmeng.png",
+          "sha256": "15f44c0b2ac18e7e64909e4fd96c9f84d180b14ebc9ac632cc0bc3768e4b52cf",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 2472430
+        },
+        {
+          "general_id": "standard_huanggai",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_huanggai.png",
+          "sha256": "98f85808b00d3581ef7cb466912ccf25b17ee49b9ca69b914a0cdc3d89dd0a84",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3002952
+        },
+        {
+          "general_id": "standard_zhouyu",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_zhouyu.png",
+          "sha256": "173d7b261e06681e9935dc8f108ef2ea514251aa8e40aa5fd8958d129aa1eab7",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3124199
+        },
+        {
+          "general_id": "standard_daqiao",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_daqiao.png",
+          "sha256": "bc0bea106b58e7916cd541a81d2f7c4bab56c3e67c49a44a20d736c069b0ac55",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3093984
+        },
+        {
+          "general_id": "standard_luxun",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_luxun.png",
+          "sha256": "909079ebbb1a80498b035a5149b307749bddbcd1d05322b07bd9f4e8be64f36d",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3195735
+        },
+        {
+          "general_id": "standard_sunshangxiang",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_sunshangxiang.png",
+          "sha256": "3101acb715b6b6c71f3c99949d67d270cf13d9c18e93c95d0092610db4c3639b",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3655630
+        },
+        {
+          "general_id": "standard_huatuo",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_huatuo.png",
+          "sha256": "94d4d27a5503a2079a12d75b41fa5af8839816f1a98e95348475d638f23de147",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 3116505
+        },
+        {
+          "general_id": "standard_diaochan",
+          "candidate_path": "docs/t10_art/v3_candidates/standard_diaochan.png",
+          "sha256": "6d10a5e488545d9cb21e928585fef85b39243f8210c9067163ae0b8b18d01236",
+          "dimensions": [
+            1024,
+            1536
+          ],
+          "bytes": 2239978
+        }
+      ]
+    },
+    "wind": {
+      "ready_count": 8,
+      "total": 8,
+      "candidates": [
+        {
+          "general_id": "wind_xiahou_yuan",
+          "candidate_path": "docs/t10_art/v3_candidates/wind_xiahou_yuan.png",
+          "sha256": "33c333ad31fc0253fa29597a4dfb9fea8653000c9cac56eef91cecb5d20ffc34",
+          "dimensions": [
+            1106,
+            1422
+          ],
+          "bytes": 3192759
+        },
+        {
+          "general_id": "wind_cao_ren",
+          "candidate_path": "docs/t10_art/v3_candidates/wind_cao_ren.png",
+          "sha256": "18d28cd4c8ed9d4deb81295c69133d2aac152615ec5c1b6d4ccd0e2e022b39bd",
+          "dimensions": [
+            1106,
+            1422
+          ],
+          "bytes": 3087552
+        },
+        {
+          "general_id": "wind_huang_zhong",
+          "candidate_path": "docs/t10_art/v3_candidates/wind_huang_zhong.png",
+          "sha256": "faefabe4ef98ed9c10ad839db317e2d4b842b9e0920b4ba9c1eb857e56c6b318",
+          "dimensions": [
+            1106,
+            1422
+          ],
+          "bytes": 3173842
+        },
+        {
+          "general_id": "wind_wei_yan",
+          "candidate_path": "docs/t10_art/v3_candidates/wind_wei_yan.png",
+          "sha256": "5d5fdf9cdfe60e395e2b58fcf58de0c7ceea0868ed18b972a2369f14c4f46bc0",
+          "dimensions": [
+            1106,
+            1422
+          ],
+          "bytes": 3023038
+        },
+        {
+          "general_id": "wind_xiao_qiao",
+          "candidate_path": "docs/t10_art/v3_candidates/wind_xiao_qiao.png",
+          "sha256": "db02ed91ac31ede1ca66fae3721977c3f89b6161f0c2399fe67e7cc5d21eda35",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2736878
+        },
+        {
+          "general_id": "wind_zhou_tai",
+          "candidate_path": "docs/t10_art/v3_candidates/wind_zhou_tai.png",
+          "sha256": "9cf4c87644539eff6174c92bea7ac84d782968e40801bc4c1a59ce48cf0a6675",
+          "dimensions": [
+            1106,
+            1422
+          ],
+          "bytes": 3112644
+        },
+        {
+          "general_id": "wind_zhang_jiao",
+          "candidate_path": "docs/t10_art/v3_candidates/wind_zhang_jiao.png",
+          "sha256": "74d22003e5d36227ae4600c50228344c5ee29220e494027ded20aa45439424d2",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 3254622
+        },
+        {
+          "general_id": "wind_yuji",
+          "candidate_path": "docs/t10_art/v3_candidates/wind_yuji.png",
+          "sha256": "ab59b21ad6480594b696d1659e25b6be765142408301d68a7af9db2040f0ee25",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 3059151
+        }
+      ]
+    },
+    "fire": {
+      "ready_count": 8,
+      "total": 8,
+      "candidates": [
+        {
+          "general_id": "fire_dian_wei",
+          "candidate_path": "docs/t10_art/v3_candidates/fire_dian_wei.png",
+          "sha256": "5be5d819c111ceba416a13fd4d4b85419b775ccacf64792bc9aa87ee197afdb6",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2606664
+        },
+        {
+          "general_id": "fire_xun_yu",
+          "candidate_path": "docs/t10_art/v3_candidates/fire_xun_yu.png",
+          "sha256": "aee145a45f6ada6219be647665cd8ec5d7e9a192c9f25d034e9c6383ed98ef0b",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2526498
+        },
+        {
+          "general_id": "fire_pang_tong",
+          "candidate_path": "docs/t10_art/v3_candidates/fire_pang_tong.png",
+          "sha256": "70b7f6928f80baa163a5af744a8c04949a0f58fff8245495ff37362eeb5d8c7d",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 3078874
+        },
+        {
+          "general_id": "fire_wolong",
+          "candidate_path": "docs/t10_art/v3_candidates/fire_wolong.png",
+          "sha256": "36a3b4ce8749a217dfb227c58e88e6116b34a755a756c8084f2a302200db87b3",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2837895
+        },
+        {
+          "general_id": "fire_taishi_ci",
+          "candidate_path": "docs/t10_art/v3_candidates/fire_taishi_ci.png",
+          "sha256": "da4fcb4269a7a24ab5a4880f14b40b6687181e66e5648d0622ccf7cd2cc9d5ea",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2943579
+        },
+        {
+          "general_id": "fire_pang_de",
+          "candidate_path": "docs/t10_art/v3_candidates/fire_pang_de.png",
+          "sha256": "8552d06535e3855cda107c80ffdc3673338dc2f59b82eea14a3670716ea678c5",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2898814
+        },
+        {
+          "general_id": "fire_yan_liang_wen_chou",
+          "candidate_path": "docs/t10_art/v3_candidates/fire_yan_liang_wen_chou.png",
+          "sha256": "c1b791f084a8abc19823e522278db4350f1e89c717d1feda416c1153905bdb9b",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 3230960
+        },
+        {
+          "general_id": "fire_yuan_shao",
+          "candidate_path": "docs/t10_art/v3_candidates/fire_yuan_shao.png",
+          "sha256": "f98af9642aab3ee2040cab3d366997e90b90157373e7ff9a36c70be17f783e1b",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2663020
+        }
+      ]
+    },
+    "forest": {
+      "ready_count": 8,
+      "total": 8,
+      "candidates": [
+        {
+          "general_id": "forest_caopi",
+          "candidate_path": "docs/t10_art/v3_candidates/forest_caopi.png",
+          "sha256": "58374955a265f142479ff63d15b4a7a63ecd5cb8202240a7d99b326aeda1b4f7",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2771932
+        },
+        {
+          "general_id": "forest_xuhuang",
+          "candidate_path": "docs/t10_art/v3_candidates/forest_xuhuang.png",
+          "sha256": "2218725b94934cf5a89147f25b097c34475c61fa99451afa6d42cc219f666a69",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2927320
+        },
+        {
+          "general_id": "forest_menghuo",
+          "candidate_path": "docs/t10_art/v3_candidates/forest_menghuo.png",
+          "sha256": "d16aa10d165bc85f07d6c32baa0c6675d28d6e280a39114723a8a6aa7e5c0776",
+          "dimensions": [
+            1086,
+            1449
+          ],
+          "bytes": 3174709
+        },
+        {
+          "general_id": "forest_zhurong",
+          "candidate_path": "docs/t10_art/v3_candidates/forest_zhurong.png",
+          "sha256": "5a768e279cfbb8df2c352daba697c97ac569eae88288687c9575f1a1e387c4ac",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2917145
+        },
+        {
+          "general_id": "forest_sunjian",
+          "candidate_path": "docs/t10_art/v3_candidates/forest_sunjian.png",
+          "sha256": "7796d2be6ca94de1bfc2f751e5f0d792625cb3a40bc85d346972773b6018066e",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 3089071
+        },
+        {
+          "general_id": "forest_lusu",
+          "candidate_path": "docs/t10_art/v3_candidates/forest_lusu.png",
+          "sha256": "94687ae56f809ea9a8ed658a4a3960cc8102a74215b4cb9f2d880906d7f2257b",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2429341
+        },
+        {
+          "general_id": "forest_jia_xu",
+          "candidate_path": "docs/t10_art/v3_candidates/forest_jia_xu.png",
+          "sha256": "eff7d2dbbafc53eaf5c76cc2196fcae9333088947555b02741add535297fe093",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2514470
+        },
+        {
+          "general_id": "forest_dong_zhuo",
+          "candidate_path": "docs/t10_art/v3_candidates/forest_dong_zhuo.png",
+          "sha256": "6d9a80a4e01877d8168c3e3c2c4fe6656c33e0d23ffb0893a743b7e5839b5a19",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2464044
+        }
+      ]
+    },
+    "mountain": {
+      "ready_count": 8,
+      "total": 8,
+      "candidates": [
+        {
+          "general_id": "mountain_zhang_he",
+          "candidate_path": "docs/t10_art/v3_candidates/mountain_zhang_he.png",
+          "sha256": "4dd81d04dab7495046621afe0fa952e79db2ec86cfff722a98ee44cd104cfbcd",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 3303267
+        },
+        {
+          "general_id": "mountain_deng_ai",
+          "candidate_path": "docs/t10_art/v3_candidates/mountain_deng_ai.png",
+          "sha256": "dd22eb0e7df4d658c9a25d6f33d8a61ef2f4e1a4d08b50210ee83d77dd6c6387",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 3187885
+        },
+        {
+          "general_id": "mountain_liushan",
+          "candidate_path": "docs/t10_art/v3_candidates/mountain_liushan.png",
+          "sha256": "1180aa24369edd8890f50f5531c0ff3bcabae1756dfa19618aa0d8c1b89751b1",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2543165
+        },
+        {
+          "general_id": "mountain_jiang_wei",
+          "candidate_path": "docs/t10_art/v3_candidates/mountain_jiang_wei.png",
+          "sha256": "3ba0314d1bbf3890eaa7b2b63736927604462c7c4b008fcbadbb0d5ee5acfac7",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 3064520
+        },
+        {
+          "general_id": "mountain_sunce",
+          "candidate_path": "docs/t10_art/v3_candidates/mountain_sunce.png",
+          "sha256": "a5a42c68dc281261cc44abb8049757982c7aac880f1ec3a0956209457695b775",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2962253
+        },
+        {
+          "general_id": "mountain_zhang_zhaozhang",
+          "candidate_path": "docs/t10_art/v3_candidates/mountain_zhang_zhaozhang.png",
+          "sha256": "cfec10780b95794e652baeb235861da2adc1b1e9d3a2a586351ed22a987e90e8",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2815092
+        },
+        {
+          "general_id": "mountain_zuoci",
+          "candidate_path": "docs/t10_art/v3_candidates/mountain_zuoci.png",
+          "sha256": "edf45461f1db82f3382a1e580f6fc76dc9962f0925f459dbc1523927670d7a09",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2836271
+        },
+        {
+          "general_id": "mountain_cai_wenji",
+          "candidate_path": "docs/t10_art/v3_candidates/mountain_cai_wenji.png",
+          "sha256": "cd564486d73fce4f4a5cb6e8d252575df450dc0d9e793b06ceaa5166f85ccdd0",
+          "dimensions": [
+            1086,
+            1448
+          ],
+          "bytes": 2383074
+        }
+      ]
+    }
+  }
+}

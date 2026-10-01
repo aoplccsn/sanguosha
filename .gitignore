@@ -61,3 +61,10 @@ web/vite.config.js
 web/vite.config.d.ts
 
 web/test-results/
+
+# T10 V3 local review and recovery copies; runtime art is in assets/generals
+docs/t10_art/v3_candidates/
+docs/t10_art/v3_source_existing/
+docs/t10_art/v3_preintegration_backup/
+docs/t10_art/v3_review/*.png
+docs/t10_art/v3_review/web_ui_smoke/

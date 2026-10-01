@@ -173,7 +173,12 @@ class PlayerPanel(QPushButton):
         clip = QPainterPath()
         clip.addRoundedRect(art, 3, 3)
         p.setClipPath(clip)
-        p.drawPixmap(art.toRect(), RESOURCES.general_portrait(v.character_id, v.character_name))
+        portrait = RESOURCES.general_portrait(v.character_id, v.character_name)
+        portrait_box = art.toRect()
+        scaled = portrait.scaled(portrait_box.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        crop_x = (scaled.width() - portrait_box.width()) // 2
+        # Keep the face near the upper edge visible in the compact seat plaque.
+        p.drawPixmap(portrait_box, scaled.copy(crop_x, 0, portrait_box.width(), portrait_box.height()))
         if not v.face_up:
             p.fillRect(art, QColor(20, 16, 13, 145))
             p.setPen(QColor("#f0d18c"))
