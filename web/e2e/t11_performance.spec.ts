@@ -52,11 +52,17 @@ test('record synthetic Canvas VFX frame timings at three desktop sizes', async (
       await record('slash', () => runtime.trigger('slash', 'p1', 'p2'))
       await record('dodge', () => runtime.trigger('dodge', 'p2', 'p2'))
       await record('damage', () => runtime.trigger('impact', 'p1', 'p2'))
+      await record('god-lvbu-slash', () => runtime.trigger('god-slash', 'p1', 'p2', '#e04139', 'forest_god_lvbu'))
       await record('simultaneous', () => {
         runtime.setBeam(['p2'], 'attack')
         runtime.trigger('slash', 'p1', 'p2')
         runtime.trigger('dodge', 'p2', 'p2')
         runtime.trigger('impact', 'p1', 'p2')
+      })
+      await record('god-lvbu-simultaneous', () => {
+        runtime.setBeam(['p2'], 'attack')
+        runtime.trigger('god-slash', 'p1', 'p2', '#e04139', 'forest_god_lvbu')
+        runtime.trigger('impact', 'p1', 'p2', '#e04139')
       })
       runtime.destroy()
       board.remove()

@@ -1,7 +1,7 @@
 export type VfxQuality = 'high' | 'medium' | 'low'
 export type BeamMode = 'attack' | 'normal' | 'protect'
 type Point = { x: number; y: number }
-type Effect = { kind: 'slash' | 'dodge' | 'impact'; from: Point; to: Point; start: number; duration: number; color: string }
+type Effect = { kind: 'slash' | 'god-slash' | 'dodge' | 'impact'; from: Point; to: Point; start: number; duration: number; color: string; style?: string }
 
 const QUALITY_KEY = 'sanguosha.vfx.quality.v1'
 export function readVfxQuality(): VfxQuality {
@@ -92,7 +92,7 @@ export class CombatVFXRuntime {
 
   setQuality(value: VfxQuality) { this.quality = value; this.resize() }
 
-  trigger(kind: Effect['kind'], sourceId: string, targetId: string, color = '#f2b858') {
+  trigger(kind: Effect['kind'], sourceId: string, targetId: string, color = '#f2b858', style?: string) {
     if (this.hidden || !this.ctx) return
     const to = this.anchor(targetId)
     if (!to) return
@@ -101,9 +101,9 @@ export class CombatVFXRuntime {
       const recycled = this.effects.shift()
       if (recycled) this.effectPool.push(recycled)
     }
-    const duration = this.reduced ? 120 : kind === 'slash' ? 340 : kind === 'dodge' ? 260 : 300
+    const duration = this.reduced ? 120 : kind === 'god-slash' ? 440 : kind === 'slash' ? 340 : kind === 'dodge' ? 260 : 300
     const effect = this.effectPool.pop() ?? { kind, from, to, color, start: 0, duration }
-    Object.assign(effect, { kind, from, to, color, start: performance.now(), duration })
+    Object.assign(effect, { kind, from, to, color, style, start: performance.now(), duration })
     this.effects.push(effect)
     this.ensureFrame()
   }
@@ -160,11 +160,11 @@ export class CombatVFXRuntime {
     ctx.strokeStyle = color
     ctx.fillStyle = color
     ctx.lineCap = 'round'
-    if (kind === 'slash') {
+    if (kind === 'slash' || kind === 'god-slash') {
       const eased = 1 - Math.pow(1 - Math.min(progress * 1.7, 1), 3)
       const x = from.x + (to.x - from.x) * eased
       const y = from.y + (to.y - from.y) * eased
-      ctx.globalAlpha = .2 * fade; ctx.lineWidth = this.quality === 'low' ? 10 : 22
+      ctx.globalAlpha = .2 * fade; ctx.lineWidth = this.quality === 'low' ? 10 : kind === 'god-slash' ? 28 : 22
       ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(x, y); ctx.stroke()
       ctx.globalAlpha = .95 * fade; ctx.lineWidth = 3
       ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(x, y); ctx.stroke()
@@ -173,6 +173,7 @@ export class CombatVFXRuntime {
         ctx.globalAlpha = Math.max(0, 1 - progress) * .8; ctx.lineWidth = 4
         ctx.beginPath(); ctx.arc(to.x, to.y, radius, -.85, 1.75); ctx.stroke()
       }
+      if (kind === 'god-slash' && progress > .25 && this.quality !== 'low') this.drawGodAccent(ctx, effect, progress)
     } else {
       const radius = kind === 'dodge' ? 14 + progress * 55 : 8 + progress * 65
       ctx.globalAlpha = fade * (kind === 'dodge' ? .75 : .9)
@@ -183,6 +184,53 @@ export class CombatVFXRuntime {
         for (let i = 1; i <= 2; i++) { ctx.beginPath(); ctx.ellipse(to.x + i * 12, to.y - i * 7, radius, radius * .55, -.45, 0, Math.PI * 2); ctx.stroke() }
       }
     }
+  }
+
+  private drawGodAccent(ctx: CanvasRenderingContext2D, effect: Effect, progress: number) {
+    const { to, style, color } = effect
+    const radius = 18 + progress * 45
+    ctx.strokeStyle = color
+    ctx.globalAlpha = (1 - progress) * .8
+    ctx.lineWidth = 2.5
+    ctx.beginPath()
+    if (style === 'wind_god_guanyu') {
+      ctx.arc(to.x, to.y, radius, -2.5, .5)
+    } else if (style === 'wind_god_lvmeng') {
+      ctx.ellipse(to.x, to.y, radius * 1.15, radius * .4, -.3, 0, Math.PI * 2)
+    } else if (style === 'fire_god_zhouyu') {
+      ctx.arc(to.x, to.y, radius, 2.8, 5.9)
+      ctx.moveTo(to.x - radius, to.y + radius * .3); ctx.lineTo(to.x + radius, to.y - radius * .3)
+    } else if (style === 'fire_god_zhugeliang') {
+      for (let i = 0; i < 8; i++) {
+        const a = Math.PI * i / 4
+        ctx.moveTo(to.x + Math.cos(a) * radius * .55, to.y + Math.sin(a) * radius * .55)
+        ctx.lineTo(to.x + Math.cos(a) * radius, to.y + Math.sin(a) * radius)
+      }
+    } else if (style === 'forest_god_caocao') {
+      for (let i = -1; i <= 1; i++) {
+        ctx.moveTo(to.x + i * 9 - radius * .25, to.y - radius)
+        ctx.lineTo(to.x + i * 9 + radius * .25, to.y + radius)
+      }
+    } else if (style === 'forest_god_lvbu') {
+      ctx.moveTo(to.x - radius, to.y - radius)
+      ctx.lineTo(to.x - radius * .3, to.y + radius * .2)
+      ctx.lineTo(to.x + radius * .1, to.y - radius * .4)
+      ctx.lineTo(to.x + radius, to.y + radius)
+      ctx.moveTo(to.x - radius * .65, to.y + radius)
+      ctx.lineTo(to.x + radius * .7, to.y - radius)
+    } else if (style === 'mountain_god_zhaoyun') {
+      ctx.moveTo(to.x - radius * 1.7, to.y + radius * .5)
+      ctx.lineTo(to.x + radius * 1.7, to.y - radius * .5)
+      ctx.moveTo(to.x + radius * .6, to.y - radius * .8)
+      ctx.lineTo(to.x + radius * 1.7, to.y - radius * .5)
+      ctx.lineTo(to.x + radius * .8, to.y + radius * .1)
+    } else if (style === 'mountain_god_simayi') {
+      ctx.ellipse(to.x, to.y, radius * .35, radius * 1.25, .35, 0, Math.PI * 2)
+      ctx.moveTo(to.x + radius * .3, to.y - radius)
+      ctx.lineTo(to.x - radius * .25, to.y)
+      ctx.lineTo(to.x + radius * .2, to.y + radius)
+    }
+    ctx.stroke()
   }
 
   destroy() {

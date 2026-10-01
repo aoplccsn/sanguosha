@@ -1,26 +1,18 @@
 {
   "method": "Chromium headless requestAnimationFrame cadence; synthetic two-player Canvas fixture; medium quality; 1.2 s per scenario. Not a measured pre-change baseline or GPU paint trace.",
-  "measuredAt": "2026-10-01T06:32:45.212Z",
+  "measuredAt": "2026-10-01T06:41:28.543Z",
   "results": {
     "1366x768": [
       {
         "scenario": "idle",
-        "fps": 60.00822030415127,
-        "averageMs": 16.66438356164383,
+        "fps": 60.00500041670139,
+        "averageMs": 16.665277777777778,
         "p95Ms": 16.799999999999955,
-        "worstMs": 16.800000000000068,
+        "worstMs": 16.80000000000001,
         "longTasks": 0
       },
       {
         "scenario": "beam",
-        "fps": 60.00500041670139,
-        "averageMs": 16.665277777777778,
-        "p95Ms": 16.800000000000182,
-        "worstMs": 16.800000000000182,
-        "longTasks": 0
-      },
-      {
-        "scenario": "slash",
         "fps": 59.99999999999999,
         "averageMs": 16.666666666666668,
         "p95Ms": 16.700000000000273,
@@ -28,10 +20,18 @@
         "longTasks": 0
       },
       {
+        "scenario": "slash",
+        "fps": 59.99999999999999,
+        "averageMs": 16.666666666666668,
+        "p95Ms": 16.799999999999727,
+        "worstMs": 16.800000000000182,
+        "longTasks": 0
+      },
+      {
         "scenario": "dodge",
-        "fps": 60.00500041670141,
-        "averageMs": 16.665277777777774,
-        "p95Ms": 16.800000000000182,
+        "fps": 59.99999999999999,
+        "averageMs": 16.666666666666668,
+        "p95Ms": 16.700000000000728,
         "worstMs": 16.800000000000182,
         "longTasks": 0
       },
@@ -44,85 +44,117 @@
         "longTasks": 0
       },
       {
+        "scenario": "god-lvbu-slash",
+        "fps": 59.99999999999999,
+        "averageMs": 16.666666666666668,
+        "p95Ms": 16.699999999999818,
+        "worstMs": 16.799999999999272,
+        "longTasks": 0
+      },
+      {
         "scenario": "simultaneous",
-        "fps": 60.00500041670141,
-        "averageMs": 16.665277777777774,
-        "p95Ms": 16.799999999999272,
+        "fps": 59.99999999999999,
+        "averageMs": 16.666666666666668,
+        "p95Ms": 16.700000000000728,
         "worstMs": 16.800000000000182,
+        "longTasks": 0
+      },
+      {
+        "scenario": "god-lvbu-simultaneous",
+        "fps": 60.005000416701314,
+        "averageMs": 16.6652777777778,
+        "p95Ms": 16.700000000000728,
+        "worstMs": 16.80000000000109,
         "longTasks": 0
       }
     ],
     "1600x900": [
       {
         "scenario": "idle",
-        "fps": 60.00500041670141,
-        "averageMs": 16.665277777777774,
-        "p95Ms": 16.700000000000728,
-        "worstMs": 16.800000000000182,
+        "fps": 59.99999999999999,
+        "averageMs": 16.666666666666668,
+        "p95Ms": 16.799999999999272,
+        "worstMs": 16.80000000000109,
         "longTasks": 0
       },
       {
         "scenario": "beam",
-        "fps": 60.005000416701314,
-        "averageMs": 16.6652777777778,
+        "fps": 60.00500041670141,
+        "averageMs": 16.665277777777774,
         "p95Ms": 16.700000000000728,
-        "worstMs": 16.700000000000728,
+        "worstMs": 16.80000000000109,
         "longTasks": 0
       },
       {
         "scenario": "slash",
         "fps": 59.99999999999999,
         "averageMs": 16.666666666666668,
-        "p95Ms": 16.80000000000109,
+        "p95Ms": 16.799999999999272,
         "worstMs": 16.80000000000109,
         "longTasks": 0
       },
       {
         "scenario": "dodge",
-        "fps": 59.99999999999999,
-        "averageMs": 16.666666666666668,
-        "p95Ms": 16.799999999999272,
+        "fps": 60.00500041670141,
+        "averageMs": 16.665277777777774,
+        "p95Ms": 16.700000000000728,
         "worstMs": 16.80000000000109,
         "longTasks": 0
       },
       {
         "scenario": "damage",
-        "fps": 60.00500041670141,
-        "averageMs": 16.665277777777774,
-        "p95Ms": 16.799999999999272,
+        "fps": 59.99999999999999,
+        "averageMs": 16.666666666666668,
+        "p95Ms": 16.700000000000728,
         "worstMs": 16.80000000000109,
         "longTasks": 0
       },
       {
-        "scenario": "simultaneous",
-        "fps": 60.00500041670141,
-        "averageMs": 16.665277777777774,
+        "scenario": "god-lvbu-slash",
+        "fps": 59.99999999999991,
+        "averageMs": 16.666666666666693,
         "p95Ms": 16.700000000000728,
         "worstMs": 16.799999999999272,
+        "longTasks": 0
+      },
+      {
+        "scenario": "simultaneous",
+        "fps": 60.005000416701314,
+        "averageMs": 16.6652777777778,
+        "p95Ms": 16.700000000000728,
+        "worstMs": 16.799999999999272,
+        "longTasks": 0
+      },
+      {
+        "scenario": "god-lvbu-simultaneous",
+        "fps": 60.005000416701506,
+        "averageMs": 16.665277777777746,
+        "p95Ms": 16.700000000000728,
+        "worstMs": 16.80000000000291,
         "longTasks": 0
       }
     ],
     "1920x1080": [
       {
         "scenario": "idle",
-        "fps": 60.005000416701314,
-        "averageMs": 16.6652777777778,
-        "p95Ms": 16.799999999999272,
-        "worstMs": 16.80000000000109,
+        "fps": 59.99999999999999,
+        "averageMs": 16.666666666666668,
+        "p95Ms": 16.700000000000728,
+        "worstMs": 16.799999999999272,
         "longTasks": 0
       },
       {
         "scenario": "beam",
         "fps": 59.171597633136024,
         "averageMs": 16.90000000000002,
-        "p95Ms": 16.700000000000728,
+        "p95Ms": 16.799999999999272,
         "worstMs": 33.29999999999927,
         "longTasks": 0
       },
       {
         "scenario": "slash",
-        "fps": 59.99999999999999,
-        "averageMs": 16.666666666666668,
+        "fps": 60.005000416701314,
+        "averageMs": 16.6652777777778,
         "p95Ms": 16.700000000000728,
         "worstMs": 16.799999999999272,
         "longTasks": 0
@@ -137,16 +169,32 @@
       },
       {
         "scenario": "damage",
-        "fps": 59.99999999999999,
-        "averageMs": 16.666666666666668,
-        "p95Ms": 16.799999999999272,
+        "fps": 60.005000416701314,
+        "averageMs": 16.6652777777778,
+        "p95Ms": 16.700000000000728,
         "worstMs": 16.799999999999272,
         "longTasks": 0
       },
       {
-        "scenario": "simultaneous",
+        "scenario": "god-lvbu-slash",
         "fps": 60.005000416701506,
         "averageMs": 16.665277777777746,
+        "p95Ms": 16.799999999999272,
+        "worstMs": 16.80000000000291,
+        "longTasks": 0
+      },
+      {
+        "scenario": "simultaneous",
+        "fps": 59.99999999999999,
+        "averageMs": 16.666666666666668,
+        "p95Ms": 16.700000000000728,
+        "worstMs": 16.80000000000291,
+        "longTasks": 0
+      },
+      {
+        "scenario": "god-lvbu-simultaneous",
+        "fps": 60.005000416701314,
+        "averageMs": 16.6652777777778,
         "p95Ms": 16.799999999999272,
         "worstMs": 16.799999999999272,
         "longTasks": 0

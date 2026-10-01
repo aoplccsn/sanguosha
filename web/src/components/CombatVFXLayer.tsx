@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { PublicEvent, PlayerView } from '../types'
 import { CombatVFXRuntime, type BeamMode, type VfxQuality } from '../vfx/CombatVFXRuntime'
+import { godAttackColor } from '../vfx/GodAttackFX'
 
 export function CombatVFXLayer({ players, targets, mode, event, quality }: {
   players: PlayerView[]; targets: string[]; mode: BeamMode; event?: PublicEvent; quality: VfxQuality
@@ -27,14 +28,14 @@ export function CombatVFXLayer({ players, targets, mode, event, quality }: {
     const definition = String(event.definition_id ?? '')
     const source = String(event.source_id ?? '')
     const sourceCharacter = players.find((player) => player.player_id === source)?.character_id
-    const godLuBu = sourceCharacter === 'forest_god_lvbu'
-    const color = godLuBu ? '#d52d27' : definition.includes('fire') ? '#fa7837' : definition.includes('thunder') ? '#9ca9ff' : '#efbd67'
+    const godColor = godAttackColor(sourceCharacter ?? '', definition)
+    const color = godColor ?? (definition.includes('fire') ? '#fa7837' : definition.includes('thunder') ? '#9ca9ff' : '#efbd67')
     if (kind === 'CardUsedEvent' && definition.includes('slash')) {
-      for (const target of Array.isArray(event.target_ids) ? event.target_ids : []) runtime.current?.trigger('slash', source, String(target), color)
+      for (const target of Array.isArray(event.target_ids) ? event.target_ids : []) runtime.current?.trigger(godColor ? 'god-slash' : 'slash', source, String(target), color, sourceCharacter)
     } else if ((kind === 'CardRespondedEvent' || kind === 'VirtualResponseEvent') && definition === 'basic.dodge') {
       runtime.current?.trigger('dodge', source, source, '#8fe9ef')
     } else if (kind === 'DamageDealtEvent') {
-      runtime.current?.trigger('impact', source, String(event.target_id ?? ''), godLuBu ? '#d52d27' : '#ef6a46')
+      runtime.current?.trigger('impact', source, String(event.target_id ?? ''), godColor ?? '#ef6a46')
     }
   }, [event, players])
   return <canvas ref={canvas} className="combat-vfx-layer" aria-hidden="true" />

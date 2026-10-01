@@ -11,3 +11,4 @@ Measured in headless Chromium on 2026-10-01, medium quality, synthetic two-playe
 All p95 frame intervals were 16.7–16.8 ms; the browser reported zero long tasks in these samples. The pre-change FPS baseline was not captured, so this does not prove a numeric improvement. Real device profiling remains necessary, especially for layered god portraits and future cinematic effects.
 
 The previous full-game E2E script is brittle after the T10 roster expansion: its seed no longer guarantees Sun Quan/Zhang Liao and its fixed opening hand sequence. A separate T11 browser smoke test validates the Canvas layer, resize behavior and persisted quality setting in a real game.
+The added God Lu Bu Slash and beam-plus-impact synthetic scenarios also measured 60.0 FPS at all three sizes, with p95 frame intervals of 16.7–16.8 ms and zero reported long tasks. This does not cover layered portrait compositing or a Level 3 cinematic.
