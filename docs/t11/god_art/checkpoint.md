@@ -7,3 +7,4 @@
 - `vfx/god_lvbu_shenfen_crest_v1.png` is an original unintegrated Level 3 texture candidate. It has not been used as a playable skill effect.
 - Independent face, eyes, hair, cloth, weapon and foreground layers are not yet complete. Other seven gods have main portrait candidates only.
 - These images were made with the built-in image generation tool. They are original candidates and are not connected to the playable god pool.
+- A separate halberd extraction was not registered to the portrait canvas; it is retained only as an unintegrated projectile concept in `vfx/god_lvbu_halberd_projectile_v1.png`.
