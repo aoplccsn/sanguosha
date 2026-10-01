@@ -74,9 +74,15 @@ export class CombatVFXRuntime {
     this.width = rect.width
     this.height = rect.height
     const dpr = Math.min(devicePixelRatio || 1, this.quality === 'high' ? 2 : this.quality === 'medium' ? 1.5 : 1)
-    this.canvas.width = Math.round(rect.width * dpr)
-    this.canvas.height = Math.round(rect.height * dpr)
-    this.ctx?.setTransform(dpr, 0, 0, dpr, 0, 0)
+    const backingWidth = Math.round(rect.width * dpr)
+    const backingHeight = Math.round(rect.height * dpr)
+    if (this.canvas.width !== backingWidth) this.canvas.width = backingWidth
+    if (this.canvas.height !== backingHeight) this.canvas.height = backingHeight
+    if (this.ctx) {
+      this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      this.ctx.imageSmoothingEnabled = true
+      this.ctx.imageSmoothingQuality = 'high'
+    }
     this.refreshBeam()
   }
 

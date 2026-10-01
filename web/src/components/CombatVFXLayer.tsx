@@ -52,17 +52,17 @@ export function CombatVFXLayer({ players, targets, mode, events, quality, reduce
       const sourceCharacter = players.find((player) => player.player_id === source)?.character_id
       const godColor = godAttackColor(sourceCharacter ?? '', definition)
       const color = godColor ?? (definition.includes('fire') ? '#fa7837' : definition.includes('thunder') ? '#9ca9ff' : '#efbd67')
-      if (kind === 'CardUsedEvent' && definition.includes('slash')) {
+      if (kind === 'CardUsedEvent' && (definition.includes('slash') || (sourceCharacter === 'forest_god_lvbu' && (definition === 'trick.savage_assault' || definition === 'trick.archery_attack')))) {
         const targetIds = Array.isArray(event.target_ids) ? event.target_ids.map(String) : []
         const luBu = sourceCharacter === 'forest_god_lvbu'
         const empowered = luBu && wuweiReady.current.has(source)
         if (empowered) wuweiReady.current.delete(source)
         if (luBu) setCinematics((queue) => [...queue, {
           id: ++nextCue.current, level: empowered ? 2 : 1,
-          nature: definition.includes('fire') ? 'fire' : definition.includes('thunder') ? 'thunder' : 'normal',
-          title: empowered ? '无前·戟斩' : undefined, targets: locateTargets(targetIds),
+          title: empowered ? '无前·戟斩' : definition === 'trick.savage_assault' ? '南蛮入侵' : definition === 'trick.archery_attack' ? '万箭齐发' : undefined,
+          targets: locateTargets(targetIds),
         }])
-        const launch = () => { for (const target of targetIds) runtime.current?.trigger(godColor ? 'god-slash' : 'slash', source, target, color, sourceCharacter) }
+        const launch = () => { for (const target of targetIds) runtime.current?.trigger(luBu || godColor ? 'god-slash' : 'slash', source, target, luBu ? '#f0c78c' : color, sourceCharacter) }
         if (luBu) {
           const timer = window.setTimeout(() => { launchTimers.current.delete(timer); launch() }, 350)
           launchTimers.current.add(timer)
@@ -73,7 +73,7 @@ export function CombatVFXLayer({ players, targets, mode, events, quality, reduce
         const targetIds = Array.isArray(event.target_ids) ? event.target_ids.map(String) : []
         if (skill === 'wuwei') { wuweiReady.current.add(source); continue }
         setCinematics((queue) => [...queue, {
-          id: ++nextCue.current, level: 3, nature: 'normal',
+          id: ++nextCue.current, level: 3,
           title: '神愤', targets: locateTargets(targetIds),
         }])
       } else if ((kind === 'CardRespondedEvent' || kind === 'VirtualResponseEvent') && definition === 'basic.dodge') {

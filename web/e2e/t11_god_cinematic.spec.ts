@@ -4,27 +4,33 @@ import path from 'node:path'
 
 const review = path.resolve(process.cwd(), '../docs/t11/god_art/review')
 
-test('Lu Bu Slash, fire, thunder and Shenfen show the character in a full-screen attack', async ({ page }) => {
+test('Lu Bu five cards share one standard cinematic and three levels render', async ({ page }) => {
   test.setTimeout(60000)
   fs.mkdirSync(review, { recursive: true })
   await page.setViewportSize({ width: 1280, height: 800 })
   await page.goto('/t11/god-lvbu-preview')
   await expect(page.locator('.god-preview-board .player-panel')).toHaveCount(5)
   await expect(page.locator('.god-preview-board .combat-vfx-layer')).toBeVisible()
-  for (const [button, nature, name] of [
-    ['Normal Slash', 'normal', 'slash'],
-    ['Fire Slash', 'fire', 'fire'],
-    ['Thunder Slash', 'thunder', 'thunder'],
-    ['Level 2', 'normal', 'level2'],
-    ['Shenfen', 'normal', 'shenfen'],
+  for (const [button, name] of [
+    ['Normal Slash', 'slash'],
+    ['Fire Slash', 'fire'],
+    ['Thunder Slash', 'thunder'],
+    ['Savage Assault', 'savage'],
+    ['Archery Attack', 'archery'],
+    ['Level 2', 'level2'],
+    ['Shenfen', 'shenfen'],
   ]) {
     await page.getByRole('button', { name: button }).click()
     const overlay = page.locator('.god-cinematic')
     await expect(overlay).toBeVisible()
-    await expect(overlay).toHaveClass(new RegExp('god-cinematic-' + nature))
+    await expect(overlay).toHaveClass(/god-cinematic-standard/)
+    await expect(overlay.locator('.god-cinematic-blade')).toHaveCount(1)
+    await expect(overlay.locator('.god-cinematic-elemental')).toHaveCount(0)
     await expect(overlay.locator('.god-cinematic-attack-pose')).toBeVisible()
-    if (name === 'shenfen') await expect(overlay.locator('.god-cinematic-targets i')).toHaveCount(4)
+    if (['savage', 'archery', 'shenfen'].includes(name)) await expect(overlay.locator('.god-cinematic-targets i')).toHaveCount(4)
     await page.waitForTimeout(name === 'shenfen' ? 1050 : 460)
+    if (['slash', 'level2', 'shenfen'].includes(name))
+      await page.screenshot({ path: path.join(review, 'god_lvbu_cinematic_' + name + '.png') })
     if (name === 'slash') {
       const drawn = await page.locator('.god-preview-board canvas').evaluate((node) => {
         const canvas = node as HTMLCanvasElement
@@ -33,7 +39,6 @@ test('Lu Bu Slash, fire, thunder and Shenfen show the character in a full-screen
       })
       expect(drawn).toBe(true)
     }
-    await page.screenshot({ path: path.join(review, 'god_lvbu_cinematic_' + name + '.png') })
     if (await overlay.count()) await page.keyboard.press('Escape')
     await expect(overlay).toHaveCount(0)
   }

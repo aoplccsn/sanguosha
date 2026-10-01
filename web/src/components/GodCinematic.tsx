@@ -6,7 +6,6 @@ export type GodCinematicTarget = { id: string; x: number; y: number }
 export type GodCinematicCue = {
   id: number
   level: 1 | 2 | 3
-  nature: 'normal' | 'fire' | 'thunder'
   title?: string
   targets: GodCinematicTarget[]
 }
@@ -34,10 +33,12 @@ export function GodCinematic({ cue, quality, reducedMotion, onComplete }: {
     window.addEventListener('keydown', skip)
     return () => { window.clearTimeout(timer); window.removeEventListener('keydown', skip) }
   }, [cue.id, cue.level, onComplete, reduced, captureHold])
-  const imageExtension = quality === 'high' ? '.png' : '_medium.webp'
+  // The 960 px medium sheets visibly upscale in a 1080p cinematic.
+  // Full resolution source art is shared by High and Medium; Low alone uses compact sheets.
+  const imageExtension = quality === 'low' ? '_medium.webp' : '.png'
   const asset = (name: string) => '/assets/gods/forest_god_lvbu/' + name + imageExtension
   const css = { '--cinematic-ms': (reduced ? 240 : duration[cue.level]) + 'ms' } as CSSProperties
-  return <div className={'god-cinematic god-cinematic-level-' + cue.level + ' god-cinematic-' + cue.nature + ' god-cinematic-' + quality + (reduced ? ' god-cinematic-reduced' : '')}
+  return <div className={'god-cinematic god-cinematic-level-' + cue.level + ' god-cinematic-standard god-cinematic-' + quality + (reduced ? ' god-cinematic-reduced' : '')}
     style={css} role="status" aria-label={'神吕布' + (cue.title ?? '攻击') + '演出'}>
     <div className="god-cinematic-dim" />
     <div className="god-cinematic-stage">
@@ -45,12 +46,17 @@ export function GodCinematic({ cue, quality, reducedMotion, onComplete }: {
       {cue.level === 3 && <img className="god-cinematic-crest" src={asset('shenfen')} alt="" />}
       {cue.level >= 2 && <div className="god-cinematic-war-spirit" aria-hidden="true"><img src={asset('attack')} alt="" /></div>}
       <div className="god-cinematic-figure">
-        <div className="god-cinematic-ready">{quality === 'high' ? <GodPortrait characterId="forest_god_lvbu" name="神吕布" quality="high" mode="idle" cue={cue.id} /> : <img className="god-cinematic-ready-image" src={asset('body')} alt="" />}</div>
+        <div className="god-cinematic-ready">{quality === 'high' ? <GodPortrait characterId="forest_god_lvbu" name="神吕布" quality="high" mode="idle" cue={cue.id} reducedMotion={reduced} /> : <img className="god-cinematic-ready-image" src={asset('body')} alt="" />}</div>
         <img className="god-cinematic-attack-pose" src={asset('attack')} alt="" />
       </div>
-      <div className="god-cinematic-slash" />
-      {cue.nature !== 'normal' && <img className="god-cinematic-elemental" src={asset(cue.nature + '_slash')} alt="" />}
-      <div className="god-cinematic-name"><span>神吕布</span><strong>{cue.title ?? (cue.nature === 'fire' ? '火杀' : cue.nature === 'thunder' ? '雷杀' : '杀')}</strong></div>
+      <svg className="god-cinematic-blade" viewBox="0 0 1600 700" preserveAspectRatio="none" aria-hidden="true">
+        <path className="god-cinematic-blade-outer" d="M 95 590 L 420 360 L 960 158 L 1510 90" />
+        <path className="god-cinematic-blade-core" d="M 95 590 L 420 360 L 960 158 L 1510 90" />
+        <path className="god-cinematic-blade-edge" d="M 95 590 L 420 360 L 960 158 L 1510 90" />
+      </svg>
+      <div className="god-cinematic-impact"><i /><i /><i /><i /><i /></div>
+      {cue.level === 3 && <div className="god-cinematic-shockwave" aria-hidden="true" />}
+      <div className="god-cinematic-name"><span>神吕布</span><strong>{cue.title ?? (cue.level === 3 ? '神愤' : '无双戟击')}</strong></div>
     </div>
     <div className="god-cinematic-targets" aria-hidden="true">{cue.targets.map((target, index) =>
       <i key={target.id} data-target-id={target.id} style={{ left: target.x + '%', top: target.y + '%',

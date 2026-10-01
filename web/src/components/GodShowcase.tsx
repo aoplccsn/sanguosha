@@ -54,10 +54,11 @@ export function GodShowcase() {
   }
   const playAttack = (definition: string, level: 1 | 2 = 1) => {
     portrait('attack')
-    setBeamTargets(['p2'])
-    if (level === 2) emit([{ kind: 'GodSkillEvent', source_id: 'p1', target_ids: ['p2'], skill_id: 'wuwei', level: 2 }])
-    emit([{ kind: 'CardUsedEvent', source_id: 'p1', target_ids: ['p2'], definition_id: definition }])
-    later(() => impact('p2'), level === 2 ? 850 : 620)
+    const targets = definition.startsWith('trick.') ? targetArt.map((target) => target.id) : ['p2']
+    setBeamTargets(targets)
+    if (level === 2) emit([{ kind: 'GodSkillEvent', source_id: 'p1', target_ids: targets, skill_id: 'wuwei', level: 2 }])
+    emit([{ kind: 'CardUsedEvent', source_id: 'p1', target_ids: targets, definition_id: definition }])
+    targets.forEach((id, index) => later(() => impact(id), (level === 2 ? 850 : 620) + index * 90))
     later(() => setBeamTargets([]), level === 2 ? 1250 : 1000)
   }
   const shenfen = () => {
@@ -83,7 +84,7 @@ export function GodShowcase() {
 
   return <main className={'god-showcase god-presentation-preview' + (reducedMotion ? ' god-preview-reduced' : '')}>
     <header>
-      <p>T11.2 · 本地开发视觉验收</p>
+      <p>T11.3 · 神吕布本地开发视觉验收</p>
       <h1>God Lü Bu Presentation Preview</h1>
       <small>使用当前游戏的 GodPortrait、CombatVFXLayer、GodCinematic 运行组件；按钮只注入视觉事件，不结算伤害或修改规则。</small>
     </header>
@@ -94,6 +95,8 @@ export function GodShowcase() {
       <button onClick={() => playAttack('basic.slash')}>Normal Slash</button>
       <button onClick={() => playAttack('basic.fire_slash')}>Fire Slash</button>
       <button onClick={() => playAttack('basic.thunder_slash')}>Thunder Slash</button>
+      <button onClick={() => playAttack('trick.savage_assault')}>Savage Assault</button>
+      <button onClick={() => playAttack('trick.archery_attack')}>Archery Attack</button>
       <button onClick={() => playAttack('basic.slash', 2)}>Level 2</button>
       <button onClick={shenfen}>Shenfen</button>
       <button onClick={() => portrait('hit')}>Hit</button>
@@ -123,6 +126,6 @@ export function GodShowcase() {
         <CombatVFXLayer key={stageKey} players={players} targets={beamTargets} mode="attack" events={events} quality={quality} reducedMotion={reducedMotion} />
       </section>
     </div>
-    <p className="god-preview-note">按 Esc 或右上角按钮可跳过全屏演出。Reset 清空视觉事件；此页不进入正式选将池。</p>
+    <p className="god-preview-note">五类牌共用同一套 Level 1 戟击；群攻对四名目标逐个反馈。按 Esc 可跳过。Reset 清空视觉事件；此页不进入正式选将池。</p>
   </main>
 }
