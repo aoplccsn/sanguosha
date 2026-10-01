@@ -44,7 +44,7 @@ MYTH_CHARACTERS = (
 )
 
 _NAMES = {
-    'shensu':'神速','jushou':'据守','liegong':'烈弓','kuanggu':'狂骨','tianxiang':'天香','hongyan':'红颜','qu':'不屈','leiji':'雷击','guidao':'鬼道','huangtian':'黄天','guhuo':'蛊惑',
+    'kuangbao':'狂暴','wumou':'无谋','wuwei':'无前','shenfen':'神愤','shensu':'神速','jushou':'据守','liegong':'烈弓','kuanggu':'狂骨','tianxiang':'天香','hongyan':'红颜','qu':'不屈','leiji':'雷击','guidao':'鬼道','huangtian':'黄天','guhuo':'蛊惑',
 }
 MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(s, _NAMES.get(s, s), '经典神话再临规则摘要。', SkillType.ACTIVE) for c in MYTH_CHARACTERS for s in c.skill_ids)
 MYTH_40_GENERAL_POOL = MYTH_CHARACTERS

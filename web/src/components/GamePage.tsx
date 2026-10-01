@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CardView, GeneralInfo, PendingRequest, PlayerView, PublicEvent, PortraitState } from '../types'
 import { useGame } from '../state/GameContext'
 import { Timer } from './Timer'
@@ -36,7 +36,7 @@ export function portraitState(player: PlayerView, selected: boolean, selectable:
     judgment: false }
 }
 
-function PlayerPanel({ player, position, selected, selectable, responding, eventKind, eventCue, vfxQuality, onSelect, onDetail }: {
+function PlayerPanel({ player, position, selected, selectable, responding, eventKind, eventCue, godCue, vfxQuality, onSelect, onDetail }: {
   player: PlayerView
   position: string
   selected: boolean
@@ -44,12 +44,13 @@ function PlayerPanel({ player, position, selected, selectable, responding, event
   responding: boolean
   eventKind?: string
   eventCue?: PublicEvent
+  godCue?: { mode: GodPortraitMode; id: number }
   vfxQuality: VfxQuality
   onSelect(): void
   onDetail(): void
 }) {
   const portrait = portraitState(player, selected, selectable, responding)
-  const godMode: GodPortraitMode = portrait.dying ? 'dying' : eventKind?.includes('Damage') ? 'hit' : eventKind?.includes('CardUsed') ? 'attack' : 'idle'
+  const godMode: GodPortraitMode = godCue?.mode ?? (portrait.dying ? 'dying' : eventKind?.includes('Damage') ? 'hit' : eventKind?.includes('CardUsed') ? 'attack' : 'idle')
   const classes = 'player-panel player-' + position
     + (player.active ? ' active' : '')
     + (selected ? ' selected-target' : '')
@@ -63,7 +64,7 @@ function PlayerPanel({ player, position, selected, selectable, responding, event
     + (!player.alive ? ' dead' : '')
   return <article data-player-id={player.player_id} className={classes} onClick={selectable ? onSelect : undefined}>
     <button className="portrait-button" onClick={(event) => { event.stopPropagation(); onDetail() }} aria-label={'查看' + player.character_name + '详情'}>
-      {player.character_id === 'forest_god_lvbu' ? <GodPortrait characterId={player.character_id} name={player.character_name} quality={vfxQuality} mode={godMode} cue={eventCue} /> : <img src={portraitFor(player)} onError={(event) => { event.currentTarget.src = '/assets/generals/default_general.png' }} alt={player.character_name} />}
+      {player.character_id === 'forest_god_lvbu' ? <GodPortrait characterId={player.character_id} name={player.character_name} quality={vfxQuality} mode={godMode} cue={godCue?.id ?? eventCue} /> : <img src={portraitFor(player)} onError={(event) => { event.currentTarget.src = '/assets/generals/default_general.png' }} alt={player.character_name} />}
       {portrait.faceDown && <span className="face-down-mark">翻面</span>}
       {player.chained && <span className="chain-mark">锁</span>}
     </button>
@@ -180,12 +181,12 @@ function EventStage({ event, players }: { event?: PublicEvent; players: PlayerVi
   return <div className={'event-stage event-' + kind.toLowerCase()}><strong>{text}</strong></div>
 }
 
-export function ResultOverlay({ result, identity, onHome, onReplay }: { result: string; identity?: string; onHome(): void; onReplay(): void }) {
+export function ResultOverlay({ result, identity, godVictory = false, quality = 'medium', onHome, onReplay }: { result: string; identity?: string; godVictory?: boolean; quality?: VfxQuality; onHome(): void; onReplay(): void }) {
   const won = identity === '主公' || identity === '忠臣'
     ? result.includes('主公') || result.includes('忠臣')
     : identity === '反贼' ? result.includes('反贼') : identity === '内奸' ? result.includes('内奸') : false
   return <div className={'result-overlay ' + (won ? 'victory' : 'defeat')} role="dialog" aria-label="对局结果"><div>
-    <p className="eyebrow">对局终了 · {identity ?? '身份未知'}</p><h1>{won ? '胜利' : '败北'}</h1><p>{result || '本局已经结束'}</p>
+    <p className="eyebrow">对局终了 · {identity ?? '身份未知'}</p>{won && godVictory && <div className="god-result-portrait"><GodPortrait characterId="forest_god_lvbu" name="神吕布胜利" quality={quality} mode="victory" /></div>}<h1>{won ? '胜利' : '败北'}</h1><p>{result || '本局已经结束'}</p>
     <button className="brush-button primary" onClick={onReplay}>再来一局</button>
     <button className="brush-button subtle" onClick={onHome}>返回首页</button>
   </div></div>
@@ -200,6 +201,49 @@ export function GamePage() {
   const [selectedOption, setSelectedOption] = useState('')
   const [detailPlayer, setDetailPlayer] = useState<PlayerView | null>(null)
   const [vfxQuality, setVfxQuality] = useState<VfxQuality>(readVfxQuality)
+  const [godCues, setGodCues] = useState<Record<string, { mode: GodPortraitMode; id: number }>>({})
+  const seenGodEvents = useRef(new Set<string>())
+  const entryShown = useRef(new Set<string>())
+  const nextGodCue = useRef(0)
+
+  useEffect(() => {
+    if (!projection) return
+    for (const player of projection.players) {
+      if (player.character_id === 'forest_god_lvbu' && !entryShown.current.has(player.player_id)) {
+        entryShown.current.add(player.player_id)
+        setGodCues((current) => ({ ...current, [player.player_id]: { mode: 'entry', id: ++nextGodCue.current } }))
+      }
+    }
+  }, [projection])
+  useEffect(() => {
+    if (!projection) return
+    for (const [index, event] of state.publicEvents.entries()) {
+      const identity = String(event.event_id ?? index + ':' + event.kind)
+      if (seenGodEvents.current.has(identity)) continue
+      seenGodEvents.current.add(identity)
+      const kind = String(event.kind)
+      let playerId = ''
+      let mode: GodPortraitMode | null = null
+      if (kind === 'DamageDealtEvent' || kind === 'PlayerDiedEvent') {
+        playerId = String(event.target_id ?? '')
+        mode = kind === 'PlayerDiedEvent' || (projection.players.find((item) => item.player_id === playerId)?.hp ?? 1) <= 0 ? 'dying' : 'hit'
+      } else if (kind === 'CardUsedEvent' && String(event.definition_id ?? '').includes('slash')) {
+        playerId = String(event.source_id ?? '')
+        mode = 'attack'
+      } else if (kind === 'GodSkillEvent' && String(event.skill_id ?? '') === 'shenfen') {
+        playerId = String(event.source_id ?? '')
+        mode = 'attack'
+      } else if (kind === 'GameEndedEvent') {
+        const winnerIds = Array.isArray(event.winner_ids) ? event.winner_ids.map(String) : []
+        playerId = winnerIds.find((id) => projection.players.some((item) => item.player_id === id && item.character_id === 'forest_god_lvbu')) ?? ''
+        mode = playerId ? 'victory' : null
+      }
+      if (mode && projection.players.some((item) => item.player_id === playerId && item.character_id === 'forest_god_lvbu')) {
+        setGodCues((current) => ({ ...current, [playerId]: { mode, id: ++nextGodCue.current } }))
+      }
+    }
+    if (seenGodEvents.current.size > 200) seenGodEvents.current = new Set(state.publicEvents.map((event, index) => String(event.event_id ?? index + ':' + event.kind)))
+  }, [state.publicEvents, projection])
 
   useEffect(() => { setSelectedCards([]); setSelectedTargets([]); setSelectedOption('') }, [request?.request_id])
   if (!projection) return <main className="game-page table-background"><section className="paper-panel loading-panel">正在恢复牌桌……</section></main>
@@ -247,20 +291,20 @@ export function GamePage() {
   return <main className="game-page table-background">
     <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><label className="vfx-quality-control">画质 <select aria-label="战斗特效画质" value={vfxQuality} onChange={(event) => { const value = event.target.value as VfxQuality; setVfxQuality(value); saveVfxQuality(value) }}><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></label><button onClick={actions.returnHome}>离开牌局</button></div></header>
     <section className="game-board">
-      <CombatVFXLayer players={projection.players} targets={selectedTargets} mode={beamMode} event={latestEvent} quality={vfxQuality} />
-      {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={positions[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} eventKind={eventTarget === player.player_id || eventSource === player.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} eventCue={latestEvent} vfxQuality={vfxQuality} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
+      <CombatVFXLayer players={projection.players} targets={selectedTargets} mode={beamMode} events={state.publicEvents} quality={vfxQuality} />
+      {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={positions[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} eventKind={eventTarget === player.player_id || eventSource === player.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} eventCue={latestEvent} godCue={godCues[player.player_id]} vfxQuality={vfxQuality} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
       <EventStage event={state.publicEvents[state.publicEvents.length - 1]} players={projection.players} />
       <SharedCards cards={projection.shared_cards} selected={selectedCards} eligible={eligibleCards} onSelect={toggleCard} />
       {projection.discard_top && <div className="discard-top"><HandCard card={projection.discard_top} selected={false} eligible={false} onClick={() => undefined} /></div>}
       <div className="self-area">
         {request && <DecisionPrompt request={request} canConfirm={canConfirm} onConfirm={confirm} onPass={() => actions.submitDecision(request.request_id, { pass: true })} onBoolean={(value) => actions.submitDecision(request.request_id, value)} onOption={(value) => actions.submitDecision(request.request_id, value)} />}
-        <PlayerPanel player={self} position="self" selected={false} selectable={false} responding={request?.player_id === self.player_id} eventKind={eventTarget === self.player_id || eventSource === self.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} eventCue={latestEvent} vfxQuality={vfxQuality} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
+        <PlayerPanel player={self} position="self" selected={false} selectable={false} responding={request?.player_id === self.player_id} eventKind={eventTarget === self.player_id || eventSource === self.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} eventCue={latestEvent} godCue={godCues[self.player_id]} vfxQuality={vfxQuality} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
         <SkillBar player={self} general={state.generals[self.character_id]} request={request} chosen={selectedOption} onChoose={setSelectedOption} />
         <div className="hand" aria-label="手牌区">{projection.hand.map((card) => <HandCard key={card.card_id} card={card} selected={selectedCards.includes(card.card_id)} eligible={cardEligible(card.card_id)} onClick={() => toggleCard(card.card_id)} />)}</div>
       </div>
     </section>
     {state.error && <div className="game-error">{state.error}<button onClick={actions.clearError}>×</button></div>}
     {detailPlayer && <GeneralDetailPanel player={detailPlayer} general={detailGeneral} quality={vfxQuality} onClose={() => setDetailPlayer(null)} />}
-    {(state.result || projection.result) && <ResultOverlay result={state.result || projection.result || ''} identity={self.identity_label} onHome={actions.returnHome} onReplay={() => { actions.returnHome(); actions.createRoom(state.playerName || '玩家', true) }} />}
+    {(state.result || projection.result) && <ResultOverlay result={state.result || projection.result || ''} identity={self.identity_label} godVictory={self.character_id === 'forest_god_lvbu'} quality={vfxQuality} onHome={actions.returnHome} onReplay={() => { actions.returnHome(); actions.createRoom(state.playerName || '玩家', true) }} />}
   </main>
 }

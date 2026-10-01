@@ -11,7 +11,7 @@ from typing import Callable
 from sanguosha.content.characters.standard import PLAYABLE_57_GENERAL_POOL
 from sanguosha.decisions.ai import AIDecisionProvider
 from sanguosha.engine.requests import Decision, PendingRequest, RequestType
-from sanguosha.engine.events import (CardUsedEvent, CardRespondedEvent, TrickTargetsDeclaredEvent,
+from sanguosha.engine.events import (Event, CardUsedEvent, CardRespondedEvent, TrickTargetsDeclaredEvent,
                                      VirtualResponseEvent, DamageDealtEvent, HpRecoveredEvent,
                                      PlayerDiedEvent, GameEndedEvent)
 from sanguosha.engine.rng import PythonRandomSource
@@ -90,11 +90,13 @@ class NetworkDecisionProvider:
 class MultiplayerRoom:
     """One game state lives here; a send callback receives only viewer-safe messages."""
 
-    def __init__(self, *, seed: int | None = None, timeout_seconds: float = TIMEOUT_SECONDS):
+    def __init__(self, *, seed: int | None = None, timeout_seconds: float = TIMEOUT_SECONDS,
+                 review_god_lvbu: bool = False):
         self.seats = {pid: Seat(pid) for pid in SEATS}
         self.phase = RoomPhase.OPEN
         self.host_id: PlayerId | None = None
         self.seed = seed
+        self.review_god_lvbu = review_god_lvbu
         self.timeout_seconds = timeout_seconds
         self.pregame: Pregame | None = None
         self.draft_requests: dict[PlayerId, PendingRequest] = {}
@@ -183,7 +185,12 @@ class MultiplayerRoom:
         assert self.pregame is not None
         remaining = [c.id for c in PLAYABLE_57_GENERAL_POOL if c.id not in self.pregame.generals.values()]
         self.pregame.rng.shuffle(remaining)
-        candidates = tuple(map(str, remaining[:10]))
+        candidates = tuple(map(str, remaining[:9])) + (('forest_god_lvbu',) if self.review_god_lvbu and pid == self.host_id else (str(remaining[9]),))
+        first_choices = {request.choices[0] for other_pid, request in self.draft_requests.items() if other_pid != pid}
+        if candidates[0] in first_choices:
+            alternative = next((choice for choice in candidates[1:] if choice not in first_choices), None)
+            if alternative is not None:
+                candidates = (alternative,) + tuple(choice for choice in candidates if choice != alternative)
         old = self.draft_requests.get(pid)
         serial = int(old.request_id.rsplit(":", 1)[-1]) + 1 if old else 1
         request = PendingRequest(f"draft:{pid}:{serial}", pid, RequestType.CHOOSE_OPTION,
@@ -240,9 +247,31 @@ class MultiplayerRoom:
                 self.pregame.generals[seat.player_id] = selected
         self.pregame.stage = SetupStage.COMPLETE
         self.session = GameSession.new_game(military=True, setup=self.pregame)
+        if self.review_god_lvbu:
+            self._prepare_lvbu_review_match()
         self.phase = RoomPhase.IN_GAME
         self._broadcast_lobby()
         self.pump()
+
+    def _prepare_lvbu_review_match(self) -> None:
+        """Prepare cards and rage only in the explicit local review fixture."""
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        state = self.session.state
+        actor = self.host_id
+        if state.players[actor].character_id != 'forest_god_lvbu':
+            return
+        state.players[actor].marks['rage'] = 8
+        hand = state.zones[ZoneRef(ZoneType.HAND, actor)].card_ids
+        for definition in ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash'):
+            if any(state.cards[cid].definition_id == definition for cid in hand):
+                continue
+            for ref, zone in state.zones.items():
+                if ref.zone_type is ZoneType.DRAW_PILE:
+                    found = next((cid for cid in zone.card_ids if state.cards[cid].definition_id == definition), None)
+                    if found is not None:
+                        zone.card_ids.remove(found)
+                        hand.append(found)
+                    break
 
     def pump(self, max_steps: int | None = None) -> None:
         if self.session is None:
@@ -349,8 +378,12 @@ class MultiplayerRoom:
 
     def _public_event(self, event) -> dict | None:
         """Allowlist semantic facts; card instance IDs and hidden moves are excluded."""
-        result = {"kind": type(event).__name__}
-        if isinstance(event, (CardUsedEvent, TrickTargetsDeclaredEvent)):
+        result = {"kind": type(event).__name__, "event_id": event.event_id}
+        if isinstance(event, Event) and event.event_type in ('skill_wuwei', 'skill_shenfen'):
+            result.update(kind='GodSkillEvent', source_id=str(event.source_id),
+                          target_ids=list(map(str, event.target_ids)),
+                          skill_id=str(event.metadata['skill_id']), level=int(event.metadata['level']))
+        elif isinstance(event, (CardUsedEvent, TrickTargetsDeclaredEvent)):
             result.update(source_id=str(event.player_id), target_ids=list(map(str, event.target_ids)))
             definition_id = (event.virtual_definition_id or str(self.session.state.cards[event.card_id].definition_id)
                              if isinstance(event, CardUsedEvent) else event.definition_id)

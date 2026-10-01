@@ -1,0 +1,40 @@
+{
+  "records": [
+    {
+      "size": {
+        "width": 1366,
+        "height": 768
+      },
+      "scene": "god_lvbu_idle",
+      "frames": 96,
+      "fps": 60,
+      "medianFrameMs": 16.7,
+      "p95FrameMs": 16.7,
+      "longFrames": 0
+    },
+    {
+      "size": {
+        "width": 1600,
+        "height": 900
+      },
+      "scene": "god_lvbu_idle",
+      "frames": 93,
+      "fps": 58,
+      "medianFrameMs": 16.7,
+      "p95FrameMs": 16.8,
+      "longFrames": 0
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "scene": "god_lvbu_idle",
+      "frames": 91,
+      "fps": 57,
+      "medianFrameMs": 16.7,
+      "p95FrameMs": 33.2,
+      "longFrames": 0
+    }
+  ]
+}

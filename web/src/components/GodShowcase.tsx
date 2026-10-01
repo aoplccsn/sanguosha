@@ -12,7 +12,10 @@ export function GodShowcase() {
   const showAttack = (level: 1 | 2 | 3, nature: 'normal' | 'fire' | 'thunder', title?: string) => {
     setMode('attack')
     setCue((current) => current + 1)
-    setCinematic({ id: Date.now(), level, nature, title, targetCount: level === 3 ? 4 : 1 })
+    setCinematic({ id: Date.now(), level, nature, title, targets: (level === 3 ? [
+      { id: 'p2', x: 76, y: 24 }, { id: 'p3', x: 87, y: 44 },
+      { id: 'p4', x: 73, y: 70 }, { id: 'p5', x: 92, y: 77 },
+    ] : [{ id: 'p2', x: 80, y: 49 }]) })
   }
   return <main className="god-showcase">
     <header><p>T11 · 神吕布动态验收预览</p><h1>神吕布</h1><small>仅供美术与动作验收，不进入可玩武将池</small></header>

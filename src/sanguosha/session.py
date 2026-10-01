@@ -115,6 +115,9 @@ class GameSession:
             status=GameStatus.ACTIVE,
             revealed_identities={setup.lord_id} if setup is not None else {ids[0]},
         )
+        for player in players.values():
+            if player.character_id == 'forest_god_lvbu':
+                player.marks['rage'] = 2
         events = EventRecorder()
         events.record(Event("game-start", "game-start"))
         if military:
@@ -168,6 +171,7 @@ class GameSession:
                     YijiAction, YijiHandler, JieyinAction, JieyinHandler,
                     QixiUse, QixiUseHandler, GuoseUse, GuoseUseHandler, FanjianAction, FanjianHandler,
                     LijianAction, LijianHandler, LongdanUse, LongdanUseHandler)
+                from sanguosha.engine.god_lvbu import WuqianAction, WuqianHandler, ShenfenAction, ShenfenHandler
                 slash_rule = card_rules.get('basic.slash')
                 provider = SkillPlayOptions(provider, skills, slash_rule)
                 registry.register(RendeAction, RendeHandler(moves))
@@ -190,6 +194,8 @@ class GameSession:
                 registry.register(FanjianAction, FanjianHandler(skills, moves, rng))
                 registry.register(LijianAction, LijianHandler(skills, moves, events))
                 registry.register(LongdanUse, LongdanUseHandler(skills, moves, events, slash_rule))
+                registry.register(WuqianAction, WuqianHandler(events))
+                registry.register(ShenfenAction, ShenfenHandler(events, moves))
             registry.register(UseSpear,UseSpearHandler(provider,moves))
             bodies.register(Phase.PLAY,PlayPhaseBody(provider))
             if skills is not None:

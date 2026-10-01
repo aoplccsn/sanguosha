@@ -48,16 +48,17 @@ export function GodPortrait({ characterId, name, quality, mode = 'idle', cue }: 
     setVisibleMode(mode)
     setMotionKey((current) => current + 1)
     if (mode === 'idle' || mode === 'dying') return
-    const timer = window.setTimeout(() => setVisibleMode('idle'), mode === 'entry' || mode === 'victory' ? 1200 : 740)
+    const timer = window.setTimeout(() => setVisibleMode('idle'), mode === 'entry' ? 1450 : mode === 'victory' ? 1600 : mode === 'attack' ? 900 : 480)
     return () => window.clearTimeout(timer)
   }, [mode, cue])
   const blink = useNaturalBlink(characterId === 'forest_god_lvbu' && quality !== 'low' && visibleMode === 'idle')
   if (characterId !== 'forest_god_lvbu') return null
-  if (quality === 'low') return <img className="god-portrait-static" src={LU_BU + 'portrait.png'} alt={name} />
-  const body = LU_BU + 'body.png'
+  if (quality === 'low') return <img className="god-portrait-static" src={LU_BU + (visibleMode === 'hit' || visibleMode === 'dying' || visibleMode === 'victory' ? visibleMode + '.png' : 'portrait.png')} alt={name} />
+  const imageName = (name: string) => LU_BU + name + (quality === 'medium' ? '_medium.webp' : '.png')
+  const body = imageName('body')
   const clip = (part: string) => 'url(#' + ids + '-' + part + ')'
   return <div className={'god-portrait god-portrait-' + visibleMode + ' god-portrait-' + quality} role="img" aria-label={name}>
-    <img className="god-portrait-background" src={LU_BU + 'background.png'} alt="" />
+    <img className="god-portrait-background" src={imageName('background')} alt="" />
     <svg key={motionKey} className="god-portrait-puppet" viewBox="0 0 1024 1536" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
         <mask id={ids + '-body-mask'} maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1536">
@@ -72,9 +73,9 @@ export function GodPortrait({ characterId, name, quality, mode = 'idle', cue }: 
       </defs>
       <g className="god-part god-hair-back" clipPath={clip('hair-back')}><image href={body} width="1024" height="1536" /></g>
       <g className="god-part god-cloth-back" clipPath={clip('cloth-back')}><image href={body} width="1024" height="1536" /></g>
-      <g className="god-part god-body" mask={clip('body-mask')}><image href={body} width="1024" height="1536" /></g>
+      <g className="god-part god-body"><image href={body} width="1024" height="1536" /></g>
       <g className="god-part god-head" clipPath={clip('head')}><image href={body} width="1024" height="1536" />
-        <image className={'god-blink-frame' + (blink ? ' visible' : '')} href={LU_BU + 'blink.png'} width="1024" height="1536" clipPath={clip('eyes')} />
+        <image className={'god-blink-frame' + (blink ? ' visible' : '')} href={imageName('blink')} width="1024" height="1536" clipPath={clip('eyes')} />
       </g>
       <g className="god-part god-hair-front" clipPath={clip('hair-front')}><image href={body} width="1024" height="1536" /></g>
       <g className="god-strike-limb">
@@ -83,6 +84,8 @@ export function GodPortrait({ characterId, name, quality, mode = 'idle', cue }: 
       </g>
       <g className="god-part god-cloth-front" clipPath={clip('cloth-front')}><image href={body} width="1024" height="1536" /></g>
     </svg>
+    {(['attack', 'hit', 'dying', 'victory'] as const).includes(visibleMode as 'attack' | 'hit' | 'dying' | 'victory') &&
+      <img className="god-portrait-pose" src={imageName(visibleMode === 'attack' ? 'attack_close' : visibleMode)} alt="" />}
     {quality === 'high' && <span className="god-portrait-embers" aria-hidden="true" />}
   </div>
 }

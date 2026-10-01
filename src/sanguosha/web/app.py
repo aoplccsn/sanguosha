@@ -191,7 +191,8 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                             if len(recent) >= config.room_creations_per_minute:
                                 raise RoomError("room creation rate limit reached")
                             recent.append(now)
-                        managed = manager.create(seed=message.get("seed"))
+                        review_god_lvbu = message.get('review_god_lvbu') is True and not config.production
+                        managed = manager.create(seed=message.get("seed"), review_god_lvbu=review_god_lvbu)
                         connection.managed = managed
                         connection.send_nowait(envelope("ROOM_CREATED", room_code=managed.code))
                         pid, token = managed.game.join(message.get("name"), connection.send_nowait)

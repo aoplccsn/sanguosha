@@ -1,0 +1,28 @@
+{
+  "records": [
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "scene": "slash",
+      "frames": 26,
+      "fps": 29,
+      "medianFrameMs": 33.3,
+      "p95FrameMs": 50,
+      "longFrames": 5
+    },
+    {
+      "size": {
+        "width": 1920,
+        "height": 1080
+      },
+      "scene": "shenfen",
+      "frames": 48,
+      "fps": 23,
+      "medianFrameMs": 50,
+      "p95FrameMs": 66.7,
+      "longFrames": 30
+    }
+  ]
+}

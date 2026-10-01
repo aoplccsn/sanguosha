@@ -254,6 +254,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const fields = {
         name: clean,
         single_player: singlePlayer,
+        review_god_lvbu: new URLSearchParams(window.location.search).get('t11_lvbu') === '1',
         ...(Number.isInteger(requestedSeed) && requestedSeed >= 0 ? { seed: requestedSeed } : {}),
       }
       if (__CLOUDFLARE_ROOMS__) {

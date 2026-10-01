@@ -49,6 +49,9 @@ class TurnActionHandler:
             state.current_phase = None
             state.turn_number += 1
             self.recorder.record(TurnStartedEvent(f"{action.action_id}:start", action.player_id, state.turn_number))
+            if state.players[action.player_id].character_id == 'forest_god_lvbu' and not state.players[action.player_id].face_up:
+                state.players[action.player_id].face_up = True
+                frame.cursor = len(action.phases)
             frame.step_index = 1
             return StepResult.continue_()
         # A player who dies during a phase must not continue the rest of the turn.
@@ -56,6 +59,10 @@ class TurnActionHandler:
                 or not state.players[action.player_id].is_alive):
             if state.ruleset_id == 'classic-military':
                 state.players[action.player_id].marks.pop('wine', None)
+                if state.players[action.player_id].character_id == 'forest_god_lvbu':
+                    state.players[action.player_id].marks.pop('wuwei', None)
+                    for other in state.players.values():
+                        other.marks.pop('wuwei_target_' + action.player_id, None)
             state.current_phase = None
             self.recorder.record(TurnEndedEvent(f"{action.action_id}:end", action.player_id, state.turn_number))
             return StepResult.complete()

@@ -30,6 +30,7 @@ def snapshot_room(room: MultiplayerRoom) -> bytes:
         "phase": room.phase.value,
         "host_id": str(room.host_id) if room.host_id is not None else None,
         "seed": room.seed,
+        "review_god_lvbu": room.review_god_lvbu,
         "timeout_seconds": room.timeout_seconds,
         "seats": [{
             "player_id": str(seat.player_id),
@@ -56,7 +57,8 @@ def restore_room(blob: bytes) -> MultiplayerRoom:
     version = data.get("schema_version")
     if version != ROOM_SNAPSHOT_SCHEMA_VERSION:
         raise ValueError(f"incompatible RoomSnapshot schema: {version!r}")
-    room = MultiplayerRoom(seed=data["seed"], timeout_seconds=data["timeout_seconds"])
+    room = MultiplayerRoom(seed=data["seed"], timeout_seconds=data["timeout_seconds"],
+                           review_god_lvbu=data.get("review_god_lvbu", False))
     room.phase = RoomPhase(data["phase"])
     room.host_id = PlayerId(data["host_id"]) if data["host_id"] is not None else None
     for seat_data in data["seats"]:

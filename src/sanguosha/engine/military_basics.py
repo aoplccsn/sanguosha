@@ -75,6 +75,8 @@ class MilitaryDamageHandler(DamageActionHandler):
             self.recorder.record(BeforeDamageEvent(action.action_id + ':before', action.source_id, action.target_id, amount))
             target.hp -= amount
             self.recorder.record(DamageDealtEvent(action.action_id + ':dealt', action.source_id, action.target_id, amount, target.hp))
+            from .god_lvbu import grant_rage_on_damage
+            grant_rage_on_damage(state, action.source_id, action.target_id, amount)
             self.recorder.record(AfterDamageEvent(action.action_id + ':after', action.source_id, action.target_id, amount))
             self.recorder.record(Event(action.action_id + ':nature', 'damage_nature', action.target_id,
                                        metadata={'nature': action.nature.value, 'amount': amount}))
@@ -264,7 +266,9 @@ class MilitarySlashHandler:
         definition=virtual.definition_id if virtual else card.definition_id
         color=virtual.color if virtual else card.color
         nature = DamageNature.FIRE if frame.local.get('fan_fire') else {'basic.fire_slash': DamageNature.FIRE, 'basic.thunder_slash': DamageNature.THUNDER}.get(definition, DamageNature.NORMAL)
-        ignore = weapon == 'equipment.weapon.qinggang_sword'
+        ignore = weapon == 'equipment.weapon.qinggang_sword' or bool(
+            state.players[action.source_id].marks.get('wuwei') and
+            state.players[action.target_id].marks.get('wuwei_target_' + action.source_id))
         if frame.step_index == 0:
             if 'amount' not in frame.local:
                 wine = action.wine_bonus if isinstance(action,MilitaryStrike) else state.players[action.source_id].marks.pop('wine', 0)

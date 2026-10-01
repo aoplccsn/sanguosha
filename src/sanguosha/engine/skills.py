@@ -26,6 +26,8 @@ class SkillRegistry:
 
     def has(self, state, player_id, skill_id):
         character = self.characters.get(state.players[player_id].character_id)
+        if skill_id == 'wushuang' and state.players[player_id].marks.get('wuwei', 0):
+            return True
         if character is None or skill_id not in character.skill_ids:
             return False
         skill = self.skills[skill_id]
@@ -1027,6 +1029,11 @@ class SkillPlayOptions:
             extra.append('skill:zhiheng')
         if self.skills.has(state,pid,'kurou'):
             extra.append('skill:kurou')
+        if self.skills.has(state,pid,'wuwei') and state.players[pid].marks.get('rage', 0) >= 2:
+            extra.append('skill:wuwei')
+        if (self.skills.has(state,pid,'shenfen') and state.players[pid].marks.get('rage', 0) >= 6
+                and not state.play_usage.count('skill.shenfen')):
+            extra.append('skill:shenfen')
         if (self.skills.has(state,pid,'qingnang') and not state.play_usage.count('skill.qingnang') and hand
                 and any(p.is_alive and p.hp < p.max_hp for p in state.players.values())):
             extra.append('skill:qingnang')
@@ -1074,6 +1081,12 @@ class SkillPlayOptions:
             return JijiangUse(aid+':jijiang',pid)
         if option == 'skill:kurou':
             return KurouAction(aid+':kurou', pid)
+        if option == 'skill:wuwei':
+            from .god_lvbu import WuqianAction
+            return WuqianAction(aid+':wuwei', pid)
+        if option == 'skill:shenfen':
+            from .god_lvbu import ShenfenAction
+            return ShenfenAction(aid+':shenfen', pid)
         if option == 'skill:qingnang':
             return QingnangAction(aid+':qingnang', pid)
         if option == 'skill:jieyin':
