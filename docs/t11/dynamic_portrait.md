@@ -1,7 +1,7 @@
-# T11 god portrait runtime checkpoint
+# T11 神将动态立绘进度
 
-The Web client now has a shared `GodPortrait` component and a Lu Bu prototype wired to player panels and general details. High and Medium render a moving battlefield plate plus alpha-enabled character plate; High adds a lightweight ember layer. Low uses the static source portrait. CSS transform and opacity handle idle breathing, entry, attack, hit and victory cues; dying darkens the composition. Reduced-motion disables repeating motion.
+**DYNAMIC PORTRAIT = PARTIAL**。正式验收条目见 [acceptance.md](acceptance.md)。两层图片、周围粒子、整张人物 PNG 的轻微位移均不构成最终完成。
 
-The prototype is intentionally incomplete. The character cutout has environmental color around some edges; the face, eyes, hair, cape, weapon and foreground are not separate assets. Blink, independent cloth/hair motion and genuine skill cinematics are not implemented. Because god skill logic remains disabled, this does not open Lu Bu or any other god for normal play. Attack cues use only public event semantics and do not modify rule outcomes.
+神吕布现有以原图坐标注册的分区角色原型：body、head、eyes、hair_back、hair_front、arm、weapon、cloth_back、cloth_front，并有 background 与前景火星。胸肩呼吸、头部微动、前后发和披风独立摆动、武器待机微动及自然眨眼已接入 High/Medium；Low 使用静态图。攻击有独立前压挥戟姿态帧；入场、受击、濒死和胜利有基础动作。`/t11/god-lvbu-preview` 仅供美术验收，神将仍不可玩。
 
-Next art pass: clean the body cutout, generate/paint isolated face/eye, hair, cloth and weapon layers, then replace the CSS prototype with a layer manifest consumed by the shared portrait runtime. Validate visual registration at portrait and detail sizes before enabling a character.
+当前层是蒙版切片，边界与遮挡尚需进一步修画。待机人物和小头像的肉眼效果、前景视差、动画节奏，以及 entry/hit/dying/victory 都未完成最终验收。其他七神将暂不扩展动态。

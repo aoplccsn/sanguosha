@@ -1,5 +1,7 @@
-# T11 God attack VFX checkpoint
+# T11 神将攻击演出进度
 
-The Web combat layer now maps ordinary Slash, Fire Slash and Thunder Slash public events to god-specific accent colors and lightweight impact geometry. The eight disabled gods have distinct motifs: Guan Yu arc, Lu Meng ink ellipse, Zhou Yu fire string, Zhuge Liang starburst, Cao Cao war echoes, Lu Bu split halberd scar, Zhao Yun spear line, and Sima Yi rift. Lu Bu uses separate normal, fire and thunder colors. These effects have fixed lifetimes, share the central Canvas loop and do not change engine state.
+**GOD ATTACK FX = PARTIAL**。正式验收条目见 [acceptance.md](acceptance.md)。仅从头像发射 beam、projectile 或粒子轨迹不能通过。
 
-This is Level 1 groundwork only. Level 2 enhanced attacks and Level 3 core skills, including Shenfen, are not implemented. The current public event projection has no god skill cue, and the gods remain disabled until their rule logic is complete. Portrait attack pose coordination, launch textures, cinematic skip controls and target reaction sequencing remain open.
+神吕布现有先切入人物、切换到前压挥戟姿态、再出现跨屏攻击及 impact 的独立全屏样片：普通杀、火杀、雷杀约 0.9 秒，二级约 1.2 秒，神愤三级约 2.1 秒。神愤使用原创赤黑冲击素材。全部可以按钮或 Esc 跳过；系统减少动态效果时采用约 240 毫秒的静态反馈。演出不写入规则引擎状态。
+
+一级杀牌通过公开 CardUsedEvent 在牌局中触发，Canvas 攻击轨迹晚于人物切入。二、三级仍只有预览入口；神将技能规则未开放，也没有可用的公开技能 cue。多目标受击和神愤的战魂/戟影需要深化。其他七神将仅有前期轻量轨迹，未获得最终人物攻击演出。

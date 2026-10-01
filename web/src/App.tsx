@@ -2,11 +2,13 @@ import { HomePage } from './components/HomePage'
 import { LobbyPage } from './components/LobbyPage'
 import { PregamePage } from './components/PregamePage'
 import { GamePage } from './components/GamePage'
+import { GodShowcase } from './components/GodShowcase'
 import { useGame } from './state/GameContext'
 import './styles.css'
 
 export default function App() {
   const { state, actions } = useGame()
+  if (window.location.pathname === '/t11/god-lvbu-preview') return <GodShowcase />
   const page = state.page === 'lobby' ? <LobbyPage />
     : state.page === 'pregame' ? <PregamePage />
       : state.page === 'game' ? <GamePage /> : <HomePage />
