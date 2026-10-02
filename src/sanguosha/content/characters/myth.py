@@ -109,7 +109,11 @@ MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(
     s, _NAMES.get(s, _FOREST_NAMES.get(s, s)),
     _WIND_DESCRIPTIONS.get(s, _FOREST_DESCRIPTIONS.get(s, '经典神话再临规则摘要。')),
     _WIND_TYPES.get(s, _FOREST_TYPES.get(s, SkillType.ACTIVE)),
-    {'lord': True} if s in ('huangtian', 'songwei', 'baonue') else {})
+    {key: True for key, enabled in (
+        ('lord', s in ('huangtian', 'songwei', 'baonue', 'ruoyu', 'zhiba')),
+        ('awakening', s in ('zaoxian', 'zhiji', 'hunzi', 'ruoyu', 'baoyin')),
+        ('limited', s in ('luanwu', 'niepan', 'yeyan')),
+    ) if enabled})
     for c in MYTH_CHARACTERS for s in c.skill_ids) + (
         SkillDefinition('jixi', '急袭', '你可以将一张田当【顺手牵羊】使用。', SkillType.VIEW_AS),
     )

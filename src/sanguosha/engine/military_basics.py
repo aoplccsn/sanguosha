@@ -50,6 +50,7 @@ class MilitaryDamageAction(DamageAction):
     ignore_armor: bool = False
     material_card_ids: tuple[str, ...] = ()
     redirected: bool = False
+    card_kind: str = ''
 
 class MilitaryDamageHandler(DamageActionHandler):
     """The first recipient completes dying before the chain cursor advances."""
@@ -107,7 +108,9 @@ class MilitaryDamageHandler(DamageActionHandler):
             self.recorder.record(DamageDealtEvent(action.action_id + ':dealt', action.source_id, action.target_id, amount, target.hp))
             from .god_lvbu import grant_rage_on_damage
             grant_rage_on_damage(state, action.source_id, action.target_id, amount)
-            self.recorder.record(AfterDamageEvent(action.action_id + ':after', action.source_id, action.target_id, amount))
+            self.recorder.record(AfterDamageEvent(action.action_id + ':after', action.source_id,
+                                                  action.target_id, amount,
+                                                  getattr(action, 'card_kind', '')))
             self.recorder.record(Event(action.action_id + ':nature', 'damage_nature', action.target_id,
                                        metadata={'nature': action.nature.value, 'amount': amount}))
             source = action.source_id
@@ -167,7 +170,8 @@ class MilitaryDamageHandler(DamageActionHandler):
                 action.source_id, redirected_to, action.amount, action.nature, action.card_id,
                 action.related_action_id, getattr(action, 'propagated', False),
                 getattr(action, 'ignore_armor', False),
-                getattr(action, 'material_card_ids', ()), True))
+                getattr(action, 'material_card_ids', ()), True,
+                getattr(action, 'card_kind', '')))
         if frame.step_index == 12:
             redirected_to = frame.local['tianxiang_target']
             if (state.status is not GameStatus.FINISHED and state.players[redirected_to].is_alive):
@@ -629,7 +633,8 @@ class MilitarySlashHandler:
             frame.step_index = 4
             return StepResult.push(MilitaryDamageAction(action.action_id + ':damage', action.source_id,
                 action.target_id, int(frame.local['amount']), nature, action.card_id, action.action_id,
-                ignore_armor=ignore, material_card_ids=virtual.material_ids if virtual else ()))
+                ignore_armor=ignore, material_card_ids=virtual.material_ids if virtual else (),
+                card_kind='slash'))
         if frame.step_index == 26:
             frame.child_result = 'dodged'
             frame.step_index = 3
@@ -676,7 +681,8 @@ class MilitarySlashHandler:
                     # Avoid offering the same optional replacement again.
                     frame.step_index=4
                     return StepResult.push(MilitaryDamageAction(action.action_id+':damage',action.source_id,
-                        action.target_id,int(frame.local['amount']),nature,action.card_id,action.action_id))
+                        action.target_id,int(frame.local['amount']),nature,action.card_id,action.action_id,
+                        card_kind='slash'))
             else:
                 frame.step_index=16
             if yes:
@@ -700,7 +706,7 @@ class MilitarySlashHandler:
                 self.moves.move(state,CardMove(action.action_id+':axe:'+cid,(cid,),ref,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,action.source_id))
             frame.decision=None
             frame.step_index=4
-            return StepResult.push(MilitaryDamageAction(action.action_id+':forced-damage',action.source_id,action.target_id,int(frame.local['amount']),nature,action.card_id,action.action_id))
+            return StepResult.push(MilitaryDamageAction(action.action_id+':forced-damage',action.source_id,action.target_id,int(frame.local['amount']),nature,action.card_id,action.action_id,card_kind='slash'))
         if frame.step_index==14:
             if frame.child_result is None:
                 return StepResult.complete('avoided')

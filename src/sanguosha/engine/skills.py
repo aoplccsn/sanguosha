@@ -30,20 +30,42 @@ class SkillRegistry:
         if skill_id in player.disabled_skills:
             return False
         character = self.characters.get(player.character_id)
+        transformed = (skill_id == player.transformation_skill
+                       and player.active_transformation in player.transformation_pool
+                       and player.character_id == 'mountain_zuoci'
+                       and 'huashen' not in player.disabled_skills)
         if skill_id == 'wushuang' and state.players[player_id].marks.get('wuwei', 0):
             return True
         if character is None or (skill_id not in character.skill_ids
-                                 and skill_id not in player.granted_skills):
+                                 and skill_id not in player.granted_skills
+                                 and not transformed):
             return False
         skill = self.skills[skill_id]
         return not skill.metadata.get('lord') or state.players[player_id].identity is Identity.LORD
 
+    def suppress_character_skills(self, state, player_id):
+        player = state.players[player_id]
+        character = self.characters.get(player.character_id)
+        if character is None:
+            return ()
+        skills = tuple(dict.fromkeys((*character.skill_ids, *player.granted_skills,
+                                      *((player.transformation_skill,)
+                                        if player.transformation_skill else ()))))
+        player.disabled_skills.update(skills)
+        return skills
+
     def faction(self, state, player_id):
-        character = self.characters.get(state.players[player_id].character_id)
+        player = state.players[player_id]
+        transformed = (player.active_transformation if player.character_id == 'mountain_zuoci'
+                       and 'huashen' not in player.disabled_skills else None)
+        character = self.characters.get(transformed or player.character_id)
         return character.kingdom if character else None
 
     def gender(self, state, player_id):
-        character = self.characters.get(state.players[player_id].character_id)
+        player = state.players[player_id]
+        transformed = (player.active_transformation if player.character_id == 'mountain_zuoci'
+                       and 'huashen' not in player.disabled_skills else None)
+        character = self.characters.get(transformed or player.character_id)
         return character.gender if character else None
 
     def allies(self, state, player_id, faction):

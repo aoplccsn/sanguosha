@@ -50,6 +50,10 @@ class DeathActionHandler:
         if frame.step_index == 0:
             victim.status = PlayerStatus.DEAD
             state.revealed_identities.add(action.target_id)
+            if (self.skills is not None and self.skills.has(state, action.target_id, 'duanchang')
+                    and action.killer_id is not None and action.killer_id != action.target_id
+                    and state.players[action.killer_id].is_alive):
+                self.skills.suppress_character_skills(state, action.killer_id)
             frame.step_index = 3
             if (self.skills is not None and any(
                     pid != action.target_id and state.players[pid].is_alive

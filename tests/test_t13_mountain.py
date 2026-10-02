@@ -6,13 +6,15 @@ import pytest
 from sanguosha.engine.mountain import (QiaobianAction, TuntianAction, ZaoxianAction,
                                        JixiUse, FangquanSkipAction, FangquanEndAction, RuoyuAction,
                                        TiaoxinAction, ZhijiAction, JiangAction, HunziAction,
-                                       ZhibaAction, ZhijianAction,
+                                       ZhibaAction, ZhijianAction, HuashenAction, XinshengAction,
+                                       BeigeAction,
                                        field_zone)
 from sanguosha.engine.turn_order import next_scheduled_player, queue_extra_turn
 from sanguosha.engine.card_moves import CardMove, CardMoveReason
 from sanguosha.engine.events import CardUsedEvent
 from sanguosha.engine.events import phase_rule_discards
 from sanguosha.engine.phases import PhaseAction
+from sanguosha.engine.death import DeathAction
 from sanguosha.engine.distance import DistanceSystem
 from sanguosha.engine.military_basics import MilitaryStrike
 from sanguosha.engine.requests import Decision
@@ -21,6 +23,7 @@ from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.model.usage import PlayUsageState
 from sanguosha.session import GameSession
 from sanguosha.snapshot import restore_session, snapshot_session
+from sanguosha.projection import project_for_human
 from test_t6_military_basics import put
 
 
@@ -471,3 +474,88 @@ def test_guzheng_uses_exact_discard_phase_cards():
     assert selected[0] in state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
     assert set(selected[1:]) <= set(state.cards_in(ZoneRef(ZoneType.HAND, 'p1')))
     assert unrelated in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+
+
+def test_zuoci_transformation_pool_is_private_and_reconnect_safe():
+    session = GameSession.new_game(military=True, five_generals=True, seed=13)
+    state = session.state
+    player = state.players['p1']
+    player.character_id = 'mountain_zuoci'
+    session.engine.start_action(HuashenAction('huashen-select', 'p1'))
+    request = session.engine.pending_request
+    assert len(player.transformation_pool) == 2
+    choice = request.choices[0]
+    session.engine.submit_decision(Decision(request.request_id, 'p1', choice))
+    general_id, skill_id = choice.rsplit(':', 1)
+    assert player.active_transformation == general_id
+    assert session.skills.has(state, 'p1', skill_id)
+    assert project_for_human(state, session.definitions, 'p1', session.character_names).players[0].transformation_pool
+    assert not project_for_human(state, session.definitions, 'p2', session.character_names).players[0].transformation_pool
+    restored = restore_session(snapshot_session(session))
+    assert restored.state.players['p1'].transformation_pool == player.transformation_pool
+    assert restored.skills.has(restored.state, 'p1', skill_id)
+
+
+def test_xinsheng_draws_new_unique_general_cards():
+    session = GameSession.new_game(military=True, five_generals=True, seed=19)
+    player = session.state.players['p1']
+    player.character_id = 'mountain_zuoci'
+    session.engine.start_action(HuashenAction('huashen-first', 'p1'))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', request.choices[0]))
+    initial = set(player.transformation_pool)
+    session.engine.start_action(XinshengAction('xinsheng', 'p1', 2))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    assert len(player.transformation_pool) == 4
+    assert len(set(player.transformation_pool)) == 4
+    assert not initial.isdisjoint(player.transformation_pool)
+
+
+def test_beige_uses_final_judgment_suit_for_recovery():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_cai_wenji'
+    state.players['p2'].hp -= 1
+    top = state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    state.cards[top] = replace(state.cards[top], suit=Suit.HEART)
+    cost = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    hp_before = state.players['p2'].hp
+    session.engine.start_action(BeigeAction('beige-heart', 'p1', 'p2', 'p3'))
+    for choice in (True, cost):
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, 'p1', choice))
+    assert state.players['p2'].hp == hp_before + 1
+    assert cost in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+
+
+def test_duanchang_suppresses_killers_character_skills_through_reconnect():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p2'].character_id = 'mountain_cai_wenji'
+    state.players['p3'].character_id = 'zhaoyun'
+    assert session.skills.has(state, 'p3', 'longdan')
+    session.engine.start_action(DeathAction('duanchang-death', 'p2', 'p3'))
+    assert not session.skills.has(state, 'p3', 'longdan')
+    assert 'longdan' in state.players['p3'].disabled_skills
+    restored = restore_session(snapshot_session(session))
+    assert not restored.skills.has(restored.state, 'p3', 'longdan')
+
+
+def test_slash_damage_offers_beige_to_cai_wenji():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_cai_wenji'
+    slash = put(session, 'basic.slash', 'p3')
+    session.engine.start_action(MilitaryStrike('beige-trigger-slash', 'p3', 'p2', slash,
+                                               'basic.dodge'))
+    seen_beige = False
+    for _ in range(30):
+        request = session.engine.pending_request
+        if request is None:
+            break
+        if request.player_id == 'p1' and '悲歌' in request.prompt:
+            seen_beige = True
+        session.engine.submit_decision(Decision(request.request_id, request.player_id,
+                                                request.timeout_value()))
+    assert seen_beige

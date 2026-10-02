@@ -62,6 +62,8 @@ class PlayerView:
     face_up: bool = True
     marks: dict[str, int] | None = None
     special_piles: dict[str, tuple[CardView, ...]] = field(default_factory=dict)
+    active_transformation: str = ""
+    transformation_pool: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -112,7 +114,7 @@ def project_for_human(
             len(state.cards_in(ZoneRef(ZoneType.HAND, pid))),
             player.is_alive, state.current_player_id == pid,
             str(player.character_id) if player.character_id in skills.characters else GENERAL_PRESENTATION.get(str(player.character_id), (str(player.character_id), "群"))[0],
-            {"wei":"魏", "shu":"蜀", "wu":"吴", "qun":"群"}[skills.characters[player.character_id].kingdom.value]
+            {"wei":"魏", "shu":"蜀", "wu":"吴", "qun":"群"}[skills.faction(state, pid).value]
             if player.character_id in skills.characters else GENERAL_PRESENTATION.get(str(player.character_id), ("", "群"))[1], player.chained,
             tuple(card_view(cid, ref.equipment_slot.value) for ref,z in state.zones.items() if ref.player_id==pid and ref.zone_type is ZoneType.EQUIPMENT for cid in z.card_ids),
             tuple(card_view(cid, judgment=True) for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid))),
@@ -124,7 +126,8 @@ def project_for_human(
                   (" · 主公技" if skills.skills[sid].metadata.get('lord') else "") +
                   (" · 已失去" if sid in player.disabled_skills else "")
                   for sid in dict.fromkeys((*skills.characters[player.character_id].skill_ids,
-                                            *player.granted_skills)))
+                                            *player.granted_skills,
+                                            *((player.transformation_skill,) if player.transformation_skill else ()))))
             if player.character_id in skills.characters else (),
             player.face_up, dict(player.marks),
             {ref.special_key: tuple(
@@ -135,6 +138,8 @@ def project_for_human(
                 for cid in zone.card_ids)
              for ref, zone in state.zones.items()
              if ref.zone_type is ZoneType.SPECIAL and ref.player_id == pid and zone.card_ids},
+            player.active_transformation or "",
+            tuple(player.transformation_pool) if pid == human_id else (),
         ))
     hand = tuple(card_view(card_id) for card_id in state.cards_in(ZoneRef(ZoneType.HAND, human_id)))
     discard = state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))

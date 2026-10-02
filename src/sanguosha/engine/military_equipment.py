@@ -41,11 +41,24 @@ class MilitaryMoveService(CardMoveService):
         new_events = self.recorder.events[cursor:]
         state.metadata['reaction_event_cursor'] = len(self.recorder.events)
         if self.skills is not None:
-            from .events import CardUsedEvent
+            from .events import CardUsedEvent, AfterDamageEvent
             from .suits import effective_color
             from sanguosha.model.enums import Color
-            from .mountain import JiangAction
+            from .mountain import JiangAction, XinshengAction, BeigeAction
             for event in new_events:
+                if isinstance(event, AfterDamageEvent):
+                    if (state.players[event.target_id].is_alive
+                            and self.skills.has(state, event.target_id, 'xinsheng')):
+                        self.reactions.append(XinshengAction(
+                            event.event_id + ':xinsheng', event.target_id, event.amount))
+                    if event.card_kind == 'slash':
+                        for pid in state.seat_order:
+                            if (pid != event.target_id and state.players[pid].is_alive
+                                    and self.skills.has(state, pid, 'beige')):
+                                self.reactions.append(BeigeAction(
+                                    event.event_id + ':beige:' + pid, pid,
+                                    event.target_id, event.source_id))
+                    continue
                 if not isinstance(event, CardUsedEvent):
                     continue
                 definition = event.virtual_definition_id or state.cards[event.card_id].definition_id
@@ -58,7 +71,8 @@ class MilitaryMoveService(CardMoveService):
                         self.reactions.append(JiangAction(event.event_id + ':jiang:' + pid, pid))
         while self.reactions:
             action=self.reactions.pop(0)
-            target=getattr(action,'target_id',getattr(action,'player_id',None))
+            target=getattr(action,'target_id',getattr(action,'player_id',
+                           getattr(action,'owner_id',None)))
             if target is not None and state.players[target].is_alive:
                 return action
         return None

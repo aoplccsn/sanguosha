@@ -133,6 +133,7 @@ class AfterDamageEvent:
     source_id: PlayerId | None
     target_id: PlayerId
     amount: int
+    card_kind: str = ""
 
 
 @dataclass(frozen=True, slots=True)

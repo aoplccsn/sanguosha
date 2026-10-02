@@ -14,6 +14,8 @@ from .distance import DistanceSystem
 from .card_use import UseCardAction
 from .forced_cards import discardable_cards
 from .pindian import PindianAction
+from .forced_cards import ForcedDiscardAction
+from .turnover import TurnoverAction
 from .judgment import JudgmentAction, JudgmentPattern
 from .suits import effective_suit
 from .hp import GainMaxHpAction, LoseMaxHpAction
@@ -675,6 +677,179 @@ class GuzhengHandler:
                 action.action_id + ':gain-rest', remaining, discard_ref,
                 ZoneRef(ZoneType.HAND, action.owner_id),
                 CardMoveReason.SYSTEM, action.owner_id, action.action_id))
+        return StepResult.complete()
+
+
+def transformable_skills(skills, general_id):
+    general = skills.characters[general_id]
+    return tuple(skill_id for skill_id in general.skill_ids
+                 if skill_id in skills.skills
+                 and skills.skills[skill_id].skill_type.value != 'limited'
+                 and not any(skills.skills[skill_id].metadata.get(flag)
+                             for flag in ('lord', 'limited', 'awakening'))
+                 and skills.skills[skill_id].metadata.get('transferable') is not False)
+
+
+def draw_transformations(state, player_id, count, skills, rng):
+    in_play = {player.character_id for player in state.players.values()}
+    held = {general_id for player in state.players.values()
+            for general_id in player.transformation_pool}
+    eligible = [general.id for general in skills.characters.values()
+                if general.id not in in_play and general.id not in held
+                and general.metadata.get('playable', False)
+                and '_god_' not in general.id
+                and transformable_skills(skills, general.id)]
+    selected = []
+    for _ in range(min(count, len(eligible))):
+        general_id = rng.choice(eligible)
+        eligible.remove(general_id)
+        state.players[player_id].transformation_pool.append(general_id)
+        selected.append(general_id)
+    return tuple(selected)
+
+
+@dataclass(frozen=True, slots=True)
+class HuashenAction(Action):
+    player_id: str
+
+
+class HuashenHandler:
+    def __init__(self, skills, rng):
+        self.skills = skills
+        self.rng = rng
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        player = state.players[actor]
+        if frame.step_index == 0:
+            if not player.is_alive or not self.skills.has(state, actor, 'huashen'):
+                return StepResult.complete()
+            if not player.transformation_pool:
+                draw_transformations(state, actor, 2, self.skills, self.rng)
+            choices = tuple(f'{general_id}:{skill_id}'
+                for general_id in player.transformation_pool
+                for skill_id in transformable_skills(self.skills, general_id))
+            if player.active_transformation is not None:
+                choices += ('keep',)
+            if not choices:
+                return StepResult.complete()
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':choose', actor, RequestType.CHOOSE_OPTION,
+                '化身：选择化身武将及其一项合法技能',
+                frame.action.action_id, frame.frame_id, choices=choices))
+        choice = frame.decision
+        frame.decision = None
+        if choice == 'keep':
+            return StepResult.complete()
+        general_id, skill_id = choice.rsplit(':', 1)
+        if (general_id not in player.transformation_pool
+                or skill_id not in transformable_skills(self.skills, general_id)):
+            raise InvalidCardUse('化身选择不合法')
+        player.active_transformation = general_id
+        player.transformation_skill = skill_id
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class XinshengAction(Action):
+    player_id: str
+    damage_points: int
+
+
+class XinshengHandler:
+    def __init__(self, skills, rng):
+        self.skills = skills
+        self.rng = rng
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        if not state.players[actor].is_alive or not self.skills.has(state, actor, 'xinsheng'):
+            return StepResult.complete()
+        if frame.step_index == 0:
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':offer', actor, RequestType.YES_NO,
+                f'是否发动【新生】获得至多 {frame.action.damage_points} 张化身牌？',
+                frame.action.action_id, frame.frame_id))
+        if frame.decision is True:
+            draw_transformations(state, actor, frame.action.damage_points,
+                                 self.skills, self.rng)
+        frame.decision = None
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class BeigeAction(Action):
+    owner_id: str
+    victim_id: str
+    source_id: str | None
+
+
+class BeigeHandler:
+    def __init__(self, skills, moves):
+        self.skills = skills
+        self.moves = moves
+
+    def costs(self, state, owner):
+        return discardable_cards(state, owner)
+
+    def step(self, state, frame):
+        action = frame.action
+        owner = action.owner_id
+        if (not state.players[owner].is_alive
+                or not self.skills.has(state, owner, 'beige')):
+            return StepResult.complete()
+        if frame.step_index == 0:
+            if not self.costs(state, owner):
+                return StepResult.complete()
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                action.action_id + ':offer', owner, RequestType.YES_NO,
+                '是否弃置一张牌发动【悲歌】？', action.action_id, frame.frame_id,
+                subject_player_id=action.victim_id))
+        if frame.step_index == 1:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted:
+                return StepResult.complete()
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(
+                action.action_id + ':cost', owner, RequestType.CHOOSE_CARD,
+                '悲歌：选择弃置的一张牌', action.action_id, frame.frame_id,
+                eligible_card_ids=self.costs(state, owner)))
+        if frame.step_index == 2:
+            cost = frame.decision
+            frame.decision = None
+            if cost not in self.costs(state, owner):
+                raise InvalidCardUse('悲歌弃牌已不可用')
+            source = next(ref for ref, zone in state.zones.items()
+                          if ref.player_id == owner and cost in zone.card_ids)
+            self.moves.move(state, CardMove(
+                action.action_id + ':cost-move', (cost,), source,
+                ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD,
+                owner, action.action_id))
+            frame.step_index = 3
+            return StepResult.push(JudgmentAction(
+                action.action_id + ':judgment', action.victim_id,
+                JudgmentPattern(), return_card_id=True))
+        if frame.step_index == 3:
+            card_id = frame.child_result
+            suit = effective_suit(state, card_id, action.victim_id)
+            frame.step_index = 4
+            if suit is Suit.HEART and state.players[action.victim_id].is_alive:
+                return StepResult.push(RecoverAction(
+                    action.action_id + ':heart', owner, action.victim_id, 1))
+            if suit is Suit.DIAMOND and state.players[action.victim_id].is_alive:
+                return StepResult.push(DrawCardsAction(
+                    action.action_id + ':diamond', action.victim_id, 2))
+            if (action.source_id is not None and state.players[action.source_id].is_alive):
+                if suit is Suit.CLUB:
+                    return StepResult.push(ForcedDiscardAction(
+                        action.action_id + ':club', action.source_id, 2))
+                if suit is Suit.SPADE:
+                    return StepResult.push(TurnoverAction(
+                        action.action_id + ':spade', action.source_id))
         return StepResult.complete()
 
 

@@ -118,6 +118,9 @@ class GameSession:
         for player in players.values():
             if player.character_id == 'forest_god_lvbu':
                 player.marks['rage'] = 2
+            if skills is not None and player.character_id == 'mountain_zuoci':
+                from sanguosha.engine.mountain import draw_transformations
+                draw_transformations(state, player.player_id, 2, skills, rng)
         events = EventRecorder()
         events.record(Event("game-start", "game-start"))
         if military:
@@ -254,7 +257,7 @@ class GameSession:
                 offers = WindPhaseOffers(skills, definitions)
                 registry.register(TurnAction, TurnActionHandler(events, offers))
                 registry.register(ShensuAction, ShensuHandler(offers, moves))
-                from sanguosha.engine.mountain import QiaobianAction, QiaobianHandler, TuntianAction, TuntianHandler, ZaoxianAction, ZaoxianHandler, JixiUse, JixiHandler, FangquanSkipAction, FangquanSkipHandler, FangquanEndAction, FangquanEndHandler, RuoyuAction, RuoyuHandler, TiaoxinAction, TiaoxinHandler, ZhijiAction, ZhijiHandler, JiangAction, JiangHandler, HunziAction, HunziHandler, ZhibaAction, ZhibaHandler, ZhijianAction, ZhijianHandler, GuzhengAction, GuzhengHandler
+                from sanguosha.engine.mountain import QiaobianAction, QiaobianHandler, TuntianAction, TuntianHandler, ZaoxianAction, ZaoxianHandler, JixiUse, JixiHandler, FangquanSkipAction, FangquanSkipHandler, FangquanEndAction, FangquanEndHandler, RuoyuAction, RuoyuHandler, TiaoxinAction, TiaoxinHandler, ZhijiAction, ZhijiHandler, JiangAction, JiangHandler, HunziAction, HunziHandler, ZhibaAction, ZhibaHandler, ZhijianAction, ZhijianHandler, GuzhengAction, GuzhengHandler, HuashenAction, HuashenHandler, XinshengAction, XinshengHandler, BeigeAction, BeigeHandler
                 registry.register(QiaobianAction, QiaobianHandler(skills, moves, rng, definitions))
                 registry.register(TuntianAction, TuntianHandler(skills, moves))
                 registry.register(ZaoxianAction, ZaoxianHandler(skills))
@@ -269,6 +272,9 @@ class GameSession:
                 registry.register(ZhibaAction, ZhibaHandler(skills, moves, events))
                 registry.register(ZhijianAction, ZhijianHandler(skills, moves, definitions))
                 registry.register(GuzhengAction, GuzhengHandler(skills, moves))
+                registry.register(HuashenAction, HuashenHandler(skills, rng))
+                registry.register(XinshengAction, XinshengHandler(skills, rng))
+                registry.register(BeigeAction, BeigeHandler(skills, moves))
                 registry.register(BuquAction, BuquHandler(deck, moves))
                 registry.register(LeijiAction, LeijiHandler())
                 from sanguosha.engine.wind_guhuo import GuhuoAction, GuhuoHandler
