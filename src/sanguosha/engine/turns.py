@@ -27,8 +27,9 @@ class TurnAction(Action):
 
 
 class TurnActionHandler:
-    def __init__(self, recorder: EventRecorder) -> None:
+    def __init__(self, recorder: EventRecorder, before_phase=None) -> None:
         self.recorder = recorder
+        self.before_phase = before_phase
 
     def validate_start(self, state: GameState, action: Action) -> None:
         assert isinstance(action, TurnAction)
@@ -49,7 +50,7 @@ class TurnActionHandler:
             state.current_phase = None
             state.turn_number += 1
             self.recorder.record(TurnStartedEvent(f"{action.action_id}:start", action.player_id, state.turn_number))
-            if state.players[action.player_id].character_id == 'forest_god_lvbu' and not state.players[action.player_id].face_up:
+            if not state.players[action.player_id].face_up:
                 state.players[action.player_id].face_up = True
                 frame.cursor = len(action.phases)
             frame.step_index = 1
@@ -67,8 +68,14 @@ class TurnActionHandler:
             self.recorder.record(TurnEndedEvent(f"{action.action_id}:end", action.player_id, state.turn_number))
             return StepResult.complete()
         phase = action.phases[frame.cursor]
+        if self.before_phase is not None and frame.local.get('before_phase_cursor') != frame.cursor:
+            frame.local['before_phase_cursor'] = frame.cursor
+            offer = self.before_phase(state, action.player_id, phase,
+                                      f'{action.action_id}:before:{frame.cursor}')
+            if offer is not None:
+                return StepResult.push(offer)
         frame.cursor += 1
-        marked_skip = phase in (Phase.PLAY, Phase.DRAW) and state.players[action.player_id].marks.pop('skip_' + phase.value, 0)
+        marked_skip = state.players[action.player_id].marks.pop('skip_' + phase.value, 0)
         if phase in action.skipped_phases or marked_skip:
             self.recorder.record(PhaseSkippedEvent(f"{action.action_id}:{frame.cursor}:skipped", action.player_id, phase))
             return StepResult.continue_()

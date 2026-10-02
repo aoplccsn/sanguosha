@@ -634,7 +634,10 @@ class MainWindow(QMainWindow):
                 labels['skill:jieyin'] = '结姻'
                 labels['skill:fanjian'] = '反间'
                 labels['skill:lijian'] = '离间'
+                labels['skill:guhuo'] = '蛊惑'
                 def option_label(choice):
+                    if choice.startswith(('basic.', 'trick.')):
+                        return '声明【' + self.session.definitions.get(choice).name + '】'
                     if choice.startswith('virtual:wusheng:'):
                         material = choice.split(':',2)[2]
                         card = next((card for card in view.hand if str(card.card_id) == material), None)
@@ -691,6 +694,8 @@ class MainWindow(QMainWindow):
                 actions.append(('护驾 · 请魏角色出闪','virtual:hujia',True))
             if 'virtual:jijiang' in request.eligible_card_ids:
                 actions.append(('激将 · 请蜀角色出杀','virtual:jijiang',True))
+            if 'virtual:guhuo' in request.eligible_card_ids:
+                actions.append(('蛊惑 · 声明响应牌','virtual:guhuo',True))
             for choice in request.eligible_card_ids:
                 if isinstance(choice,str) and choice.startswith('virtual:jijiu:'):
                     actions.append(('急救 · 红牌当桃',choice,True))
@@ -722,7 +727,8 @@ class MainWindow(QMainWindow):
             actions.append(("确认选择", ordered, request.min_count <= count <= request.max_count))
         elif kind is RequestType.YES_NO:
             prompt = request.prompt
-            actions = [("是", True, True), ("否", False, True)]
+            actions = [(("质疑" if '质疑' in prompt else "是"), True, True),
+                       (("不质疑" if '质疑' in prompt else "否"), False, True)]
         else:
             prompt = request.prompt
         self.decision.render(prompt, actions)

@@ -29,6 +29,17 @@ from sanguosha.relay.transport import HostRelayTransport, RelayGameClient
 from sanguosha.session_store import clear_session, load_session, save_session
 from sanguosha.settings import relay_url as default_relay_url
 
+GUHUO_CARD_NAMES = {
+    'basic.slash': '杀', 'basic.fire_slash': '火杀', 'basic.thunder_slash': '雷杀',
+    'basic.dodge': '闪', 'basic.peach': '桃', 'basic.wine': '酒',
+    'trick.nullification': '无懈可击', 'trick.ex_nihilo': '无中生有',
+    'trick.dismantlement': '过河拆桥', 'trick.snatch': '顺手牵羊',
+    'trick.duel': '决斗', 'trick.fire_attack': '火攻', 'trick.iron_chain': '铁索连环',
+    'trick.savage_assault': '南蛮入侵', 'trick.archery_attack': '万箭齐发',
+    'trick.god_salvation': '桃园结义', 'trick.amazing_grace': '五谷丰登',
+    'trick.borrowed_sword': '借刀杀人',
+}
+
 
 class ServerThread(QThread):
     listening = Signal(int)
@@ -549,6 +560,14 @@ class MultiplayerWindow(QDialog):
 
     def _play_public_event(self, fact):
         kind = fact["kind"]
+        if kind == 'GuhuoEvent':
+            declared = GUHUO_CARD_NAMES.get(fact['declared'], fact['declared'])
+            if fact['stage'] == 'reveal':
+                actual = GUHUO_CARD_NAMES.get(fact['actual'], fact['actual'])
+                self.table.play_public_event(f'蛊惑揭示【{actual}】 · 声明【{declared}】', '')
+            else:
+                self.table.play_public_event(f'蛊惑声明【{declared}】 · 扣置一张未知牌', '')
+            return
         source = fact.get("source_id") or None
         target = fact.get("target_id") or None
         targets = tuple(fact.get("target_ids", ()))
@@ -616,21 +635,28 @@ class MultiplayerWindow(QDialog):
         if kind == "choose_option":
             for choice in request["choices"]:
                 if not choice.startswith("use:"):
-                    self._action("结束出牌" if choice == END_PLAY_PHASE else choice, lambda v=choice: self._decide(v))
+                    label = ("结束出牌" if choice == END_PLAY_PHASE else
+                             '蛊惑' if choice == 'skill:guhuo' else
+                             f'声明【{GUHUO_CARD_NAMES[choice]}】' if choice in GUHUO_CARD_NAMES else choice)
+                    self._action(label, lambda v=choice: self._decide(v))
         elif kind == "respond_with_card":
             if request["allow_pass"]:
                 self._action("不出", lambda: self._decide(PASS_RESPONSE))
             for cid in request["eligible_card_ids"]:
                 if str(cid).startswith("virtual:"):
-                    self._action(str(cid), lambda v=cid: self._decide(v))
+                    self._action('蛊惑 · 声明响应牌' if cid == 'virtual:guhuo' else str(cid),
+                                 lambda v=cid: self._decide(v))
         elif kind in ("choose_card", "choose_cards"):
             for cid in request["eligible_card_ids"]:
-                self._action(str(cid), lambda v=cid: self._card_selected(v))
+                card = next((item for item in self.view.hand if item.card_id == cid), None)
+                label = f'{card.name} {card.suit}{card.rank}' if card else str(cid)
+                self._action(label, lambda v=cid: self._card_selected(v))
             if kind == "choose_cards":
                 self._action("确认选择", lambda: self._decide(tuple(self.selected)))
         elif kind == "yes_no":
-            self._action("是", lambda: self._decide(True))
-            self._action("否", lambda: self._decide(False))
+            challenge = '质疑' in request['prompt']
+            self._action('质疑' if challenge else "是", lambda: self._decide(True))
+            self._action('不质疑' if challenge else "否", lambda: self._decide(False))
         elif kind in ("choose_player", "choose_players"):
             for pid in request["allowed_player_ids"]:
                 self._action(f"座位 {pid[1:]}", lambda v=pid: self._player_selected(v))

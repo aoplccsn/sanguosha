@@ -6,11 +6,11 @@ from dataclasses import dataclass
 
 from sanguosha.content.cards.basic import SlashRule, ReachableOpponent, EquipmentSlashLimit
 from sanguosha.content.cards.classic_military import register_additional_definitions
-from sanguosha.model.enums import DamageNature, Color, EquipmentSlot, Phase, Kingdom
+from sanguosha.model.enums import DamageNature, Color, EquipmentSlot, Phase, Kingdom, Suit
 from sanguosha.model.ids import CardInstanceId, PlayerId
 from sanguosha.model.state import GameStatus
 from sanguosha.model.zones import ZoneRef, ZoneType
-from .actions import Action, StepResult
+from .actions import Action, StepKind, StepResult
 from .card_effects import SlashEffectAction
 from .card_rules import InvalidCardUse
 from .card_moves import CardMove, CardMoveReason
@@ -20,6 +20,9 @@ from .dying import DyingAction
 from .events import BeforeDamageEvent, DamageDealtEvent, AfterDamageEvent, DyingRequiredEvent, Event, VirtualResponseEvent
 from .judgment import JudgmentAction, JudgmentPattern, JudgmentHandler
 from .response import RespondWithCardAction, RespondWithCardHandler
+from .recovery import RecoverAction
+from .deck import DrawCardsAction
+from .suits import effective_color, effective_suit
 from .requests import PendingRequest, RequestType
 from .equipment import EquipCardAction, EquipCardHandler, register_equipment_rules
 from sanguosha.model.virtual_card import VirtualCard
@@ -35,12 +38,14 @@ class MilitaryDamageAction(DamageAction):
     propagated: bool = False
     ignore_armor: bool = False
     material_card_ids: tuple[str, ...] = ()
+    redirected: bool = False
 
 class MilitaryDamageHandler(DamageActionHandler):
     """The first recipient completes dying before the chain cursor advances."""
     def __init__(self, recorder, moves=None, skills=None):
         super().__init__(recorder)
         self.moves, self.skills = moves, skills
+        self.distance = DistanceSystem()
 
     def validate_start(self, state, action):
         if action.amount <= 0 or action.target_id not in state.players or not state.players[action.target_id].is_alive:
@@ -51,6 +56,20 @@ class MilitaryDamageHandler(DamageActionHandler):
         target = state.players[action.target_id]
         if frame.step_index == 0:
             self.validate_start(state, action)
+            if (not frame.local.get('tianxiang_offered') and not getattr(action, 'redirected', False)
+                    and self.skills is not None and self.skills.has(state, action.target_id, 'tianxiang')):
+                hand = state.cards_in(ZoneRef(ZoneType.HAND, action.target_id))
+                materials = tuple(cid for cid in hand
+                                  if effective_suit(state, cid, action.target_id) is Suit.HEART)
+                others = tuple(pid for pid in state.seat_order if pid != action.target_id
+                               and state.players[pid].is_alive)
+                frame.local['tianxiang_offered'] = True
+                if materials and others:
+                    frame.step_index = 9
+                    return StepResult.ask(PendingRequest(action.action_id + ':tianxiang', action.target_id,
+                        RequestType.YES_NO, '是否发动【天香】弃红桃手牌转移伤害？',
+                        action.action_id, frame.frame_id,
+                        choices=(f'damage:{action.amount}',), subject_player_id=action.source_id))
             amount = action.amount
             armor = equipped(state, action.target_id, EquipmentSlot.ARMOR)
             if (action.source_id is not None and state.current_player_id == action.source_id
@@ -80,10 +99,86 @@ class MilitaryDamageHandler(DamageActionHandler):
             self.recorder.record(AfterDamageEvent(action.action_id + ':after', action.source_id, action.target_id, amount))
             self.recorder.record(Event(action.action_id + ':nature', 'damage_nature', action.target_id,
                                        metadata={'nature': action.nature.value, 'amount': amount}))
+            source = action.source_id
+            frame.local['kuanggu_remaining'] = (amount if source is not None and source != action.target_id
+                and state.players[source].is_alive and self.skills is not None
+                and self.skills.has(state, source, 'kuanggu')
+                and self.distance.distance_between(state, source, action.target_id) <= 1 else 0)
+            if frame.local['kuanggu_remaining']:
+                frame.step_index = 8
+                return StepResult.push(RecoverAction(action.action_id + ':kuanggu:0',
+                    source, source, 1))
             frame.step_index = 1
             if target.hp <= 0:
                 self.recorder.record(DyingRequiredEvent(action.action_id + ':dying', action.target_id, target.hp))
                 return StepResult.push(DyingAction(action.action_id + ':rescue', action.target_id, action.source_id))
+            return StepResult.continue_()
+        if frame.step_index == 9:
+            wanted = frame.decision is True
+            frame.decision = None
+            frame.step_index = 0
+            if not wanted:
+                return StepResult.continue_()
+            eligible = tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, action.target_id))
+                             if effective_suit(state, cid, action.target_id) is Suit.HEART)
+            if not eligible:
+                return StepResult.continue_()
+            frame.step_index = 10
+            return StepResult.ask(PendingRequest(action.action_id + ':tianxiang-cost', action.target_id,
+                RequestType.CHOOSE_CARD, '天香：选择一张红桃手牌弃置', action.action_id,
+                frame.frame_id, eligible_card_ids=eligible))
+        if frame.step_index == 10:
+            cost = frame.decision
+            frame.decision = None
+            if (cost not in state.cards_in(ZoneRef(ZoneType.HAND, action.target_id))
+                    or effective_suit(state, cost, action.target_id) is not Suit.HEART):
+                raise InvalidCardUse('天香只能弃置红桃手牌')
+            frame.local['tianxiang_cost'] = cost
+            others = tuple(pid for pid in state.seat_order if pid != action.target_id
+                           and state.players[pid].is_alive)
+            frame.step_index = 11
+            return StepResult.ask(PendingRequest(action.action_id + ':tianxiang-target', action.target_id,
+                RequestType.CHOOSE_PLAYER, '天香：选择承受伤害的其他角色',
+                action.action_id, frame.frame_id, allowed_player_ids=others))
+        if frame.step_index == 11:
+            redirected_to = frame.decision
+            frame.decision = None
+            cost = frame.local['tianxiang_cost']
+            if (redirected_to == action.target_id or not state.players[redirected_to].is_alive
+                    or cost not in state.cards_in(ZoneRef(ZoneType.HAND, action.target_id))):
+                raise InvalidCardUse('天香目标或代价已不可用')
+            self.moves.move(state, CardMove(action.action_id + ':tianxiang-discard', (cost,),
+                ZoneRef(ZoneType.HAND, action.target_id), ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.DISCARD, action.target_id, action.action_id))
+            frame.local['tianxiang_target'] = redirected_to
+            frame.step_index = 12
+            return StepResult.push(MilitaryDamageAction(action.action_id + ':tianxiang-damage',
+                action.source_id, redirected_to, action.amount, action.nature, action.card_id,
+                action.related_action_id, getattr(action, 'propagated', False),
+                getattr(action, 'ignore_armor', False),
+                getattr(action, 'material_card_ids', ()), True))
+        if frame.step_index == 12:
+            redirected_to = frame.local['tianxiang_target']
+            if (state.status is not GameStatus.FINISHED and state.players[redirected_to].is_alive):
+                missing = max(0, state.players[redirected_to].max_hp - state.players[redirected_to].hp)
+                if missing:
+                    frame.step_index = 13
+                    return StepResult.push(DrawCardsAction(action.action_id + ':tianxiang-draw',
+                        redirected_to, missing))
+            return StepResult.complete(frame.child_result)
+        if frame.step_index == 13:
+            return StepResult.complete()
+        if frame.step_index == 8:
+            remaining = int(frame.local['kuanggu_remaining']) - 1
+            frame.local['kuanggu_remaining'] = remaining
+            source = action.source_id
+            if remaining and source is not None and state.players[source].is_alive:
+                return StepResult.push(RecoverAction(
+                    f'{action.action_id}:kuanggu:{action.amount - remaining}', source, source, 1))
+            frame.step_index = 1
+            if target.hp <= 0:
+                self.recorder.record(DyingRequiredEvent(action.action_id + ':dying', action.target_id, target.hp))
+                return StepResult.push(DyingAction(action.action_id + ':rescue', action.target_id, source))
             return StepResult.continue_()
         if frame.step_index == 5:
             requested = frame.decision is True
@@ -261,10 +356,10 @@ class MilitarySlashHandler:
         action = frame.action
         armor = equipped(state, action.target_id, EquipmentSlot.ARMOR)
         weapon = equipped(state, action.source_id, EquipmentSlot.WEAPON)
-        card = state.cards[action.card_id]
+        card = state.cards.get(action.card_id)
         virtual=getattr(action,'virtual_card',None)
         definition=virtual.definition_id if virtual else card.definition_id
-        color=virtual.color if virtual else card.color
+        color=virtual.color if virtual else effective_color(state, action.card_id, action.source_id)
         nature = DamageNature.FIRE if frame.local.get('fan_fire') else {'basic.fire_slash': DamageNature.FIRE, 'basic.thunder_slash': DamageNature.THUNDER}.get(definition, DamageNature.NORMAL)
         ignore = weapon == 'equipment.weapon.qinggang_sword' or bool(
             state.players[action.source_id].marks.get('wuwei') and
@@ -305,6 +400,18 @@ class MilitarySlashHandler:
             if not ignore and (armor == 'equipment.armor.renwang_shield' and color is Color.BLACK
                                or armor == 'equipment.armor.vine' and nature is DamageNature.NORMAL):
                 return StepResult.complete('prevented')
+            if (self.skills is not None and self.skills.has(state, action.source_id, 'liegong')
+                    and state.current_player_id == action.source_id and state.current_phase is Phase.PLAY
+                    and not frame.local.get('liegong_offered')):
+                hand_count = len(state.cards_in(ZoneRef(ZoneType.HAND, action.target_id)))
+                source_hp = state.players[action.source_id].hp
+                attack_range = self.distance.attack_range(state, action.source_id)
+                frame.local['liegong_offered'] = True
+                if hand_count >= source_hp or hand_count <= attack_range:
+                    frame.step_index = 25
+                    return StepResult.ask(PendingRequest(action.action_id + ':liegong', action.source_id,
+                        RequestType.YES_NO, '是否发动【烈弓】令此目标不能使用【闪】？',
+                        action.action_id, frame.frame_id, subject_player_id=action.target_id))
             if (self.skills is not None and self.skills.has(state,action.source_id,'tieqi')
                     and not frame.local.get('tieqi_offered')):
                 frame.local['tieqi_offered'] = True
@@ -312,7 +419,7 @@ class MilitarySlashHandler:
                 return StepResult.ask(PendingRequest(action.action_id+':tieqi',action.source_id,
                     RequestType.YES_NO,'是否发动【铁骑】判定，使目标可能无法闪避？',
                     action.action_id,frame.frame_id))
-            if frame.local.get('tieqi_unavoidable'):
+            if frame.local.get('tieqi_unavoidable') or frame.local.get('no_dodge'):
                 frame.child_result = None
                 frame.step_index = 3
                 return StepResult.continue_()
@@ -339,6 +446,11 @@ class MilitarySlashHandler:
                 frame.step_index = 20
                 return StepResult.push(JudgmentAction(action.action_id+':tieqi-judge',action.source_id,
                     JudgmentPattern(color=Color.RED)))
+            frame.step_index = 0
+            return StepResult.continue_()
+        if frame.step_index == 25:
+            frame.local['no_dodge'] = frame.decision is True
+            frame.decision = None
             frame.step_index = 0
             return StepResult.continue_()
         if frame.step_index == 21:
@@ -507,6 +619,25 @@ class MilitaryResponseHandler(RespondWithCardHandler):
 
     def step(self, state, frame):
         action = frame.action
+        if frame.step_index == 30:
+            return StepResult.complete(frame.local['leiji_response'])
+        result = self._step_response(state, frame)
+        if (result.kind is StepKind.COMPLETE and result.value is not None
+                and action.required_definition_id == 'basic.dodge'
+                and self.skills is not None and self.skills.has(state, action.player_id, 'leiji')
+                and any(pid != action.player_id and state.players[pid].is_alive
+                        for pid in state.seat_order)):
+            from .wind import LeijiAction
+            frame.local['leiji_response'] = (result.value if isinstance(result.value, str)
+                                             else 'virtual:leiji-dodge')
+            frame.step_index = 30
+            return StepResult.push(LeijiAction(action.action_id + ':leiji', action.player_id))
+        return result
+
+    def _step_response(self, state, frame):
+        action = frame.action
+        if frame.step_index == 12:
+            return StepResult.complete(frame.child_result)
         if frame.step_index == 11:
             return StepResult.complete(frame.child_result)
         if frame.step_index == 0 and not frame.local.get('armor_offered') and action.allow_armor and action.required_definition_id=='basic.dodge' and equipped(state,action.player_id,EquipmentSlot.ARMOR)=='equipment.armor.eight_trigrams':
@@ -545,7 +676,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 if action.required_definition_id == 'basic.dodge' and self.skills.has(state,action.player_id,'hujia') and self.skills.allies(state,action.player_id,Kingdom.WEI):
                     eligible += ('virtual:hujia',)
                 if action.required_definition_id == 'basic.dodge' and self.skills.has(state,action.player_id,'qingguo'):
-                    eligible += tuple(f'virtual:qingguo:{cid}' for cid in hand if state.cards[cid].color is Color.BLACK)
+                    eligible += tuple(f'virtual:qingguo:{cid}' for cid in hand
+                                      if effective_color(state, cid, action.player_id) is Color.BLACK)
                 if action.required_definition_id == 'basic.peach':
                     eligible += tuple(f'virtual:jijiu:{cid}' for cid in self.skills.emergency_peach_materials(state,action.player_id))
                 if self.skills.has(state,action.player_id,'longdan'):
@@ -554,6 +686,12 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                     if opposite:
                         eligible += tuple(f'virtual:longdan:{cid}' for cid in hand
                                           if state.cards[cid].definition_id == opposite)
+                if self.skills.has(state, action.player_id, 'guhuo') and hand:
+                    from .wind_guhuo import GuhuoAction, GuhuoHandler
+                    if GuhuoHandler(self.skills, None, None, None, None).response_definitions_for(
+                            state, action.required_definition_id, action.player_id,
+                            action.subject_player_id):
+                        eligible += ('virtual:guhuo',)
             frame.step_index = 1
             return StepResult.ask(PendingRequest(action.action_id + ':request', action.player_id,
                 RequestType.RESPOND_WITH_CARD, action.prompt, action.action_id, frame.frame_id,
@@ -570,7 +708,7 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             if equipped(state,action.player_id,EquipmentSlot.WEAPON)!='equipment.weapon.serpent_spear':
                 raise InvalidCardUse('spear no longer equipped')
             materials=tuple(choice)
-            virtual=VirtualCard.spear(state,materials)
+            virtual=VirtualCard.spear(state,materials,effective_suit)
             for cid in materials:
                 self.moves.move(state,CardMove(action.action_id+':virtual:'+cid,(cid,),ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.RESPONSE,action.player_id))
                 self.recorder.record(CardRespondedEvent(action.action_id+':virtual-responded:'+cid,action.player_id,cid,
@@ -581,12 +719,23 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             return StepResult.ask(PendingRequest(action.action_id+':spear-cost',action.player_id,RequestType.CHOOSE_CARDS,
                 '丈八蛇矛：选择两张手牌当杀',action.action_id,frame.frame_id,
                 eligible_card_ids=state.cards_in(ZoneRef(ZoneType.HAND,action.player_id)),min_count=2,max_count=2))
+        if choice == 'virtual:guhuo':
+            if (self.skills is None or not self.skills.has(state, action.player_id, 'guhuo')
+                    or not state.cards_in(ZoneRef(ZoneType.HAND, action.player_id))):
+                raise InvalidCardUse('蛊惑响应不可用')
+            from .wind_guhuo import GuhuoAction
+            frame.step_index = 12
+            return StepResult.push(GuhuoAction(action.action_id + ':guhuo', action.player_id,
+                action.required_definition_id, action.source_action_id,
+                action.subject_player_id, action.response_number, action.response_total))
         if isinstance(choice,str) and choice.startswith('virtual:wusheng:'):
             material=choice.split(':',2)[2]
             if self.skills is None or material not in self.skills.red_slash_materials(state,action.player_id):
                 raise InvalidCardUse('武圣材料不合法')
             card=state.cards[material]
-            virtual=VirtualCard('basic.slash',(material,),card.suit,card.color)
+            virtual=VirtualCard('basic.slash',(material,),
+                                effective_suit(state, material, action.player_id),
+                                effective_color(state, material, action.player_id))
             self.moves.move(state,CardMove(action.action_id+':wusheng-processing',(material,),
                 ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.PROCESSING),CardMoveReason.RESPONSE,action.player_id))
             self.recorder.record(CardRespondedEvent(action.action_id+':wusheng-responded',action.player_id,material,
@@ -599,10 +748,12 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             if (self.skills is None or not self.skills.has(state,action.player_id,'qingguo')
                     or action.required_definition_id!='basic.dodge' or material not in
                     state.cards_in(ZoneRef(ZoneType.HAND,action.player_id))
-                    or state.cards[material].color is not Color.BLACK):
+                    or effective_color(state, material, action.player_id) is not Color.BLACK):
                 raise InvalidCardUse('倾国材料不合法')
             card=state.cards[material]
-            virtual=VirtualCard('basic.dodge',(material,),card.suit,card.color)
+            virtual=VirtualCard('basic.dodge',(material,),
+                                effective_suit(state, material, action.player_id),
+                                effective_color(state, material, action.player_id))
             self.moves.move(state,CardMove(action.action_id+':qingguo-processing',(material,),
                 ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.RESPONSE,action.player_id))
@@ -618,7 +769,9 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                     or material not in self.skills.emergency_peach_materials(state,action.player_id)):
                 raise InvalidCardUse('急救材料不合法')
             card=state.cards[material]
-            virtual=VirtualCard('basic.peach',(material,),card.suit,card.color)
+            virtual=VirtualCard('basic.peach',(material,),
+                                effective_suit(state, material, action.player_id),
+                                effective_color(state, material, action.player_id))
             source=next(ref for ref,zone in state.zones.items() if material in zone.card_ids)
             self.moves.move(state,CardMove(action.action_id+':jijiu-processing',(material,),
                 source,ZoneRef(ZoneType.PROCESSING),CardMoveReason.RESPONSE,action.player_id))
@@ -637,7 +790,9 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                     or state.cards[material].definition_id != opposite):
                 raise InvalidCardUse('龙胆材料不合法')
             card=state.cards[material]
-            virtual=VirtualCard(action.required_definition_id,(material,),card.suit,card.color)
+            virtual=VirtualCard(action.required_definition_id,(material,),
+                                effective_suit(state, material, action.player_id),
+                                effective_color(state, material, action.player_id))
             self.moves.move(state,CardMove(action.action_id+':longdan-processing',(material,),
                 ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.RESPONSE,action.player_id))

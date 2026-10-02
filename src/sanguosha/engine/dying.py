@@ -21,9 +21,10 @@ class DyingAction(Action):
 
 
 class DyingActionHandler:
-    def __init__(self, recorder: EventRecorder, skills=None) -> None:
+    def __init__(self, recorder: EventRecorder, skills=None, before_rescue=None) -> None:
         self.recorder = recorder
         self.skills = skills
+        self.before_rescue = before_rescue
 
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
@@ -33,6 +34,13 @@ class DyingActionHandler:
             if target.hp > 0:
                 self.recorder.record(DyingRescuedEvent(f"{action.action_id}:rescued", action.target_id, target.hp))
                 return StepResult.complete("rescued")
+            if self.before_rescue is not None and not frame.local.get('before_rescue_checked'):
+                frame.local['before_rescue_checked'] = True
+                offer = self.before_rescue(state, action.target_id,
+                                           action.action_id + ':before-rescue')
+                if offer is not None:
+                    frame.step_index = 4
+                    return StepResult.push(offer)
             order = state.seat_order
             if frame.cursor >= len(order):
                 frame.step_index = 3
@@ -65,6 +73,9 @@ class DyingActionHandler:
         if frame.step_index == 2:
             frame.cursor = 0
             frame.local["round"] = int(frame.local.get("round", 0)) + 1
+            frame.step_index = 0
+            return StepResult.continue_()
+        if frame.step_index == 4:
             frame.step_index = 0
             return StepResult.continue_()
         return StepResult.complete("dead")

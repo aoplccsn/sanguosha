@@ -50,6 +50,10 @@ function PlayerPanel({ player, position, selected, selectable, responding, event
   onDetail(): void
 }) {
   const portrait = portraitState(player, selected, selectable, responding)
+  const buqu = player.special_piles?.buqu ?? []
+  const committed = Object.entries(player.special_piles ?? {})
+    .filter(([key]) => key.startsWith('committed:'))
+    .flatMap(([, cards]) => cards)
   const godMode: GodPortraitMode = godCue?.mode ?? (portrait.dying ? 'dying' : eventKind?.includes('Damage') ? 'hit' : eventKind?.includes('CardUsed') ? 'attack' : 'idle')
   const classes = 'player-panel player-' + position
     + (player.active ? ' active' : '')
@@ -80,6 +84,11 @@ function PlayerPanel({ player, position, selected, selectable, responding, event
         <span className="equipment-preview" role="tooltip"><img src={assetForCard(card)} alt={card.name} /><small>{card.details}</small></span>
       </span>)}
       {player.judgments.map((card) => <span key={card.card_id} className="zone-token judgment-token" title={card.details}>{card.name}</span>)}
+      {buqu.length > 0 && <span className="zone-token buqu-token" title={'不屈牌：' + buqu.map((card) => card.suit + card.rank).join(' ')}>
+        不屈 {buqu.length} · {buqu.map((card) => card.suit + card.rank).join(' ')}
+      </span>}
+      {committed.map((card) => <span key={card.card_id} className="zone-token judgment-token"
+        title={card.name + (card.suit ? ' ' + card.suit + card.rank : '')}>蛊惑 · {card.name}</span>)}
     </div>
     <div className="mini-skills">{player.skill_labels.map((skill) => <span key={skill}>{skill}</span>)}</div>
     {player.active && <span className="turn-badge">当前回合</span>}
@@ -102,17 +111,32 @@ function HandCard({ card, selected, eligible, onClick }: { card: CardView; selec
   </button>
 }
 
+const cardNames: Record<string, string> = {
+  'basic.slash': '杀', 'basic.fire_slash': '火杀', 'basic.thunder_slash': '雷杀',
+  'basic.dodge': '闪', 'basic.peach': '桃', 'basic.wine': '酒',
+  'trick.nullification': '无懈可击', 'trick.ex_nihilo': '无中生有',
+  'trick.dismantlement': '过河拆桥', 'trick.snatch': '顺手牵羊',
+  'trick.duel': '决斗', 'trick.fire_attack': '火攻', 'trick.iron_chain': '铁索连环',
+  'trick.savage_assault': '南蛮入侵', 'trick.archery_attack': '万箭齐发',
+  'trick.god_salvation': '桃园结义', 'trick.amazing_grace': '五谷丰登',
+  'trick.borrowed_sword': '借刀杀人',
+}
+
 function SkillBar({ player, general, request, chosen, onChoose }: { player: PlayerView; general?: GeneralInfo; request: PendingRequest | null; chosen: string; onChoose(value: string): void }) {
-  const skillOptions = request?.choices.filter((choice) => choice.startsWith('skill:') || choice.startsWith('virtual:')) ?? []
+  const skillOptions = Array.from(new Set([
+    ...(request?.choices.filter((choice) => choice.startsWith('skill:') || choice.startsWith('virtual:')) ?? []),
+    ...(request?.eligible_card_ids.filter((choice) => choice === 'virtual:guhuo') ?? []),
+  ]))
   return <div className="skill-bar" aria-label="技能栏">
     {player.skill_labels.map((label) => {
       const plain = label.split(' · ')[0]
       const skill = general?.skills.find((item) => item.name === plain)
-      const option = skillOptions.find((item) => skill && item.split(':')[1] === skill.id)
+      const option = skillOptions.find((item) => item.split(':')[1] === (skill?.id ?? (plain === '蛊惑' ? 'guhuo' : '')))
       return <button key={label} disabled={!option} className={chosen === option ? 'selected' : ''} onClick={() => option && onChoose(option)}>{label}</button>
     })}
-    {skillOptions.filter((option) => !general?.skills.some((skill) => skill.id === option.split(':')[1])).map((option) =>
-      <button key={option} className={chosen === option ? 'selected' : ''} onClick={() => onChoose(option)}>{option.split(':')[1]}</button>)}
+    {skillOptions.filter((option) => !general?.skills.some((skill) => skill.id === option.split(':')[1])
+      && !(option.split(':')[1] === 'guhuo' && player.skill_labels.some((label) => label.split(' · ')[0] === '蛊惑'))).map((option) =>
+      <button key={option} className={chosen === option ? 'selected' : ''} onClick={() => onChoose(option)}>{option.split(':')[1] === 'guhuo' ? '蛊惑' : option.split(':')[1]}</button>)}
   </div>
 }
 
@@ -132,8 +156,8 @@ function DecisionPrompt({ request, canConfirm, onConfirm, onPass, onBoolean, onO
   if (request.request_type === 'yes_no') return <section className="decision-prompt">
     <div className="prompt-copy"><strong>{prompt}</strong><small>服务器正在等待你的决定</small></div>
     <Timer remainingMs={request.remaining_ms} />
-    <button className="brush-button primary compact" onClick={() => onBoolean(true)}>发动 / 是</button>
-    <button className="brush-button subtle compact" onClick={() => onBoolean(false)}>不发动 / 否</button>
+    <button className="brush-button primary compact" onClick={() => onBoolean(true)}>{prompt.includes('质疑') ? '质疑' : '发动 / 是'}</button>
+    <button className="brush-button subtle compact" onClick={() => onBoolean(false)}>{prompt.includes('质疑') ? '不质疑' : '不发动 / 否'}</button>
   </section>
   const directOptions = request.request_type === 'choose_option'
     ? request.choices.filter((choice) => !choice.startsWith('use:') && !choice.startsWith('skill:') && !choice.startsWith('virtual:'))
@@ -141,7 +165,7 @@ function DecisionPrompt({ request, canConfirm, onConfirm, onPass, onBoolean, onO
   return <section className="decision-prompt">
     <div className="prompt-copy"><strong>{prompt}</strong><small>选择后点击确认，操作才会提交</small></div>
     <Timer remainingMs={request.remaining_ms} />
-    {directOptions.map((choice) => <button key={choice} className="brush-button compact" onClick={() => onOption(choice)}>{choice === 'end_play_phase' ? '结束出牌' : choice}</button>)}
+    {directOptions.map((choice) => <button key={choice} className="brush-button compact" onClick={() => onOption(choice)}>{choice === 'end_play_phase' ? '结束出牌' : cardNames[choice] ?? choice}</button>)}
     {request.allow_pass && <button className="brush-button subtle compact" onClick={onPass}>{request.required_definition_id === 'trick.nullification' ? '本次均不响应' : '不出'}</button>}
     <button className="brush-button primary compact" disabled={!canConfirm} onClick={onConfirm}>确定</button>
   </section>
@@ -170,6 +194,9 @@ function EventStage({ event, players }: { event?: PublicEvent; players: PlayerVi
   const kind = String(event.kind ?? '')
   let text = kind
   if (kind.includes('CardUsed') || kind.includes('TrickTargets')) text = name(event.source_id) + ' 使用【' + String(event.card_name ?? '卡牌') + '】'
+  else if (kind === 'GuhuoEvent') text = name(event.source_id) + (event.stage === 'reveal'
+    ? ' 揭示蛊惑牌【' + (cardNames[String(event.actual)] ?? String(event.actual)) + '】'
+    : ' 蛊惑声明【' + (cardNames[String(event.declared)] ?? String(event.declared)) + '】')
   else if (kind.includes('Responded') || kind.includes('VirtualResponse')) {
     const responseNames: Record<string, string> = { 'basic.dodge': '闪', 'basic.slash': '杀', 'basic.peach': '桃', 'trick.nullification': '无懈可击' }
     text = name(event.source_id) + ' 打出【' + (responseNames[String(event.definition_id)] ?? '响应牌') + '】'
@@ -261,6 +288,7 @@ export function GamePage() {
   function toggleCard(id: string) {
     if (!request || !cardEligible(id)) return
     if (request.request_type === 'choose_option') { setSelectedCards([id]); setSelectedOption('use:' + id); return }
+    if (request.request_type === 'respond_with_card') setSelectedOption('')
     const max = request.max_count || 1
     setSelectedCards((current) => current.includes(id) ? current.filter((item) => item !== id) : max === 1 ? [id] : current.length < max ? [...current, id] : current)
   }
@@ -272,7 +300,8 @@ export function GamePage() {
   function confirm() {
     if (!request) return
     let value: unknown = selectedOption
-    if (request.request_type === 'respond_with_card' || request.request_type === 'choose_card') value = selectedCards[0]
+    if (request.request_type === 'respond_with_card') value = selectedOption === 'virtual:guhuo' ? selectedOption : selectedCards[0]
+    if (request.request_type === 'choose_card') value = selectedCards[0]
     if (request.request_type === 'choose_cards') value = selectedCards
     if (request.request_type === 'choose_player') value = selectedTargets[0]
     if (request.request_type === 'choose_players') value = selectedTargets
@@ -299,7 +328,7 @@ export function GamePage() {
       <div className="self-area">
         {request && <DecisionPrompt request={request} canConfirm={canConfirm} onConfirm={confirm} onPass={() => actions.submitDecision(request.request_id, { pass: true })} onBoolean={(value) => actions.submitDecision(request.request_id, value)} onOption={(value) => actions.submitDecision(request.request_id, value)} />}
         <PlayerPanel player={self} position="self" selected={false} selectable={false} responding={request?.player_id === self.player_id} eventKind={eventTarget === self.player_id || eventSource === self.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} eventCue={latestEvent} godCue={godCues[self.player_id]} vfxQuality={vfxQuality} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
-        <SkillBar player={self} general={state.generals[self.character_id]} request={request} chosen={selectedOption} onChoose={setSelectedOption} />
+        <SkillBar player={self} general={state.generals[self.character_id]} request={request} chosen={selectedOption} onChoose={(option) => { setSelectedOption(option); if (request?.request_type === 'respond_with_card') setSelectedCards([]) }} />
         <div className="hand" aria-label="手牌区">{projection.hand.map((card) => <HandCard key={card.card_id} card={card} selected={selectedCards.includes(card.card_id)} eligible={cardEligible(card.card_id)} onClick={() => toggleCard(card.card_id)} />)}</div>
       </div>
     </section>

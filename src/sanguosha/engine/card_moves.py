@@ -73,6 +73,11 @@ class CardMoveService:
             virtual_delayed = state.metadata.get('virtual_delayed_cards', {})
             for card_id in ids:
                 virtual_delayed.pop(card_id, None)
+        if (move.from_zone.zone_type is ZoneType.DISCARD_PILE
+                or move.to_zone.zone_type not in (ZoneType.PROCESSING, ZoneType.DISCARD_PILE)):
+            concealed = state.metadata.get('concealed_discard_cards', {})
+            for card_id in ids:
+                concealed.pop(card_id, None)
         self.recorder.record(CardMovedEvent(
             move.move_id, ids, move.from_zone, move.to_zone,
             move.reason.value, move.actor_id, move.related_action_id,

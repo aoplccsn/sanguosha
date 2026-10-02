@@ -196,6 +196,21 @@ class GameSession:
                 registry.register(LongdanUse, LongdanUseHandler(skills, moves, events, slash_rule))
                 registry.register(WuqianAction, WuqianHandler(events))
                 registry.register(ShenfenAction, ShenfenHandler(events, moves))
+                from sanguosha.engine.wind import (WindPhaseOffers, ShensuAction, ShensuHandler,
+                    BuquAction, BuquHandler, BuquOffer, WindHandLimit,
+                    LeijiAction, LeijiHandler)
+                offers = WindPhaseOffers(skills, definitions)
+                registry.register(TurnAction, TurnActionHandler(events, offers))
+                registry.register(ShensuAction, ShensuHandler(offers, moves))
+                registry.register(BuquAction, BuquHandler(deck, moves))
+                registry.register(LeijiAction, LeijiHandler())
+                from sanguosha.engine.wind_guhuo import GuhuoAction, GuhuoHandler
+                registry.register(GuhuoAction, GuhuoHandler(
+                    skills, definitions, card_rules, moves, events))
+                from sanguosha.engine.wind_lord import HuangtianAction, HuangtianHandler
+                registry.register(HuangtianAction, HuangtianHandler(skills, moves))
+                registry.register(DyingAction, DyingActionHandler(events, skills, BuquOffer(skills)))
+                bodies.register(Phase.DISCARD, DiscardPhaseBody(moves, skills, events, WindHandLimit()))
             registry.register(UseSpear,UseSpearHandler(provider,moves))
             bodies.register(Phase.PLAY,PlayPhaseBody(provider))
             if skills is not None:

@@ -123,9 +123,14 @@ class PlayerPanel(QPushButton):
         self.setText(f"{view.name} · {view.character_name} {view.identity_label} {status} 手牌 {view.hand_count}")
         distance_text = (f"\n距离：{view.base_distance}；装备修正后：{view.effective_distance}"
                          if view.base_distance is not None else "")
+        buqu = view.special_piles.get('buqu', ())
+        buqu_text = ("\n不屈牌：" + "、".join(card.suit + card.rank for card in buqu)) if buqu else ""
+        committed = tuple(card for key, cards in view.special_piles.items()
+                          if key.startswith('committed:') for card in cards)
+        committed_text = ("\n蛊惑扣牌：" + "、".join(card.name for card in committed)) if committed else ""
         self.setToolTip("装备：" + ("、".join(c.name for c in view.equipment) or "无") +
                         "\n判定：" + ("、".join(c.name for c in view.judgments) or "无") +
-                        f"\n当前攻击范围：{view.attack_range}" + distance_text)
+                        f"\n当前攻击范围：{view.attack_range}" + distance_text + buqu_text + committed_text)
         self.setEnabled(not choosing_target or targetable)
         self.setCursor(Qt.PointingHandCursor if targetable else Qt.ArrowCursor)
         self.update()
@@ -186,6 +191,17 @@ class PlayerPanel(QPushButton):
             p.drawText(art, Qt.AlignCenter, "翻面")
         if not v.alive:
             p.fillRect(art, QColor(24, 21, 19, int(185*self.death_opacity)))
+        buqu = v.special_piles.get('buqu', ())
+        committed = tuple(card for key, cards in v.special_piles.items()
+                          if key.startswith('committed:') for card in cards)
+        if buqu or committed:
+            badge = QRectF(art.left(), art.bottom()-21, art.width(), 20)
+            p.fillRect(badge, QColor(30, 24, 19, 190))
+            p.setPen(QColor("#f4d58b"))
+            p.setFont(QFont("Microsoft YaHei UI", 7, QFont.Bold))
+            p.drawText(badge, Qt.AlignCenter,
+                       ("不屈 " + str(len(buqu)) + " · " + " ".join(card.rank for card in buqu))
+                       if buqu else "蛊惑 · " + committed[0].name)
         p.setClipping(False)
         p.setPen(QPen(QColor("#795d3c"), 2))
         p.setBrush(Qt.NoBrush)

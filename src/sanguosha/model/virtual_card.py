@@ -10,9 +10,12 @@ class VirtualCard:
     color: Color | None
 
     @classmethod
-    def spear(cls,state,materials):
+    def spear(cls,state,materials,suit_resolver=None):
         cards=tuple(state.cards[cid] for cid in materials)
-        suits={c.suit for c in cards}
-        colors={c.color for c in cards}
+        interpreted=tuple(suit_resolver(state,cid) if suit_resolver else c.suit
+                          for cid,c in zip(materials,cards))
+        suits=set(interpreted)
+        colors={Color.RED if suit in (Suit.HEART,Suit.DIAMOND) else Color.BLACK
+                for suit in interpreted}
         return cls('basic.slash',tuple(materials),next(iter(suits)) if len(suits)==1 else None,
                    next(iter(colors)) if len(colors)==1 else None)

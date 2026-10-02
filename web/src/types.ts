@@ -86,6 +86,7 @@ export interface PlayerView {
   skill_labels: string[]
   face_up?: boolean
   marks?: Record<string, number>
+  special_piles?: Record<string, CardView[]>
 }
 
 export interface PortraitState {

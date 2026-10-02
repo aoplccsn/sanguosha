@@ -242,10 +242,12 @@ class TargetTrickHandler:
                 f.decision=None
                 return StepResult.complete()
             if d == 'trick.fire_attack':
-                suit=state.cards[f.decision].suit
+                from .suits import effective_suit
+                suit=effective_suit(state, f.decision, a.target_id)
                 f.decision=None
                 f.step_index=2
-                eligible=tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND,a.source_id)) if state.cards[cid].suit == suit)
+                eligible=tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND,a.source_id))
+                               if effective_suit(state, cid, a.source_id) == suit)
                 return self.ask(a,f,a.source_id,RequestType.RESPOND_WITH_CARD,f'火攻：展示花色 {suit.value}，弃同花色手牌或放弃',eligible_card_ids=eligible,allow_pass=True)
             if d == 'trick.borrowed_sword':
                 f.local['victim']=str(f.decision)

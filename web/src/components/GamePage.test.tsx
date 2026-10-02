@@ -6,6 +6,7 @@ import { GamePage, ResultOverlay, portraitState } from './GamePage'
 const submitDecision = vi.fn()
 const returnHome = vi.fn()
 let request: any
+let generals: Record<string, any> = {}
 const card = { card_id: 'slash-1', name: '杀', suit: '♠', rank: '7', definition_id: 'basic.slash', category: 'basic', equipment_slot: '', details: '' }
 const players = [
   { player_id: 'p1', name: '你 · 房主', character_name: '曹操', identity_label: '主公', hp: 4, max_hp: 4, hand_count: 1, alive: true, active: true, character_id: 'caocao', faction: '魏', chained: false, equipment: [], judgments: [], base_distance: null, effective_distance: null, attack_range: 1, skill_labels: ['奸雄'] },
@@ -20,7 +21,7 @@ vi.mock('../state/GameContext', () => ({
       projection: { players, hand: [card], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
       pendingRequest: request,
       publicEvents: [],
-      generals: {},
+      generals,
       result: null,
       error: '',
     },
@@ -29,7 +30,7 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
-  beforeEach(() => { submitDecision.mockClear(); request = null })
+  beforeEach(() => { submitDecision.mockClear(); request = null; generals = {}; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄'] })
 
   it('maps shared portrait state for turn, target, response and chain feedback', () => {
     const state = portraitState({ ...players[1], face_up: false, chained: true }, true, true, true)
@@ -50,6 +51,36 @@ describe('GamePage', () => {
     expect(submitDecision).not.toHaveBeenCalled()
     await userEvent.click(screen.getByRole('button', { name: '确定' }))
     expect(submitDecision).toHaveBeenCalledWith('r1', 'slash-1')
+  })
+
+  it('offers Guhuo in a response window and submits the virtual choice', async () => {
+    players[0].character_id = 'wind_yuji'
+    players[0].skill_labels = ['蛊惑']
+    generals = { wind_yuji: { skills: [{ id: 'guhuo', name: '蛊惑', type: 'view_as', description: '蛊惑规则' }] } }
+    request = { request_id: 'guhuo-response', player_id: 'p1', request_type: 'respond_with_card', prompt: '请打出闪', choices: [], allowed_player_ids: [], required_definition_id: 'basic.dodge', eligible_card_ids: ['virtual:guhuo'], allow_pass: true, min_count: 1, max_count: 1, subject_player_id: 'p1', remaining_ms: 30000 }
+    render(<GamePage />)
+    await userEvent.click(screen.getByRole('button', { name: '蛊惑' }))
+    await userEvent.click(screen.getByRole('button', { name: '确定' }))
+    expect(submitDecision).toHaveBeenCalledWith('guhuo-response', 'virtual:guhuo')
+  })
+
+  it('lets a physical response replace a previously selected Guhuo option', async () => {
+    players[0].character_id = 'wind_yuji'
+    players[0].skill_labels = ['蛊惑']
+    generals = { wind_yuji: { skills: [{ id: 'guhuo', name: '蛊惑', type: 'view_as', description: '蛊惑规则' }] } }
+    request = { request_id: 'guhuo-switch', player_id: 'p1', request_type: 'respond_with_card', prompt: '请打出杀', choices: [], allowed_player_ids: [], required_definition_id: 'basic.slash', eligible_card_ids: ['virtual:guhuo', 'slash-1'], allow_pass: true, min_count: 1, max_count: 1, subject_player_id: 'p2', remaining_ms: 30000 }
+    render(<GamePage />)
+    await userEvent.click(screen.getByRole('button', { name: '蛊惑' }))
+    await userEvent.click(screen.getByRole('button', { name: /杀/ }))
+    await userEvent.click(screen.getByRole('button', { name: '确定' }))
+    expect(submitDecision).toHaveBeenCalledWith('guhuo-switch', 'slash-1')
+  })
+
+  it('labels the two challenge decisions', async () => {
+    request = { request_id: 'guhuo-challenge', player_id: 'p1', request_type: 'yes_no', prompt: '蛊惑声明【杀】：是否质疑？', choices: ['declared:basic.slash'], allowed_player_ids: [], required_definition_id: null, eligible_card_ids: [], allow_pass: false, min_count: 0, max_count: 0, subject_player_id: 'p2', remaining_ms: 30000 }
+    render(<GamePage />)
+    await userEvent.click(screen.getByRole('button', { name: '质疑' }))
+    expect(submitDecision).toHaveBeenCalledWith('guhuo-challenge', true)
   })
 
   it('selects a target before submitting it', async () => {

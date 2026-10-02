@@ -383,6 +383,13 @@ class MultiplayerRoom:
             result.update(kind='GodSkillEvent', source_id=str(event.source_id),
                           target_ids=list(map(str, event.target_ids)),
                           skill_id=str(event.metadata['skill_id']), level=int(event.metadata['level']))
+        elif isinstance(event, Event) and event.event_type in ('guhuo_declare', 'guhuo_reveal'):
+            result.update(kind='GuhuoEvent', source_id=str(event.source_id),
+                          stage='declare' if event.event_type == 'guhuo_declare' else 'reveal',
+                          declared=str(event.metadata['declared']))
+            if event.event_type == 'guhuo_reveal':
+                result.update(actual=str(event.metadata['actual']),
+                              suit=str(event.metadata['suit']), truth=bool(event.metadata['truth']))
         elif isinstance(event, (CardUsedEvent, TrickTargetsDeclaredEvent)):
             result.update(source_id=str(event.player_id), target_ids=list(map(str, event.target_ids)))
             definition_id = (event.virtual_definition_id or str(self.session.state.cards[event.card_id].definition_id)

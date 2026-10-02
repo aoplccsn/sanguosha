@@ -28,7 +28,7 @@ class DeathActionHandler:
         self.recorder = recorder
 
     def _discard_all(self, state: GameState, player_id: PlayerId, action_id: str) -> None:
-        personal = (ZoneType.HAND, ZoneType.EQUIPMENT, ZoneType.JUDGMENT)
+        personal = (ZoneType.HAND, ZoneType.EQUIPMENT, ZoneType.JUDGMENT, ZoneType.SPECIAL)
         refs = sorted(
             (ref for ref in state.zones if ref.player_id == player_id and ref.zone_type in personal),
             key=lambda ref: (ref.zone_type.value, ref.equipment_slot.value if ref.equipment_slot else ""),

@@ -6,6 +6,7 @@ from .card_rules import InvalidCardUse
 from .card_moves import CardMove,CardMoveReason
 from .requests import PendingRequest,RequestType
 from .military_basics import equipped,SlashSequence
+from .suits import effective_suit
 from sanguosha.model.virtual_card import VirtualCard
 from sanguosha.model.enums import EquipmentSlot,Phase
 from sanguosha.model.zones import ZoneRef,ZoneType
@@ -55,7 +56,7 @@ class UseSpearHandler:
             target=f.decision
             f.decision=None
             self.provider.validator.rules.get('basic.slash').validate_targets(state,a.player_id,(target,))
-            virtual=VirtualCard.spear(state,materials)
+            virtual=VirtualCard.spear(state,materials,effective_suit)
             self.moves.move(state,CardMove(a.action_id+':processing',materials,hand,ZoneRef(ZoneType.PROCESSING),CardMoveReason.USE,a.player_id))
             state.play_usage.record('basic.slash')
             f.step_index=3

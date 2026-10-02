@@ -44,7 +44,28 @@ MYTH_CHARACTERS = (
 )
 
 _NAMES = {
-    'kuangbao':'狂暴','wumou':'无谋','wuwei':'无前','shenfen':'神愤','shensu':'神速','jushou':'据守','liegong':'烈弓','kuanggu':'狂骨','tianxiang':'天香','hongyan':'红颜','qu':'不屈','leiji':'雷击','guidao':'鬼道','huangtian':'黄天','guhuo':'蛊惑',
+    'kuangbao':'狂暴','wumou':'无谋','wuwei':'无前','shenfen':'神愤','shensu':'神速','jushou':'据守','liegong':'烈弓','kuanggu':'狂骨','tianxiang':'天香','hongyan':'红颜','buqu':'不屈','leiji':'雷击','guidao':'鬼道','huangtian':'黄天','guhuo':'蛊惑',
 }
-MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(s, _NAMES.get(s, s), '经典神话再临规则摘要。', SkillType.ACTIVE) for c in MYTH_CHARACTERS for s in c.skill_ids)
+_WIND_DESCRIPTIONS = {
+    'shensu': '你可跳过判定阶段和摸牌阶段，视为使用一张无距离限制的杀；亦可跳过出牌阶段并弃置一张装备牌，视为使用一张无距离限制的杀。两项可分别发动。',
+    'jushou': '结束阶段开始时，你可以摸三张牌，然后将武将牌翻面。背面朝上时跳过下个自己的回合并翻回正面。',
+    'liegong': '出牌阶段使用杀指定目标后，若其手牌数不小于你的体力值，或不大于你的攻击范围，你可以令其不能以闪响应此杀。',
+    'kuanggu': '锁定技。你对距离一以内的角色每造成一点伤害后，回复一点体力。',
+    'hongyan': '锁定技。你的黑桃牌视为红桃牌。',
+    'tianxiang': '受到伤害前，你可以弃置一张红桃手牌并选择一名其他角色，将此次伤害转移给该角色；结算后其摸等同于已损失体力值的牌。',
+    'buqu': '锁定技。濒死时亮出牌堆顶一张牌作为不屈牌；若点数与已有不屈牌均不同，回复至一点体力，否则弃置并继续濒死流程。有不屈牌时手牌上限等于其数量。',
+    'leiji': '使用或打出闪时，你可以令一名其他角色判定：黑桃则对其造成两点雷电伤害；梅花则你回复一点体力，再对其造成一点雷电伤害。',
+    'guidao': '任意角色的判定牌生效前，你可以打出一张黑色牌替换之。',
+    'huangtian': '主公技。其他群势力角色在各自出牌阶段限一次，可以将一张闪或闪电交给你。',
+    'guhuo': '你可以扣置一张手牌，声明为基本牌或非延时锦囊牌使用或打出。其他角色依次可质疑；被质疑时展示实体牌，并按真伪结算质疑者失去体力或摸牌。仅真牌且实体牌为红桃时继续生效。',
+}
+_WIND_TYPES = {
+    'jushou': SkillType.TRIGGERED, 'liegong': SkillType.TRIGGERED,
+    'kuanggu': SkillType.LOCKED, 'hongyan': SkillType.LOCKED,
+    'tianxiang': SkillType.TRIGGERED, 'buqu': SkillType.LOCKED,
+    'leiji': SkillType.TRIGGERED, 'guidao': SkillType.TRIGGERED,
+    'guhuo': SkillType.VIEW_AS,
+}
+MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(s, _NAMES.get(s, s), _WIND_DESCRIPTIONS.get(s, '经典神话再临规则摘要。'), _WIND_TYPES.get(s, SkillType.ACTIVE),
+    {'lord': True} if s == 'huangtian' else {}) for c in MYTH_CHARACTERS for s in c.skill_ids)
 MYTH_40_GENERAL_POOL = MYTH_CHARACTERS
