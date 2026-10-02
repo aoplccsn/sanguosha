@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from sanguosha.model.enums import Phase, Suit
+from sanguosha.model.enums import Identity, Phase, Suit
 from sanguosha.model.zones import ZoneRef, ZoneType
 
 from .actions import Action, StepResult
@@ -12,7 +12,9 @@ from .requests import PendingRequest, RequestType
 from .events import CardUsedEvent
 from .judgment import JudgmentAction, JudgmentPattern
 from .suits import effective_suit
-from .hp import LoseMaxHpAction
+from .hp import GainMaxHpAction, LoseMaxHpAction
+from .recovery import RecoverAction
+from .turn_order import queue_extra_turn
 
 
 QIAOBIAN_PHASES = frozenset((Phase.JUDGMENT, Phase.DRAW, Phase.PLAY, Phase.DISCARD))
@@ -145,6 +147,123 @@ class JixiHandler:
                 ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.USE, action.player_id, action.action_id))
         return StepResult.complete(frame.child_result)
+
+
+@dataclass(frozen=True, slots=True)
+class FangquanSkipAction(Action):
+    player_id: str
+
+
+class FangquanSkipHandler:
+    def __init__(self, skills):
+        self.skills = skills
+
+    def step(self, state, frame):
+        player_id = frame.action.player_id
+        if (not self.skills.has(state, player_id, 'fangquan')
+                or not state.players[player_id].is_alive):
+            return StepResult.complete()
+        if frame.step_index == 0:
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':offer', player_id, RequestType.YES_NO,
+                '是否发动【放权】跳过出牌阶段？', frame.action.action_id, frame.frame_id))
+        if frame.decision is True:
+            state.players[player_id].marks['skip_play'] = 1
+            state.players[player_id].marks['fangquan_pending'] = 1
+        frame.decision = None
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class FangquanEndAction(Action):
+    player_id: str
+
+
+class FangquanEndHandler:
+    def __init__(self, moves):
+        self.moves = moves
+
+    def targets(self, state, player_id):
+        return tuple(pid for pid in state.seat_order
+                     if pid != player_id and state.players[pid].is_alive)
+
+    def step(self, state, frame):
+        player_id = frame.action.player_id
+        hand = state.cards_in(ZoneRef(ZoneType.HAND, player_id))
+        if frame.step_index == 0:
+            if not hand or not self.targets(state, player_id):
+                return StepResult.complete()
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':offer', player_id, RequestType.YES_NO,
+                '放权：是否弃置一张手牌令其他角色进行额外回合？',
+                frame.action.action_id, frame.frame_id))
+        if frame.step_index == 1:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted or not hand:
+                return StepResult.complete()
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':cost', player_id, RequestType.CHOOSE_CARD,
+                '放权：弃置一张手牌', frame.action.action_id, frame.frame_id,
+                eligible_card_ids=hand))
+        if frame.step_index == 2:
+            cost = frame.decision
+            frame.decision = None
+            if cost not in hand:
+                raise InvalidCardUse('放权代价不是当前手牌')
+            frame.local['cost'] = cost
+            frame.step_index = 3
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':target', player_id, RequestType.CHOOSE_PLAYER,
+                '放权：选择获得额外回合的角色', frame.action.action_id, frame.frame_id,
+                allowed_player_ids=self.targets(state, player_id)))
+        target = frame.decision
+        frame.decision = None
+        if target not in self.targets(state, player_id):
+            raise InvalidCardUse('放权目标已不可用')
+        cost = frame.local['cost']
+        if cost not in hand:
+            raise InvalidCardUse('放权手牌代价已不可用')
+        self.moves.move(state, CardMove(
+            frame.action.action_id + ':cost', (cost,), ZoneRef(ZoneType.HAND, player_id),
+            ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD,
+            player_id, frame.action.action_id))
+        queue_extra_turn(state, target)
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class RuoyuAction(Action):
+    player_id: str
+
+
+class RuoyuHandler:
+    def __init__(self, skills):
+        self.skills = skills
+
+    def step(self, state, frame):
+        player_id = frame.action.player_id
+        player = state.players[player_id]
+        if frame.step_index == 0:
+            if (not player.is_alive or player.identity is not Identity.LORD
+                    or not self.skills.has(state, player_id, 'ruoyu')
+                    or player.marks.get('awakened_ruoyu')
+                    or any(other.is_alive and other.hp < player.hp
+                           for other in state.players.values())):
+                return StepResult.complete(False)
+            player.marks['awakened_ruoyu'] = 1
+            frame.step_index = 1
+            return StepResult.push(GainMaxHpAction(
+                frame.action.action_id + ':max-hp', player_id, 1))
+        if frame.step_index == 1:
+            frame.step_index = 2
+            return StepResult.push(RecoverAction(
+                frame.action.action_id + ':recover', player_id, player_id, 1))
+        player.granted_skills['jijiang'] = 'ruoyu'
+        return StepResult.complete(True)
 
 
 @dataclass(frozen=True, slots=True)

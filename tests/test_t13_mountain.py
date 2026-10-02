@@ -3,9 +3,13 @@
 from dataclasses import replace
 import pytest
 
-from sanguosha.engine.mountain import QiaobianAction, TuntianAction, ZaoxianAction, JixiUse, field_zone
+from sanguosha.engine.mountain import (QiaobianAction, TuntianAction, ZaoxianAction,
+                                       JixiUse, FangquanSkipAction, FangquanEndAction, RuoyuAction,
+                                       field_zone)
+from sanguosha.engine.turn_order import next_scheduled_player, queue_extra_turn
 from sanguosha.engine.card_moves import CardMove, CardMoveReason
 from sanguosha.engine.distance import DistanceSystem
+from sanguosha.engine.military_basics import MilitaryStrike
 from sanguosha.engine.requests import Decision
 from sanguosha.model.enums import EquipmentSlot, Phase, Suit
 from sanguosha.model.zones import ZoneRef, ZoneType
@@ -117,6 +121,24 @@ def test_tuntian_off_turn_card_loss_queues_reaction():
     assert reaction.player_id == 'p1'
 
 
+def test_move_reaction_queue_survives_reconnect():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_deng_ai'
+    state.players['p1'].granted_skills['lianying'] = 'test'
+    state.current_player_id = 'p2'
+    hand = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
+    moves = session.engine.reaction_provider.__self__
+    moves.move(state, CardMove('loss-with-two-reactions', hand,
+                               ZoneRef(ZoneType.HAND, 'p1'), ZoneRef(ZoneType.DISCARD_PILE),
+                               CardMoveReason.DISCARD, 'p2'))
+    assert len(moves.reactions) == 2
+    restored = restore_session(snapshot_session(session))
+    reactions = restored.engine.reaction_provider.__self__.reactions
+    assert len(reactions) == 2
+    assert isinstance(reactions[1], TuntianAction)
+
+
 def test_zaoxian_awakens_once_and_grants_jixi():
     session = GameSession.new_game(military=True, five_generals=True)
     state = session.state
@@ -182,3 +204,102 @@ def test_jixi_uses_existing_snatch_and_consumes_field_card():
     assert session.engine.pending_request is None
     assert field_card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
     assert field_card not in state.cards_in(field_zone('p1'))
+
+
+def test_xiangle_prevents_slash_when_attacker_declines_basic_cost():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p2'].character_id = 'mountain_liushan'
+    slash = put(session, 'basic.slash', 'p1')
+    hp = state.players['p2'].hp
+    session.engine.start_action(MilitaryStrike('xiangle-slash', 'p1', 'p2', slash,
+                                               'basic.dodge'))
+    request = session.engine.pending_request
+    assert 'decline' in request.choices
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'decline'))
+    assert state.players['p2'].hp == hp
+
+
+def test_xiangle_consumes_basic_cost_then_slash_continues():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p2'].character_id = 'mountain_liushan'
+    slash = put(session, 'basic.slash', 'p1')
+    cost = put(session, 'basic.peach', 'p1')
+    session.engine.start_action(MilitaryStrike('xiangle-paid', 'p1', 'p2', slash,
+                                               'basic.dodge'))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', cost))
+    assert cost in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    while session.engine.pending_request is not None:
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, request.player_id,
+                                                request.timeout_value()))
+    assert session.engine.stack.is_empty()
+
+
+def test_fangquan_skip_cost_and_extra_turn_survive_reconnect():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_liushan'
+    hand = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
+    session.engine.start_action(FangquanSkipAction('fangquan-skip', 'p1'))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    assert state.players['p1'].marks['skip_play'] == 1
+    assert state.players['p1'].marks['fangquan_pending'] == 1
+    session.engine.start_action(FangquanEndAction('fangquan-end', 'p1'))
+    for choice in (True, hand[0], 'p3'):
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, 'p1', choice))
+    assert hand[0] in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert state.extra_turn_queue == ['p3']
+    restored = restore_session(snapshot_session(session))
+    assert next_scheduled_player(restored.state) == 'p3'
+    assert restored.state.extra_turn_queue == []
+
+
+def test_extra_turn_queue_skips_dead_recipient_and_preserves_order():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.current_player_id = 'p1'
+    queue_extra_turn(state, 'p2')
+    queue_extra_turn(state, 'p3')
+    from sanguosha.model.enums import PlayerStatus
+    state.players['p2'].status = PlayerStatus.DEAD
+    assert next_scheduled_player(state) == 'p3'
+    state.current_player_id = 'p3'
+    assert next_scheduled_player(state) == 'p3'
+
+
+def test_nested_extra_turns_resume_after_original_player():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.current_player_id = 'p1'
+    queue_extra_turn(state, 'p3')
+    assert next_scheduled_player(state) == 'p3'
+    state.current_player_id = 'p3'
+    queue_extra_turn(state, 'p4')
+    assert next_scheduled_player(state) == 'p4'
+    state.current_player_id = 'p4'
+    assert next_scheduled_player(state) == 'p2'
+
+
+def test_ruoyu_lord_awakes_once_and_reuses_jijiang():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    lord_id = next(pid for pid, player in state.players.items()
+                   if player.identity.value == 'lord')
+    lord = state.players[lord_id]
+    lord.character_id = 'mountain_liushan'
+    lord.hp = 1
+    original_max = lord.max_hp
+    session.engine.start_action(RuoyuAction('ruoyu-awake', lord_id))
+    assert lord.max_hp == original_max + 1
+    assert lord.hp == 2
+    assert lord.marks['awakened_ruoyu'] == 1
+    assert session.skills.has(state, lord_id, 'jijiang')
+    session.engine.start_action(RuoyuAction('ruoyu-again', lord_id))
+    assert lord.max_hp == original_max + 1
+    restored = restore_session(snapshot_session(session))
+    assert restored.skills.has(restored.state, lord_id, 'jijiang')

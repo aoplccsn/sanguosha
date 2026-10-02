@@ -108,6 +108,9 @@ def snapshot_session(session: GameSession) -> bytes:
         "human_id": str(session.human_id),
         "character_names": _encode(session.character_names),
         "declined_nullification_windows": _encode(session.declined_nullification_windows),
+        "move_reactions": _encode(
+            session.engine.reaction_provider.__self__.reactions
+            if session.engine.reaction_provider is not None else []),
     }
     return json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
 
@@ -145,4 +148,6 @@ def restore_session(blob: bytes) -> GameSession:
     session.ai = AIDecisionProvider(session.human_id)
     session.character_names = _decode(data["character_names"])
     session.declined_nullification_windows = _decode(data["declined_nullification_windows"])
+    if engine.reaction_provider is not None:
+        engine.reaction_provider.__self__.reactions = _decode(data.get("move_reactions", []))
     return session

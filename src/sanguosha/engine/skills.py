@@ -75,6 +75,10 @@ class FinishSkillBody:
     def step(self, state, frame):
         actor = frame.action.player_id
         if frame.step_index == 1:
+            if state.players[actor].marks.pop('fangquan_pending', 0):
+                from .mountain import FangquanEndAction
+                frame.step_index = 10
+                return StepResult.push(FangquanEndAction(frame.action.action_id + ':fangquan-end', actor))
             if (not frame.local.get('benghuai_offered')
                     and self.skills.has(state, actor, 'benghuai')
                     and state.players[actor].is_alive):

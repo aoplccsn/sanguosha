@@ -45,11 +45,21 @@ class WindPhaseOffers:
                               and not state.cards_in(ZoneRef(ZoneType.HAND, pid))))
 
     def __call__(self, state, player_id, phase, action_id):
+        if phase is Phase.PREPARATION and self.skills.has(state, player_id, 'ruoyu'):
+            from .mountain import RuoyuAction
+            player = state.players[player_id]
+            if (not player.marks.get('awakened_ruoyu')
+                    and all(not other.is_alive or other.hp >= player.hp
+                            for other in state.players.values())):
+                return RuoyuAction(action_id + ':ruoyu', player_id)
         if phase is Phase.PREPARATION and self.skills.has(state, player_id, 'zaoxian'):
             from .mountain import ZaoxianAction, field_zone
             if (not state.players[player_id].marks.get('awakened_zaoxian')
                     and len(state.cards_in(field_zone(player_id))) >= 3):
                 return ZaoxianAction(action_id + ':zaoxian', player_id)
+        if phase is Phase.PLAY and self.skills.has(state, player_id, 'fangquan'):
+            from .mountain import FangquanSkipAction
+            return FangquanSkipAction(action_id + ':fangquan', player_id)
         if phase in (Phase.JUDGMENT, Phase.DRAW, Phase.PLAY, Phase.DISCARD) and self.skills.has(state, player_id, 'qiaobian'):
             if state.cards_in(ZoneRef(ZoneType.HAND, player_id)):
                 from .mountain import QiaobianAction

@@ -150,9 +150,11 @@ class GameSession:
         ))
         registry.register(DyingAction, DyingActionHandler(events, skills))
         from sanguosha.engine.hp import (LoseHpAction, LoseHpHandler,
-                                         LoseMaxHpAction, LoseMaxHpHandler)
+                                         LoseMaxHpAction, LoseMaxHpHandler,
+                                         GainMaxHpAction, GainMaxHpHandler)
         registry.register(LoseHpAction, LoseHpHandler(events))
         registry.register(LoseMaxHpAction, LoseMaxHpHandler(events))
+        registry.register(GainMaxHpAction, GainMaxHpHandler(events))
         registry.register(DeathAction, DeathActionHandler(moves, IdentitySystem(), events, skills))
         from sanguosha.engine.turnover import TurnoverAction, TurnoverHandler
         registry.register(TurnoverAction, TurnoverHandler(events))
@@ -252,11 +254,14 @@ class GameSession:
                 offers = WindPhaseOffers(skills, definitions)
                 registry.register(TurnAction, TurnActionHandler(events, offers))
                 registry.register(ShensuAction, ShensuHandler(offers, moves))
-                from sanguosha.engine.mountain import QiaobianAction, QiaobianHandler, TuntianAction, TuntianHandler, ZaoxianAction, ZaoxianHandler, JixiUse, JixiHandler
+                from sanguosha.engine.mountain import QiaobianAction, QiaobianHandler, TuntianAction, TuntianHandler, ZaoxianAction, ZaoxianHandler, JixiUse, JixiHandler, FangquanSkipAction, FangquanSkipHandler, FangquanEndAction, FangquanEndHandler, RuoyuAction, RuoyuHandler
                 registry.register(QiaobianAction, QiaobianHandler(skills, moves, rng, definitions))
                 registry.register(TuntianAction, TuntianHandler(skills, moves))
                 registry.register(ZaoxianAction, ZaoxianHandler(skills))
                 registry.register(JixiUse, JixiHandler(skills, moves, events, card_rules.get('trick.snatch')))
+                registry.register(FangquanSkipAction, FangquanSkipHandler(skills))
+                registry.register(FangquanEndAction, FangquanEndHandler(moves))
+                registry.register(RuoyuAction, RuoyuHandler(skills))
                 registry.register(BuquAction, BuquHandler(deck, moves))
                 registry.register(LeijiAction, LeijiHandler())
                 from sanguosha.engine.wind_guhuo import GuhuoAction, GuhuoHandler
@@ -305,8 +310,8 @@ class GameSession:
             return True
         if self.engine.status in (EngineStatus.IDLE, EngineStatus.COMPLETED):
             current = self.state.current_player_id
-            next_player = (next(pid for pid in self.state.seat_order if self.state.players[pid].identity is Identity.LORD)
-                           if current is None else next_alive_player(self.state, current))
+            from sanguosha.engine.turn_order import next_scheduled_player
+            next_player = next_scheduled_player(self.state)
             self.engine.start_action(TurnAction(f"turn-{self.state.turn_number + 1}", next_player))
             return True
         request = self.engine.pending_request

@@ -424,6 +424,21 @@ class MilitarySlashHandler:
                     return StepResult.ask(PendingRequest(action.action_id+':liuli', action.target_id,
                         RequestType.YES_NO, '是否发动【流离】弃一张牌，转移【杀】的目标？',
                         action.action_id, frame.frame_id))
+            if (self.skills is not None and self.skills.has(state, action.target_id, 'xiangle')
+                    and action.source_id != action.target_id
+                    and not frame.local.get('xiangle_handled')):
+                from sanguosha.model.enums import CardCategory
+                basic = tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, action.source_id))
+                              if self.distance.definitions.get(state.cards[cid].definition_id).category
+                              is CardCategory.BASIC)
+                frame.local['xiangle_handled'] = True
+                if not basic:
+                    return StepResult.complete('prevented')
+                frame.step_index = 28
+                return StepResult.ask(PendingRequest(
+                    action.action_id + ':xiangle', action.source_id, RequestType.CHOOSE_OPTION,
+                    '享乐：弃置一张基本牌，否则此【杀】无效', action.action_id,
+                    frame.frame_id, choices=(*basic, 'decline')))
             if not frame.local.get('fan_handled') and weapon=='equipment.weapon.vermilion_fan' and nature is DamageNature.NORMAL:
                 frame.local['fan_handled']=True
                 frame.step_index=9
@@ -497,6 +512,21 @@ class MilitarySlashHandler:
         if frame.step_index == 25:
             frame.local['no_dodge'] = frame.decision is True
             frame.decision = None
+            frame.step_index = 0
+            return StepResult.continue_()
+        if frame.step_index == 28:
+            choice = frame.decision
+            frame.decision = None
+            if choice == 'decline':
+                return StepResult.complete('prevented')
+            from sanguosha.model.enums import CardCategory
+            if (choice not in state.cards_in(ZoneRef(ZoneType.HAND, action.source_id))
+                    or self.distance.definitions.get(state.cards[choice].definition_id).category
+                    is not CardCategory.BASIC):
+                raise InvalidCardUse('享乐代价不是合法基本牌')
+            self.moves.move(state, CardMove(action.action_id + ':xiangle-cost', (choice,),
+                ZoneRef(ZoneType.HAND, action.source_id), ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.DISCARD, action.source_id, action.action_id))
             frame.step_index = 0
             return StepResult.continue_()
         if frame.step_index == 21:
