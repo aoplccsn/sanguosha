@@ -45,6 +45,10 @@ class WindPhaseOffers:
                               and not state.cards_in(ZoneRef(ZoneType.HAND, pid))))
 
     def __call__(self, state, player_id, phase, action_id):
+        if phase in (Phase.JUDGMENT, Phase.DRAW, Phase.PLAY, Phase.DISCARD) and self.skills.has(state, player_id, 'qiaobian'):
+            if state.cards_in(ZoneRef(ZoneType.HAND, player_id)):
+                from .mountain import QiaobianAction
+                return QiaobianAction(action_id + ':qiaobian', player_id, phase)
         if phase is Phase.DRAW and self.skills.has(state, player_id, 'shuangxiong'):
             from .fire import ShuangxiongAction
             return ShuangxiongAction(action_id + ':shuangxiong', player_id)

@@ -252,6 +252,8 @@ class GameSession:
                 offers = WindPhaseOffers(skills, definitions)
                 registry.register(TurnAction, TurnActionHandler(events, offers))
                 registry.register(ShensuAction, ShensuHandler(offers, moves))
+                from sanguosha.engine.mountain import QiaobianAction, QiaobianHandler
+                registry.register(QiaobianAction, QiaobianHandler(skills, moves, rng, definitions))
                 registry.register(BuquAction, BuquHandler(deck, moves))
                 registry.register(LeijiAction, LeijiHandler())
                 from sanguosha.engine.wind_guhuo import GuhuoAction, GuhuoHandler
