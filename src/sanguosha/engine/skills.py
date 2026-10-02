@@ -26,7 +26,10 @@ class SkillRegistry:
         self.skills = {skill.id: skill for skill in SKILLS}
 
     def has(self, state, player_id, skill_id):
-        character = self.characters.get(state.players[player_id].character_id)
+        player = state.players[player_id]
+        if skill_id in player.disabled_skills:
+            return False
+        character = self.characters.get(player.character_id)
         if skill_id == 'wushuang' and state.players[player_id].marks.get('wuwei', 0):
             return True
         if character is None or skill_id not in character.skill_ids:

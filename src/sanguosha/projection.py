@@ -121,7 +121,8 @@ def project_for_human(
             distance.attack_range(state,pid) if player.is_alive else 1,
             tuple(skills.skills[sid].name + (" · 已用" if sid == 'zhiheng' and state.play_usage and state.play_usage.player_id == pid
                                          and state.play_usage.count('skill.zhiheng') else "") +
-                  (" · 主公技" if skills.skills[sid].metadata.get('lord') else "")
+                  (" · 主公技" if skills.skills[sid].metadata.get('lord') else "") +
+                  (" · 已失去" if sid in player.disabled_skills else "")
                   for sid in skills.characters[player.character_id].skill_ids)
             if player.character_id in skills.characters else (),
             player.face_up, dict(player.marks),
