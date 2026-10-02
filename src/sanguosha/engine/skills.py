@@ -71,6 +71,13 @@ class FinishSkillBody:
     def step(self, state, frame):
         actor = frame.action.player_id
         if frame.step_index == 1:
+            if (not frame.local.get('benghuai_offered')
+                    and self.skills.has(state, actor, 'benghuai')
+                    and state.players[actor].is_alive):
+                from .forest import BenghuaiAction
+                frame.local['benghuai_offered'] = True
+                frame.step_index = 10
+                return StepResult.push(BenghuaiAction(frame.action.action_id + ':benghuai', actor))
             if self.base is not None:
                 self.base.step(state, frame)
             if self.skills.has(state, actor, 'jushou') and state.players[actor].is_alive:
@@ -100,6 +107,9 @@ class FinishSkillBody:
         if frame.step_index == 6:
             state.players[actor].face_up = not state.players[actor].face_up
             return StepResult.complete()
+        if frame.step_index == 10:
+            frame.step_index = 1
+            return StepResult.continue_()
         return StepResult.complete(frame.child_result)
 
 
@@ -112,6 +122,16 @@ class PreparationSkillBody:
         actor = frame.action.player_id
         if not state.players[actor].is_alive:
             return StepResult.complete()
+        if frame.step_index == 20:
+            frame.step_index = 1
+            return StepResult.continue_()
+        if (frame.step_index == 1 and not frame.local.get('yinghun_offered')
+                and self.skills.has(state, actor, 'yinghun')
+                and state.players[actor].hp < state.players[actor].max_hp):
+            from .forest import YinghunAction
+            frame.local['yinghun_offered'] = True
+            frame.step_index = 20
+            return StepResult.push(YinghunAction(frame.action.action_id + ':yinghun', actor))
         if self.skills.has(state, actor, 'guanxing'):
             return self._guanxing(state, frame, actor)
         if not self.skills.has(state, actor, 'luoshen') or not state.players[actor].is_alive:
@@ -566,6 +586,12 @@ class QixiUseHandler:
     def __init__(self, skills, moves, recorder, trick_rule):
         self.skills, self.moves, self.recorder, self.trick_rule = skills, moves, recorder, trick_rule
 
+    def targets(self, state, player_id, material_id):
+        from .forest import weimu_blocks
+        return tuple(pid for pid in self.trick_rule.target_candidates(state, player_id)
+                     if not weimu_blocks(state, pid, material_id,
+                         'trick.dismantlement', player_id, self.skills))
+
     def validate_start(self, state, action):
         source = next((ref for ref, zone in state.zones.items()
                        if action.material_id in zone.card_ids), None)
@@ -574,7 +600,7 @@ class QixiUseHandler:
                 or source is None or source.player_id != action.player_id
                 or source.zone_type not in (ZoneType.HAND, ZoneType.EQUIPMENT)
                 or effective_color(state, action.material_id, action.player_id) is not Color.BLACK
-                or not self.trick_rule.target_candidates(state, action.player_id)):
+                or not self.targets(state, action.player_id, action.material_id)):
             raise InvalidCardUse('奇袭不可用')
 
     def step(self, state, frame):
@@ -585,12 +611,15 @@ class QixiUseHandler:
             frame.step_index = 1
             return StepResult.ask(PendingRequest(action.action_id + ':target', action.player_id,
                 RequestType.CHOOSE_PLAYER, '奇袭：选择【过河拆桥】目标', action.action_id,
-                frame.frame_id, allowed_player_ids=self.trick_rule.target_candidates(state, action.player_id)))
+                frame.frame_id, allowed_player_ids=self.targets(state, action.player_id,
+                                                                  action.material_id)))
         if frame.step_index == 1:
             target = frame.decision
             frame.decision = None
             self.validate_start(state, action)
             self.trick_rule.validate_targets(state, action.player_id, (target,))
+            if target not in self.targets(state, action.player_id, action.material_id):
+                raise InvalidCardUse('帷幕阻止该奇袭目标')
             source = next(ref for ref, zone in state.zones.items()
                           if action.material_id in zone.card_ids)
             self.moves.move(state, CardMove(action.action_id + ':processing', (action.material_id,),
@@ -1064,13 +1093,38 @@ class SkillPlayOptions:
         if self.skills.has(state,pid,'qixi'):
             dismantlement = self.validator.rules.get('trick.dismantlement')
             if dismantlement.target_candidates(state,pid):
+                from .forest import weimu_blocks
                 extra.extend(f'virtual:qixi:{cid}' for cid in materials
-                             if effective_color(state, cid, pid) is Color.BLACK)
+                             if effective_color(state, cid, pid) is Color.BLACK
+                             and any(not weimu_blocks(state, target, cid,
+                                 'trick.dismantlement', pid, self.skills)
+                                 for target in dismantlement.target_candidates(state, pid)))
         if self.skills.has(state,pid,'guose'):
             indulgence = self.validator.rules.get('delayed.indulgence')
             if indulgence.target_candidates(state,pid):
                 extra.extend(f'virtual:guose:{cid}' for cid in materials
                              if effective_suit(state, cid, pid) is Suit.DIAMOND)
+        if self.skills.has(state, pid, 'duanliang'):
+            from .forest import DuanliangHandler
+            shortage = self.validator.rules.get('delayed.supply_shortage')
+            handler = DuanliangHandler(self.skills, None, None,
+                                      self.validator.definitions, shortage)
+            if handler.available(state, pid):
+                extra.extend(f'virtual:duanliang:{cid}' for cid in handler.materials(state, pid))
+        if self.skills.has(state, pid, 'dimeng'):
+            from .forest import DimengHandler
+            if DimengHandler(self.skills).available(state, pid):
+                extra.append('skill:dimeng')
+        if self.skills.has(state, pid, 'luanwu'):
+            from .forest import LuanwuHandler
+            if LuanwuHandler(self.skills, self.slash_rule).available(state, pid):
+                extra.append('skill:luanwu')
+        if self.skills.has(state, pid, 'jiuchi'):
+            from .forest import JiuchiHandler
+            wine = self.validator.rules.get('basic.wine')
+            handler = JiuchiHandler(self.skills, None, None, wine)
+            if handler.available(state, pid):
+                extra.extend(f'virtual:jiuchi:{cid}' for cid in handler.materials(state, pid))
         if (self.skills.has(state,pid,'fanjian') and not state.play_usage.count('skill.fanjian')
                 and hand and any(q != pid and p.is_alive for q,p in state.players.items())):
             extra.append('skill:fanjian')
@@ -1169,6 +1223,15 @@ class SkillPlayOptions:
             return FanjianAction(aid+':fanjian', pid)
         if option == 'skill:lijian':
             return LijianAction(aid+':lijian', pid)
+        if option == 'skill:dimeng':
+            from .forest import DimengAction
+            return DimengAction(aid + ':dimeng', pid)
+        if option == 'skill:luanwu':
+            from .forest import LuanwuAction
+            return LuanwuAction(aid + ':luanwu', pid)
+        if option.startswith('virtual:jiuchi:'):
+            from .forest import JiuchiUse
+            return JiuchiUse(aid + ':jiuchi', pid, option.split(':', 2)[2])
         if option == 'skill:huangtian':
             from .wind_lord import HuangtianAction
             return HuangtianAction(aid+':huangtian', pid)
@@ -1181,6 +1244,9 @@ class SkillPlayOptions:
             return QixiUse(aid+':qixi',pid,option.split(':',2)[2])
         if option.startswith('virtual:guose:'):
             return GuoseUse(aid+':guose',pid,option.split(':',2)[2])
+        if option.startswith('virtual:duanliang:'):
+            from .forest import DuanliangUse
+            return DuanliangUse(aid + ':duanliang', pid, option.split(':', 2)[2])
         if option.startswith('virtual:longdan:'):
             return LongdanUse(aid+':longdan',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)

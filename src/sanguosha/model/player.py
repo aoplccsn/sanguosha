@@ -22,8 +22,8 @@ class PlayerState:
     def __post_init__(self) -> None:
         if not self.player_id or not self.character_id:
             raise ValueError("player and character ids are required")
-        if self.seat < 0 or self.max_hp < 1:
-            raise ValueError("seat must be nonnegative and max_hp positive")
+        if self.seat < 0 or self.max_hp < 0:
+            raise ValueError("seat and max_hp must be nonnegative")
         if self.hp > self.max_hp:
             raise ValueError("hp cannot exceed max_hp")
 

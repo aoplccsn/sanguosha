@@ -22,10 +22,12 @@ class DeathAction(Action):
 
 
 class DeathActionHandler:
-    def __init__(self, moves: CardMoveService, identity: IdentitySystem, recorder: EventRecorder) -> None:
+    def __init__(self, moves: CardMoveService, identity: IdentitySystem, recorder: EventRecorder,
+                 skills=None) -> None:
         self.moves = moves
         self.identity = identity
         self.recorder = recorder
+        self.skills = skills
 
     def _discard_all(self, state: GameState, player_id: PlayerId, action_id: str) -> None:
         personal = (ZoneType.HAND, ZoneType.EQUIPMENT, ZoneType.JUDGMENT, ZoneType.SPECIAL)
@@ -48,6 +50,15 @@ class DeathActionHandler:
         if frame.step_index == 0:
             victim.status = PlayerStatus.DEAD
             state.revealed_identities.add(action.target_id)
+            frame.step_index = 3
+            if (self.skills is not None and any(
+                    pid != action.target_id and state.players[pid].is_alive
+                    and self.skills.has(state, pid, 'xingshang') for pid in state.seat_order)):
+                from .forest import XingshangAction
+                return StepResult.push(XingshangAction(action.action_id + ':xingshang',
+                                                       action.target_id))
+            return StepResult.continue_()
+        if frame.step_index == 3:
             self._discard_all(state, action.target_id, action.action_id)
             self.recorder.record(PlayerDiedEvent(
                 f"{action.action_id}:died", action.target_id, victim.identity, action.killer_id,

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from sanguosha.model.enums import Color, Suit
+from sanguosha.model.enums import Color, Suit, Kingdom
 from sanguosha.model.ids import CardInstanceId, PlayerId
 from sanguosha.model.state import GameState
 from sanguosha.model.zones import ZoneRef, ZoneType
@@ -50,11 +50,25 @@ class JudgmentHandler:
                                         CardMoveReason.SYSTEM, action.player_id, action.action_id))
         self.recorder.record(Event(f"{action.action_id}:after", "after_judgment", action.player_id,
                                    metadata={"card_id": str(card_id), "matched": bool(frame.local["matched"])}))
+        if (self.skills is not None and state.players[action.player_id].is_alive
+                and self.skills.faction(state, action.player_id) is Kingdom.WEI
+                and effective_color(state, card_id, action.player_id) is Color.BLACK):
+            lord = next((pid for pid in state.seat_order if pid != action.player_id
+                         and state.players[pid].is_alive
+                         and self.skills.has(state, pid, 'songwei')), None)
+            if lord is not None:
+                from .forest import SongweiAction
+                frame.step_index = 8
+                return StepResult.push(SongweiAction(action.action_id + ':songwei',
+                                                     action.player_id, lord))
         return StepResult.complete(str(card_id) if action.return_card_id else bool(frame.local["matched"]))
 
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
         assert isinstance(action, JudgmentAction)
+        if frame.step_index == 8:
+            return StepResult.complete(str(frame.local['card_id']) if action.return_card_id
+                                       else bool(frame.local['matched']))
         draw = ZoneRef(ZoneType.DRAW_PILE)
         processing = ZoneRef(ZoneType.PROCESSING)
         if frame.step_index == 0:

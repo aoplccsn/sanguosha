@@ -66,6 +66,39 @@ _WIND_TYPES = {
     'leiji': SkillType.TRIGGERED, 'guidao': SkillType.TRIGGERED,
     'guhuo': SkillType.VIEW_AS,
 }
-MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(s, _NAMES.get(s, s), _WIND_DESCRIPTIONS.get(s, '经典神话再临规则摘要。'), _WIND_TYPES.get(s, SkillType.ACTIVE),
-    {'lord': True} if s == 'huangtian' else {}) for c in MYTH_CHARACTERS for s in c.skill_ids)
+_FOREST_NAMES = {
+    'xingshang': '行殇', 'fangzhu': '放逐', 'songwei': '颂威',
+    'duanliang': '断粮', 'huoshou': '祸首', 'zaiqi': '再起',
+    'juxiang': '巨象', 'lieren': '烈刃', 'yinghun': '英魂',
+    'haoshi': '好施', 'dimeng': '缔盟', 'wansha': '完杀',
+    'luanwu': '乱武', 'weimu': '帷幕', 'jiuchi': '酒池',
+    'roulin': '肉林', 'benghuai': '崩坏', 'baonue': '暴虐',
+}
+_FOREST_DESCRIPTIONS = {
+    'xingshang': '其他角色死亡时，你可以获得其此时仍拥有的所有牌。',
+    'fangzhu': '每受到一次伤害后，你可以令一名其他角色摸等同于你已损失体力值的牌，然后将其武将牌翻面。',
+    'songwei': '主公技。其他魏势力角色的黑色判定牌生效后，其可以令你摸一张牌。',
+    'duanliang': '你可以将一张黑色基本牌或装备牌当兵粮寸断使用；你使用兵粮寸断的距离限制为二。',
+    'huoshou': '锁定技。南蛮入侵对你无效；其他角色使用的南蛮入侵造成伤害时，伤害来源改为你。',
+    'zaiqi': '摸牌阶段，若你已受伤，你可以改为亮出等同于已损失体力值的牌；每有一张红桃牌，你回复一点体力，然后获得其余的牌。',
+    'juxiang': '锁定技。南蛮入侵对你无效；其他角色使用的南蛮入侵结算结束后，你获得此牌。',
+    'lieren': '你使用杀对目标角色造成伤害后，可以与其拼点；若你赢，获得其一张牌。',
+    'yinghun': '准备阶段，若你已受伤，你可以令一名其他角色摸X张牌并弃一张牌，或摸一张牌并弃X张牌（X为你已损失体力值）。',
+    'haoshi': '摸牌阶段，你可以额外摸两张牌；若摸牌结束后你的手牌数大于五，你须将一半手牌交给一名手牌最少的其他角色。',
+    'dimeng': '出牌阶段限一次，你可以弃置等同于两名其他角色手牌数差的牌，令他们交换手牌。',
+    'benghuai': '结束阶段开始时，若你的体力值不是全场最低，你须选择失去一点体力或减少一点体力上限。',
+    'baonue': '主公技。其他群势力角色造成伤害后，其可以进行判定；若结果为黑桃，你回复一点体力。',
+    'luanwu': '限定技。出牌阶段，你可以令其他角色依次对距离最近的合法角色使用一张杀，否则失去一点体力。',
+    'jiuchi': '你可以将一张黑桃手牌当酒使用或用于自己濒死时自救。',
+}
+_FOREST_TYPES = {
+    'huoshou': SkillType.LOCKED, 'zaiqi': SkillType.TRIGGERED,
+    'juxiang': SkillType.LOCKED, 'lieren': SkillType.TRIGGERED,
+}
+MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(
+    s, _NAMES.get(s, _FOREST_NAMES.get(s, s)),
+    _WIND_DESCRIPTIONS.get(s, _FOREST_DESCRIPTIONS.get(s, '经典神话再临规则摘要。')),
+    _WIND_TYPES.get(s, _FOREST_TYPES.get(s, SkillType.ACTIVE)),
+    {'lord': True} if s in ('huangtian', 'songwei', 'baonue') else {})
+    for c in MYTH_CHARACTERS for s in c.skill_ids)
 MYTH_40_GENERAL_POOL = MYTH_CHARACTERS

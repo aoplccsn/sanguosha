@@ -14,7 +14,7 @@ from sanguosha.engine.card_rules import CardRuleRegistry, CardUseValidator, Targ
 from sanguosha.engine.card_use import LegalPlayActionProvider, UseCardAction, UseCardActionHandler
 from sanguosha.engine.damage import DamageAction, DamageActionHandler
 from sanguosha.engine.death import DeathAction, DeathActionHandler
-from sanguosha.engine.deck import DeckService, DrawCardsAction, DrawCardsHandler, DrawPhaseBody, basic_deck, classic_military_deck
+from sanguosha.engine.deck import DeckService, DrawCardsAction, DrawCardsHandler, DrawPhaseBody, RevealTopCardsAction, RevealTopCardsHandler, basic_deck, classic_military_deck
 from sanguosha.engine.discard import DiscardPhaseBody
 from sanguosha.engine.dying import DyingAction, DyingActionHandler
 from sanguosha.engine.engine import EngineStatus, GameEngine
@@ -131,7 +131,7 @@ class GameSession:
         definitions = CardDefinitionRegistry()
         card_rules = CardRuleRegistry()
         register_basic_cards(definitions, card_rules)
-        validator = CardUseValidator(definitions, card_rules, TargetValidator())
+        validator = CardUseValidator(definitions, card_rules, TargetValidator(), skills)
         bodies = standard_phase_bodies(LegalPlayActionProvider(validator))
         bodies.register(Phase.DRAW, DrawPhaseBody(skills))
         bodies.register(Phase.DISCARD, DiscardPhaseBody(moves, skills, events))
@@ -139,6 +139,7 @@ class GameSession:
         registry.register(TurnAction, TurnActionHandler(events))
         registry.register(PhaseAction, PhaseActionHandler(bodies, events))
         registry.register(DrawCardsAction, DrawCardsHandler(deck))
+        registry.register(RevealTopCardsAction, RevealTopCardsHandler(deck, events))
         registry.register(UseCardAction, UseCardActionHandler(validator, moves, events, skills))
         registry.register(SlashEffectAction, SlashEffectHandler())
         registry.register(RespondWithCardAction, RespondWithCardHandler(moves, events))
@@ -148,9 +149,13 @@ class GameSession:
             events, lambda action: DyingAction(f"{action.action_id}:dying-resolution", action.target_id, action.source_id),
         ))
         registry.register(DyingAction, DyingActionHandler(events, skills))
-        from sanguosha.engine.hp import LoseHpAction, LoseHpHandler
+        from sanguosha.engine.hp import (LoseHpAction, LoseHpHandler,
+                                         LoseMaxHpAction, LoseMaxHpHandler)
         registry.register(LoseHpAction, LoseHpHandler(events))
-        registry.register(DeathAction, DeathActionHandler(moves, IdentitySystem(), events))
+        registry.register(LoseMaxHpAction, LoseMaxHpHandler(events))
+        registry.register(DeathAction, DeathActionHandler(moves, IdentitySystem(), events, skills))
+        from sanguosha.engine.turnover import TurnoverAction, TurnoverHandler
+        registry.register(TurnoverAction, TurnoverHandler(events))
         if military:
             from sanguosha.engine.military_basics import register_military_basics
             register_military_basics(definitions, card_rules, registry, moves, events, bodies, skills)
@@ -215,6 +220,32 @@ class GameSession:
                     LuanjiAction, LuanjiHandler, FireHandLimit)
                 registry.register(ShuangxiongAction, ShuangxiongHandler(skills))
                 registry.register(LuanjiAction, LuanjiHandler(skills, moves, events))
+                from sanguosha.engine.forest import (XingshangAction, XingshangHandler,
+                    FangzhuAction, FangzhuHandler, SongweiAction, SongweiHandler,
+                    DuanliangUse, DuanliangHandler, ZaiqiAction, ZaiqiHandler,
+                    LierenAction, LierenHandler, YinghunAction, YinghunHandler,
+                    HaoshiGiveAction, HaoshiGiveHandler, DimengAction, DimengHandler,
+                    BenghuaiAction, BenghuaiHandler, BaonueAction, BaonueHandler,
+                    LuanwuAction, LuanwuHandler, JiuchiUse, JiuchiHandler)
+                from sanguosha.engine.forced_cards import (ForcedDiscardAction,
+                    ForcedDiscardHandler, SwapHandsAction, SwapHandsHandler)
+                registry.register(XingshangAction, XingshangHandler(skills, moves))
+                registry.register(FangzhuAction, FangzhuHandler(skills))
+                registry.register(SongweiAction, SongweiHandler(skills))
+                registry.register(DuanliangUse, DuanliangHandler(skills, moves, events,
+                    definitions, card_rules.get('delayed.supply_shortage')))
+                registry.register(ZaiqiAction, ZaiqiHandler(skills, moves))
+                registry.register(LierenAction, LierenHandler(skills, moves, rng))
+                registry.register(ForcedDiscardAction, ForcedDiscardHandler(moves))
+                registry.register(SwapHandsAction, SwapHandsHandler(moves))
+                registry.register(YinghunAction, YinghunHandler(skills))
+                registry.register(HaoshiGiveAction, HaoshiGiveHandler(moves))
+                registry.register(DimengAction, DimengHandler(skills))
+                registry.register(BenghuaiAction, BenghuaiHandler(skills))
+                registry.register(BaonueAction, BaonueHandler(skills))
+                registry.register(LuanwuAction, LuanwuHandler(skills, slash_rule))
+                registry.register(JiuchiUse, JiuchiHandler(skills, moves, events,
+                    card_rules.get('basic.wine')))
                 from sanguosha.engine.wind import (WindPhaseOffers, ShensuAction, ShensuHandler,
                     BuquAction, BuquHandler, BuquOffer, WindHandLimit,
                     LeijiAction, LeijiHandler)

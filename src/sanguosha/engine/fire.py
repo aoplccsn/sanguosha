@@ -369,7 +369,18 @@ class FireViewAsTrickHandler:
         if not materials or material_id is not None and material_id not in materials:
             return False
         rule = self.rules.get(self.DEFINITIONS[skill_id])
-        return skill_id == 'lianhuan' or bool(rule.target_candidates(state, player_id))
+        return skill_id == 'lianhuan' or (any(
+            self.targets(state, player_id, skill_id, cid) for cid in materials)
+            if material_id is None else bool(self.targets(
+                state, player_id, skill_id, material_id)))
+
+    def targets(self, state, player_id, skill_id, material_id):
+        from .forest import weimu_blocks
+        definition = self.DEFINITIONS[skill_id]
+        rule = self.rules.get(definition)
+        return tuple(pid for pid in rule.target_candidates(state, player_id)
+                     if not weimu_blocks(state, pid, material_id, definition,
+                                         player_id, self.skills))
 
     def step(self, state, frame):
         from .military_tricks import TrickAction
@@ -387,7 +398,8 @@ class FireViewAsTrickHandler:
             return StepResult.ask(PendingRequest(action.action_id + ':targets', player_id,
                 RequestType.CHOOSE_PLAYERS if high > 1 else RequestType.CHOOSE_PLAYER,
                 '选择转化锦囊目标；连环可选零名角色重铸', action.action_id,
-                frame.frame_id, allowed_player_ids=rule.target_candidates(state, player_id),
+                frame.frame_id, allowed_player_ids=self.targets(state, player_id,
+                    action.skill_id, action.material_id),
                 min_count=low, max_count=high))
         if frame.step_index == 1:
             choice = frame.decision
@@ -396,6 +408,9 @@ class FireViewAsTrickHandler:
             if not self.available(state, player_id, action.skill_id, action.material_id):
                 raise InvalidCardUse('转化锦囊材料已不可用')
             rule.validate_targets(state, player_id, targets)
+            if any(pid not in self.targets(state, player_id, action.skill_id,
+                                           action.material_id) for pid in targets):
+                raise InvalidCardUse('帷幕阻止该转化锦囊目标')
             virtual = VirtualCard(definition, (action.material_id,),
                 effective_suit(state, action.material_id, player_id),
                 effective_color(state, action.material_id, player_id))

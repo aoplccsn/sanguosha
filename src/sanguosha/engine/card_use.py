@@ -21,6 +21,7 @@ class UseCardAction(Action):
     user_id: PlayerId
     card_id: CardInstanceId
     target_ids: tuple[PlayerId, ...] = ()
+    forced: bool = False
 
 
 class UseCardActionHandler:
@@ -31,18 +32,33 @@ class UseCardActionHandler:
         self.recorder = recorder
         self.skills = skills
 
+    def _rule_for_action(self, state: GameState, action: UseCardAction):
+        if not action.forced:
+            return self.validator.validate_card(state, action.user_id, action.card_id)
+        if (action.user_id not in state.players or not state.players[action.user_id].is_alive
+                or action.card_id not in state.cards_in(ZoneRef(ZoneType.HAND, action.user_id))):
+            raise InvalidCardUse('forced-use card is unavailable')
+        rule = self.validator.rule_for(state, action.card_id)
+        if not rule.can_use(state, action.user_id):
+            raise InvalidCardUse('forced-use card condition is not met')
+        return rule
+
     def validate_start(self, state: GameState, action: Action) -> None:
         assert isinstance(action, UseCardAction)
-        rule = self.validator.validate_card(state, action.user_id, action.card_id)
+        rule = self._rule_for_action(state, action)
         if action.target_ids:
-            self.validator.targets.validate(rule, state, action.user_id, action.target_ids)
+            self.validator.validate_targets_for_card(rule, state, action.user_id,
+                                                     action.card_id, action.target_ids)
         elif not rule.requires_target_selection:
-            self.validator.targets.validate(rule, state, action.user_id, ())
-        elif not rule.target_candidates(state, action.user_id):
+            self.validator.validate_targets_for_card(rule, state, action.user_id,
+                                                     action.card_id, ())
+        elif not self.validator.target_candidates(state, action.user_id, action.card_id):
             raise InvalidCardUse("no legal target")
 
     def _commit(self, state: GameState, action: UseCardAction, targets: tuple[PlayerId, ...]) -> StepResult:
-        rule = self.validator.validate_final(state, action.user_id, action.card_id, targets)
+        rule = self._rule_for_action(state, action)
+        self.validator.validate_targets_for_card(rule, state, action.user_id,
+                                                 action.card_id, targets)
         effect = rule.effect_action(f"{action.action_id}:effect", action.user_id, action.card_id, targets)
         hand = ZoneRef(ZoneType.HAND, action.user_id)
         processing = ZoneRef(ZoneType.PROCESSING)
@@ -50,9 +66,10 @@ class UseCardActionHandler:
             f"{action.action_id}:to-processing", (action.card_id,), hand, processing,
             CardMoveReason.USE, action.user_id, action.action_id,
         ))
-        usage = state.play_usage
-        assert usage is not None
-        usage.record(getattr(rule, 'usage_key', state.cards[action.card_id].definition_id))
+        if not action.forced:
+            usage = state.play_usage
+            assert usage is not None
+            usage.record(getattr(rule, 'usage_key', state.cards[action.card_id].definition_id))
         self.recorder.record(CardUsedEvent(f"{action.action_id}:used", action.user_id, action.card_id, targets))
         return StepResult.push(effect)
 
@@ -85,7 +102,8 @@ class UseCardActionHandler:
                 return StepResult.ask(PendingRequest(
                     f"{action.action_id}:target", action.user_id, RequestType.CHOOSE_PLAYERS if high > 1 else RequestType.CHOOSE_PLAYER,
                     "Choose a target", action.action_id, frame.frame_id,
-                    allowed_player_ids=rule.target_candidates(state, action.user_id),
+                    allowed_player_ids=self.validator.target_candidates(state, action.user_id,
+                                                                        action.card_id),
                     min_count=low, max_count=high,
                 ))
             frame.step_index = 2
@@ -117,6 +135,16 @@ class UseCardActionHandler:
                     f"{action.action_id}:to-discard", (action.card_id,), processing, discard,
                     CardMoveReason.USE, action.user_id, action.action_id,
                 ))
+                if (self.skills is not None
+                        and state.cards[action.card_id].definition_id == 'trick.savage_assault'):
+                    owner = next((pid for pid in state.seat_order if pid != action.user_id
+                                  and state.players[pid].is_alive
+                                  and self.skills.has(state, pid, 'juxiang')), None)
+                    if owner is not None and action.card_id in state.cards_in(discard):
+                        self.moves.move(state, CardMove(
+                            f'{action.action_id}:juxiang', (action.card_id,), discard,
+                            ZoneRef(ZoneType.HAND, owner), CardMoveReason.SYSTEM,
+                            owner, action.action_id))
             self.recorder.record(CardResolvedEvent(f"{action.action_id}:resolved", action.user_id, action.card_id))
             return StepResult.complete(frame.child_result)
         raise InvalidCardUse(f"invalid card use step {frame.step_index}")

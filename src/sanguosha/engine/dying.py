@@ -50,6 +50,12 @@ class DyingActionHandler:
             frame.cursor += 1
             if not state.players[candidate].is_alive:
                 return StepResult.continue_()
+            turn_owner = state.current_player_id
+            if (self.skills is not None and turn_owner in state.players
+                    and state.players[turn_owner].is_alive
+                    and self.skills.has(state, turn_owner, 'wansha')
+                    and candidate not in (turn_owner, action.target_id)):
+                return StepResult.continue_()
             frame.step_index = 1
             round_number = int(frame.local.get("round", 0))
             return StepResult.push(RespondWithCardAction(
