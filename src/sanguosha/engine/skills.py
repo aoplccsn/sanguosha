@@ -1130,6 +1130,12 @@ class SkillPlayOptions:
                                     self.validator.definitions)
             if handler.available(state, pid):
                 extra.append('skill:tiaoxin')
+        from .mountain import ZhibaHandler
+        if ZhibaHandler(self.skills, None, None).available(state, pid):
+            extra.append('skill:zhiba')
+        from .mountain import ZhijianHandler
+        if ZhijianHandler(self.skills, None, self.validator.definitions).available(state, pid):
+            extra.append('skill:zhijian')
         if self.skills.has(state, pid, 'dimeng'):
             from .forest import DimengHandler
             if DimengHandler(self.skills).available(state, pid):
@@ -1272,6 +1278,12 @@ class SkillPlayOptions:
         if option == 'skill:tiaoxin':
             from .mountain import TiaoxinAction
             return TiaoxinAction(aid + ':tiaoxin', pid)
+        if option == 'skill:zhiba':
+            from .mountain import ZhibaAction
+            return ZhibaAction(aid + ':zhiba', pid)
+        if option == 'skill:zhijian':
+            from .mountain import ZhijianAction
+            return ZhijianAction(aid + ':zhijian', pid)
         if option.startswith('virtual:longdan:'):
             return LongdanUse(aid+':longdan',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)

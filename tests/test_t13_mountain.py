@@ -5,10 +5,14 @@ import pytest
 
 from sanguosha.engine.mountain import (QiaobianAction, TuntianAction, ZaoxianAction,
                                        JixiUse, FangquanSkipAction, FangquanEndAction, RuoyuAction,
-                                       TiaoxinAction, ZhijiAction,
+                                       TiaoxinAction, ZhijiAction, JiangAction, HunziAction,
+                                       ZhibaAction, ZhijianAction,
                                        field_zone)
 from sanguosha.engine.turn_order import next_scheduled_player, queue_extra_turn
 from sanguosha.engine.card_moves import CardMove, CardMoveReason
+from sanguosha.engine.events import CardUsedEvent
+from sanguosha.engine.events import phase_rule_discards
+from sanguosha.engine.phases import PhaseAction
 from sanguosha.engine.distance import DistanceSystem
 from sanguosha.engine.military_basics import MilitaryStrike
 from sanguosha.engine.requests import Decision
@@ -364,3 +368,106 @@ def test_zhiji_empty_hand_awakes_and_reuses_guanxing():
     assert session.skills.has(state, 'p1', 'guanxing')
     session.engine.start_action(ZhijiAction('zhiji-again', 'p1'))
     assert player.max_hp == original_max - 1
+
+
+def test_jiang_reacts_to_red_slash_use_and_target_without_duplicate():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_sunce'
+    state.players['p2'].character_id = 'mountain_sunce'
+    card = put(session, 'basic.slash', 'p1')
+    state.cards[card] = replace(state.cards[card], suit=Suit.HEART)
+    session.events.record(CardUsedEvent('jiang-red-use', 'p1', card, ('p2',)))
+    moves = session.engine.reaction_provider.__self__
+    first = moves.next_reaction(state)
+    second = moves.next_reaction(state)
+    assert isinstance(first, JiangAction) and first.player_id == 'p1'
+    assert isinstance(second, JiangAction) and second.player_id == 'p2'
+    assert moves.next_reaction(state) is None
+
+
+def test_hunzi_awakes_at_one_hp_and_grants_existing_skills():
+    session = GameSession.new_game(military=True, five_generals=True)
+    player = session.state.players['p1']
+    player.character_id = 'mountain_sunce'
+    player.hp = 1
+    original_max = player.max_hp
+    session.engine.start_action(HunziAction('hunzi', 'p1'))
+    assert player.max_hp == original_max - 1
+    assert session.skills.has(session.state, 'p1', 'yingzi')
+    assert session.skills.has(session.state, 'p1', 'yinghun')
+    session.engine.start_action(HunziAction('hunzi-again', 'p1'))
+    assert player.max_hp == original_max - 1
+
+
+def test_zhiba_pindian_claims_cards_when_lord_does_not_win():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    lord_id = next(pid for pid, player in state.players.items()
+                   if player.identity.value == 'lord')
+    challenger = next(pid for pid in state.seat_order if pid != lord_id)
+    state.players[lord_id].character_id = 'mountain_sunce'
+    state.players[challenger].character_id = 'sunquan'
+    state.current_player_id = challenger
+    state.current_phase = Phase.PLAY
+    state.turn_number = 1
+    state.play_usage = PlayUsageState(challenger, 1)
+    source_card = state.cards_in(ZoneRef(ZoneType.HAND, challenger))[0]
+    lord_card = state.cards_in(ZoneRef(ZoneType.HAND, lord_id))[0]
+    state.cards[source_card] = replace(state.cards[source_card], rank=13)
+    state.cards[lord_card] = replace(state.cards[lord_card], rank=1)
+    session.engine.start_action(ZhibaAction('zhiba', challenger))
+    for choice in (source_card, lord_card, True):
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, request.player_id, choice))
+    lord_hand = state.cards_in(ZoneRef(ZoneType.HAND, lord_id))
+    assert source_card in lord_hand and lord_card in lord_hand
+    assert state.play_usage.count('skill.zhiba') == 1
+
+
+def test_zhijian_replaces_equipment_and_draws():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_zhang_zhaozhang'
+    state.current_player_id = 'p1'
+    state.current_phase = Phase.PLAY
+    new = put(session, 'equipment.weapon.serpent_spear', 'p1')
+    old = put(session, 'equipment.weapon.qinggang_sword', 'p2',
+              ZoneType.EQUIPMENT, EquipmentSlot.WEAPON)
+    hand_before = len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1')))
+    session.engine.start_action(ZhijianAction('zhijian', 'p1'))
+    for choice in (new, 'p2'):
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, request.player_id, choice))
+    assert new in state.cards_in(ZoneRef(ZoneType.EQUIPMENT, 'p2', EquipmentSlot.WEAPON))
+    assert old in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == hand_before
+
+
+def test_guzheng_uses_exact_discard_phase_cards():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_zhang_zhaozhang'
+    state.players['p2'].character_id = 'caocao'
+    state.current_player_id = 'p2'
+    extra = state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[:2]
+    session.engine.reaction_provider.__self__.move(state, CardMove(
+        'setup-extra-hand', extra, ZoneRef(ZoneType.DRAW_PILE),
+        ZoneRef(ZoneType.HAND, 'p2'), CardMoveReason.SYSTEM))
+    unrelated = state.cards_in(ZoneRef(ZoneType.HAND, 'p3'))[0]
+    session.engine.reaction_provider.__self__.move(state, CardMove(
+        'unrelated-discard', (unrelated,), ZoneRef(ZoneType.HAND, 'p3'),
+        ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD, 'p3'))
+    session.engine.start_action(PhaseAction('guzheng-discard-phase', 'p2', Phase.DISCARD))
+    request = session.engine.pending_request
+    selected = tuple(request.eligible_card_ids[:request.min_count])
+    session.engine.submit_decision(Decision(request.request_id, 'p2', selected))
+    assert phase_rule_discards(session.events.events, 'guzheng-discard-phase', 'p2') == selected
+    request = session.engine.pending_request
+    assert request.player_id == 'p1' and '固政' in request.prompt
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', selected[0]))
+    assert selected[0] in state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
+    assert set(selected[1:]) <= set(state.cards_in(ZoneRef(ZoneType.HAND, 'p1')))
+    assert unrelated in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))

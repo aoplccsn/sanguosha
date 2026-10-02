@@ -100,9 +100,10 @@ class PlayPhaseBody:
 
 
 class PhaseActionHandler:
-    def __init__(self, bodies: PhaseBodyRegistry, recorder: EventRecorder) -> None:
+    def __init__(self, bodies: PhaseBodyRegistry, recorder: EventRecorder, skills=None) -> None:
         self.bodies = bodies
         self.recorder = recorder
+        self.skills = skills
 
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
@@ -120,8 +121,26 @@ class PhaseActionHandler:
             frame.step_index = 1
             return StepResult.continue_()
         if frame.step_index == 4:
-            self.recorder.record(PhaseEndedEvent(f"{action.action_id}:end", action.player_id, action.phase))
-            state.current_phase = None
+            if not frame.local.get('phase_end_recorded'):
+                self.recorder.record(PhaseEndedEvent(f"{action.action_id}:end", action.player_id, action.phase))
+                state.current_phase = None
+                frame.local['phase_end_recorded'] = True
+                if action.phase is Phase.DISCARD and self.skills is not None:
+                    from .events import phase_rule_discards
+                    cards = phase_rule_discards(self.recorder.events, action.action_id, action.player_id)
+                    frame.local['guzheng_cards'] = cards
+                    frame.local['guzheng_owners'] = tuple(pid for pid in state.seat_order
+                        if pid != action.player_id and state.players[pid].is_alive
+                        and self.skills.has(state, pid, 'guzheng')) if cards else ()
+                    frame.local['guzheng_cursor'] = 0
+            owners = frame.local.get('guzheng_owners', ())
+            index = frame.local.get('guzheng_cursor', 0)
+            if index < len(owners):
+                frame.local['guzheng_cursor'] = index + 1
+                from .mountain import GuzhengAction
+                return StepResult.push(GuzhengAction(
+                    f'{action.action_id}:guzheng:{index}', owners[index],
+                    action.player_id, frame.local['guzheng_cards']))
             return StepResult.complete()
         if state.status is GameStatus.FINISHED or not state.players[action.player_id].is_alive:
             frame.step_index = 4

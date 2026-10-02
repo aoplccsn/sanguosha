@@ -45,6 +45,11 @@ class WindPhaseOffers:
                               and not state.cards_in(ZoneRef(ZoneType.HAND, pid))))
 
     def __call__(self, state, player_id, phase, action_id):
+        if phase is Phase.PREPARATION and self.skills.has(state, player_id, 'hunzi'):
+            from .mountain import HunziAction
+            if (not state.players[player_id].marks.get('awakened_hunzi')
+                    and state.players[player_id].hp == 1):
+                return HunziAction(action_id + ':hunzi', player_id)
         if phase is Phase.PREPARATION and self.skills.has(state, player_id, 'zhiji'):
             from .mountain import ZhijiAction
             if (not state.players[player_id].marks.get('awakened_zhiji')

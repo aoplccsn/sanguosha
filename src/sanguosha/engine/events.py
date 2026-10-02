@@ -6,7 +6,7 @@ from typing import Mapping
 from sanguosha.model.enums import Phase
 from sanguosha.model.enums import Identity
 from sanguosha.model.ids import CardInstanceId, PlayerId
-from sanguosha.model.zones import ZoneRef
+from sanguosha.model.zones import ZoneRef, ZoneType
 
 
 @dataclass(frozen=True, slots=True)
@@ -202,3 +202,15 @@ class EventRecorder:
 
     def record(self, event: RecordedEvent) -> None:
         self.events.append(event)
+
+
+def phase_rule_discards(events: list[RecordedEvent], phase_action_id: str,
+                        player_id: PlayerId) -> tuple[CardInstanceId, ...]:
+    """Cards discarded by the hand-limit rule of one exact discard phase."""
+    return tuple(card_id for event in events
+                 if isinstance(event, CardMovedEvent)
+                 and event.related_action_id == phase_action_id
+                 and event.from_zone == ZoneRef(ZoneType.HAND, player_id)
+                 and event.to_zone == ZoneRef(ZoneType.DISCARD_PILE)
+                 and event.reason == 'discard'
+                 for card_id in event.card_ids)

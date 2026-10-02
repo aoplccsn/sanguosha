@@ -137,7 +137,7 @@ class GameSession:
         bodies.register(Phase.DISCARD, DiscardPhaseBody(moves, skills, events))
         registry = ActionHandlerRegistry()
         registry.register(TurnAction, TurnActionHandler(events))
-        registry.register(PhaseAction, PhaseActionHandler(bodies, events))
+        registry.register(PhaseAction, PhaseActionHandler(bodies, events, skills))
         registry.register(DrawCardsAction, DrawCardsHandler(deck))
         registry.register(RevealTopCardsAction, RevealTopCardsHandler(deck, events))
         registry.register(UseCardAction, UseCardActionHandler(validator, moves, events, skills))
@@ -254,7 +254,7 @@ class GameSession:
                 offers = WindPhaseOffers(skills, definitions)
                 registry.register(TurnAction, TurnActionHandler(events, offers))
                 registry.register(ShensuAction, ShensuHandler(offers, moves))
-                from sanguosha.engine.mountain import QiaobianAction, QiaobianHandler, TuntianAction, TuntianHandler, ZaoxianAction, ZaoxianHandler, JixiUse, JixiHandler, FangquanSkipAction, FangquanSkipHandler, FangquanEndAction, FangquanEndHandler, RuoyuAction, RuoyuHandler, TiaoxinAction, TiaoxinHandler, ZhijiAction, ZhijiHandler
+                from sanguosha.engine.mountain import QiaobianAction, QiaobianHandler, TuntianAction, TuntianHandler, ZaoxianAction, ZaoxianHandler, JixiUse, JixiHandler, FangquanSkipAction, FangquanSkipHandler, FangquanEndAction, FangquanEndHandler, RuoyuAction, RuoyuHandler, TiaoxinAction, TiaoxinHandler, ZhijiAction, ZhijiHandler, JiangAction, JiangHandler, HunziAction, HunziHandler, ZhibaAction, ZhibaHandler, ZhijianAction, ZhijianHandler, GuzhengAction, GuzhengHandler
                 registry.register(QiaobianAction, QiaobianHandler(skills, moves, rng, definitions))
                 registry.register(TuntianAction, TuntianHandler(skills, moves))
                 registry.register(ZaoxianAction, ZaoxianHandler(skills))
@@ -264,6 +264,11 @@ class GameSession:
                 registry.register(RuoyuAction, RuoyuHandler(skills))
                 registry.register(TiaoxinAction, TiaoxinHandler(skills, moves, slash_rule, definitions))
                 registry.register(ZhijiAction, ZhijiHandler(skills))
+                registry.register(JiangAction, JiangHandler(skills))
+                registry.register(HunziAction, HunziHandler(skills))
+                registry.register(ZhibaAction, ZhibaHandler(skills, moves, events))
+                registry.register(ZhijianAction, ZhijianHandler(skills, moves, definitions))
+                registry.register(GuzhengAction, GuzhengHandler(skills, moves))
                 registry.register(BuquAction, BuquHandler(deck, moves))
                 registry.register(LeijiAction, LeijiHandler())
                 from sanguosha.engine.wind_guhuo import GuhuoAction, GuhuoHandler

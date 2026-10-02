@@ -37,6 +37,25 @@ class MilitaryMoveService(CardMoveService):
             from .mountain import TuntianAction
             self.reactions.append(TuntianAction(move.move_id + ':tuntian', owner))
     def next_reaction(self,state):
+        cursor = state.metadata.get('reaction_event_cursor', 0)
+        new_events = self.recorder.events[cursor:]
+        state.metadata['reaction_event_cursor'] = len(self.recorder.events)
+        if self.skills is not None:
+            from .events import CardUsedEvent
+            from .suits import effective_color
+            from sanguosha.model.enums import Color
+            from .mountain import JiangAction
+            for event in new_events:
+                if not isinstance(event, CardUsedEvent):
+                    continue
+                definition = event.virtual_definition_id or state.cards[event.card_id].definition_id
+                if (definition != 'trick.duel'
+                        and (definition not in ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash')
+                             or effective_color(state, event.card_id, event.player_id) is not Color.RED)):
+                    continue
+                for pid in dict.fromkeys((event.player_id, *event.target_ids)):
+                    if state.players[pid].is_alive and self.skills.has(state, pid, 'jiang'):
+                        self.reactions.append(JiangAction(event.event_id + ':jiang:' + pid, pid))
         while self.reactions:
             action=self.reactions.pop(0)
             target=getattr(action,'target_id',getattr(action,'player_id',None))

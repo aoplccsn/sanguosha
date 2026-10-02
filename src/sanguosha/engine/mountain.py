@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from sanguosha.model.enums import Identity, Phase, Suit
+from sanguosha.model.enums import CardCategory, Identity, Kingdom, Phase, Suit
 from sanguosha.model.zones import ZoneRef, ZoneType
 
 from .actions import Action, StepResult
@@ -13,6 +13,7 @@ from .events import CardUsedEvent
 from .distance import DistanceSystem
 from .card_use import UseCardAction
 from .forced_cards import discardable_cards
+from .pindian import PindianAction
 from .judgment import JudgmentAction, JudgmentPattern
 from .suits import effective_suit
 from .hp import GainMaxHpAction, LoseMaxHpAction
@@ -405,6 +406,276 @@ class ZhijiHandler:
         if player.is_alive:
             player.granted_skills['guanxing'] = 'zhiji'
         return StepResult.complete(player.is_alive)
+
+
+@dataclass(frozen=True, slots=True)
+class JiangAction(Action):
+    player_id: str
+
+
+class JiangHandler:
+    def __init__(self, skills):
+        self.skills = skills
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        if not state.players[actor].is_alive or not self.skills.has(state, actor, 'jiang'):
+            return StepResult.complete()
+        if frame.step_index == 0:
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':offer', actor, RequestType.YES_NO,
+                '是否发动【激昂】摸一张牌？', frame.action.action_id, frame.frame_id))
+        if frame.step_index == 1:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted:
+                return StepResult.complete()
+            frame.step_index = 2
+            return StepResult.push(DrawCardsAction(
+                frame.action.action_id + ':draw', actor, 1))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class HunziAction(Action):
+    player_id: str
+
+
+class HunziHandler:
+    def __init__(self, skills):
+        self.skills = skills
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        player = state.players[actor]
+        if frame.step_index == 0:
+            if (not player.is_alive or not self.skills.has(state, actor, 'hunzi')
+                    or player.marks.get('awakened_hunzi') or player.hp != 1):
+                return StepResult.complete(False)
+            player.marks['awakened_hunzi'] = 1
+            frame.step_index = 1
+            return StepResult.push(LoseMaxHpAction(
+                frame.action.action_id + ':max-hp', actor, 1))
+        if player.is_alive:
+            player.granted_skills['yingzi'] = 'hunzi'
+            player.granted_skills['yinghun'] = 'hunzi'
+        return StepResult.complete(player.is_alive)
+
+
+@dataclass(frozen=True, slots=True)
+class ZhibaAction(Action):
+    player_id: str
+
+
+class ZhibaHandler:
+    def __init__(self, skills, moves, events):
+        self.skills = skills
+        self.moves = moves
+        self.events = events
+
+    def lord(self, state, challenger):
+        return next((pid for pid in state.seat_order
+                     if pid != challenger and state.players[pid].is_alive
+                     and state.players[pid].identity is Identity.LORD
+                     and self.skills.has(state, pid, 'zhiba')
+                     and state.cards_in(ZoneRef(ZoneType.HAND, pid))), None)
+
+    def available(self, state, challenger):
+        return (state.players[challenger].is_alive
+                and self.skills.faction(state, challenger) is Kingdom.WU
+                and state.current_player_id == challenger
+                and state.current_phase is Phase.PLAY
+                and state.play_usage is not None
+                and not state.play_usage.count('skill.zhiba')
+                and bool(state.cards_in(ZoneRef(ZoneType.HAND, challenger)))
+                and self.lord(state, challenger) is not None)
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        if frame.step_index == 0:
+            if not self.available(state, actor):
+                raise InvalidCardUse('制霸当前不可用')
+            lord = self.lord(state, actor)
+            state.play_usage.record('skill.zhiba')
+            frame.local['lord'] = lord
+            if state.players[lord].marks.get('awakened_hunzi'):
+                frame.step_index = 1
+                return StepResult.ask(PendingRequest(
+                    frame.action.action_id + ':accept', lord, RequestType.YES_NO,
+                    '制霸：是否接受拼点？', frame.action.action_id, frame.frame_id))
+            frame.step_index = 2
+        if frame.step_index == 1:
+            accepted = frame.decision is True
+            frame.decision = None
+            if not accepted:
+                return StepResult.complete()
+            frame.step_index = 2
+        if frame.step_index == 2:
+            frame.step_index = 3
+            return StepResult.push(PindianAction(
+                frame.action.action_id + ':pindian', actor, frame.local['lord']))
+        if frame.step_index == 3:
+            event_id = frame.action.action_id + ':pindian:shown'
+            shown = next(event for event in reversed(self.events.events)
+                         if getattr(event, 'event_id', None) == event_id)
+            lord_rank = shown.metadata['opponent_rank']
+            challenger_rank = shown.metadata['source_rank']
+            if lord_rank > challenger_rank:
+                return StepResult.complete()
+            cards = (shown.metadata['source_card_id'], shown.metadata['opponent_card_id'])
+            available = tuple(cid for cid in cards
+                              if cid in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE)))
+            if not available:
+                return StepResult.complete()
+            frame.local['claim_cards'] = available
+            frame.step_index = 4
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':claim', frame.local['lord'], RequestType.YES_NO,
+                '制霸：是否获得双方拼点牌？', frame.action.action_id, frame.frame_id))
+        if frame.decision is True:
+            cards = tuple(cid for cid in frame.local['claim_cards']
+                          if cid in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE)))
+            if cards:
+                self.moves.move(state, CardMove(
+                    frame.action.action_id + ':claim-cards', cards,
+                    ZoneRef(ZoneType.DISCARD_PILE),
+                    ZoneRef(ZoneType.HAND, frame.local['lord']),
+                    CardMoveReason.SYSTEM, frame.local['lord'], frame.action.action_id))
+        frame.decision = None
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class ZhijianAction(Action):
+    player_id: str
+
+
+class ZhijianHandler:
+    def __init__(self, skills, moves, definitions):
+        self.skills = skills
+        self.moves = moves
+        self.definitions = definitions
+
+    def materials(self, state, actor):
+        return tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, actor))
+                     if self.definitions.get(state.cards[cid].definition_id).category
+                     is CardCategory.EQUIPMENT)
+
+    def targets(self, state, actor):
+        return tuple(pid for pid in state.seat_order
+                     if pid != actor and state.players[pid].is_alive)
+
+    def available(self, state, actor):
+        return (self.skills.has(state, actor, 'zhijian')
+                and state.current_player_id == actor
+                and state.current_phase is Phase.PLAY
+                and self.materials(state, actor) and self.targets(state, actor))
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        if frame.step_index == 0:
+            if not self.available(state, actor):
+                raise InvalidCardUse('直谏当前不可用')
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':equipment', actor, RequestType.CHOOSE_CARD,
+                '直谏：选择一张手牌中的装备牌', frame.action.action_id,
+                frame.frame_id, eligible_card_ids=self.materials(state, actor)))
+        if frame.step_index == 1:
+            card_id = frame.decision
+            frame.decision = None
+            if card_id not in self.materials(state, actor):
+                raise InvalidCardUse('直谏装备牌已不可用')
+            frame.local['equipment'] = card_id
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':target', actor, RequestType.CHOOSE_PLAYER,
+                '直谏：选择装备的其他角色', frame.action.action_id, frame.frame_id,
+                allowed_player_ids=self.targets(state, actor)))
+        if frame.step_index == 2:
+            target = frame.decision
+            frame.decision = None
+            card_id = frame.local['equipment']
+            if target not in self.targets(state, actor) or card_id not in self.materials(state, actor):
+                raise InvalidCardUse('直谏目标或装备已不可用')
+            slot = self.definitions.get(state.cards[card_id].definition_id).equipment_slot
+            destination = ZoneRef(ZoneType.EQUIPMENT, target, slot)
+            old = state.cards_in(destination)
+            if old:
+                self.moves.move(state, CardMove(
+                    frame.action.action_id + ':replace', old, destination,
+                    ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD,
+                    actor, frame.action.action_id))
+            self.moves.move(state, CardMove(
+                frame.action.action_id + ':equip', (card_id,),
+                ZoneRef(ZoneType.HAND, actor), destination,
+                CardMoveReason.USE, actor, frame.action.action_id))
+            frame.step_index = 3
+            return StepResult.push(DrawCardsAction(
+                frame.action.action_id + ':draw', actor, 1))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class GuzhengAction(Action):
+    owner_id: str
+    discard_player_id: str
+    card_ids: tuple[str, ...]
+
+
+class GuzhengHandler:
+    def __init__(self, skills, moves):
+        self.skills = skills
+        self.moves = moves
+
+    def available_cards(self, state, action):
+        discard = state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+        return tuple(cid for cid in action.card_ids if cid in discard)
+
+    def step(self, state, frame):
+        action = frame.action
+        if (not state.players[action.owner_id].is_alive
+                or not state.players[action.discard_player_id].is_alive
+                or not self.skills.has(state, action.owner_id, 'guzheng')):
+            return StepResult.complete()
+        cards = self.available_cards(state, action)
+        if frame.step_index == 0:
+            if not cards:
+                return StepResult.complete()
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                action.action_id + ':offer', action.owner_id, RequestType.YES_NO,
+                '是否发动【固政】？', action.action_id, frame.frame_id,
+                subject_player_id=action.discard_player_id))
+        if frame.step_index == 1:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted or not cards:
+                return StepResult.complete()
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(
+                action.action_id + ':return', action.owner_id, RequestType.CHOOSE_CARD,
+                '固政：选择一张牌归还给弃牌角色', action.action_id,
+                frame.frame_id, eligible_card_ids=cards,
+                subject_player_id=action.discard_player_id))
+        chosen = frame.decision
+        frame.decision = None
+        if chosen not in cards:
+            raise InvalidCardUse('固政归还牌已不可用')
+        discard_ref = ZoneRef(ZoneType.DISCARD_PILE)
+        self.moves.move(state, CardMove(
+            action.action_id + ':return-card', (chosen,), discard_ref,
+            ZoneRef(ZoneType.HAND, action.discard_player_id),
+            CardMoveReason.SYSTEM, action.owner_id, action.action_id))
+        remaining = tuple(cid for cid in cards if cid != chosen
+                          and cid in state.cards_in(discard_ref))
+        if remaining:
+            self.moves.move(state, CardMove(
+                action.action_id + ':gain-rest', remaining, discard_ref,
+                ZoneRef(ZoneType.HAND, action.owner_id),
+                CardMoveReason.SYSTEM, action.owner_id, action.action_id))
+        return StepResult.complete()
 
 
 @dataclass(frozen=True, slots=True)
