@@ -31,6 +31,11 @@ class MilitaryMoveService(CardMoveService):
         if lost_equipment and state.players[owner].is_alive:
             from .skills import XiaojiAction
             self.reactions.append(XiaojiAction(move.move_id+':xiaoji',owner,len(move.card_ids)))
+        if (owner is not None and move.from_zone.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
+                and state.current_player_id != owner and state.players[owner].is_alive
+                and self.skills is not None and self.skills.has(state, owner, 'tuntian')):
+            from .mountain import TuntianAction
+            self.reactions.append(TuntianAction(move.move_id + ':tuntian', owner))
     def next_reaction(self,state):
         while self.reactions:
             action=self.reactions.pop(0)

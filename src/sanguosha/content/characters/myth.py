@@ -110,5 +110,7 @@ MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(
     _WIND_DESCRIPTIONS.get(s, _FOREST_DESCRIPTIONS.get(s, '经典神话再临规则摘要。')),
     _WIND_TYPES.get(s, _FOREST_TYPES.get(s, SkillType.ACTIVE)),
     {'lord': True} if s in ('huangtian', 'songwei', 'baonue') else {})
-    for c in MYTH_CHARACTERS for s in c.skill_ids)
+    for c in MYTH_CHARACTERS for s in c.skill_ids) + (
+        SkillDefinition('jixi', '急袭', '你可以将一张田当【顺手牵羊】使用。', SkillType.VIEW_AS),
+    )
 MYTH_40_GENERAL_POOL = MYTH_CHARACTERS

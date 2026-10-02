@@ -32,7 +32,8 @@ class SkillRegistry:
         character = self.characters.get(player.character_id)
         if skill_id == 'wushuang' and state.players[player_id].marks.get('wuwei', 0):
             return True
-        if character is None or skill_id not in character.skill_ids:
+        if character is None or (skill_id not in character.skill_ids
+                                 and skill_id not in player.granted_skills):
             return False
         skill = self.skills[skill_id]
         return not skill.metadata.get('lord') or state.players[player_id].identity is Identity.LORD
@@ -1114,6 +1115,11 @@ class SkillPlayOptions:
                                       self.validator.definitions, shortage)
             if handler.available(state, pid):
                 extra.extend(f'virtual:duanliang:{cid}' for cid in handler.materials(state, pid))
+        if self.skills.has(state, pid, 'jixi'):
+            from .mountain import JixiHandler, field_zone
+            handler = JixiHandler(self.skills, None, None, self.validator.rules.get('trick.snatch'))
+            if handler.available(state, pid):
+                extra.extend(f'virtual:jixi:{cid}' for cid in state.cards_in(field_zone(pid)))
         if self.skills.has(state, pid, 'dimeng'):
             from .forest import DimengHandler
             if DimengHandler(self.skills).available(state, pid):
@@ -1250,6 +1256,9 @@ class SkillPlayOptions:
         if option.startswith('virtual:duanliang:'):
             from .forest import DuanliangUse
             return DuanliangUse(aid + ':duanliang', pid, option.split(':', 2)[2])
+        if option.startswith('virtual:jixi:'):
+            from .mountain import JixiUse
+            return JixiUse(aid + ':jixi', pid, option.split(':', 2)[2])
         if option.startswith('virtual:longdan:'):
             return LongdanUse(aid+':longdan',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)

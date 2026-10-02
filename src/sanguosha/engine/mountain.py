@@ -2,16 +2,149 @@
 
 from dataclasses import dataclass
 
-from sanguosha.model.enums import Phase
+from sanguosha.model.enums import Phase, Suit
 from sanguosha.model.zones import ZoneRef, ZoneType
 
 from .actions import Action, StepResult
 from .card_moves import CardMove, CardMoveReason
 from .card_rules import InvalidCardUse
 from .requests import PendingRequest, RequestType
+from .events import CardUsedEvent
+from .judgment import JudgmentAction, JudgmentPattern
+from .suits import effective_suit
+from .hp import LoseMaxHpAction
 
 
 QIAOBIAN_PHASES = frozenset((Phase.JUDGMENT, Phase.DRAW, Phase.PLAY, Phase.DISCARD))
+
+
+def field_zone(player_id):
+    return ZoneRef(ZoneType.SPECIAL, player_id, special_key='tian')
+
+
+@dataclass(frozen=True, slots=True)
+class TuntianAction(Action):
+    player_id: str
+
+
+class TuntianHandler:
+    def __init__(self, skills, moves):
+        self.skills = skills
+        self.moves = moves
+
+    def step(self, state, frame):
+        action = frame.action
+        player_id = action.player_id
+        if not self.skills.has(state, player_id, 'tuntian') or not state.players[player_id].is_alive:
+            return StepResult.complete()
+        if frame.step_index == 0:
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                action.action_id + ':offer', player_id, RequestType.YES_NO,
+                '回合外失去牌，是否发动【屯田】判定？', action.action_id, frame.frame_id))
+        if frame.step_index == 1:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted:
+                return StepResult.complete()
+            frame.step_index = 2
+            return StepResult.push(JudgmentAction(
+                action.action_id + ':judgment', player_id,
+                JudgmentPattern(), return_card_id=True))
+        if frame.step_index == 2:
+            card_id = frame.child_result
+            if (card_id is not None and effective_suit(state, card_id, player_id) is not Suit.HEART
+                    and card_id in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))):
+                self.moves.move(state, CardMove(
+                    action.action_id + ':field', (card_id,), ZoneRef(ZoneType.DISCARD_PILE),
+                    field_zone(player_id), CardMoveReason.SYSTEM, player_id, action.action_id))
+            return StepResult.complete()
+        raise InvalidCardUse('屯田状态无效')
+
+
+@dataclass(frozen=True, slots=True)
+class ZaoxianAction(Action):
+    player_id: str
+
+
+class ZaoxianHandler:
+    def __init__(self, skills):
+        self.skills = skills
+
+    def step(self, state, frame):
+        player = state.players[frame.action.player_id]
+        if frame.step_index == 0:
+            if (not player.is_alive or not self.skills.has(state, player.player_id, 'zaoxian')
+                    or player.marks.get('awakened_zaoxian')
+                    or len(state.cards_in(field_zone(player.player_id))) < 3):
+                return StepResult.complete(False)
+            player.marks['awakened_zaoxian'] = 1
+            frame.step_index = 1
+            return StepResult.push(LoseMaxHpAction(frame.action.action_id + ':max-hp', player.player_id, 1))
+        if player.is_alive:
+            player.granted_skills['jixi'] = 'zaoxian'
+        return StepResult.complete(player.is_alive)
+
+
+@dataclass(frozen=True, slots=True)
+class JixiUse(Action):
+    player_id: str
+    material_id: str
+
+
+class JixiHandler:
+    def __init__(self, skills, moves, events, snatch_rule):
+        self.skills = skills
+        self.moves = moves
+        self.events = events
+        self.snatch_rule = snatch_rule
+
+    def targets(self, state, player_id):
+        return self.snatch_rule.target_candidates(state, player_id)
+
+    def available(self, state, player_id, material_id=None):
+        field = state.cards_in(field_zone(player_id))
+        return (self.skills.has(state, player_id, 'jixi')
+                and state.players[player_id].is_alive
+                and state.current_player_id == player_id
+                and state.current_phase is Phase.PLAY
+                and state.play_usage is not None
+                and (material_id is None and bool(field) or material_id in field)
+                and bool(self.targets(state, player_id)))
+
+    def step(self, state, frame):
+        from .military_tricks import TrickAction
+        action = frame.action
+        if frame.step_index == 0:
+            if not self.available(state, action.player_id, action.material_id):
+                raise InvalidCardUse('急袭当前不可用')
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                action.action_id + ':target', action.player_id, RequestType.CHOOSE_PLAYER,
+                '急袭：选择【顺手牵羊】目标', action.action_id, frame.frame_id,
+                allowed_player_ids=self.targets(state, action.player_id)))
+        if frame.step_index == 1:
+            target = frame.decision
+            frame.decision = None
+            if (not self.available(state, action.player_id, action.material_id)
+                    or target not in self.targets(state, action.player_id)):
+                raise InvalidCardUse('急袭目标不合法')
+            self.moves.move(state, CardMove(
+                action.action_id + ':processing', (action.material_id,),
+                field_zone(action.player_id), ZoneRef(ZoneType.PROCESSING),
+                CardMoveReason.USE, action.player_id, action.action_id))
+            self.events.record(CardUsedEvent(action.action_id + ':used', action.player_id,
+                                             action.material_id, (target,), 'trick.snatch'))
+            frame.step_index = 2
+            return StepResult.push(TrickAction(
+                action.action_id + ':snatch', action.player_id, action.material_id,
+                'trick.snatch', (target,)))
+        if action.material_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
+            self.moves.move(state, CardMove(
+                action.action_id + ':discard', (action.material_id,),
+                ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.USE, action.player_id, action.action_id))
+        return StepResult.complete(frame.child_result)
 
 
 @dataclass(frozen=True, slots=True)

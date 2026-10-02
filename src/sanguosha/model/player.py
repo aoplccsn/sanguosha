@@ -19,6 +19,7 @@ class PlayerState:
     face_up: bool = True
     marks: dict[str, int] = field(default_factory=dict)
     disabled_skills: set[str] = field(default_factory=set)
+    granted_skills: dict[str, str] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not self.player_id or not self.character_id:

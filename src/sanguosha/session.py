@@ -252,8 +252,11 @@ class GameSession:
                 offers = WindPhaseOffers(skills, definitions)
                 registry.register(TurnAction, TurnActionHandler(events, offers))
                 registry.register(ShensuAction, ShensuHandler(offers, moves))
-                from sanguosha.engine.mountain import QiaobianAction, QiaobianHandler
+                from sanguosha.engine.mountain import QiaobianAction, QiaobianHandler, TuntianAction, TuntianHandler, ZaoxianAction, ZaoxianHandler, JixiUse, JixiHandler
                 registry.register(QiaobianAction, QiaobianHandler(skills, moves, rng, definitions))
+                registry.register(TuntianAction, TuntianHandler(skills, moves))
+                registry.register(ZaoxianAction, ZaoxianHandler(skills))
+                registry.register(JixiUse, JixiHandler(skills, moves, events, card_rules.get('trick.snatch')))
                 registry.register(BuquAction, BuquHandler(deck, moves))
                 registry.register(LeijiAction, LeijiHandler())
                 from sanguosha.engine.wind_guhuo import GuhuoAction, GuhuoHandler

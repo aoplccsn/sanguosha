@@ -1,11 +1,15 @@
 """Targeted classic Mountain rule tests."""
 
+from dataclasses import replace
 import pytest
 
-from sanguosha.engine.mountain import QiaobianAction
+from sanguosha.engine.mountain import QiaobianAction, TuntianAction, ZaoxianAction, JixiUse, field_zone
+from sanguosha.engine.card_moves import CardMove, CardMoveReason
+from sanguosha.engine.distance import DistanceSystem
 from sanguosha.engine.requests import Decision
-from sanguosha.model.enums import EquipmentSlot, Phase
+from sanguosha.model.enums import EquipmentSlot, Phase, Suit
 from sanguosha.model.zones import ZoneRef, ZoneType
+from sanguosha.model.usage import PlayUsageState
 from sanguosha.session import GameSession
 from sanguosha.snapshot import restore_session, snapshot_session
 from test_t6_military_basics import put
@@ -83,3 +87,98 @@ def test_qiaobian_moves_equipment_to_open_matching_slot():
     assert card not in session.state.cards_in(ZoneRef(ZoneType.EQUIPMENT, 'p2', EquipmentSlot.WEAPON))
     assert card in session.state.cards_in(ZoneRef(ZoneType.EQUIPMENT, 'p3', EquipmentSlot.WEAPON))
     assert session.state.players['p1'].marks['skip_play'] == 1
+
+
+def test_tuntian_nonheart_judgment_enters_authoritative_field():
+    session = GameSession.new_game(military=True, five_generals=True, seed=3)
+    session.state.players['p1'].character_id = 'mountain_deng_ai'
+    draw = ZoneRef(ZoneType.DRAW_PILE)
+    top = session.state.cards_in(draw)[0]
+    session.state.cards[top] = replace(session.state.cards[top], suit=Suit.SPADE)
+    session.engine.start_action(TuntianAction('tuntian-judge', 'p1'))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    assert top in session.state.cards_in(field_zone('p1'))
+    restored = restore_session(snapshot_session(session))
+    assert top in restored.state.cards_in(field_zone('p1'))
+
+
+def test_tuntian_off_turn_card_loss_queues_reaction():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_deng_ai'
+    state.current_player_id = 'p2'
+    card = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    moves = session.engine.reaction_provider.__self__
+    moves.move(state, CardMove('tuntian-loss', (card,), ZoneRef(ZoneType.HAND, 'p1'),
+                               ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD, 'p2'))
+    reaction = moves.next_reaction(state)
+    assert isinstance(reaction, TuntianAction)
+    assert reaction.player_id == 'p1'
+
+
+def test_zaoxian_awakens_once_and_grants_jixi():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    player = state.players['p1']
+    player.character_id = 'mountain_deng_ai'
+    moves = session.engine.reaction_provider.__self__
+    field_cards = state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[:3]
+    moves.move(state, CardMove('setup-field', field_cards, ZoneRef(ZoneType.DRAW_PILE),
+                               field_zone('p1'), CardMoveReason.SYSTEM))
+    original_max = player.max_hp
+    session.engine.start_action(ZaoxianAction('zaoxian', 'p1'))
+    assert player.max_hp == original_max - 1
+    assert player.marks['awakened_zaoxian'] == 1
+    assert player.granted_skills['jixi'] == 'zaoxian'
+    assert session.skills.has(state, 'p1', 'jixi')
+    session.engine.start_action(ZaoxianAction('zaoxian-again', 'p1'))
+    assert player.max_hp == original_max - 1
+    restored = restore_session(snapshot_session(session))
+    assert restored.skills.has(restored.state, 'p1', 'jixi')
+    assert len(restored.state.cards_in(field_zone('p1'))) == 3
+
+
+def test_tuntian_field_reduces_outgoing_distance():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_deng_ai'
+    distance = DistanceSystem(session.definitions)
+    before = distance.distance_between(state, 'p1', 'p3')
+    card = state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    session.engine.reaction_provider.__self__.move(state, CardMove(
+        'setup-one-field', (card,), ZoneRef(ZoneType.DRAW_PILE), field_zone('p1'),
+        CardMoveReason.SYSTEM))
+    assert distance.distance_between(state, 'p1', 'p3') == max(1, before - 1)
+    assert distance.distance_between(state, 'p3', 'p1') == before
+
+
+def test_jixi_uses_existing_snatch_and_consumes_field_card():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    player = state.players['p1']
+    player.character_id = 'mountain_deng_ai'
+    player.granted_skills['jixi'] = 'zaoxian'
+    state.current_player_id = 'p1'
+    state.current_phase = Phase.PLAY
+    state.turn_number = 1
+    state.play_usage = PlayUsageState('p1', 1)
+    field_card = state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    session.engine.reaction_provider.__self__.move(state, CardMove(
+        'setup-jixi-field', (field_card,), ZoneRef(ZoneType.DRAW_PILE),
+        field_zone('p1'), CardMoveReason.SYSTEM))
+    session.engine.start_action(JixiUse('jixi-use', 'p1', field_card))
+    for _ in range(20):
+        request = session.engine.pending_request
+        if request is None:
+            break
+        if request.request_id == 'jixi-use:target':
+            choice = 'p2'
+        elif request.eligible_card_ids and request.player_id == 'p1':
+            choice = request.eligible_card_ids[0]
+        else:
+            choice = request.timeout_value()
+        session.engine.submit_decision(Decision(request.request_id, request.player_id, choice))
+    assert session.engine.pending_request is None
+    assert field_card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert field_card not in state.cards_in(field_zone('p1'))
