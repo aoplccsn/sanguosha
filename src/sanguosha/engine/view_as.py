@@ -17,7 +17,14 @@ class UseSpear(Action):
 
 class MilitaryPlayOptions(LegalPlayActionProvider):
     def spear_legal(self,state,pid):
-        return equipped(state,pid,EquipmentSlot.WEAPON)=='equipment.weapon.serpent_spear' and len(state.cards_in(ZoneRef(ZoneType.HAND,pid)))>=2 and state.play_usage.count('basic.slash')<1 and bool(self.validator.rules.get('basic.slash').target_candidates(state,pid))
+        rule = self.validator.rules.get('basic.slash')
+        limit = rule.usage_limit(state, pid)
+        usage = state.play_usage
+        return (equipped(state,pid,EquipmentSlot.WEAPON)=='equipment.weapon.serpent_spear'
+                and len(state.cards_in(ZoneRef(ZoneType.HAND,pid)))>=2
+                and usage is not None and rule.can_use(state, pid)
+                and (limit is None or usage.count('basic.slash') < limit)
+                and bool(rule.target_candidates(state,pid)))
     def options(self,state,pid):
         ordinary=super().options(state,pid)
         return (*ordinary,'virtual:spear') if self.spear_legal(state,pid) else ordinary

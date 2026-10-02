@@ -196,6 +196,25 @@ class GameSession:
                 registry.register(LongdanUse, LongdanUseHandler(skills, moves, events, slash_rule))
                 registry.register(WuqianAction, WuqianHandler(events))
                 registry.register(ShenfenAction, ShenfenHandler(events, moves))
+                from sanguosha.engine.pindian import PindianAction, PindianHandler
+                registry.register(PindianAction, PindianHandler(moves, events))
+                from sanguosha.engine.fire import (QiangxiAction, QiangxiHandler,
+                    QuhuAction, QuhuHandler, JiemingAction, JiemingHandler,
+                    NiepanAction, NiepanHandler, NiepanOffer, FirstDyingOffer,
+                    FireViewAsTrick, FireViewAsTrickHandler, TianyiAction, TianyiHandler,
+                    MengjinAction, MengjinHandler)
+                registry.register(QiangxiAction, QiangxiHandler(skills, moves, definitions))
+                registry.register(QuhuAction, QuhuHandler(skills, definitions))
+                registry.register(JiemingAction, JiemingHandler())
+                registry.register(NiepanAction, NiepanHandler(moves))
+                registry.register(FireViewAsTrick,
+                    FireViewAsTrickHandler(skills, moves, events, card_rules))
+                registry.register(TianyiAction, TianyiHandler(skills))
+                registry.register(MengjinAction, MengjinHandler(skills, moves))
+                from sanguosha.engine.fire import (ShuangxiongAction, ShuangxiongHandler,
+                    LuanjiAction, LuanjiHandler, FireHandLimit)
+                registry.register(ShuangxiongAction, ShuangxiongHandler(skills))
+                registry.register(LuanjiAction, LuanjiHandler(skills, moves, events))
                 from sanguosha.engine.wind import (WindPhaseOffers, ShensuAction, ShensuHandler,
                     BuquAction, BuquHandler, BuquOffer, WindHandLimit,
                     LeijiAction, LeijiHandler)
@@ -209,8 +228,10 @@ class GameSession:
                     skills, definitions, card_rules, moves, events))
                 from sanguosha.engine.wind_lord import HuangtianAction, HuangtianHandler
                 registry.register(HuangtianAction, HuangtianHandler(skills, moves))
-                registry.register(DyingAction, DyingActionHandler(events, skills, BuquOffer(skills)))
-                bodies.register(Phase.DISCARD, DiscardPhaseBody(moves, skills, events, WindHandLimit()))
+                registry.register(DyingAction, DyingActionHandler(events, skills,
+                    FirstDyingOffer(NiepanOffer(skills), BuquOffer(skills))))
+                bodies.register(Phase.DISCARD, DiscardPhaseBody(moves, skills, events,
+                    FireHandLimit(WindHandLimit(), skills)))
             registry.register(UseSpear,UseSpearHandler(provider,moves))
             bodies.register(Phase.PLAY,PlayPhaseBody(provider))
             if skills is not None:

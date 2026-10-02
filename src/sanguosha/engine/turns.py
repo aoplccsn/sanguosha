@@ -60,6 +60,10 @@ class TurnActionHandler:
                 or not state.players[action.player_id].is_alive):
             if state.ruleset_id == 'classic-military':
                 state.players[action.player_id].marks.pop('wine', None)
+                for key in ('slash_quota_bonus', 'slash_ignore_distance',
+                            'slash_extra_targets', 'slash_prohibited',
+                            'shuangxiong_color'):
+                    state.players[action.player_id].marks.pop(key, None)
                 if state.players[action.player_id].character_id == 'forest_god_lvbu':
                     state.players[action.player_id].marks.pop('wuwei', None)
                     for other in state.players.values():

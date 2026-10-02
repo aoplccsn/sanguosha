@@ -1092,8 +1092,27 @@ class SkillPlayOptions:
             if GuhuoHandler(self.skills, self.validator.definitions,
                             self.validator.rules, None, None).available(state, pid):
                 extra.append('skill:guhuo')
+        from .fire import QiangxiHandler, QuhuHandler, LuanjiHandler
+        if QiangxiHandler(self.skills, None, self.validator.definitions).available(state, pid):
+            extra.append('skill:qiangxi')
+        if QuhuHandler(self.skills, self.validator.definitions).available(state, pid):
+            extra.append('skill:quhu')
+        luanji = LuanjiHandler(self.skills, None, None)
+        if self.skills.has(state, pid, 'luanji'):
+            extra.extend(f'virtual:luanji:{a}:{b}' for a, b in luanji.pairs(state, pid))
+        from .fire import TianyiHandler
+        if TianyiHandler(self.skills).available(state, pid):
+            extra.append('skill:tianyi')
+        from .fire import FireViewAsTrickHandler
+        fire_tricks = FireViewAsTrickHandler(self.skills, None, None, self.validator.rules)
+        if fire_tricks.available(state, pid, 'lianhuan'):
+            extra.extend(f'virtual:lianhuan:{cid}' for cid in fire_tricks.materials(state, pid, 'lianhuan'))
+        if fire_tricks.available(state, pid, 'huoji'):
+            extra.extend(f'virtual:huoji:{cid}' for cid in fire_tricks.materials(state, pid, 'huoji'))
+        if fire_tricks.available(state, pid, 'shuangxiong'):
+            extra.extend(f'virtual:shuangxiong:{cid}' for cid in fire_tricks.materials(state, pid, 'shuangxiong'))
         limit = self.slash_rule.usage_limit(state,pid)
-        slash_available = (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
+        slash_available = self.slash_rule.can_use(state, pid) and (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
         if slash_available:
             extra.extend(f'virtual:wusheng:{cid}' for cid in self.skills.red_slash_materials(state,pid))
             if self.skills.has(state,pid,'longdan'):
@@ -1106,6 +1125,28 @@ class SkillPlayOptions:
     def build_action(self, state, pid, option, aid):
         if option not in self.options(state,pid):
             raise InvalidCardUse('skill option is no longer legal')
+        if option.startswith('virtual:lianhuan:'):
+            from .fire import FireViewAsTrick
+            return FireViewAsTrick(aid + ':lianhuan', pid, option.split(':', 2)[2], 'lianhuan')
+        if option.startswith('virtual:huoji:'):
+            from .fire import FireViewAsTrick
+            return FireViewAsTrick(aid + ':huoji', pid, option.split(':', 2)[2], 'huoji')
+        if option.startswith('virtual:shuangxiong:'):
+            from .fire import FireViewAsTrick
+            return FireViewAsTrick(aid + ':shuangxiong', pid, option.split(':', 2)[2], 'shuangxiong')
+        if option == 'skill:qiangxi':
+            from .fire import QiangxiAction
+            return QiangxiAction(aid + ':qiangxi', pid)
+        if option == 'skill:quhu':
+            from .fire import QuhuAction
+            return QuhuAction(aid + ':quhu', pid)
+        if option.startswith('virtual:luanji:'):
+            from .fire import LuanjiAction
+            _, _, first, second = option.split(':', 3)
+            return LuanjiAction(aid + ':luanji', pid, (first, second))
+        if option == 'skill:tianyi':
+            from .fire import TianyiAction
+            return TianyiAction(aid + ':tianyi', pid)
         if option == 'skill:rende':
             return RendeAction(aid+':rende',pid)
         if option == 'skill:zhiheng':

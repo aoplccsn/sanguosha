@@ -247,6 +247,12 @@ class MilitaryDamageHandler(DamageActionHandler):
             frame.local['yiji_offered'] = True
             return StepResult.push(YijiAction(action.action_id+':yiji',action.target_id,
                                               int(frame.local['amount'])))
+        if (frame.step_index == 1 and not frame.local.get('jieming_offered') and self.skills is not None
+                and self.skills.has(state, action.target_id, 'jieming') and target.is_alive):
+            from .fire import JiemingAction
+            frame.local['jieming_offered'] = True
+            return StepResult.push(JiemingAction(action.action_id + ':jieming',
+                action.target_id, int(frame.local['amount'])))
         chain = str(frame.local['chain']).split('|') if frame.local['chain'] else []
         if state.status is GameStatus.FINISHED or frame.cursor >= len(chain):
             return StepResult.complete(int(frame.local['amount']))
@@ -290,7 +296,8 @@ class SkillSlashLimit:
     def limit(self, state, user):
         if self.skills is not None and self.skills.has(state, user, 'paoxiao'):
             return None
-        return self.equipment.limit(state, user)
+        base = self.equipment.limit(state, user)
+        return None if base is None else base + max(0, state.players[user].marks.get('slash_quota_bonus', 0))
 
 
 class MilitarySlashRule(SlashRule):
@@ -298,8 +305,16 @@ class MilitarySlashRule(SlashRule):
     def __init__(self, distance, skills=None):
         super().__init__(ReachableOpponent(distance), SkillSlashLimit(skills))
         self.skills = skills
+    def can_use(self, state, user):
+        return not state.players[user].marks.get('slash_prohibited')
     def target_candidates(self, state, user):
-        candidates = super().target_candidates(state, user)
+        marks = state.players[user].marks
+        if marks.get('slash_prohibited'):
+            return ()
+        candidates = (tuple(pid for pid in state.seat_order if pid != user
+                           and state.players[pid].is_alive)
+                      if marks.get('slash_ignore_distance') else
+                      super().target_candidates(state, user))
         if self.skills is None:
             return candidates
         return tuple(pid for pid in candidates if not (
@@ -307,7 +322,7 @@ class MilitarySlashRule(SlashRule):
             not state.cards_in(ZoneRef(ZoneType.HAND, pid))))
     def target_bounds(self,state,user,card):
         maximum = 3 if equipped(state,user,EquipmentSlot.WEAPON)=='equipment.weapon.halberd' and len(state.cards_in(ZoneRef(ZoneType.HAND,user)))==1 else 1
-        return 1,maximum
+        return 1,maximum + max(0, state.players[user].marks.get('slash_extra_targets', 0))
     def validate_targets(self,state,user,targets):
         low,high=self.target_bounds(state,user,None)
         if not low<=len(targets)<=high or len(set(targets))!=len(targets) or any(pid not in self.target_candidates(state,user) for pid in targets):
@@ -354,7 +369,8 @@ class MilitarySlashHandler:
 
     def step(self, state, frame):
         action = frame.action
-        armor = equipped(state, action.target_id, EquipmentSlot.ARMOR)
+        from .fire import effective_armor
+        armor = effective_armor(state, action.target_id, self.skills)
         weapon = equipped(state, action.source_id, EquipmentSlot.WEAPON)
         card = state.cards.get(action.card_id)
         virtual=getattr(action,'virtual_card',None)
@@ -520,6 +536,16 @@ class MilitarySlashHandler:
                     return StepResult.push(RespondWithCardAction(action.action_id+':wushuang-second',action.target_id,
                         action.dodge_definition_id,action.action_id,'无双：第一张闪已响应，还需第二张闪',
                         action.target_id,not ignore,2,2))
+                if (not frame.local.get('mengjin_offered') and self.skills is not None
+                        and state.players[action.source_id].is_alive
+                        and state.players[action.target_id].is_alive
+                        and self.skills.has(state, action.source_id, 'mengjin')):
+                    from .fire import MengjinAction, mengjin_choices
+                    if mengjin_choices(state, action.target_id):
+                        frame.local['mengjin_offered'] = True
+                        frame.step_index = 26
+                        return StepResult.push(MengjinAction(action.action_id + ':mengjin',
+                            action.source_id, action.target_id))
                 if weapon=='equipment.weapon.green_dragon_blade':
                     frame.step_index=14
                     return StepResult.push(RespondWithCardAction(action.action_id+':green-dragon',action.source_id,
@@ -544,6 +570,10 @@ class MilitarySlashHandler:
             return StepResult.push(MilitaryDamageAction(action.action_id + ':damage', action.source_id,
                 action.target_id, int(frame.local['amount']), nature, action.card_id, action.action_id,
                 ignore_armor=ignore, material_card_ids=virtual.material_ids if virtual else ()))
+        if frame.step_index == 26:
+            frame.child_result = 'dodged'
+            frame.step_index = 3
+            return StepResult.continue_()
         if frame.step_index == 18:
             frame.step_index = 3
             return StepResult.continue_()
@@ -640,7 +670,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             return StepResult.complete(frame.child_result)
         if frame.step_index == 11:
             return StepResult.complete(frame.child_result)
-        if frame.step_index == 0 and not frame.local.get('armor_offered') and action.allow_armor and action.required_definition_id=='basic.dodge' and equipped(state,action.player_id,EquipmentSlot.ARMOR)=='equipment.armor.eight_trigrams':
+        from .fire import effective_armor
+        if frame.step_index == 0 and not frame.local.get('armor_offered') and action.allow_armor and action.required_definition_id=='basic.dodge' and effective_armor(state,action.player_id,self.skills)=='equipment.armor.eight_trigrams':
             frame.local['armor_offered']=True
             frame.step_index=8
             return StepResult.ask(PendingRequest(action.action_id+':armor',action.player_id,RequestType.YES_NO,
@@ -692,6 +723,10 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                             state, action.required_definition_id, action.player_id,
                             action.subject_player_id):
                         eligible += ('virtual:guhuo',)
+                if (action.required_definition_id == 'trick.nullification'
+                        and self.skills.has(state, action.player_id, 'kanpo')):
+                    eligible += tuple(f'virtual:kanpo:{cid}' for cid in hand
+                        if effective_color(state, cid, action.player_id) is Color.BLACK)
             frame.step_index = 1
             return StepResult.ask(PendingRequest(action.action_id + ':request', action.player_id,
                 RequestType.RESPOND_WITH_CARD, action.prompt, action.action_id, frame.frame_id,
@@ -762,6 +797,26 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             self.moves.move(state,CardMove(action.action_id+':qingguo-discard',(material,),
                 ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE,action.player_id))
+            return StepResult.complete(virtual)
+        if isinstance(choice,str) and choice.startswith('virtual:kanpo:'):
+            material = choice.split(':', 2)[2]
+            if (self.skills is None or not self.skills.has(state, action.player_id, 'kanpo')
+                    or action.required_definition_id != 'trick.nullification'
+                    or material not in state.cards_in(ZoneRef(ZoneType.HAND, action.player_id))
+                    or effective_color(state, material, action.player_id) is not Color.BLACK):
+                raise InvalidCardUse('看破材料不合法')
+            virtual = VirtualCard('trick.nullification', (material,),
+                effective_suit(state, material, action.player_id),
+                effective_color(state, material, action.player_id))
+            self.moves.move(state, CardMove(action.action_id + ':kanpo-processing', (material,),
+                ZoneRef(ZoneType.HAND, action.player_id), ZoneRef(ZoneType.PROCESSING),
+                CardMoveReason.RESPONSE, action.player_id))
+            self.recorder.record(CardRespondedEvent(action.action_id + ':kanpo-responded',
+                action.player_id, material, action.source_action_id,
+                'trick.nullification', action.response_number, action.response_total))
+            self.moves.move(state, CardMove(action.action_id + ':kanpo-discard', (material,),
+                ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.RESPONSE, action.player_id))
             return StepResult.complete(virtual)
         if isinstance(choice,str) and choice.startswith('virtual:jijiu:'):
             material=choice.split(':',2)[2]
