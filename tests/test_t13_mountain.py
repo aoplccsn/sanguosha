@@ -5,6 +5,7 @@ import pytest
 
 from sanguosha.engine.mountain import (QiaobianAction, TuntianAction, ZaoxianAction,
                                        JixiUse, FangquanSkipAction, FangquanEndAction, RuoyuAction,
+                                       TiaoxinAction, ZhijiAction,
                                        field_zone)
 from sanguosha.engine.turn_order import next_scheduled_player, queue_extra_turn
 from sanguosha.engine.card_moves import CardMove, CardMoveReason
@@ -303,3 +304,63 @@ def test_ruoyu_lord_awakes_once_and_reuses_jijiang():
     assert lord.max_hp == original_max + 1
     restored = restore_session(snapshot_session(session))
     assert restored.skills.has(restored.state, lord_id, 'jijiang')
+
+
+def test_tiaoxin_decline_discards_target_card_and_once_per_phase():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_jiang_wei'
+    state.current_player_id = 'p1'
+    state.current_phase = Phase.PLAY
+    state.turn_number = 1
+    state.play_usage = PlayUsageState('p1', 1)
+    target_card = state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))[0]
+    session.engine.start_action(TiaoxinAction('tiaoxin', 'p1'))
+    for choice in ('p2', target_card):
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, request.player_id, choice))
+    assert target_card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert state.play_usage.count('skill.tiaoxin') == 1
+
+
+def test_tiaoxin_uses_real_forced_slash_pipeline():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_jiang_wei'
+    state.current_player_id = 'p1'
+    state.current_phase = Phase.PLAY
+    state.turn_number = 1
+    state.play_usage = PlayUsageState('p1', 1)
+    slash = put(session, 'basic.slash', 'p2')
+    session.engine.start_action(TiaoxinAction('tiaoxin-slash', 'p1'))
+    for choice in ('p2', slash):
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, request.player_id, choice))
+    for _ in range(20):
+        request = session.engine.pending_request
+        if request is None:
+            break
+        session.engine.submit_decision(Decision(request.request_id, request.player_id,
+                                                request.timeout_value()))
+    assert session.engine.pending_request is None
+    assert slash in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+
+
+def test_zhiji_empty_hand_awakes_and_reuses_guanxing():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    player = state.players['p1']
+    player.character_id = 'mountain_jiang_wei'
+    hand = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
+    session.engine.reaction_provider.__self__.move(state, CardMove(
+        'setup-zhiji-empty', hand, ZoneRef(ZoneType.HAND, 'p1'),
+        ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.SYSTEM))
+    original_max = player.max_hp
+    session.engine.start_action(ZhijiAction('zhiji', 'p1'))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'draw'))
+    assert player.max_hp == original_max - 1
+    assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == 2
+    assert session.skills.has(state, 'p1', 'guanxing')
+    session.engine.start_action(ZhijiAction('zhiji-again', 'p1'))
+    assert player.max_hp == original_max - 1

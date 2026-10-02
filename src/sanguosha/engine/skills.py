@@ -1124,6 +1124,12 @@ class SkillPlayOptions:
             handler = JixiHandler(self.skills, None, None, self.validator.rules.get('trick.snatch'))
             if handler.available(state, pid):
                 extra.extend(f'virtual:jixi:{cid}' for cid in state.cards_in(field_zone(pid)))
+        if self.skills.has(state, pid, 'tiaoxin'):
+            from .mountain import TiaoxinHandler
+            handler = TiaoxinHandler(self.skills, None, self.slash_rule,
+                                    self.validator.definitions)
+            if handler.available(state, pid):
+                extra.append('skill:tiaoxin')
         if self.skills.has(state, pid, 'dimeng'):
             from .forest import DimengHandler
             if DimengHandler(self.skills).available(state, pid):
@@ -1263,6 +1269,9 @@ class SkillPlayOptions:
         if option.startswith('virtual:jixi:'):
             from .mountain import JixiUse
             return JixiUse(aid + ':jixi', pid, option.split(':', 2)[2])
+        if option == 'skill:tiaoxin':
+            from .mountain import TiaoxinAction
+            return TiaoxinAction(aid + ':tiaoxin', pid)
         if option.startswith('virtual:longdan:'):
             return LongdanUse(aid+':longdan',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)

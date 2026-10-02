@@ -10,10 +10,14 @@ from .card_moves import CardMove, CardMoveReason
 from .card_rules import InvalidCardUse
 from .requests import PendingRequest, RequestType
 from .events import CardUsedEvent
+from .distance import DistanceSystem
+from .card_use import UseCardAction
+from .forced_cards import discardable_cards
 from .judgment import JudgmentAction, JudgmentPattern
 from .suits import effective_suit
 from .hp import GainMaxHpAction, LoseMaxHpAction
 from .recovery import RecoverAction
+from .deck import DrawCardsAction
 from .turn_order import queue_extra_turn
 
 
@@ -264,6 +268,143 @@ class RuoyuHandler:
                 frame.action.action_id + ':recover', player_id, player_id, 1))
         player.granted_skills['jijiang'] = 'ruoyu'
         return StepResult.complete(True)
+
+
+@dataclass(frozen=True, slots=True)
+class TiaoxinAction(Action):
+    player_id: str
+
+
+class TiaoxinHandler:
+    def __init__(self, skills, moves, slash_rule, definitions):
+        self.skills = skills
+        self.moves = moves
+        self.slash_rule = slash_rule
+        self.distance = DistanceSystem(definitions)
+
+    def targets(self, state, player_id):
+        return tuple(pid for pid in state.seat_order
+                     if pid != player_id and state.players[pid].is_alive
+                     and self.distance.distance_between(state, player_id, pid)
+                     <= self.distance.attack_range(state, player_id))
+
+    def slashes(self, state, target, challenger):
+        if challenger not in self.slash_rule.target_candidates(state, target):
+            return ()
+        return tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, target))
+                     if state.cards[cid].definition_id in
+                     ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash'))
+
+    def available(self, state, player_id):
+        return (self.skills.has(state, player_id, 'tiaoxin')
+                and state.current_player_id == player_id
+                and state.current_phase is Phase.PLAY
+                and state.play_usage is not None
+                and not state.play_usage.count('skill.tiaoxin')
+                and bool(self.targets(state, player_id)))
+
+    def step(self, state, frame):
+        action = frame.action
+        actor = action.player_id
+        if frame.step_index == 0:
+            if not self.available(state, actor):
+                raise InvalidCardUse('挑衅当前不可用')
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                action.action_id + ':target', actor, RequestType.CHOOSE_PLAYER,
+                '挑衅：选择攻击范围内的一名角色', action.action_id, frame.frame_id,
+                allowed_player_ids=self.targets(state, actor)))
+        if frame.step_index == 1:
+            target = frame.decision
+            frame.decision = None
+            if not self.available(state, actor) or target not in self.targets(state, actor):
+                raise InvalidCardUse('挑衅目标不合法')
+            state.play_usage.record('skill.tiaoxin')
+            frame.local['target'] = target
+            slashes = self.slashes(state, target, actor)
+            if slashes:
+                frame.step_index = 2
+                return StepResult.ask(PendingRequest(
+                    action.action_id + ':slash', target, RequestType.CHOOSE_OPTION,
+                    '挑衅：对姜维使用一张【杀】，或拒绝', action.action_id,
+                    frame.frame_id, choices=(*slashes, 'decline')))
+            frame.step_index = 4
+        if frame.step_index == 2:
+            choice = frame.decision
+            frame.decision = None
+            target = frame.local['target']
+            if choice != 'decline':
+                if choice not in self.slashes(state, target, actor):
+                    raise InvalidCardUse('挑衅所用杀不合法')
+                frame.step_index = 3
+                return StepResult.push(UseCardAction(
+                    action.action_id + ':forced-slash', target, choice, (actor,), forced=True))
+            frame.step_index = 4
+        if frame.step_index == 3:
+            return StepResult.complete()
+        target = frame.local['target']
+        cards = discardable_cards(state, target)
+        if not cards:
+            return StepResult.complete()
+        if frame.step_index == 4:
+            frame.step_index = 5
+            return StepResult.ask(PendingRequest(
+                action.action_id + ':discard', actor, RequestType.CHOOSE_CARD,
+                '挑衅：弃置目标的一张牌', action.action_id, frame.frame_id,
+                eligible_card_ids=cards, subject_player_id=target))
+        card_id = frame.decision
+        frame.decision = None
+        if card_id not in discardable_cards(state, target):
+            raise InvalidCardUse('挑衅弃牌已不可用')
+        source = next(ref for ref, zone in state.zones.items()
+                      if ref.player_id == target and card_id in zone.card_ids)
+        self.moves.move(state, CardMove(
+            action.action_id + ':discard-card', (card_id,), source,
+            ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD,
+            actor, action.action_id))
+        return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class ZhijiAction(Action):
+    player_id: str
+
+
+class ZhijiHandler:
+    def __init__(self, skills):
+        self.skills = skills
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        player = state.players[actor]
+        if frame.step_index == 0:
+            if (not player.is_alive or not self.skills.has(state, actor, 'zhiji')
+                    or player.marks.get('awakened_zhiji')
+                    or state.cards_in(ZoneRef(ZoneType.HAND, actor))):
+                return StepResult.complete(False)
+            player.marks['awakened_zhiji'] = 1
+            choices = ('draw', 'recover') if player.hp < player.max_hp else ('draw',)
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':choice', actor, RequestType.CHOOSE_OPTION,
+                '志继：摸两张牌或回复一点体力', frame.action.action_id,
+                frame.frame_id, choices=choices))
+        if frame.step_index == 1:
+            choice = frame.decision
+            frame.decision = None
+            frame.step_index = 2
+            if choice == 'recover' and player.hp < player.max_hp:
+                return StepResult.push(RecoverAction(
+                    frame.action.action_id + ':recover', actor, actor, 1))
+            return StepResult.push(DrawCardsAction(
+                frame.action.action_id + ':draw', actor, 2))
+        if frame.step_index == 2:
+            frame.step_index = 3
+            return StepResult.push(LoseMaxHpAction(
+                frame.action.action_id + ':max-hp', actor, 1))
+        if player.is_alive:
+            player.granted_skills['guanxing'] = 'zhiji'
+        return StepResult.complete(player.is_alive)
 
 
 @dataclass(frozen=True, slots=True)
