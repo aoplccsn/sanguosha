@@ -64,6 +64,17 @@ describe('GamePage', () => {
     expect(submitDecision).toHaveBeenCalledWith('guhuo-response', 'virtual:guhuo')
   })
 
+  it('submits Jiuchi wine from a hand card during self rescue', async () => {
+    players[0].character_id = 'forest_dong_zhuo'
+    players[0].skill_labels = ['酒池']
+    generals = { forest_dong_zhuo: { skills: [{ id: 'jiuchi', name: '酒池', type: 'view_as', description: '黑桃手牌当酒' }] } }
+    request = { request_id: 'jiuchi-rescue', player_id: 'p1', request_type: 'respond_with_card', prompt: '濒死：请打出桃救援或放弃', choices: [], allowed_player_ids: [], required_definition_id: 'basic.peach', eligible_card_ids: ['virtual:jiuchi:slash-1'], allow_pass: true, min_count: 1, max_count: 1, subject_player_id: 'p1', remaining_ms: 30000 }
+    render(<GamePage />)
+    await userEvent.click(screen.getByRole('button', { name: '酒池' }))
+    await userEvent.click(screen.getByRole('button', { name: '确定' }))
+    expect(submitDecision).toHaveBeenCalledWith('jiuchi-rescue', 'virtual:jiuchi:slash-1')
+  })
+
   it('lets a physical response replace a previously selected Guhuo option', async () => {
     players[0].character_id = 'wind_yuji'
     players[0].skill_labels = ['蛊惑']

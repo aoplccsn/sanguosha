@@ -235,6 +235,8 @@ class MainWindow(QMainWindow):
                     value = f'virtual:jijiu:{card_id}'
                 elif request and f'virtual:longdan:{card_id}' in request.eligible_card_ids:
                     value = f'virtual:longdan:{card_id}'
+                elif request and f'virtual:jiuchi:{card_id}' in request.eligible_card_ids:
+                    value = f'virtual:jiuchi:{card_id}'
                 else:
                     value = f'virtual:wusheng:{card_id}'
             else:
@@ -370,7 +372,8 @@ class MainWindow(QMainWindow):
                     f'virtual:wusheng:{card_id}' in request.eligible_card_ids or
                     f'virtual:qingguo:{card_id}' in request.eligible_card_ids or
                     f'virtual:jijiu:{card_id}' in request.eligible_card_ids or
-                    f'virtual:longdan:{card_id}' in request.eligible_card_ids):
+                    f'virtual:longdan:{card_id}' in request.eligible_card_ids or
+                    f'virtual:jiuchi:{card_id}' in request.eligible_card_ids):
                 if request.request_type is RequestType.RESPOND_WITH_CARD:
                     self.interaction.select_response(card_id)
                     self._render()
@@ -538,11 +541,11 @@ class MainWindow(QMainWindow):
             if human_request.request_type is RequestType.CHOOSE_OPTION:
                 selectable = {choice[4:] for choice in human_request.choices if choice.startswith("use:")}
                 selectable.update(choice.split(':', 2)[2] for choice in human_request.choices
-                                  if choice.startswith(('virtual:wusheng:', 'virtual:qixi:', 'virtual:guose:', 'virtual:longdan:', 'virtual:lianhuan:', 'virtual:huoji:', 'virtual:shuangxiong:', 'virtual:luanji:')))
+                                  if choice.startswith(('virtual:wusheng:', 'virtual:qixi:', 'virtual:guose:', 'virtual:longdan:', 'virtual:lianhuan:', 'virtual:huoji:', 'virtual:shuangxiong:', 'virtual:luanji:', 'virtual:duanliang:', 'virtual:jiuchi:')))
             elif human_request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD, RequestType.CHOOSE_CARDS):
                 selectable = set(map(str, human_request.eligible_card_ids))
                 selectable.update(choice.split(':',2)[2] for choice in human_request.eligible_card_ids
-                                  if isinstance(choice,str) and choice.startswith(('virtual:wusheng:', 'virtual:qingguo:', 'virtual:jijiu:', 'virtual:longdan:', 'virtual:kanpo:')))
+                                  if isinstance(choice,str) and choice.startswith(('virtual:wusheng:', 'virtual:qingguo:', 'virtual:jijiu:', 'virtual:longdan:', 'virtual:kanpo:', 'virtual:jiuchi:')))
         selected_cards = set(self._selected_cards)
         if self.interaction.card_id:
             selected_cards.add(self.interaction.card_id)
@@ -652,6 +655,8 @@ class MainWindow(QMainWindow):
                 labels['skill:lijian'] = '离间'
                 labels['skill:guhuo'] = '蛊惑'
                 labels['skill:tianyi'] = '天义'
+                labels['skill:dimeng'] = '缔盟'
+                labels['skill:luanwu'] = '乱武'
                 def option_label(choice):
                     if choice.startswith(('basic.', 'trick.')):
                         return '声明【' + self.session.definitions.get(choice).name + '】'
@@ -687,6 +692,10 @@ class MainWindow(QMainWindow):
                         return f'火计 · {card.name} {card.suit}{card.rank}' if card else '火计 · 红色手牌'
                     if choice.startswith('virtual:luanji:'):
                         return '乱击 · 两张同花色手牌'
+                    if choice.startswith('virtual:duanliang:'):
+                        return '断粮 · 黑色基本牌或装备牌'
+                    if choice.startswith('virtual:jiuchi:'):
+                        return '酒池 · 黑桃手牌当酒'
                     return labels.get(choice,choice)
                 actions.extend((option_label(choice),choice,True)
                                for choice in request.choices
@@ -697,7 +706,9 @@ class MainWindow(QMainWindow):
             prompt = f"选择目标 · {chosen or '点击金框玩家'}"
             actions = [("确定", "ui.confirm_target", chosen is not None)]
         elif kind is RequestType.RESPOND_WITH_CARD:
-            if attack and request.required_definition_id=='basic.dodge':
+            if '第二张闪' in request.prompt:
+                prompt = request.prompt
+            elif attack and request.required_definition_id=='basic.dodge':
                 attacker = next((p.name for p in view.players if str(p.player_id) == attack[0]), attack[0])
                 defender = next((p.name for p in view.players if str(p.player_id) == attack[1]), "你")
                 prompt = f"{attacker} 对{defender}使用了【杀】 · 请选择【闪】响应"
@@ -726,6 +737,8 @@ class MainWindow(QMainWindow):
             for choice in request.eligible_card_ids:
                 if isinstance(choice,str) and choice.startswith('virtual:jijiu:'):
                     actions.append(('急救 · 红牌当桃',choice,True))
+                if isinstance(choice,str) and choice.startswith('virtual:jiuchi:'):
+                    actions.append(('酒池 · 黑桃手牌当酒自救',choice,True))
             if self.interaction.card_id:
                 actions.append(("取消", "ui.cancel", True))
         elif kind is RequestType.CHOOSE_CARDS:

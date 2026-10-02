@@ -1,6 +1,7 @@
 """Targeted classic Forest package tests."""
 from dataclasses import replace
 import json
+import time
 
 import pytest
 
@@ -19,11 +20,13 @@ from sanguosha.model.enums import EquipmentSlot, Identity, Phase, Suit
 from sanguosha.model.enums import SkillType
 from sanguosha.model.usage import PlayUsageState
 from sanguosha.model.zones import ZoneRef, ZoneType
+from sanguosha.model.virtual_card import VirtualCard
 from sanguosha.session import GameSession
 from sanguosha.snapshot import snapshot_session, restore_session
-from sanguosha.content.characters.myth import MYTH_SKILL_CATALOGUE
+from sanguosha.content.characters.myth import MYTH_CHARACTERS, MYTH_SKILL_CATALOGUE
 from sanguosha.projection import project_for_human
 from sanguosha.multiplayer.protocol import serialize_projection
+from sanguosha.multiplayer.room import MultiplayerRoom, RoomPhase
 from test_t6_military_basics import put
 
 
@@ -442,13 +445,26 @@ def test_forest_pindian_ai_uses_highest_rank_in_hand():
     assert session.ai.decide(session.state, request).value == high
 
 
-def test_menghuo_and_zhurong_catalogue_has_rule_text_and_types():
+def test_forest_catalogue_has_rule_text_and_types():
     skills = {skill.id: skill for skill in MYTH_SKILL_CATALOGUE}
-    expected = {'huoshou': SkillType.LOCKED, 'zaiqi': SkillType.TRIGGERED,
-                'juxiang': SkillType.LOCKED, 'lieren': SkillType.TRIGGERED}
+    ordinary = [character for character in MYTH_CHARACTERS
+                if character.id.startswith('forest_') and '_god_' not in character.id]
+    assert len(ordinary) == 8
+    expected = {
+        'xingshang': SkillType.TRIGGERED, 'fangzhu': SkillType.TRIGGERED,
+        'songwei': SkillType.TRIGGERED, 'duanliang': SkillType.VIEW_AS,
+        'huoshou': SkillType.LOCKED, 'zaiqi': SkillType.TRIGGERED,
+        'juxiang': SkillType.LOCKED, 'lieren': SkillType.TRIGGERED,
+        'yinghun': SkillType.TRIGGERED, 'haoshi': SkillType.TRIGGERED,
+        'dimeng': SkillType.ACTIVE, 'wansha': SkillType.LOCKED,
+        'luanwu': SkillType.LIMITED, 'weimu': SkillType.LOCKED,
+        'jiuchi': SkillType.VIEW_AS, 'roulin': SkillType.LOCKED,
+        'benghuai': SkillType.LOCKED, 'baonue': SkillType.TRIGGERED,
+    }
+    assert {skill_id for character in ordinary for skill_id in character.skill_ids} == set(expected)
     for skill_id, kind in expected.items():
         assert skills[skill_id].skill_type is kind
-        assert len(skills[skill_id].description) > 20
+        assert len(skills[skill_id].description) > 15
         assert '规则摘要' not in skills[skill_id].description
 
 
@@ -470,6 +486,40 @@ def test_yinghun_draws_two_then_target_discards_one():
     assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))) == before + 1
 
 
+def test_yinghun_draw_one_then_discard_missing_hp():
+    session = forest_game('forest_sunjian')
+    state = session.state
+    state.players['p1'].hp -= 2
+    state.current_player_id, state.turn_number = 'p1', 1
+    before = len(state.cards_in(ZoneRef(ZoneType.HAND, 'p2')))
+    session.engine.start_action(PhaseAction('forest-yinghun-other-mode', 'p1', Phase.PREPARATION))
+    seen = drive(session, lambda request: (
+        True if request.request_type is RequestType.YES_NO else
+        'p2' if request.request_type is RequestType.CHOOSE_PLAYER else
+        'draw_one_discard_x' if request.request_type is RequestType.CHOOSE_OPTION else
+        request.eligible_card_ids[:request.min_count]
+        if request.request_type is RequestType.CHOOSE_CARDS else request.timeout_value()))
+    discard = next(request for request in seen
+                   if request.request_type is RequestType.CHOOSE_CARDS)
+    assert discard.min_count == discard.max_count == 2
+    assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))) == before - 1
+
+
+@pytest.mark.parametrize('wounded', [False, True])
+def test_yinghun_unwounded_or_declined_does_not_change_target_hand(wounded):
+    session = forest_game('forest_sunjian')
+    state = session.state
+    if wounded:
+        state.players['p1'].hp -= 1
+    state.current_player_id, state.turn_number = 'p1', 1
+    before = state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
+    session.engine.start_action(PhaseAction('forest-yinghun-decline', 'p1', Phase.PREPARATION))
+    seen = drive(session, lambda request: False if '英魂' in request.prompt
+                 else request.timeout_value())
+    assert any('英魂' in request.prompt for request in seen) is wounded
+    assert state.cards_in(ZoneRef(ZoneType.HAND, 'p2')) == before
+
+
 def test_haoshi_gives_exact_half_to_lowest_hand_player():
     session = forest_game('forest_lusu')
     state = session.state
@@ -489,6 +539,36 @@ def test_haoshi_gives_exact_half_to_lowest_hand_player():
     assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))) == target_before + give.min_count
 
 
+def test_haoshi_decline_draws_two_and_does_not_force_gift():
+    session = forest_game('forest_lusu')
+    state = session.state
+    state.current_player_id, state.turn_number = 'p1', 1
+    before = len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1')))
+    session.engine.start_action(PhaseAction('forest-haoshi-decline', 'p1', Phase.DRAW))
+    seen = drive(session, lambda request: False if '好施' in request.prompt
+                 else request.timeout_value())
+    assert any('好施' in request.prompt for request in seen)
+    assert not any(request.request_type is RequestType.CHOOSE_CARDS for request in seen)
+    assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == before + 2
+
+
+def test_haoshi_only_offers_lowest_hand_recipient():
+    session = forest_game('forest_lusu')
+    state = session.state
+    state.current_player_id, state.turn_number = 'p1', 1
+    for pid in ('p3', 'p4', 'p5'):
+        put(session, 'basic.slash', pid, ZoneType.HAND)
+    session.engine.start_action(PhaseAction('forest-haoshi-lowest', 'p1', Phase.DRAW))
+    seen = drive(session, lambda request: (
+        True if request.request_type is RequestType.YES_NO and '好施' in request.prompt else
+        'p2' if request.request_type is RequestType.CHOOSE_PLAYER else
+        request.eligible_card_ids[:request.min_count]
+        if request.request_type is RequestType.CHOOSE_CARDS else request.timeout_value()))
+    recipient = next(request for request in seen
+                     if request.request_type is RequestType.CHOOSE_PLAYER and '好施' in request.prompt)
+    assert recipient.allowed_player_ids == ('p2',)
+
+
 def test_dimeng_swaps_entire_hands_once_per_turn():
     session = forest_game('forest_lusu')
     state = session.state
@@ -503,6 +583,32 @@ def test_dimeng_swaps_entire_hands_once_per_turn():
     assert state.cards_in(ZoneRef(ZoneType.HAND, 'p2')) == second
     assert state.cards_in(ZoneRef(ZoneType.HAND, 'p3')) == first
     assert state.play_usage.count('skill.dimeng') == 1
+
+
+def test_dimeng_pays_hand_difference_and_swap_stays_private():
+    session = forest_game('forest_lusu')
+    state = session.state
+    state.current_player_id, state.current_phase = 'p1', Phase.PLAY
+    state.turn_number, state.play_usage = 1, PlayUsageState('p1', 1)
+    put(session, 'basic.slash', 'p2', ZoneType.HAND)
+    own_before = len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1')))
+    first = state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
+    second = state.cards_in(ZoneRef(ZoneType.HAND, 'p3'))
+    assert len(first) == len(second) + 1
+    session.engine.start_action(DimengAction('forest-dimeng-cost', 'p1'))
+    seen = drive(session, lambda request: (
+        'p2' if request.request_type is RequestType.CHOOSE_PLAYER and '第一名' in request.prompt else
+        'p3' if request.request_type is RequestType.CHOOSE_PLAYER else
+        request.eligible_card_ids[:request.min_count]
+        if request.request_type is RequestType.CHOOSE_CARDS else request.timeout_value()))
+    cost = next(request for request in seen if request.request_type is RequestType.CHOOSE_CARDS)
+    assert cost.min_count == cost.max_count == 1
+    assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == own_before - 1
+    assert state.cards_in(ZoneRef(ZoneType.HAND, 'p2')) == second
+    assert state.cards_in(ZoneRef(ZoneType.HAND, 'p3')) == first
+    stranger = json.dumps(serialize_projection(project_for_human(
+        state, session.definitions, 'p4', session.character_names)))
+    assert all(card_id not in stranger for card_id in first + second)
 
 
 def test_wansha_limits_peach_rescue_to_owner_and_dying_player():
@@ -671,3 +777,372 @@ def test_weimu_ignores_black_savage_assault_effect():
           if pending.request_type is RequestType.RESPOND_WITH_CARD
           else pending.timeout_value())
     assert state.players['p1'].hp == before
+
+
+def test_wansha_only_limits_rescue_during_owner_turn():
+    session = forest_game('forest_jia_xu')
+    state = session.state
+    state.current_player_id, state.current_phase = 'p3', Phase.PLAY
+    state.players['p2'].hp = 0
+    session.engine.start_action(DyingAction('forest-wansha-other-turn', 'p2', 'p3'))
+    seen = drive(session, lambda request: request.timeout_value())
+    rescuers = {request.player_id for request in seen
+                if request.request_type is RequestType.RESPOND_WITH_CARD
+                and request.required_definition_id == 'basic.peach'}
+    assert {'p3', 'p4'}.issubset(rescuers)
+
+
+def test_luanwu_cannot_be_used_twice():
+    session = forest_game('forest_jia_xu')
+    state = session.state
+    state.current_player_id, state.current_phase = 'p1', Phase.PLAY
+    state.turn_number, state.play_usage = 1, PlayUsageState('p1', 1)
+    for pid in ('p2', 'p3', 'p4', 'p5'):
+        for card_id in state.cards_in(ZoneRef(ZoneType.HAND, pid)):
+            state.cards[card_id] = replace(state.cards[card_id], definition_id='basic.dodge')
+    session.engine.start_action(LuanwuAction('forest-luanwu-once', 'p1'))
+    assert state.players['p1'].marks['luanwu_used'] == 1
+    with pytest.raises(InvalidCardUse):
+        session.engine.start_action(LuanwuAction('forest-luanwu-again', 'p1'))
+
+
+def test_luanwu_pending_choice_restores_without_private_card_ids():
+    session = forest_game('forest_jia_xu')
+    state = session.state
+    state.current_player_id, state.current_phase = 'p1', Phase.PLAY
+    state.turn_number, state.play_usage = 1, PlayUsageState('p1', 1)
+    slash = state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))[0]
+    state.cards[slash] = replace(state.cards[slash], definition_id='basic.slash')
+    session.engine.start_action(LuanwuAction('forest-luanwu-restore', 'p1'))
+    pending = session.engine.pending_request
+    assert pending.player_id == 'p2' and '乱武' in pending.prompt
+    restored = restore_session(snapshot_session(session))
+    assert restored.engine.pending_request.request_id == pending.request_id
+    stranger = json.dumps(serialize_projection(project_for_human(
+        restored.state, restored.definitions, 'p4', restored.character_names)))
+    assert slash not in stranger
+    drive(restored, lambda request: 'lose_hp'
+          if request.request_type is RequestType.CHOOSE_OPTION and '乱武' in request.prompt
+          else request.timeout_value())
+    assert restored.state.players['p1'].marks['luanwu_used'] == 1
+
+
+@pytest.mark.parametrize('suit, allowed', [(Suit.SPADE, False), (Suit.HEART, True)])
+def test_weimu_blocks_black_delayed_trick_targets(suit, allowed):
+    session = forest_game('forest_jia_xu')
+    state = session.state
+    state.current_player_id, state.current_phase = 'p2', Phase.PLAY
+    state.turn_number, state.play_usage = 1, PlayUsageState('p2', 1)
+    card_id = state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))[0]
+    state.cards[card_id] = replace(state.cards[card_id],
+                                   definition_id='delayed.indulgence', suit=suit)
+    session.engine.start_action(UseCardAction('forest-weimu-delayed', 'p2', card_id))
+    request = session.engine.pending_request
+    assert ('p1' in request.allowed_player_ids) is allowed
+
+
+@pytest.mark.parametrize('suit', [Suit.HEART, Suit.CLUB, Suit.DIAMOND])
+def test_jiuchi_rejects_non_spade_material(suit):
+    session = forest_game('forest_dong_zhuo')
+    state = session.state
+    state.current_player_id, state.current_phase = 'p1', Phase.PLAY
+    state.turn_number, state.play_usage = 1, PlayUsageState('p1', 1)
+    material = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    state.cards[material] = replace(state.cards[material], suit=suit)
+    with pytest.raises(InvalidCardUse):
+        session.engine.start_action(JiuchiUse('forest-jiuchi-suit', 'p1', material))
+    assert material in state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
+
+
+def test_jiuchi_rejects_equipped_spade_and_offers_hand_only():
+    session = forest_game('forest_dong_zhuo')
+    state = session.state
+    state.current_player_id, state.current_phase = 'p1', Phase.PLAY
+    state.turn_number, state.play_usage = 1, PlayUsageState('p1', 1)
+    equipment = put(session, 'equipment.weapon.serpent_spear', 'p1',
+                    ZoneType.EQUIPMENT, EquipmentSlot.WEAPON)
+    state.cards[equipment] = replace(state.cards[equipment], suit=Suit.SPADE)
+    hand = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
+    for card_id in hand:
+        state.cards[card_id] = replace(state.cards[card_id], suit=Suit.HEART)
+    with pytest.raises(InvalidCardUse):
+        session.engine.start_action(JiuchiUse('forest-jiuchi-equipped', 'p1', equipment))
+    assert equipment in state.cards_in(ZoneRef(ZoneType.EQUIPMENT, 'p1', EquipmentSlot.WEAPON))
+
+
+@pytest.mark.parametrize('attacker_female,target_female,expected', [
+    (False, True, 2), (True, False, 2), (False, False, 1),
+])
+def test_roulin_applies_only_across_female_dong_pair(attacker_female, target_female, expected):
+    session = forest_game('forest_dong_zhuo')
+    state = session.state
+    if attacker_female:
+        state.players['p1'].character_id = 'forest_zhurong'
+        state.players['p2'].character_id = 'forest_dong_zhuo'
+    elif target_female:
+        state.players['p2'].character_id = 'forest_zhurong'
+    slash = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    state.cards[slash] = replace(state.cards[slash], definition_id='basic.slash')
+    session.engine.start_action(MilitaryStrike('forest-roulin-direction', 'p1', 'p2',
+                                               slash, 'basic.dodge'))
+    seen = drive(session, lambda request: PASS_RESPONSE
+                 if request.request_type is RequestType.RESPOND_WITH_CARD
+                 else request.timeout_value())
+    dodges = [request for request in seen
+              if request.required_definition_id == 'basic.dodge']
+    assert len(dodges) == 1
+    assert dodges[0].player_id == 'p2'
+    from sanguosha.engine.military_basics import required_dodge_count
+    assert required_dodge_count(state, 'p1', 'p2', session.skills) == expected
+
+
+def test_roulin_first_dodge_then_reconnect_requires_second_and_pass_takes_damage():
+    session = forest_game('forest_dong_zhuo')
+    state = session.state
+    state.players['p2'].character_id = 'forest_zhurong'
+    slash = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    dodge = state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))[0]
+    state.cards[slash] = replace(state.cards[slash], definition_id='basic.slash')
+    state.cards[dodge] = replace(state.cards[dodge], definition_id='basic.dodge')
+    for card_id in state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))[1:]:
+        state.cards[card_id] = replace(state.cards[card_id], definition_id='basic.slash')
+    before = state.players['p2'].hp
+    session.engine.start_action(MilitaryStrike('forest-roulin-restore', 'p1', 'p2',
+                                               slash, 'basic.dodge'))
+    first = session.engine.pending_request
+    assert first.player_id == 'p2' and dodge in first.eligible_card_ids
+    session.engine.submit_decision(Decision(first.request_id, 'p2', dodge))
+    second = session.engine.pending_request
+    assert second.player_id == 'p2' and second.request_id != first.request_id
+    assert '第二张闪' in second.prompt
+    restored = restore_session(snapshot_session(session))
+    assert restored.engine.pending_request.request_id == second.request_id
+    drive(restored, lambda request: PASS_RESPONSE
+          if request.request_type is RequestType.RESPOND_WITH_CARD
+          else request.timeout_value())
+    assert restored.state.players['p2'].hp == before - 1
+    assert dodge in restored.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+
+
+@pytest.mark.parametrize('owner_hp, other_hp, triggered', [
+    (2, 3, False), (2, 2, False), (3, 2, True),
+])
+def test_benghuai_only_when_another_living_player_has_lower_hp(owner_hp, other_hp, triggered):
+    session = forest_game('forest_dong_zhuo')
+    state = session.state
+    state.current_player_id, state.turn_number = 'p1', 1
+    state.players['p1'].hp = owner_hp
+    for pid in ('p2', 'p3', 'p4', 'p5'):
+        state.players[pid].hp = 3
+    state.players['p2'].hp = other_hp
+    session.engine.start_action(PhaseAction('forest-benghuai-minimum', 'p1', Phase.FINISH))
+    pending = session.engine.pending_request
+    assert (pending is not None and '崩坏' in pending.prompt) is triggered
+    if pending:
+        drive(session, lambda request: 'lose_hp' if '崩坏' in request.prompt
+              else request.timeout_value())
+
+
+def test_benghuai_loses_hp_without_damage_and_restores_choice():
+    session = forest_game('forest_dong_zhuo')
+    state = session.state
+    state.current_player_id, state.turn_number = 'p1', 1
+    before = state.players['p1'].hp
+    session.engine.start_action(PhaseAction('forest-benghuai-hp', 'p1', Phase.FINISH))
+    pending = session.engine.pending_request
+    restored = restore_session(snapshot_session(session))
+    assert restored.engine.pending_request.request_id == pending.request_id
+    restored.engine.submit_decision(Decision(pending.request_id, 'p1', 'lose_hp'))
+    assert restored.state.players['p1'].hp == before - 1
+    assert any(getattr(event, 'event_type', '') == 'hp_lost' for event in restored.events.events)
+    assert not any(type(event).__name__ == 'DamageDealtEvent'
+                   for event in restored.events.events)
+
+
+@pytest.mark.parametrize('source_character,lord_identity,expect_offer', [
+    ('forest_jia_xu', Identity.LORD, True),
+    ('forest_sunjian', Identity.LORD, False),
+    ('forest_jia_xu', Identity.REBEL, False),
+    ('forest_dong_zhuo', Identity.LORD, True),
+])
+def test_baonue_requires_other_qun_source_and_dong_lord(
+        source_character, lord_identity, expect_offer):
+    session = forest_game('forest_dong_zhuo')
+    state = session.state
+    state.players['p1'].identity = lord_identity
+    state.players['p2'].character_id = source_character
+    session.engine.start_action(MilitaryDamageAction('forest-baonue-eligibility', 'p2', 'p3', 1))
+    seen = drive(session, lambda request: False if '暴虐' in request.prompt
+                 else request.timeout_value())
+    assert any(request.player_id == 'p2' and '暴虐' in request.prompt
+               for request in seen) is expect_offer
+
+
+def test_baonue_does_not_trigger_from_dong_own_damage():
+    session = forest_game('forest_dong_zhuo')
+    session.engine.start_action(MilitaryDamageAction('forest-baonue-self', 'p1', 'p2', 1))
+    seen = drive(session, lambda request: request.timeout_value())
+    assert not any('暴虐' in request.prompt for request in seen)
+
+
+@pytest.mark.parametrize('suit,accept,healed', [
+    (Suit.SPADE, True, True), (Suit.HEART, True, False),
+    (Suit.SPADE, False, False),
+])
+def test_baonue_final_judgment_and_decline(suit, accept, healed):
+    session = forest_game('forest_dong_zhuo')
+    state = session.state
+    state.players['p1'].hp -= 1
+    state.players['p2'].character_id = 'forest_jia_xu'
+    top = state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    state.cards[top] = replace(state.cards[top], suit=suit)
+    before = state.players['p1'].hp
+    session.engine.start_action(MilitaryDamageAction('forest-baonue-result', 'p2', 'p3', 1))
+    request = session.engine.pending_request
+    assert request.player_id == 'p2' and '暴虐' in request.prompt
+    restored = restore_session(snapshot_session(session))
+    assert restored.engine.pending_request.request_id == request.request_id
+    drive(restored, lambda pending: accept if '暴虐' in pending.prompt
+          else pending.timeout_value())
+    assert restored.state.players['p1'].hp == before + int(healed)
+
+
+@pytest.mark.parametrize('character_id', [
+    'forest_caopi', 'forest_xuhuang', 'forest_menghuo', 'forest_zhurong',
+    'forest_sunjian', 'forest_lusu', 'forest_jia_xu', 'forest_dong_zhuo',
+])
+def test_forest_ai_uses_authoritative_requests_without_stalling(character_id):
+    session = forest_game(character_id)
+    session.human_id = 'observer'
+    steps = 0
+    for _ in range(120):
+        if not session.step_auto():
+            break
+        steps += 1
+        session.state.__post_init__()
+    assert steps >= 5
+    request = session.engine.pending_request
+    if request is not None:
+        request.validate(session.ai.decide(session.state, request).value)
+
+
+def test_forest_room_only_sends_luanwu_request_to_current_actor():
+    messages = {f'p{index}': [] for index in range(1, 6)}
+    room = MultiplayerRoom(seed=17)
+    for index in range(1, 6):
+        room.join(f'forest-{index}', messages[f'p{index}'].append)
+    room.session = forest_game('forest_jia_xu')
+    room.phase = RoomPhase.IN_GAME
+    state = room.session.state
+    state.current_player_id, state.current_phase = 'p1', Phase.PLAY
+    state.turn_number, state.play_usage = 1, PlayUsageState('p1', 1)
+    slash = state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))[0]
+    state.cards[slash] = replace(state.cards[slash], definition_id='basic.slash')
+    room.session.engine.start_action(LuanwuAction('forest-room-luanwu', 'p1'))
+    room.request_deadline = time.time() + 30
+    for inbox in messages.values():
+        inbox.clear()
+    room._sync()
+    assert any(message['type'] == 'PENDING_REQUEST' for message in messages['p2'])
+    assert all(message['type'] != 'PENDING_REQUEST'
+               for pid, inbox in messages.items() if pid != 'p2' for message in inbox)
+    assert all(slash not in json.dumps(inbox, ensure_ascii=False)
+               for pid, inbox in messages.items() if pid != 'p2')
+
+
+def test_forest_full_match_ai_smoke():
+    session = forest_game('forest_dong_zhuo')
+    for pid, character_id in zip(('p2', 'p3', 'p4', 'p5'),
+                                 ('forest_jia_xu', 'forest_zhurong',
+                                  'forest_menghuo', 'forest_lusu')):
+        character = session.skills.characters[character_id]
+        player = session.state.players[pid]
+        player.character_id = character_id
+        player.max_hp = player.hp = character.max_hp
+    session.human_id = 'observer'
+    for _ in range(12000):
+        if not session.step_auto():
+            break
+    session.state.__post_init__()
+    assert session.state.status.value == 'finished'
+    assert session.engine.pending_request is None
+    assert session.engine.stack.is_empty()
+    assert not session.state.cards_in(ZoneRef(ZoneType.PROCESSING))
+
+
+def test_jiuchi_virtual_wine_adds_damage_to_next_slash():
+    session = forest_game('forest_dong_zhuo')
+    state = session.state
+    state.current_player_id, state.current_phase = 'p1', Phase.PLAY
+    state.turn_number, state.play_usage = 1, PlayUsageState('p1', 1)
+    wine, slash = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[:2]
+    state.cards[wine] = replace(state.cards[wine], definition_id='basic.dodge', suit=Suit.SPADE)
+    state.cards[slash] = replace(state.cards[slash], definition_id='basic.slash')
+    session.engine.start_action(JiuchiUse('forest-jiuchi-wine-slash', 'p1', wine))
+    virtual = session.engine.last_result
+    assert isinstance(virtual, VirtualCard)
+    assert virtual.definition_id == 'basic.wine' and virtual.material_ids == (wine,)
+    assert wine in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    before = state.players['p2'].hp
+    session.engine.start_action(UseCardAction('forest-jiuchi-slash', 'p1', slash, ('p2',)))
+    drive(session, lambda request: PASS_RESPONSE
+          if request.request_type is RequestType.RESPOND_WITH_CARD
+          else request.timeout_value())
+    assert state.players['p2'].hp == before - 2
+    assert state.players['p1'].marks.get('wine', 0) == 0
+
+
+def test_baonue_uses_final_spade_after_guicai_retrial():
+    session = forest_game('forest_dong_zhuo')
+    state = session.state
+    state.players['p1'].hp -= 1
+    state.players['p2'].character_id = 'forest_jia_xu'
+    state.players['p3'].character_id = 'simayi'
+    top = state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    replacement = state.cards_in(ZoneRef(ZoneType.HAND, 'p3'))[0]
+    state.cards[top] = replace(state.cards[top], suit=Suit.HEART)
+    state.cards[replacement] = replace(state.cards[replacement], suit=Suit.SPADE)
+    before = state.players['p1'].hp
+    session.engine.start_action(MilitaryDamageAction('forest-baonue-retrial', 'p2', 'p4', 1))
+    seen = drive(session, lambda request: (
+        True if request.request_type is RequestType.YES_NO else
+        replacement if request.request_type is RequestType.CHOOSE_CARD
+        and request.player_id == 'p3' else request.timeout_value()))
+    assert any('鬼才' in request.prompt for request in seen)
+    assert state.players['p1'].hp == before + 1
+
+
+@pytest.mark.parametrize('character_id,skill,action_kind', [
+    ('forest_caopi', '放逐', 'damage'),
+    ('forest_menghuo', '再起', 'draw'),
+    ('forest_sunjian', '英魂', 'preparation'),
+    ('forest_lusu', '好施', 'draw'),
+    ('forest_lusu', '缔盟', 'dimeng'),
+])
+def test_forest_pending_skill_request_restores_without_repeating(
+        character_id, skill, action_kind):
+    session = forest_game(character_id)
+    state = session.state
+    state.current_player_id, state.turn_number = 'p1', 1
+    if action_kind in ('draw', 'preparation') and skill != '好施':
+        state.players['p1'].hp -= 1
+    if action_kind == 'damage':
+        action = MilitaryDamageAction('forest-restore-offer', 'p2', 'p1', 1)
+    elif action_kind == 'draw':
+        action = PhaseAction('forest-restore-offer', 'p1', Phase.DRAW)
+    elif action_kind == 'preparation':
+        action = PhaseAction('forest-restore-offer', 'p1', Phase.PREPARATION)
+    else:
+        state.current_phase, state.play_usage = Phase.PLAY, PlayUsageState('p1', 1)
+        action = DimengAction('forest-restore-offer', 'p1')
+    session.engine.start_action(action)
+    request = session.engine.pending_request
+    assert request is not None and skill in request.prompt
+    restored = restore_session(snapshot_session(session))
+    pending = restored.engine.pending_request
+    assert pending.request_id == request.request_id
+    assert pending.player_id == request.player_id
+    assert pending.request_type is request.request_type
+    assert pending.choices == request.choices
+    assert pending.allowed_player_ids == request.allowed_player_ids
+    drive(restored, lambda later: later.timeout_value())

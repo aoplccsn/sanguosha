@@ -125,7 +125,7 @@ const cardNames: Record<string, string> = {
 function SkillBar({ player, general, request, chosen, onChoose }: { player: PlayerView; general?: GeneralInfo; request: PendingRequest | null; chosen: string; onChoose(value: string): void }) {
   const skillOptions = Array.from(new Set([
     ...(request?.choices.filter((choice) => choice.startsWith('skill:') || choice.startsWith('virtual:')) ?? []),
-    ...(request?.eligible_card_ids.filter((choice) => choice === 'virtual:guhuo') ?? []),
+    ...(request?.eligible_card_ids.filter((choice) => choice.startsWith('virtual:')) ?? []),
   ]))
   return <div className="skill-bar" aria-label="技能栏">
     {player.skill_labels.map((label) => {
@@ -300,7 +300,7 @@ export function GamePage() {
   function confirm() {
     if (!request) return
     let value: unknown = selectedOption
-    if (request.request_type === 'respond_with_card') value = selectedOption === 'virtual:guhuo' ? selectedOption : selectedCards[0]
+    if (request.request_type === 'respond_with_card') value = selectedOption.startsWith('virtual:') ? selectedOption : selectedCards[0]
     if (request.request_type === 'choose_card') value = selectedCards[0]
     if (request.request_type === 'choose_cards') value = selectedCards
     if (request.request_type === 'choose_player') value = selectedTargets[0]

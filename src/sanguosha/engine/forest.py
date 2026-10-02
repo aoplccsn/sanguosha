@@ -1,9 +1,10 @@
 """Classic Forest skills using the shared resolution stack and card services."""
 from dataclasses import dataclass
 
-from sanguosha.model.enums import CardCategory, Color, Kingdom, Phase, Suit
+from sanguosha.model.enums import CardCategory, Color, Identity, Kingdom, Phase, Suit
 from sanguosha.model.state import GameStatus
 from sanguosha.model.zones import ZoneRef, ZoneType
+from sanguosha.model.virtual_card import VirtualCard
 
 from .actions import Action, StepResult
 from .card_moves import CardMove, CardMoveReason
@@ -604,6 +605,7 @@ class BaonueHandler:
         if frame.step_index == 0:
             if (source == lord or not state.players[source].is_alive
                     or not state.players[lord].is_alive
+                    or state.players[lord].identity is not Identity.LORD
                     or self.skills.faction(state, source) is not Kingdom.QUN
                     or not self.skills.has(state, lord, 'baonue')):
                 return StepResult.complete()
@@ -774,13 +776,16 @@ class JiuchiHandler:
         if frame.step_index == 0:
             if not self.available(state, action.player_id, action.material_id):
                 raise InvalidCardUse('酒池当前不可用')
+            virtual = VirtualCard('basic.wine', (action.material_id,),
+                effective_suit(state, action.material_id, action.player_id),
+                effective_color(state, action.material_id, action.player_id))
             self.moves.move(state, CardMove(action.action_id + ':processing',
                 (action.material_id,), ZoneRef(ZoneType.HAND, action.player_id),
                 ZoneRef(ZoneType.PROCESSING), CardMoveReason.USE,
                 action.player_id, action.action_id))
             state.play_usage.record('basic.wine')
             self.events.record(CardUsedEvent(action.action_id + ':used',
-                action.player_id, action.material_id, (), 'basic.wine'))
+                action.player_id, action.material_id, (), virtual.definition_id))
             frame.step_index = 1
             return StepResult.push(WineAction(action.action_id + ':wine', action.player_id))
         processing = ZoneRef(ZoneType.PROCESSING)
@@ -790,4 +795,6 @@ class JiuchiHandler:
                 CardMoveReason.USE, action.player_id, action.action_id))
         self.events.record(CardResolvedEvent(action.action_id + ':resolved',
                                              action.player_id, action.material_id))
-        return StepResult.complete()
+        return StepResult.complete(VirtualCard('basic.wine', (action.material_id,),
+            effective_suit(state, action.material_id, action.player_id),
+            effective_color(state, action.material_id, action.player_id)))

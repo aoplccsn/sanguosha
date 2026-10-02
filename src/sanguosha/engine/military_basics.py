@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from sanguosha.content.cards.basic import SlashRule, ReachableOpponent, EquipmentSlashLimit
 from sanguosha.content.cards.classic_military import register_additional_definitions
-from sanguosha.model.enums import DamageNature, Color, EquipmentSlot, Phase, Kingdom, Suit, Gender
+from sanguosha.model.enums import DamageNature, Color, EquipmentSlot, Phase, Kingdom, Suit, Gender, Identity
 from sanguosha.model.ids import CardInstanceId, PlayerId
 from sanguosha.model.state import GameStatus
 from sanguosha.model.zones import ZoneRef, ZoneType
@@ -278,6 +278,7 @@ class MilitaryDamageHandler(DamageActionHandler):
                     and self.skills.faction(state, source) is Kingdom.QUN):
                 lord = next((pid for pid in state.seat_order if pid != source
                              and state.players[pid].is_alive
+                             and state.players[pid].identity is Identity.LORD
                              and self.skills.has(state, pid, 'baonue')), None)
                 if lord is not None:
                     from .forest import BaonueAction

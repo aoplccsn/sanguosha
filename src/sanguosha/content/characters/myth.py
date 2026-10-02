@@ -86,14 +86,24 @@ _FOREST_DESCRIPTIONS = {
     'yinghun': '准备阶段，若你已受伤，你可以令一名其他角色摸X张牌并弃一张牌，或摸一张牌并弃X张牌（X为你已损失体力值）。',
     'haoshi': '摸牌阶段，你可以额外摸两张牌；若摸牌结束后你的手牌数大于五，你须将一半手牌交给一名手牌最少的其他角色。',
     'dimeng': '出牌阶段限一次，你可以弃置等同于两名其他角色手牌数差的牌，令他们交换手牌。',
+    'wansha': '锁定技。你的回合内有角色处于濒死状态时，除你和该角色外，其他角色不能使用桃救援。',
+    'weimu': '锁定技。你不能成为黑色锦囊牌的目标。',
     'benghuai': '结束阶段开始时，若你的体力值不是全场最低，你须选择失去一点体力或减少一点体力上限。',
     'baonue': '主公技。其他群势力角色造成伤害后，其可以进行判定；若结果为黑桃，你回复一点体力。',
     'luanwu': '限定技。出牌阶段，你可以令其他角色依次对距离最近的合法角色使用一张杀，否则失去一点体力。',
     'jiuchi': '你可以将一张黑桃手牌当酒使用或用于自己濒死时自救。',
+    'roulin': '锁定技。你对女性角色使用杀，或女性角色对你使用杀时，目标角色须连续使用两张闪才能抵消。',
 }
 _FOREST_TYPES = {
+    'xingshang': SkillType.TRIGGERED, 'fangzhu': SkillType.TRIGGERED,
+    'songwei': SkillType.TRIGGERED, 'duanliang': SkillType.VIEW_AS,
     'huoshou': SkillType.LOCKED, 'zaiqi': SkillType.TRIGGERED,
     'juxiang': SkillType.LOCKED, 'lieren': SkillType.TRIGGERED,
+    'yinghun': SkillType.TRIGGERED, 'haoshi': SkillType.TRIGGERED,
+    'dimeng': SkillType.ACTIVE, 'wansha': SkillType.LOCKED,
+    'luanwu': SkillType.LIMITED, 'weimu': SkillType.LOCKED,
+    'jiuchi': SkillType.VIEW_AS, 'roulin': SkillType.LOCKED,
+    'benghuai': SkillType.LOCKED, 'baonue': SkillType.TRIGGERED,
 }
 MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(
     s, _NAMES.get(s, _FOREST_NAMES.get(s, s)),
