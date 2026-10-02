@@ -84,6 +84,11 @@ class DeathActionHandler:
             ))
             frame.step_index = 2
             return StepResult.continue_()
+        if (frame.step_index == 2 and not frame.local.get('wuhun_resolved')
+                and self.skills is not None and self.skills.has(state, action.target_id, 'wuhun')):
+            from .gods import WuhunDeathAction
+            frame.local['wuhun_resolved'] = True
+            return StepResult.push(WuhunDeathAction(action.action_id + ':wuhun', action.target_id))
         victory = self.identity.evaluate(state)
         if victory is not None:
             state.victory = victory

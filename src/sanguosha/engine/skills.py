@@ -1146,6 +1146,11 @@ class SkillPlayOptions:
             handler = JixiHandler(self.skills, None, None, self.validator.rules.get('trick.snatch'))
             if handler.available(state, pid):
                 extra.extend(f'virtual:jixi:{cid}' for cid in state.cards_in(field_zone(pid)))
+        if self.skills.has(state, pid, 'wushen'):
+            from .gods import WushenHandler
+            handler = WushenHandler(self.skills, None, self.slash_rule)
+            if handler.available(state, pid):
+                extra.extend(f'virtual:wushen:{cid}' for cid in handler.materials(state, pid))
         if self.skills.has(state, pid, 'tiaoxin'):
             from .mountain import TiaoxinHandler
             handler = TiaoxinHandler(self.skills, None, self.slash_rule,
@@ -1158,6 +1163,9 @@ class SkillPlayOptions:
         from .mountain import ZhijianHandler
         if ZhijianHandler(self.skills, None, self.validator.definitions).available(state, pid):
             extra.append('skill:zhijian')
+        from .gods import GongxinHandler
+        if GongxinHandler(self.skills, None).available(state, pid):
+            extra.append('skill:gongxin')
         if self.skills.has(state, pid, 'dimeng'):
             from .forest import DimengHandler
             if DimengHandler(self.skills).available(state, pid):
@@ -1297,6 +1305,9 @@ class SkillPlayOptions:
         if option.startswith('virtual:jixi:'):
             from .mountain import JixiUse
             return JixiUse(aid + ':jixi', pid, option.split(':', 2)[2])
+        if option.startswith('virtual:wushen:'):
+            from .gods import WushenUse
+            return WushenUse(aid + ':wushen', pid, option.split(':', 2)[2])
         if option == 'skill:tiaoxin':
             from .mountain import TiaoxinAction
             return TiaoxinAction(aid + ':tiaoxin', pid)
@@ -1306,6 +1317,9 @@ class SkillPlayOptions:
         if option == 'skill:zhijian':
             from .mountain import ZhijianAction
             return ZhijianAction(aid + ':zhijian', pid)
+        if option == 'skill:gongxin':
+            from .gods import GongxinAction
+            return GongxinAction(aid + ':gongxin', pid)
         if option.startswith('virtual:longdan:'):
             return LongdanUse(aid+':longdan',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)

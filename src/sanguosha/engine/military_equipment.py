@@ -47,6 +47,10 @@ class MilitaryMoveService(CardMoveService):
             from .mountain import JiangAction, XinshengAction, BeigeAction
             for event in new_events:
                 if isinstance(event, AfterDamageEvent):
+                    if (event.source_id is not None and state.players[event.target_id].is_alive
+                            and self.skills.has(state, event.target_id, 'wuhun')):
+                        source = state.players[event.source_id]
+                        source.marks['nightmare'] = source.marks.get('nightmare', 0) + event.amount
                     if (state.players[event.target_id].is_alive
                             and self.skills.has(state, event.target_id, 'xinsheng')):
                         self.reactions.append(XinshengAction(

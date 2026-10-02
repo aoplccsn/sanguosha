@@ -31,6 +31,7 @@ class CardMove:
     reason: CardMoveReason
     actor_id: PlayerId | None = None
     related_action_id: str | None = None
+    to_top: bool = False
 
 
 class CardMoveService:
@@ -43,6 +44,8 @@ class CardMoveService:
             raise InvalidCardMove("move needs a unique id and distinct cards")
         if move.from_zone == move.to_zone:
             raise InvalidCardMove("source and destination must differ")
+        if move.to_top and move.to_zone.zone_type is not ZoneType.DRAW_PILE:
+            raise InvalidCardMove("top placement requires draw pile destination")
         if any(card_id not in state.cards for card_id in ids):
             raise InvalidCardMove("move contains unknown card")
         source = state.zones.get(move.from_zone)
@@ -62,7 +65,7 @@ class CardMoveService:
         if any(card_id in dest_ids for card_id in ids):
             raise InvalidCardMove("card already exists in destination")
         new_source = [card_id for card_id in source.card_ids if card_id not in ids]
-        new_destination = [*dest_ids, *ids]
+        new_destination = [*ids, *dest_ids] if move.to_top else [*dest_ids, *ids]
         # All validation is complete. Commit both zones before publishing a fact.
         source.card_ids[:] = new_source
         if destination is None:

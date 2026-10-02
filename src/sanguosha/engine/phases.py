@@ -128,11 +128,18 @@ class PhaseActionHandler:
                 if action.phase is Phase.DISCARD and self.skills is not None:
                     from .events import phase_rule_discards
                     cards = phase_rule_discards(self.recorder.events, action.action_id, action.player_id)
+                    if (len(cards) >= 2 and self.skills.has(state, action.player_id, 'qinyin')
+                            and state.players[action.player_id].is_alive):
+                        frame.local['qinyin_pending'] = True
                     frame.local['guzheng_cards'] = cards
                     frame.local['guzheng_owners'] = tuple(pid for pid in state.seat_order
                         if pid != action.player_id and state.players[pid].is_alive
                         and self.skills.has(state, pid, 'guzheng')) if cards else ()
                     frame.local['guzheng_cursor'] = 0
+            if frame.local.pop('qinyin_pending', False):
+                from .gods import QinyinAction
+                return StepResult.push(QinyinAction(
+                    f'{action.action_id}:qinyin', action.player_id))
             owners = frame.local.get('guzheng_owners', ())
             index = frame.local.get('guzheng_cursor', 0)
             if index < len(owners):
