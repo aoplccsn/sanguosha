@@ -47,6 +47,22 @@ class AIDecisionProvider:
             equipment = [choice for choice in request.choices if choice.startswith('equipment:')]
             value = equipment[0] if equipment else 'random_hand'
             return Decision(request.request_id, player_id, value)
+        if kind is RequestType.CHOOSE_OPTION and '化身：选择' in request.prompt:
+            preferred = ('yingzi', 'paoxiao', 'guanxing', 'jizhi', 'qicai',
+                         'longdan', 'mashu', 'qixi', 'yinghun')
+            value = max(request.choices, key=lambda choice: (
+                0 if choice == 'keep' else
+                len(preferred) - preferred.index(choice.rsplit(':', 1)[-1])
+                if choice.rsplit(':', 1)[-1] in preferred else 1))
+            return Decision(request.request_id, player_id, value)
+        if kind is RequestType.CHOOSE_OPTION and '志继：' in request.prompt:
+            value = ('recover' if 'recover' in request.choices
+                     and state.players[player_id].hp <= 1 else 'draw')
+            return Decision(request.request_id, player_id, value)
+        if kind is RequestType.CHOOSE_OPTION and '享乐：' in request.prompt:
+            subject = request.subject_player_id
+            value = next((choice for choice in request.choices if choice != 'decline'), 'decline')
+            return Decision(request.request_id, player_id, value)
         if kind is RequestType.CHOOSE_OPTION and '蛊惑：声明' in request.prompt:
             hand = state.cards_in(ZoneRef(ZoneType.HAND, player_id))
             enemies = any(pid != player_id and state.players[pid].is_alive
@@ -109,6 +125,10 @@ class AIDecisionProvider:
                 value = next(choice for choice in request.choices if choice.startswith('virtual:wusheng:'))
             elif enemies and any(choice.startswith('virtual:qixi:') for choice in request.choices):
                 value = next(choice for choice in request.choices if choice.startswith('virtual:qixi:'))
+            elif enemies and any(choice.startswith('virtual:jixi:') for choice in request.choices):
+                value = next(choice for choice in request.choices if choice.startswith('virtual:jixi:'))
+            elif enemies and 'skill:tiaoxin' in request.choices:
+                value = 'skill:tiaoxin'
             elif enemies and any(choice.startswith('virtual:guose:') for choice in request.choices):
                 value = next(choice for choice in request.choices if choice.startswith('virtual:guose:'))
             elif enemies and any(choice.startswith('virtual:longdan:') for choice in request.choices):
@@ -119,6 +139,8 @@ class AIDecisionProvider:
                 value = usable[0]
             elif 'skill:zhiheng' in request.choices:
                 value = 'skill:zhiheng'
+            elif 'skill:zhijian' in request.choices:
+                value = 'skill:zhijian'
             elif 'skill:qingnang' in request.choices:
                 value = 'skill:qingnang'
             elif 'skill:jieyin' in request.choices:
@@ -137,7 +159,13 @@ class AIDecisionProvider:
             else:
                 value = END_PLAY_PHASE if END_PLAY_PHASE in request.choices else request.choices[0]
         elif kind is RequestType.CHOOSE_PLAYER:
-            if '好施：' in request.prompt:
+            if '放权：选择获得额外回合' in request.prompt or '直谏：选择装备' in request.prompt:
+                value = min(request.allowed_player_ids,
+                            key=lambda pid: self._priority(state, player_id, pid))
+            elif '巧变' in request.prompt and '摸牌' in request.prompt:
+                value = max(request.allowed_player_ids,
+                            key=lambda pid: self._priority(state, player_id, pid))
+            elif '好施：' in request.prompt:
                 value = min(request.allowed_player_ids,
                             key=lambda pid: self._priority(state, player_id, pid))
             elif '缔盟：选择第一' in request.prompt:
@@ -223,7 +251,15 @@ class AIDecisionProvider:
                 count=max(count,min(request.max_count,len(enemies)))
             value=tuple(ordered[:min(count,len(ordered),request.max_count)])
         elif kind is RequestType.YES_NO:
-            if '【行殇】' in request.prompt or '【颂威】' in request.prompt:
+            if '【巧变】' in request.prompt:
+                hand_count = len(state.cards_in(ZoneRef(ZoneType.HAND, player_id)))
+                value = hand_count > (3 if '出牌' in request.prompt else 1)
+            elif '【放权】跳过' in request.prompt:
+                value = len(state.cards_in(ZoneRef(ZoneType.HAND, player_id))) <= 1
+            elif '【悲歌】' in request.prompt:
+                subject = request.subject_player_id
+                value = subject is not None and self._priority(state, player_id, subject) < 0
+            elif '【行殇】' in request.prompt or '【颂威】' in request.prompt:
                 value = True
             elif '【暴虐】' in request.prompt:
                 subject = request.subject_player_id

@@ -22,9 +22,12 @@ from sanguosha.model.enums import EquipmentSlot, Phase, Suit
 from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.model.usage import PlayUsageState
 from sanguosha.session import GameSession
+from sanguosha.model.ids import PlayerId
 from sanguosha.snapshot import restore_session, snapshot_session
 from sanguosha.projection import project_for_human
+from sanguosha.multiplayer.protocol import serialize_projection, deserialize_projection
 from test_t6_military_basics import put
+from sanguosha.content.characters.myth import MYTH_CHARACTERS, MYTH_SKILL_CATALOGUE
 
 
 @pytest.mark.parametrize('phase', (Phase.JUDGMENT, Phase.DRAW, Phase.PLAY, Phase.DISCARD))
@@ -48,6 +51,17 @@ def test_qiaobian_discards_hand_card_and_marks_only_legal_phase(phase):
     assert player.marks['skip_' + phase.value] == 1
     restored = restore_session(snapshot_session(session))
     assert restored.state.players['p1'].marks['skip_' + phase.value] == 1
+
+
+def test_mountain_catalogue_has_eight_named_generals_and_real_skill_text():
+    generals = tuple(general for general in MYTH_CHARACTERS
+                     if general.id.startswith('mountain_') and '_god_' not in general.id)
+    skills = {skill.id: skill for skill in MYTH_SKILL_CATALOGUE}
+    assert len(generals) == 8
+    for general in generals:
+        for skill_id in general.skill_ids:
+            assert skills[skill_id].name != skill_id
+            assert skills[skill_id].description != '经典神话再临规则摘要。'
 
 
 def test_qiaobian_draw_replacement_takes_from_two_distinct_players():
@@ -99,6 +113,23 @@ def test_qiaobian_moves_equipment_to_open_matching_slot():
     assert card not in session.state.cards_in(ZoneRef(ZoneType.EQUIPMENT, 'p2', EquipmentSlot.WEAPON))
     assert card in session.state.cards_in(ZoneRef(ZoneType.EQUIPMENT, 'p3', EquipmentSlot.WEAPON))
     assert session.state.players['p1'].marks['skip_play'] == 1
+
+
+def test_qiaobian_delayed_trick_excludes_duplicate_and_immune_targets():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_zhang_he'
+    state.players['p4'].character_id = 'luxun'
+    moving = put(session, 'delayed.indulgence', 'p2', ZoneType.JUDGMENT)
+    put(session, 'delayed.indulgence', 'p3', ZoneType.JUDGMENT)
+    cost = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    session.engine.start_action(QiaobianAction('qiaobian-delayed', 'p1', Phase.PLAY))
+    for choice in (True, cost, moving):
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, 'p1', choice))
+    request = session.engine.pending_request
+    assert 'p3' not in request.allowed_player_ids
+    assert 'p4' not in request.allowed_player_ids
 
 
 def test_tuntian_nonheart_judgment_enters_authoritative_field():
@@ -494,6 +525,13 @@ def test_zuoci_transformation_pool_is_private_and_reconnect_safe():
     restored = restore_session(snapshot_session(session))
     assert restored.state.players['p1'].transformation_pool == player.transformation_pool
     assert restored.skills.has(restored.state, 'p1', skill_id)
+    owner_wire = serialize_projection(project_for_human(
+        state, session.definitions, 'p1', session.character_names))
+    opponent_wire = serialize_projection(project_for_human(
+        state, session.definitions, 'p2', session.character_names))
+    assert owner_wire['players'][0]['transformation_pool']
+    assert opponent_wire['players'][0]['transformation_pool'] == ()
+    assert deserialize_projection(owner_wire).players[0].transformation_pool == tuple(player.transformation_pool)
 
 
 def test_xinsheng_draws_new_unique_general_cards():
@@ -529,6 +567,33 @@ def test_beige_uses_final_judgment_suit_for_recovery():
     assert cost in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
 
 
+@pytest.mark.parametrize('suit', (Suit.DIAMOND, Suit.CLUB, Suit.SPADE))
+def test_beige_nonheart_suits_use_shared_effects(suit):
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_cai_wenji'
+    top = state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    state.cards[top] = replace(state.cards[top], suit=suit)
+    victim_hand = len(state.cards_in(ZoneRef(ZoneType.HAND, 'p2')))
+    source_hand = len(state.cards_in(ZoneRef(ZoneType.HAND, 'p3')))
+    source_face = state.players['p3'].face_up
+    cost = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    session.engine.start_action(BeigeAction('beige-' + suit.value, 'p1', 'p2', 'p3'))
+    for choice in (True, cost):
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, 'p1', choice))
+    while session.engine.pending_request is not None:
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, request.player_id,
+                                                request.timeout_value()))
+    if suit is Suit.DIAMOND:
+        assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))) == victim_hand + 2
+    elif suit is Suit.CLUB:
+        assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p3'))) == source_hand - 2
+    else:
+        assert state.players['p3'].face_up != source_face
+
+
 def test_duanchang_suppresses_killers_character_skills_through_reconnect():
     session = GameSession.new_game(military=True, five_generals=True)
     state = session.state
@@ -559,3 +624,21 @@ def test_slash_damage_offers_beige_to_cai_wenji():
         session.engine.submit_decision(Decision(request.request_id, request.player_id,
                                                 request.timeout_value()))
     assert seen_beige
+
+
+@pytest.mark.parametrize('character_id', (
+    'mountain_zhang_he', 'mountain_deng_ai', 'mountain_liushan',
+    'mountain_jiang_wei', 'mountain_sunce', 'mountain_zhang_zhaozhang',
+    'mountain_zuoci', 'mountain_cai_wenji',
+))
+def test_mountain_general_full_ai_match_finishes(character_id):
+    session = GameSession.new_game(seed=11, military=True, five_generals=True)
+    session.state.players['p1'].character_id = character_id
+    session.human_id = PlayerId('nobody')
+    session.ai.human_id = session.human_id
+    for _ in range(2500):
+        if session.state.status.value == 'finished':
+            break
+        assert session.step_auto()
+    assert session.state.status.value == 'finished'
+    assert session.engine.pending_request is None

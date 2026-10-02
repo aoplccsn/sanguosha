@@ -51,6 +51,7 @@ function PlayerPanel({ player, position, selected, selectable, responding, event
 }) {
   const portrait = portraitState(player, selected, selectable, responding)
   const buqu = player.special_piles?.buqu ?? []
+  const field = player.special_piles?.tian ?? []
   const committed = Object.entries(player.special_piles ?? {})
     .filter(([key]) => key.startsWith('committed:'))
     .flatMap(([, cards]) => cards)
@@ -87,6 +88,9 @@ function PlayerPanel({ player, position, selected, selectable, responding, event
       {buqu.length > 0 && <span className="zone-token buqu-token" title={'不屈牌：' + buqu.map((card) => card.suit + card.rank).join(' ')}>
         不屈 {buqu.length} · {buqu.map((card) => card.suit + card.rank).join(' ')}
       </span>}
+      {field.length > 0 && <span className="zone-token" title={'田：' + field.map((card) => card.suit + card.rank).join(' ')}>田 {field.length}</span>}
+      {player.active_transformation && <span className="zone-token">化身 {player.active_transformation}</span>}
+      {!!player.transformation_pool?.length && <span className="zone-token">化身池 {player.transformation_pool.length}</span>}
       {committed.map((card) => <span key={card.card_id} className="zone-token judgment-token"
         title={card.name + (card.suit ? ' ' + card.suit + card.rank : '')}>蛊惑 · {card.name}</span>)}
     </div>

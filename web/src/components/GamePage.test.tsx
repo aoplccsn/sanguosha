@@ -30,7 +30,7 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
-  beforeEach(() => { submitDecision.mockClear(); request = null; generals = {}; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄'] })
+  beforeEach(() => { submitDecision.mockClear(); request = null; generals = {}; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
 
   it('maps shared portrait state for turn, target, response and chain feedback', () => {
     const state = portraitState({ ...players[1], face_up: false, chained: true }, true, true, true)
@@ -42,6 +42,16 @@ describe('GamePage', () => {
     expect(screen.getAllByText(/手牌/)).toHaveLength(5)
     expect(screen.getByRole('button', { name: /杀/ })).toBeDisabled()
     expect(screen.getByLabelText('技能栏')).toBeInTheDocument()
+  })
+
+  it('shows Mountain field and private transformation state', () => {
+    ;(players[0] as any).special_piles = { tian: [{ ...card, card_id: 'field-1' }] }
+    ;(players[0] as any).active_transformation = 'wind_wei_yan'
+    ;(players[0] as any).transformation_pool = ['wind_wei_yan', 'fire_xun_yu']
+    render(<GamePage />)
+    expect(screen.getByText('田 1')).toBeInTheDocument()
+    expect(screen.getByText('化身 wind_wei_yan')).toBeInTheDocument()
+    expect(screen.getByText('化身池 2')).toBeInTheDocument()
   })
 
   it('requires confirm after selecting a response card', async () => {

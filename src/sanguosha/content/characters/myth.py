@@ -105,10 +105,50 @@ _FOREST_TYPES = {
     'jiuchi': SkillType.VIEW_AS, 'roulin': SkillType.LOCKED,
     'benghuai': SkillType.LOCKED, 'baonue': SkillType.TRIGGERED,
 }
+_MOUNTAIN_NAMES = {
+    'qiaobian': '巧变', 'tuntian': '屯田', 'zaoxian': '凿险',
+    'xiangle': '享乐', 'fangquan': '放权', 'ruoyu': '若愚',
+    'tiaoxin': '挑衅', 'zhiji': '志继', 'jiang': '激昂',
+    'hunzi': '魂姿', 'zhiba': '制霸', 'zhijian': '直谏',
+    'guzheng': '固政', 'huashen': '化身', 'xinsheng': '新生',
+    'beige': '悲歌', 'duanchang': '断肠', 'guanxing': '观星',
+}
+_MOUNTAIN_DESCRIPTIONS = {
+    'qiaobian': '你可以弃置一张手牌跳过判定、摸牌、出牌或弃牌阶段。跳过摸牌阶段时可从至多两名其他角色各获得一张手牌；跳过出牌阶段时可移动场上的一张装备牌或延时锦囊牌。',
+    'tuntian': '回合外失去牌后，你可以判定；若结果不为红桃，将判定牌置于武将牌上作为田。你与其他角色的距离减少田的数量。',
+    'zaoxian': '觉醒技，准备阶段若田不少于三张，减少一点体力上限并获得急袭。',
+    'xiangle': '锁定技，其他角色使用杀指定你为目标时，须额外弃置一张基本牌，否则此杀对你无效。',
+    'fangquan': '你可以跳过出牌阶段；若如此，回合结束时可弃置一张手牌，令一名其他角色进行一个额外回合。',
+    'ruoyu': '主公技、觉醒技，准备阶段若你的体力值为全场最低，增加一点体力上限、回复一点体力并获得激将。',
+    'tiaoxin': '出牌阶段限一次，选择攻击范围内一名其他角色，其须对你使用一张杀，否则你弃置其一张牌。',
+    'zhiji': '觉醒技，准备阶段若你没有手牌，选择回复一点体力或摸两张牌，然后减少一点体力上限并获得观星。',
+    'jiang': '使用或成为红色杀、决斗的目标时，你可以摸一张牌。',
+    'hunzi': '觉醒技，准备阶段若你的体力值为一，减少一点体力上限并获得英姿、英魂。',
+    'zhiba': '主公技，其他吴势力角色出牌阶段限一次可与你拼点；你觉醒后可拒绝。若你未赢，可获得双方拼点牌。',
+    'zhijian': '出牌阶段，你可以将手牌中的一张装备牌置入其他角色装备区，然后摸一张牌。',
+    'guzheng': '其他角色弃牌阶段结束后，你可以将其此阶段因规则弃置的一张牌归还，然后获得其余这些牌。',
+    'huashen': '游戏开始获得两张未登场武将牌；准备阶段及结束阶段可选择一张化身及其一项允许的技能，并改变性别和势力。',
+    'xinsheng': '受到伤害后，你可以按伤害点数获得新的未登场武将牌。',
+    'beige': '其他角色受到杀造成的伤害后，你可以弃置一张牌令其判定：红桃回复，方块摸牌，梅花伤害来源弃牌，黑桃伤害来源翻面。',
+    'duanchang': '锁定技，你死亡时，杀死你的角色失去其武将技能。',
+    'guanxing': '准备阶段可查看并调整牌堆顶的牌。',
+}
+_MOUNTAIN_TYPES = {
+    'qiaobian': SkillType.TRIGGERED, 'tuntian': SkillType.TRIGGERED,
+    'zaoxian': SkillType.TRIGGERED, 'xiangle': SkillType.LOCKED,
+    'fangquan': SkillType.TRIGGERED, 'ruoyu': SkillType.TRIGGERED,
+    'tiaoxin': SkillType.ACTIVE, 'zhiji': SkillType.TRIGGERED,
+    'jiang': SkillType.TRIGGERED, 'hunzi': SkillType.TRIGGERED,
+    'zhiba': SkillType.ACTIVE, 'zhijian': SkillType.ACTIVE,
+    'guzheng': SkillType.TRIGGERED, 'huashen': SkillType.TRIGGERED,
+    'xinsheng': SkillType.TRIGGERED, 'beige': SkillType.TRIGGERED,
+    'duanchang': SkillType.LOCKED, 'guanxing': SkillType.TRIGGERED,
+}
 MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(
-    s, _NAMES.get(s, _FOREST_NAMES.get(s, s)),
-    _WIND_DESCRIPTIONS.get(s, _FOREST_DESCRIPTIONS.get(s, '经典神话再临规则摘要。')),
-    _WIND_TYPES.get(s, _FOREST_TYPES.get(s, SkillType.ACTIVE)),
+    s, _NAMES.get(s, _FOREST_NAMES.get(s, _MOUNTAIN_NAMES.get(s, s))),
+    _WIND_DESCRIPTIONS.get(s, _FOREST_DESCRIPTIONS.get(s,
+                           _MOUNTAIN_DESCRIPTIONS.get(s, '经典神话再临规则摘要。'))),
+    _WIND_TYPES.get(s, _FOREST_TYPES.get(s, _MOUNTAIN_TYPES.get(s, SkillType.ACTIVE))),
     {key: True for key, enabled in (
         ('lord', s in ('huangtian', 'songwei', 'baonue', 'ruoyu', 'zhiba')),
         ('awakening', s in ('zaoxian', 'zhiji', 'hunzi', 'ruoyu', 'baoyin')),

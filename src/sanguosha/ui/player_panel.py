@@ -192,16 +192,19 @@ class PlayerPanel(QPushButton):
         if not v.alive:
             p.fillRect(art, QColor(24, 21, 19, int(185*self.death_opacity)))
         buqu = v.special_piles.get('buqu', ())
+        field_cards = v.special_piles.get('tian', ())
         committed = tuple(card for key, cards in v.special_piles.items()
                           if key.startswith('committed:') for card in cards)
-        if buqu or committed:
+        if buqu or committed or field_cards or v.active_transformation:
             badge = QRectF(art.left(), art.bottom()-21, art.width(), 20)
             p.fillRect(badge, QColor(30, 24, 19, 190))
             p.setPen(QColor("#f4d58b"))
             p.setFont(QFont("Microsoft YaHei UI", 7, QFont.Bold))
             p.drawText(badge, Qt.AlignCenter,
                        ("不屈 " + str(len(buqu)) + " · " + " ".join(card.rank for card in buqu))
-                       if buqu else "蛊惑 · " + committed[0].name)
+                       if buqu else "田 " + str(len(field_cards)) if field_cards
+                       else "化身 " + v.active_transformation if v.active_transformation
+                       else "蛊惑 · " + committed[0].name)
         p.setClipping(False)
         p.setPen(QPen(QColor("#795d3c"), 2))
         p.setBrush(Qt.NoBrush)

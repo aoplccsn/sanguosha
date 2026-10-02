@@ -87,6 +87,8 @@ export interface PlayerView {
   face_up?: boolean
   marks?: Record<string, number>
   special_piles?: Record<string, CardView[]>
+  active_transformation?: string
+  transformation_pool?: string[]
 }
 
 export interface PortraitState {

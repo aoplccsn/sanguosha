@@ -897,6 +897,11 @@ class QiaobianHandler:
             else:
                 definition = delayed_definition(state, card_id)
                 destination = ZoneRef(ZoneType.JUDGMENT, pid)
+                from .forest import weimu_blocks
+                if (definition == 'delayed.indulgence' and self.skills.has(state, pid, 'qianxun')
+                        or weimu_blocks(state, pid, card_id, definition,
+                                        source.player_id, self.skills)):
+                    continue
                 if any(delayed_definition(state, other) == definition
                        for other in state.cards_in(destination)):
                     continue
