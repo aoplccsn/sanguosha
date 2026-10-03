@@ -71,3 +71,25 @@ def test_reconnect_restores_private_draft_request():
             ))
             assert receive_until(restored, "WELCOME")["seat_id"] == welcome["seat_id"]
             assert receive_until(restored, "DRAFT_REQUEST")["request"]["request_id"] == draft["request"]["request_id"]
+
+
+def test_reconnect_takes_over_before_old_socket_closes():
+    app = create_app(WebConfig())
+    with TestClient(app) as client:
+        with client.websocket_connect('/ws') as first:
+            first.send_json(message('HELLO'))
+            receive_until(first, 'WELCOME')
+            first.send_json(message('CREATE_ROOM', name='房主'))
+            code = receive_until(first, 'ROOM_CREATED')['room_code']
+            welcome = receive_until(first, 'WELCOME')
+            with client.websocket_connect('/ws') as restored:
+                restored.send_json(message('HELLO'))
+                receive_until(restored, 'WELCOME')
+                restored.send_json(message('RECONNECT', room_code=code,
+                                           token=welcome['reconnect_token']))
+                assert receive_until(restored, 'WELCOME')['seat_id'] == welcome['seat_id']
+                room = app.state.room_manager.rooms[code].game
+                assert room.seats[welcome['seat_id']].connected
+                first.send_json(message('READY', ready=True))
+                assert receive_until(first, 'ERROR')['message'] == 'seat reconnected elsewhere'
+            assert not room.seats[welcome['seat_id']].connected

@@ -285,6 +285,16 @@ export function GamePage() {
   const opponents = projection.players.filter((player) => player.player_id !== self.player_id)
   const allowedTargets = new Set(request?.allowed_player_ids ?? [])
   const eligibleCards = new Set(request?.eligible_card_ids ?? [])
+  const displayedCardIds = new Set([
+    ...projection.hand.map((card) => card.card_id),
+    ...projection.shared_cards.map((card) => card.card_id),
+    ...projection.players.flatMap((player) => [
+      ...(player.revealed_hand ?? []).map((card) => card.card_id),
+    ]),
+  ])
+  const publicCards = projection.players.flatMap((player) => [...player.equipment, ...player.judgments])
+  const otherCardChoices = request?.request_type === 'choose_card' || request?.request_type === 'choose_cards'
+    ? request.eligible_card_ids.filter((id) => !displayedCardIds.has(id)) : []
   const isCardRequest = !!request && ['respond_with_card', 'choose_card', 'choose_cards'].includes(request.request_type)
   const isTargetRequest = !!request && ['choose_player', 'choose_players'].includes(request.request_type)
   const choiceCardIds = new Set((request?.choices ?? []).filter((choice) => choice.startsWith('use:')).map((choice) => choice.slice(4)))
@@ -329,6 +339,11 @@ export function GamePage() {
       {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={(projection.players.length === 8 ? positionsEight : positions)[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} eventKind={eventTarget === player.player_id || eventSource === player.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} eventCue={latestEvent} godCue={godCues[player.player_id]} vfxQuality={vfxQuality} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
       <EventStage event={state.publicEvents[state.publicEvents.length - 1]} players={projection.players} />
       <SharedCards cards={projection.shared_cards} selected={selectedCards} eligible={eligibleCards} onSelect={toggleCard} />
+      {otherCardChoices.length > 0 && <section className="shared-card-pool" aria-label="可选目标牌">
+        <p>选择目标的一张牌</p><div>{otherCardChoices.map((id) =>
+          <button key={id} className={'brush-button compact' + (selectedCards.includes(id) ? ' selected' : '')}
+            onClick={() => toggleCard(id)}>{id.startsWith('hidden-hand:') ? '暗置手牌 ' + id.split(':')[1] : publicCards.find((card) => card.card_id === id)?.name ?? id}</button>)}</div>
+      </section>}
       {request?.player_id === self.player_id && projection.players.filter((player) => !!player.revealed_hand?.length).map((player) =>
         <section key={player.player_id} className="shared-card-pool" aria-label="攻心查看手牌">
           <p>攻心 · {player.name} 的手牌</p><div>{player.revealed_hand!.map((card) =>

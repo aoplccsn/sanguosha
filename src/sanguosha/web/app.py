@@ -53,7 +53,7 @@ class BrowserConnection:
     def detach(self) -> None:
         if self.managed is not None and self.player_id is not None:
             seat = self.managed.game.seats[self.player_id]
-            if seat.connected:
+            if seat.connected and seat.send == self.send_nowait:
                 self.managed.game.disconnect(self.player_id)
             self.managed.touch()
         self.managed = None
@@ -237,6 +237,8 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                         connection.detach()
                     elif connection.managed is None or connection.player_id is None:
                         raise RoomError("join room first")
+                    elif connection.managed.game.seats[connection.player_id].send != connection.send_nowait:
+                        raise RoomError("seat reconnected elsewhere")
                     elif kind == "READY":
                         connection.managed.game.ready(connection.player_id, message.get("ready"))
                     elif kind == 'CONFIGURE_ROOM':

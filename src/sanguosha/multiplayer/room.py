@@ -19,6 +19,7 @@ from sanguosha.engine.rng import PythonRandomSource
 from sanguosha.model.enums import Identity
 from sanguosha.model.ids import CharacterId, PlayerId
 from sanguosha.model.state import GameStatus
+from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.pregame import Pregame, ROLE_SET, SEATS, SetupStage
 from sanguosha.projection import project_for_human
 from sanguosha.session import GameSession
@@ -122,8 +123,6 @@ class MultiplayerRoom:
             seat = next((s for s in self.seats.values() if s.token == token and s.controller is Controller.HUMAN), None)
             if seat is None:
                 raise RoomError("invalid reconnect token")
-            if seat.connected:
-                raise RoomError("seat is already connected")
             seat.connected, seat.send = True, send
             self._send_current(seat.player_id)
             self._broadcast(envelope("PLAYER_RECONNECTED", seat_id=str(seat.player_id)))
@@ -273,6 +272,9 @@ class MultiplayerRoom:
             return
         if self.phase is not RoomPhase.IN_GAME or self.session is None:
             raise RoomError("no active game request")
+        request = self.session.engine.pending_request
+        if request is not None and request.request_id == decision.request_id:
+            decision = self._resolve_hidden_choice(request, decision)
         self.network_decisions.validate(pid, decision)
         self.session.engine.submit_decision(decision)
         self._send(pid, envelope("DECISION_RESULT", request_id=decision.request_id, accepted=True))
@@ -395,8 +397,7 @@ class MultiplayerRoom:
         self._seen_events = len(self.session.events.events)
         request = self.session.engine.pending_request
         if request is not None and self.seats[request.player_id].controller is Controller.HUMAN:
-            self._send(request.player_id, envelope("PENDING_REQUEST", request=serialize_request(
-                request, max(0, int((self.request_deadline - time.time()) * 1000)))))
+            self._send(request.player_id, envelope("PENDING_REQUEST", request=self._request_payload(request)))
 
     def _send_current(self, pid: PlayerId) -> None:
         self._send(pid, envelope("LOBBY_STATE", **self.lobby_state()))
@@ -408,8 +409,35 @@ class MultiplayerRoom:
                                      projection=self._named_projection(view, pid)))
             request = self.session.engine.pending_request
             if request is not None and request.player_id == pid and self.request_deadline is not None:
-                self._send(pid, envelope("PENDING_REQUEST", request=serialize_request(
-                    request, max(0, int((self.request_deadline - time.time()) * 1000)))))
+                self._send(pid, envelope("PENDING_REQUEST", request=self._request_payload(request)))
+
+    def _hidden_hand_aliases(self, request: PendingRequest) -> dict[str, str]:
+        if (self.session is None or request.subject_player_id is None
+                or request.subject_player_id == request.player_id
+                or request.request_type not in (RequestType.CHOOSE_CARD, RequestType.CHOOSE_CARDS)):
+            return {}
+        hand = self.session.state.cards_in(ZoneRef(ZoneType.HAND, request.subject_player_id))
+        return {f'hidden-hand:{index}': card_id for index, card_id in enumerate(hand, 1)
+                if card_id in request.eligible_card_ids}
+
+    def _request_payload(self, request: PendingRequest) -> dict:
+        remaining = max(0, int((self.request_deadline - time.time()) * 1000)) if self.request_deadline else 0
+        payload = serialize_request(request, remaining)
+        aliases = self._hidden_hand_aliases(request)
+        if aliases:
+            reverse = {card_id: alias for alias, card_id in aliases.items()}
+            payload['eligible_card_ids'] = [reverse.get(card_id, card_id)
+                                            for card_id in request.eligible_card_ids]
+        return payload
+
+    def _resolve_hidden_choice(self, request: PendingRequest, decision: Decision) -> Decision:
+        aliases = self._hidden_hand_aliases(request)
+        value = decision.value
+        if isinstance(value, str):
+            value = aliases.get(value, value)
+        elif isinstance(value, tuple):
+            value = tuple(aliases.get(item, item) for item in value)
+        return Decision(decision.request_id, decision.player_id, value)
 
     def lobby_state(self) -> dict:
         return {"phase": self.phase.value, "host_id": self.host_id,

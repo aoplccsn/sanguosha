@@ -68,4 +68,22 @@ describe('GameConnection', () => {
     socket.emit('open')
     expect(socket.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'JOIN_ROOM'])
   })
+
+  it('rejoins the same seat after a WebSocket reconnect', () => {
+    const connection = new GameConnection()
+    connection.openRoom('ABC234', 'JOIN_ROOM', { room_code: 'ABC234', name: '玩家' })
+    const first = FakeSocket.instances[0]
+    first.readyState = FakeSocket.OPEN
+    first.emit('open')
+    first.emit('message', { data: JSON.stringify({
+      type: 'WELCOME', room_code: 'ABC234', seat_id: 'p1', reconnect_token: 'secret',
+    }) })
+    first.close()
+    vi.advanceTimersByTime(800)
+    const second = FakeSocket.instances[1]
+    second.readyState = FakeSocket.OPEN
+    second.emit('open')
+    expect(second.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'RECONNECT'])
+    expect(JSON.parse(second.sent[1]).token).toBe('secret')
+  })
 })

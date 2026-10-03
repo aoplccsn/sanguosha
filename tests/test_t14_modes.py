@@ -10,7 +10,9 @@ from sanguosha.snapshot import restore_session, snapshot_session
 from sanguosha.multiplayer.room import MultiplayerRoom, RoomPhase
 from sanguosha.room_snapshot import restore_room, snapshot_room
 from sanguosha.engine.requests import Decision
+from sanguosha.engine.requests import PendingRequest, RequestType
 from sanguosha.projection import project_for_human
+from sanguosha.model.zones import ZoneRef, ZoneType
 
 
 def test_mode_definitions_have_classic_role_distributions():
@@ -104,3 +106,20 @@ def test_mode_switch_refuses_to_drop_an_occupied_human_seat():
     with pytest.raises(RoomError, match='occupied'):
         room.configure(host, mode_id='military-five')
     assert room.mode.mode_id == 'military-eight'
+
+
+def test_hidden_opponent_hand_uses_opaque_choice_and_restores_after_snapshot():
+    room = MultiplayerRoom(mode_id='military-eight')
+    room.session = GameSession.new_game(military=True, five_generals=True,
+                                        mode_id='military-eight')
+    hand = room.session.state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
+    request = PendingRequest('private-choice', 'p1', RequestType.CHOOSE_CARD,
+                             '选择目标手牌', 'action', 'frame',
+                             eligible_card_ids=hand, subject_player_id='p2')
+    payload = room._request_payload(request)
+    assert payload['eligible_card_ids'] == [f'hidden-hand:{i}' for i in range(1, len(hand) + 1)]
+    assert not any(card in str(payload) for card in hand)
+    restored = restore_room(snapshot_room(room))
+    assert restored._request_payload(request)['eligible_card_ids'] == payload['eligible_card_ids']
+    decision = restored._resolve_hidden_choice(request, Decision('private-choice', 'p1', 'hidden-hand:1'))
+    assert decision.value == hand[0]

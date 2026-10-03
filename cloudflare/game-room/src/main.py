@@ -234,6 +234,14 @@ class GameRoomDurableObject(DurableObject):
                     allow_gods=message.get('allow_gods', False))
             token = message.get("token") if kind == "RECONNECT" else None
             pid, reconnect_token = self.room.join(message.get("name", "player"), self._sender(ws), token=token)
+            for old_ws in tuple(self.sockets.values()):
+                if old_ws is ws:
+                    continue
+                old_attachment = _attachment(old_ws)
+                if old_attachment.get("player_id") == str(pid):
+                    old_attachment["player_id"] = ""
+                    _save_attachment(old_ws, old_attachment)
+                    old_ws.close(1000, "reconnected elsewhere")
             attachment.update({
                 "player_id": str(pid),
                 "seat": str(pid),
@@ -286,8 +294,10 @@ class GameRoomDurableObject(DurableObject):
             self.rate.pop(session_id, None)
         player_id = attachment.get("player_id")
         if player_id:
-            self.room.disconnect(PlayerId(player_id))
-            await self._persist()
+            if not any(_attachment(other).get("player_id") == player_id
+                       for other in self.sockets.values()):
+                self.room.disconnect(PlayerId(player_id))
+                await self._persist()
 
     async def alarm(self):
         if not await self._load():

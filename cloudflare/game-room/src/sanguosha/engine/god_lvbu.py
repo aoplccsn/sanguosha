@@ -12,6 +12,7 @@ from .card_rules import InvalidCardUse
 from .military_basics import MilitaryDamageAction
 from .events import Event
 from .requests import PendingRequest, RequestType
+from .turnover import TurnoverAction
 
 
 GOD_LVBU = 'forest_god_lvbu'
@@ -130,6 +131,10 @@ class ShenfenHandler:
             frame.step_index = 2
             return StepResult.continue_()
         if frame.step_index == 4:
-            state.players[actor].face_up = not state.players[actor].face_up
+            frame.step_index = 5
+            if state.players[actor].is_alive and state.status is not GameStatus.FINISHED:
+                return StepResult.push(TurnoverAction(action.action_id + ':turnover', actor))
+            return StepResult.complete()
+        if frame.step_index == 5:
             return StepResult.complete()
         return StepResult.continue_()

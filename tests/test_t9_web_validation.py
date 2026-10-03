@@ -59,14 +59,16 @@ async def start_server():
     raise AssertionError("web server did not start")
 
 
-async def play_web_match(url: str, humans: int, seed: int, audit_app=None, audit_seen=None):
+async def play_web_match(url: str, humans: int, seed: int, audit_app=None, audit_seen=None,
+                         mode_id: str = "military-five"):
     clients = [await websockets.connect(url) for _ in range(humans)]
     seats: list[str] = []
     try:
         for ws in clients:
             await ws.send(json.dumps(wire("HELLO")))
             await recv_until(ws, "WELCOME")
-        await clients[0].send(json.dumps(wire("CREATE_ROOM", name="web-human-0", seed=seed)))
+        await clients[0].send(json.dumps(wire("CREATE_ROOM", name="web-human-0", seed=seed,
+                                              mode_id=mode_id)))
         room_code = (await recv_until(clients[0], "ROOM_CREATED"))["room_code"]
         host_welcome = await recv_until(clients[0], "WELCOME")
         seats.append(host_welcome["seat_id"])
@@ -91,7 +93,8 @@ async def play_web_match(url: str, humans: int, seed: int, audit_app=None, audit
                         for opponent_id in seats:
                             if opponent_id != seats[index]:
                                 private_ids = room.session.state.cards_in(ZoneRef(ZoneType.HAND, opponent_id))
-                                assert all(str(card_id) not in raw for card_id in private_ids)
+                                assert all(str(card_id) not in raw for card_id in private_ids), (
+                                    kind, seats[index], opponent_id, tuple(map(str, private_ids)), message)
                         assert "deck_order" not in raw and "draw_pile" not in raw
                         if kind == "PROJECTION_UPDATE":
                             for player in message["projection"]["players"]:
@@ -150,6 +153,27 @@ def test_fastapi_websocket_full_game_smoke(humans, seed):
             assert all(seen)
             assert len(room.session.state.cards) == len(set(room.session.state.cards))
             room.session.state.__post_init__()
+        finally:
+            server.should_exit = True
+            await task
+
+    asyncio.run(scenario())
+
+
+def test_fastapi_websocket_eight_player_mixed_full_game():
+    async def scenario():
+        app, server, task, url = await start_server()
+        try:
+            room_code, seen = await play_web_match(
+                url, humans=2, seed=8, audit_app=app, audit_seen=set(),
+                mode_id="military-eight",
+            )
+            room = app.state.room_manager.rooms[room_code].game
+            assert room.mode.mode_id == "military-eight"
+            assert len(room.seats) == 8
+            assert sum(seat.controller.value == "AI" for seat in room.seats.values()) == 6
+            assert room.phase.value == "FINISHED"
+            assert all(seen)
         finally:
             server.should_exit = True
             await task

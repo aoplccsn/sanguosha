@@ -17,6 +17,7 @@ export class GameConnection {
   private reconnectDelay = 800
   private roomCode = ''
   private pendingMessage: { type: string; fields: Record<string, unknown> } | null = null
+  private reconnectMessage: { type: string; fields: Record<string, unknown> } | null = null
 
   subscribe(listener: Listener) {
     this.listeners.add(listener)
@@ -46,6 +47,8 @@ export class GameConnection {
         const pending = this.pendingMessage
         this.pendingMessage = null
         this.send(pending.type, pending.fields)
+      } else if (this.reconnectMessage) {
+        this.send(this.reconnectMessage.type, this.reconnectMessage.fields)
       }
       if (!__CLOUDFLARE_ROOMS__) {
         this.heartbeat = window.setInterval(() => this.send('PING'), 15000)
@@ -54,6 +57,11 @@ export class GameConnection {
     this.socket.addEventListener('message', (event) => {
       try {
         const message = JSON.parse(String(event.data)) as Record<string, unknown>
+        if (message.type === 'WELCOME' && message.room_code && message.reconnect_token) {
+          this.reconnectMessage = { type: 'RECONNECT', fields: {
+            room_code: String(message.room_code), token: String(message.reconnect_token), name: '玩家',
+          } }
+        }
         this.listeners.forEach((listener) => listener(message))
       } catch {
         this.listeners.forEach((listener) => listener({ type: 'ERROR', message: '服务器消息格式错误' }))
@@ -83,6 +91,7 @@ export class GameConnection {
     this.intentionallyClosed = false
     this.roomCode = roomCode.trim().toUpperCase()
     this.pendingMessage = { type, fields }
+    this.reconnectMessage = null
     this.reconnectDelay = 800
     this.connect(this.roomCode)
   }
@@ -99,5 +108,6 @@ export class GameConnection {
     this.socket?.close()
     this.socket = null
     this.pendingMessage = null
+    this.reconnectMessage = null
   }
 }
