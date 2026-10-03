@@ -73,6 +73,8 @@ class Default(WorkerEntrypoint):
                     return Response.json({"room_code": code}, status=201)
             return Response.json({"error": "unable to allocate room code"}, status=503)
         if path.startswith("/room/"):
+            if request.headers.get('Upgrade', '').lower() != 'websocket':
+                return await self.env.ASSETS.fetch(request)
             try:
                 code = _normalize_room_code(path.split("/", 3)[2])
             except ValueError as exc:
@@ -166,7 +168,7 @@ class GameRoomDurableObject(DurableObject):
             return Response.json({"room_code": self.room_code, "phase": self.room.phase.value})
         if not await self._load():
             return Response.json({"error": "room not found"}, status=404)
-        maximum = int(getattr(self.env, "MAX_CONNECTIONS_PER_ROOM", "5"))
+        maximum = int(getattr(self.env, "MAX_CONNECTIONS_PER_ROOM", "8"))
         if len(self.ctx.getWebSockets()) >= maximum:
             return Response.json({"error": "room connection limit reached"}, status=429)
         client, server = WebSocketPair.new().object_values()
@@ -227,7 +229,9 @@ class GameRoomDurableObject(DurableObject):
                 if seed is not None:
                     if type(seed) is not int or seed < 0:
                         raise ProtocolError("seed must be a non-negative integer")
-                    self.room.seed = seed
+                self.room = MultiplayerRoom(seed=seed,
+                    mode_id=message.get('mode_id', 'military-five'),
+                    allow_gods=message.get('allow_gods', False))
             token = message.get("token") if kind == "RECONNECT" else None
             pid, reconnect_token = self.room.join(message.get("name", "player"), self._sender(ws), token=token)
             attachment.update({
@@ -249,6 +253,11 @@ class GameRoomDurableObject(DurableObject):
         pid = PlayerId(attachment["player_id"])
         if kind == "READY":
             self.room.ready(pid, message.get("ready"))
+        elif kind == 'CONFIGURE_ROOM':
+            self.room.configure(pid, mode_id=message.get('mode_id'),
+                                allow_gods=message.get('allow_gods'))
+        elif kind == 'KICK_PLAYER':
+            self.room.kick(pid, PlayerId(message['seat_id']))
         elif kind == "START_GAME":
             self.room.start(pid)
         elif kind == "SUBMIT_DECISION":
@@ -256,7 +265,7 @@ class GameRoomDurableObject(DurableObject):
         elif kind == "TAKEOVER_AI":
             self.room.takeover_ai(pid, PlayerId(message["seat_id"]))
         elif kind == "LEAVE_ROOM":
-            self.room.disconnect(pid)
+            self.room.leave(pid)
             ws.close(1000, "left room")
         else:
             raise ProtocolError(f"unsupported client message: {kind}")

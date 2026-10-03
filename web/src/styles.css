@@ -114,6 +114,15 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .player-north { left: calc(50% - 110px); top: 8%; }
 .player-north-east { right: 7%; top: 15%; }
 .player-east { right: 4%; top: 47%; }
+.player-east-upper { right: 2%; top: 29%; }
+.player-east-lower { right: 2%; top: 55%; }
+.player-west-upper { left: 2%; top: 29%; }
+.player-west-lower { left: 2%; top: 55%; }
+.eight-seats .player-north-west { left: 8%; top: 5%; }
+.eight-seats .player-north { top: 3%; }
+.eight-seats .player-north-east { right: 8%; top: 5%; }
+.lobby-options { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.lobby-options label { display: inline-flex; align-items: center; gap: 8px; }
 .player-self { position: relative; inset: auto; width: 260px; min-height: 150px; flex: 0 0 260px; }
 .portrait-button { position: absolute; inset: 9px auto auto 9px; width: 70px; height: 92px; padding: 0; overflow: hidden; background: #21180f; border: 1px solid #a97939; }
 .portrait-button img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
@@ -194,6 +203,7 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 @keyframes chainPulse { 50% { box-shadow: 0 0 10px #67c7d2; transform: rotate(-8deg) scale(1.12); } }
 @media (max-width: 1000px) { .player-panel { width: 185px; padding-left: 76px; } .portrait-button { width: 58px; height: 78px; } .player-north-west { left: 2%; } .player-north-east { right: 2%; } .player-east { right: 1%; } .mini-skills, .player-zones { margin-left: -66px; } .decision-prompt { width: 94vw; bottom: 205px; } .game-general-detail { grid-template-columns: 180px 1fr; } }
 @media (max-width: 720px) { .game-board { min-height: 760px; transform-origin: top center; } .player-panel { width: 160px; min-height: 165px; font-size: 11px; } .player-north-west { left: 1%; top: 12%; } .player-north { top: 8%; } .player-north-east { right: 1%; top: 12%; } .player-east { right: 1%; top: 34%; } .player-self { flex-basis: 170px; } .self-area { left: 1%; right: 1%; } .skill-bar { display: none; } .decision-prompt { flex-wrap: wrap; bottom: 200px; } .prompt-copy { min-width: 100%; } .game-general-detail { grid-template-columns: 1fr; } .game-general-detail > img { max-height: 240px; } .pile-stats span { display: none; } }
+@media (max-width: 720px) { .game-board.eight-seats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(158px, auto); gap: 8px; min-height: 1160px; padding: 10px; align-content: start; } .eight-seats > .player-panel:not(.player-self) { position: relative; inset: auto; width: 100%; min-height: 155px; } .eight-seats .self-area { bottom: 10px; } .eight-seats .event-stage { top: 70%; } .eight-seats .decision-prompt { position: fixed; bottom: 10px; z-index: 40; max-height: 35vh; overflow: auto; } .hand { overflow-x: auto; justify-content: flex-start; } }
 .connection-banner {
   position: fixed;
   z-index: 1000;

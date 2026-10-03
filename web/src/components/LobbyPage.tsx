@@ -13,13 +13,20 @@ export function LobbyPage() {
   const copyCode = async () => {
     await navigator.clipboard?.writeText(state.roomCode)
   }
+  const copyInvite = async () => {
+    await navigator.clipboard?.writeText(new URL('/room/' + state.roomCode, window.location.origin).toString())
+  }
 
   return <main className="lobby-page table-background">
     <section className="lobby-shell paper-panel">
       <header className="lobby-header">
         <div><p className="eyebrow">群雄候场</p><h1>多人房间</h1></div>
-        <div className="room-code-box"><span>房间码</span><strong>{state.roomCode}</strong><button onClick={copyCode}>复制</button></div>
+        <div className="room-code-box"><span>房间码</span><strong>{state.roomCode}</strong><button onClick={copyCode}>复制房间码</button><button onClick={copyInvite}>复制邀请链接</button></div>
       </header>
+      <div className="lobby-options">
+        <label>模式 <select aria-label="房间模式" value={lobby.mode_id} disabled={!isHost || !['OPEN', 'READY'].includes(lobby.phase)} onChange={(event) => actions.configureRoom(event.target.value, lobby.allow_gods)}><option value="military-five">军五 · 5 人</option><option value="military-eight">军八 · 8 人</option></select></label>
+        <label><input type="checkbox" checked={lobby.allow_gods} disabled={!isHost || !['OPEN', 'READY'].includes(lobby.phase)} onChange={(event) => actions.configureRoom(lobby.mode_id, event.target.checked)} /> 允许神将</label>
+      </div>
       <div className="seat-grid">
         {lobby.seats.map((seat, index) => <article className={`lobby-seat ${seat.controller_type.toLowerCase()} ${seat.connected ? '' : 'offline'}`} key={seat.seat_id}>
           <div className="seat-number">{index + 1}</div>
@@ -31,9 +38,10 @@ export function LobbyPage() {
             {seat.controller_type === 'HUMAN' && <span className={seat.ready || seat.seat_id === lobby.host_id ? 'ready' : 'waiting'}>{seat.seat_id === lobby.host_id ? '主持' : seat.ready ? '已准备' : '未准备'}</span>}
             {seat.controller_type !== 'EMPTY' && <span>{seat.connected ? '在线' : '断线'}</span>}
           </div>
+          {isHost && seat.controller_type === 'HUMAN' && seat.seat_id !== lobby.host_id && <button className="brush-button subtle compact" onClick={() => actions.kickPlayer(seat.seat_id)}>移出</button>}
         </article>)}
       </div>
-      <p className="lobby-note">开始时不足五人的座位将由 AI 自动补齐。</p>
+      <p className="lobby-note">开始时不足 {lobby.seat_count} 人的座位将由 AI 自动补齐。</p>
       <div className="lobby-actions">
         <button className="brush-button subtle" onClick={actions.returnHome}>返回首页</button>
         {isHost

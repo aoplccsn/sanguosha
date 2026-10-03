@@ -6,7 +6,8 @@
   "assets": {
     "directory": "../../web/dist",
     "binding": "ASSETS",
-    "run_worker_first": true
+    "run_worker_first": true,
+    "not_found_handling": "single-page-application"
   },
   "durable_objects": {
     "bindings": [
@@ -20,7 +21,7 @@
   "vars": {
     "ROOM_TTL_SECONDS": "7200",
     "MAX_ACTIVE_ROOMS": "100",
-    "MAX_CONNECTIONS_PER_ROOM": "5",
+    "MAX_CONNECTIONS_PER_ROOM": "8",
     "MESSAGE_RATE_PER_10_SECONDS": "300"
   }
 }

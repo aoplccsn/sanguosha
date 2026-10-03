@@ -12,6 +12,9 @@ export interface Seat {
 export interface LobbyState {
   phase: 'OPEN' | 'READY' | 'DRAFT' | 'IN_GAME' | 'FINISHED'
   host_id: string | null
+  mode_id: 'military-five' | 'military-eight'
+  seat_count: number
+  allow_gods: boolean
   seats: Seat[]
 }
 

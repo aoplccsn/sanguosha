@@ -11,6 +11,8 @@ export function HomePage() {
   const initialRoom = useMemo(roomFromUrl, [])
   const [name, setName] = useState(localStorage.getItem('sanguosha.web.nickname') ?? '')
   const [roomCode, setRoomCode] = useState(initialRoom)
+  const [modeId, setModeId] = useState<'military-five' | 'military-eight'>('military-five')
+  const [allowGods, setAllowGods] = useState(false)
 
   const remember = () => {
     const clean = name.trim() || '玩家'
@@ -23,16 +25,23 @@ export function HomePage() {
     <div className="ink-mist ink-mist-two" />
     <section className="home-panel paper-panel">
       <div className="seal">战</div>
-      <p className="eyebrow">云端权威 · 五人身份局</p>
+      <p className="eyebrow">云端权威 · 身份局</p>
       <h1>三国杀</h1>
       <h2>Web Edition</h2>
       <p className="home-copy">打开网页，邀友入局。规则、身份与牌堆全部由服务器掌管。</p>
       <label className="field-label">玩家昵称
         <input aria-label="玩家昵称" maxLength={32} value={name} onChange={(event) => setName(event.target.value)} placeholder="请输入昵称" />
       </label>
+      <label className="field-label">对局模式
+        <select aria-label="对局模式" value={modeId} onChange={(event) => setModeId(event.target.value as 'military-five' | 'military-eight')}>
+          <option value="military-five">军五 · 5 人</option>
+          <option value="military-eight">军八 · 8 人</option>
+        </select>
+      </label>
+      <label className="field-label"><input type="checkbox" checked={allowGods} onChange={(event) => setAllowGods(event.target.checked)} /> 允许神将进入候选池</label>
       <div className="home-actions">
-        <button className="brush-button primary" onClick={() => actions.createRoom(remember(), true)}>单人游戏</button>
-        <button className="brush-button" onClick={() => actions.createRoom(remember())}>创建多人房间</button>
+        <button className="brush-button primary" onClick={() => actions.createRoom(remember(), true, modeId, allowGods)}>单人游戏</button>
+        <button className="brush-button" onClick={() => actions.createRoom(remember(), false, modeId, allowGods)}>创建多人房间</button>
       </div>
       {import.meta.env.DEV && <a className="god-preview-entry" href="/t11/god-lvbu-preview">God Lü Bu Presentation Preview · 神吕布视觉验收</a>}
       <div className="join-row">

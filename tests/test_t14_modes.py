@@ -79,3 +79,28 @@ def test_eight_player_mixed_room_starts_shared_game_with_private_identities():
     for player in view.players:
         if player.player_id not in (host, room.pregame.lord_id):
             assert player.identity_label == '未知'
+
+
+def test_lobby_disconnect_keeps_token_and_kick_releases_seat():
+    room = MultiplayerRoom(mode_id='military-eight')
+    host, _ = room.join('host', lambda _: None)
+    guest, token = room.join('guest', lambda _: None)
+    room.disconnect(guest)
+    assert room.seats[guest].controller.value == 'HUMAN'
+    assert not room.seats[guest].connected
+    rejoined, same_token = room.join('guest', lambda _: None, token=token)
+    assert rejoined == guest and same_token == token
+    room.kick(host, guest)
+    assert room.seats[guest].controller.value == 'EMPTY'
+
+
+def test_mode_switch_refuses_to_drop_an_occupied_human_seat():
+    from sanguosha.multiplayer.room import RoomError
+    import pytest
+    room = MultiplayerRoom(mode_id='military-eight')
+    host, _ = room.join('host', lambda _: None)
+    for index in range(5):
+        room.join(f'guest-{index}', lambda _: None)
+    with pytest.raises(RoomError, match='occupied'):
+        room.configure(host, mode_id='military-five')
+    assert room.mode.mode_id == 'military-eight'

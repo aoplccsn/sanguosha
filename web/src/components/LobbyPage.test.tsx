@@ -11,6 +11,9 @@ vi.mock('../state/GameContext', () => ({
       lobby: {
         phase: 'OPEN',
         host_id: 'p1',
+        mode_id: 'military-five',
+        seat_count: 5,
+        allow_gods: false,
         seats: [
           { seat_id: 'p1', player_name: '房主', controller_type: 'HUMAN', ready: false, connected: true },
           { seat_id: 'p2', player_name: '来宾', controller_type: 'HUMAN', ready: true, connected: true },
@@ -24,7 +27,8 @@ vi.mock('../state/GameContext', () => ({
         ],
       },
     },
-    actions: { startGame: vi.fn(), setReady: vi.fn(), returnHome: vi.fn() },
+    actions: { startGame: vi.fn(), setReady: vi.fn(), returnHome: vi.fn(),
+      configureRoom: vi.fn(), kickPlayer: vi.fn() },
   }),
 }))
 

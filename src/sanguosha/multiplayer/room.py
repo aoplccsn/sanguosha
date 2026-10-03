@@ -95,6 +95,8 @@ class MultiplayerRoom:
                  review_god_lvbu: bool = False, mode_id: str = 'military-five',
                  allow_gods: bool = False):
         self.mode = game_mode(mode_id)
+        if type(allow_gods) is not bool:
+            raise RoomError('allow_gods must be boolean')
         self.allow_gods = allow_gods
         self.seats = {pid: Seat(pid) for pid in self.mode.seats}
         self.phase = RoomPhase.OPEN
@@ -148,12 +150,18 @@ class MultiplayerRoom:
         if not seat.connected:
             return
         seat.connected, seat.send = False, None
-        if self.phase in (RoomPhase.OPEN, RoomPhase.READY):
-            seat.controller, seat.name, seat.ready, seat.token = Controller.EMPTY, "", False, ""
-            if pid == self.host_id:
-                self.host_id = next((s.player_id for s in self.seats.values() if s.controller is Controller.HUMAN), None)
         self._broadcast(envelope("PLAYER_DISCONNECTED", seat_id=str(pid)))
         self._broadcast_lobby()
+
+    def leave(self, pid: PlayerId) -> None:
+        self.disconnect(pid)
+        if self.phase in (RoomPhase.OPEN, RoomPhase.READY):
+            self.seats[pid] = Seat(pid)
+            if pid == self.host_id:
+                self.host_id = next((s.player_id for s in self.seats.values()
+                                     if s.controller is Controller.HUMAN), None)
+            self.phase = RoomPhase.READY if any(s.ready for s in self.seats.values()) else RoomPhase.OPEN
+            self._broadcast_lobby()
 
     def ready(self, pid: PlayerId, value: bool) -> None:
         if self.phase not in (RoomPhase.OPEN, RoomPhase.READY) or pid == self.host_id:
@@ -180,6 +188,19 @@ class MultiplayerRoom:
             if type(allow_gods) is not bool:
                 raise RoomError('allow_gods must be boolean')
             self.allow_gods = allow_gods
+        self._broadcast_lobby()
+
+    def kick(self, host_id: PlayerId, target_id: PlayerId) -> None:
+        if host_id != self.host_id or self.phase not in (RoomPhase.OPEN, RoomPhase.READY):
+            raise RoomError('only the host can kick before the game starts')
+        if target_id == host_id or target_id not in self.seats:
+            raise RoomError('invalid kick target')
+        seat = self.seats[target_id]
+        if seat.controller is not Controller.HUMAN:
+            raise RoomError('target is not a human player')
+        self._send(target_id, envelope('KICKED', reason='房主已将你移出房间'))
+        self.seats[target_id] = Seat(target_id)
+        self.phase = RoomPhase.READY if any(s.ready for s in self.seats.values()) else RoomPhase.OPEN
         self._broadcast_lobby()
 
     def start(self, pid: PlayerId) -> None:

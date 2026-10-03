@@ -192,7 +192,10 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                                 raise RoomError("room creation rate limit reached")
                             recent.append(now)
                         review_god_lvbu = message.get('review_god_lvbu') is True and not config.production
-                        managed = manager.create(seed=message.get("seed"), review_god_lvbu=review_god_lvbu)
+                        managed = manager.create(seed=message.get("seed"),
+                            review_god_lvbu=review_god_lvbu,
+                            mode_id=message.get('mode_id', 'military-five'),
+                            allow_gods=message.get('allow_gods', False))
                         connection.managed = managed
                         connection.send_nowait(envelope("ROOM_CREATED", room_code=managed.code))
                         pid, token = managed.game.join(message.get("name"), connection.send_nowait)
@@ -229,11 +232,19 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                         connection.send_nowait(envelope("PONG"))
                     elif kind == "LEAVE_ROOM":
                         LOG.info("room leave code=%s", connection.managed.code if connection.managed else "none")
+                        if connection.managed is not None and connection.player_id is not None:
+                            connection.managed.game.leave(connection.player_id)
                         connection.detach()
                     elif connection.managed is None or connection.player_id is None:
                         raise RoomError("join room first")
                     elif kind == "READY":
                         connection.managed.game.ready(connection.player_id, message.get("ready"))
+                    elif kind == 'CONFIGURE_ROOM':
+                        connection.managed.game.configure(connection.player_id,
+                            mode_id=message.get('mode_id'), allow_gods=message.get('allow_gods'))
+                    elif kind == 'KICK_PLAYER':
+                        connection.managed.game.kick(connection.player_id,
+                            PlayerId(message.get('seat_id', '')))
                     elif kind == "START_GAME":
                         connection.managed.game.start(connection.player_id)
                         LOG.info("game start code=%s", connection.managed.code)
