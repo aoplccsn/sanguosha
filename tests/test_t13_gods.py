@@ -247,3 +247,27 @@ def test_star_weather_modifies_fire_and_prevents_non_thunder_damage():
     assert state.players['p2'].hp == state.players['p2'].max_hp - 2
     session.engine.start_action(MilitaryDamageAction('weather-fog', 'p4', 'p3', 1))
     assert state.players['p3'].hp == state.players['p3'].max_hp
+
+
+def test_wumou_pays_rage_before_non_delayed_trick_resolves():
+    from sanguosha.engine.card_use import UseCardAction
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'forest_god_lvbu'
+    state.players['p1'].marks['rage'] = 2
+    state.current_player_id = 'p1'
+    state.current_phase = Phase.PLAY
+    state.turn_number = 1
+    state.play_usage = PlayUsageState('p1', 1)
+    card = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    state.cards[card] = replace(state.cards[card], definition_id='trick.ex_nihilo')
+    session.engine.start_action(UseCardAction('wumou-trick', 'p1', card))
+    request = session.engine.pending_request
+    assert request.choices == ('lose_hp', 'rage')
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'rage'))
+    assert state.players['p1'].marks['rage'] == 1
+    while session.engine.pending_request is not None:
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, request.player_id,
+                                                request.timeout_value()))
+    assert card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))

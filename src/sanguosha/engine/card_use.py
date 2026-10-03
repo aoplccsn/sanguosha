@@ -85,6 +85,19 @@ class UseCardActionHandler:
                 '是否发动【集智】摸一张牌？', action.action_id, frame.frame_id))
         return outcome
 
+    def _commit_with_wumou(self, state, frame, action, targets):
+        definition = self.validator.definitions.get(state.cards[action.card_id].definition_id)
+        if (self.skills is not None and self.skills.has(state, action.user_id, 'wumou')
+                and definition.category is CardCategory.TRICK):
+            frame.local['wumou_targets'] = tuple(targets)
+            frame.step_index = 5
+            choices = ('lose_hp', 'rage') if state.players[action.user_id].marks.get('rage', 0) else ('lose_hp',)
+            return StepResult.ask(PendingRequest(
+                f'{action.action_id}:wumou', action.user_id, RequestType.CHOOSE_OPTION,
+                '无谋：弃一枚怒标记或失去一点体力', action.action_id,
+                frame.frame_id, choices=choices))
+        return self._commit_with_jizhi(state, frame, action, targets)
+
     def _jizhi_effect(self, state, frame, action):
         targets = frame.local['jizhi_targets']
         rule = self.validator.rule_for(state, action.card_id)
@@ -107,15 +120,33 @@ class UseCardActionHandler:
                     min_count=low, max_count=high,
                 ))
             frame.step_index = 2
-            return self._commit_with_jizhi(state, frame, action, action.target_ids)
+            return self._commit_with_wumou(state, frame, action, action.target_ids)
         if frame.step_index == 1:
             target = frame.decision
             if not isinstance(target, (str, tuple)):
                 raise InvalidCardUse("target choice is missing")
             frame.decision = None
             frame.step_index = 2
-            return self._commit_with_jizhi(state, frame, action,
+            return self._commit_with_wumou(state, frame, action,
                                            tuple(map(PlayerId, target)) if isinstance(target, tuple) else (PlayerId(target),))
+        if frame.step_index == 5:
+            choice = frame.decision
+            frame.decision = None
+            if choice == 'rage':
+                if state.players[action.user_id].marks.get('rage', 0) < 1:
+                    raise InvalidCardUse('无谋怒标记不足')
+                state.players[action.user_id].marks['rage'] -= 1
+            elif choice == 'lose_hp':
+                from .hp import LoseHpAction
+                frame.step_index = 6
+                return StepResult.push(LoseHpAction(
+                    f'{action.action_id}:wumou-hp', action.user_id, 1))
+            else:
+                raise InvalidCardUse('无谋代价不合法')
+        if frame.step_index in (5, 6):
+            frame.step_index = 2
+            return self._commit_with_jizhi(state, frame, action,
+                                           frame.local['wumou_targets'])
         if frame.step_index == 3:
             draw = frame.decision is True
             frame.decision = None

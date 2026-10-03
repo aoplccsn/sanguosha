@@ -9,7 +9,7 @@ from sanguosha.model.zones import ZoneRef, ZoneType
 from .actions import Action, StepResult
 from .card_moves import CardMove, CardMoveReason
 from .card_rules import InvalidCardUse
-from .damage import DamageAction
+from .military_basics import MilitaryDamageAction
 from .events import Event
 from .requests import PendingRequest, RequestType
 
@@ -89,7 +89,7 @@ class ShenfenHandler:
                 target = targets[frame.cursor]
                 frame.cursor += 1
                 if state.players[target].is_alive:
-                    return StepResult.push(DamageAction(action.action_id + ':damage:' + str(frame.cursor),
+                    return StepResult.push(MilitaryDamageAction(action.action_id + ':damage:' + str(frame.cursor),
                                                         actor, target, 1))
                 return StepResult.continue_()
             frame.cursor = 0
