@@ -287,3 +287,65 @@ def test_juejing_draws_for_missing_hp_and_increases_hand_limit():
     session.engine.start_action(PhaseAction('juejing-draw', 'p1', Phase.DRAW))
     assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == before + 3
     assert FireHandLimit(WindHandLimit(), session.skills)(state, 'p1') == 3
+
+
+def test_longhun_response_uses_current_hp_same_suit_cards():
+    from sanguosha.engine.response import RespondWithCardAction
+    from sanguosha.engine.gods import longhun_option
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_god_zhaoyun'
+    state.players['p1'].max_hp = 2
+    state.players['p1'].hp = 2
+    cards = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[:2]
+    for cid in cards:
+        state.cards[cid] = replace(state.cards[cid], suit=Suit.CLUB)
+    session.engine.start_action(RespondWithCardAction(
+        'longhun-dodge', 'p1', 'basic.dodge', 'attack'))
+    request = session.engine.pending_request
+    option = longhun_option(cards)
+    assert option in request.eligible_card_ids
+    session.engine.submit_decision(Decision(request.request_id, 'p1', option))
+    assert all(cid in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE)) for cid in cards)
+
+
+def test_longhun_fire_slash_uses_shared_slash_pipeline():
+    from sanguosha.engine.gods import LonghunUse
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_god_zhaoyun'
+    state.players['p1'].max_hp = 2
+    state.players['p1'].hp = 1
+    state.current_player_id = 'p1'
+    state.current_phase = Phase.PLAY
+    state.turn_number = 1
+    state.play_usage = PlayUsageState('p1', 1)
+    card = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    state.cards[card] = replace(state.cards[card], suit=Suit.DIAMOND)
+    session.engine.start_action(LonghunUse('longhun-fire', 'p1', (card,), 'basic.fire_slash'))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'p2'))
+    while session.engine.pending_request is not None:
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, request.player_id,
+                                                request.timeout_value()))
+    assert state.play_usage.count('basic.slash') == 1
+    assert card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+
+
+def test_longhun_peach_is_offered_and_recovers():
+    from sanguosha.engine.gods import LonghunUse
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_god_zhaoyun'
+    state.players['p1'].max_hp = 2
+    state.players['p1'].hp = 1
+    state.current_player_id = 'p1'
+    state.current_phase = Phase.PLAY
+    state.turn_number = 1
+    state.play_usage = PlayUsageState('p1', 1)
+    card = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    state.cards[card] = replace(state.cards[card], suit=Suit.HEART)
+    session.engine.start_action(LonghunUse('longhun-peach', 'p1', (card,), 'basic.peach'))
+    assert state.players['p1'].hp == 2
+    assert card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))

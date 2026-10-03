@@ -1,6 +1,7 @@
 """Classic God general rules using the shared card and death pipelines."""
 
 from dataclasses import dataclass
+from itertools import combinations
 
 from sanguosha.model.enums import DamageNature, Phase, Suit
 from sanguosha.model.zones import ZoneRef, ZoneType
@@ -18,6 +19,7 @@ from .forced_cards import discardable_cards
 from .military_basics import SlashSequence
 from .requests import PendingRequest, RequestType
 from .suits import effective_color, effective_suit
+from .events import CardUsedEvent
 
 
 @dataclass(frozen=True, slots=True)
@@ -576,6 +578,102 @@ class GuixinHandler:
 
 def star_zone(player_id):
     return ZoneRef(ZoneType.SPECIAL, player_id, special_key='star')
+
+
+LONGHUN_SUIT = {
+    'basic.peach': Suit.HEART,
+    'basic.fire_slash': Suit.DIAMOND,
+    'basic.dodge': Suit.CLUB,
+    'trick.nullification': Suit.SPADE,
+}
+
+
+def longhun_materials(state, actor, definition_id):
+    suit = LONGHUN_SUIT[definition_id]
+    required = max(1, state.players[actor].hp)
+    cards = tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, actor))
+                  if effective_suit(state, cid, actor) is suit)
+    return tuple(combinations(cards, required))
+
+
+def longhun_option(cards):
+    return 'virtual:longhun:' + ':'.join(cards)
+
+
+@dataclass(frozen=True, slots=True)
+class LonghunUse(Action):
+    player_id: str
+    material_ids: tuple[str, ...]
+    definition_id: str
+
+
+class LonghunUseHandler:
+    def __init__(self, skills, moves, recorder, slash_rule):
+        self.skills, self.moves, self.recorder, self.slash_rule = (
+            skills, moves, recorder, slash_rule)
+
+    def available(self, state, actor, definition_id, materials):
+        if (not self.skills.has(state, actor, 'longhun')
+                or state.current_player_id != actor
+                or state.current_phase is not Phase.PLAY
+                or state.play_usage is None
+                or tuple(materials) not in longhun_materials(state, actor, definition_id)):
+            return False
+        if definition_id == 'basic.peach':
+            return state.players[actor].hp < state.players[actor].max_hp
+        if definition_id != 'basic.fire_slash':
+            return False
+        limit = self.slash_rule.usage_limit(state, actor)
+        return ((limit is None or state.play_usage.count('basic.slash') < limit)
+                and bool(self.slash_rule.target_candidates(state, actor)))
+
+    def step(self, state, frame):
+        action = frame.action
+        actor = action.player_id
+        hand = ZoneRef(ZoneType.HAND, actor)
+        processing = ZoneRef(ZoneType.PROCESSING)
+        if frame.step_index == 0:
+            if not self.available(state, actor, action.definition_id, action.material_ids):
+                raise InvalidCardUse('龙魂出牌不可用')
+            if action.definition_id == 'basic.fire_slash':
+                frame.step_index = 1
+                return StepResult.ask(PendingRequest(
+                    action.action_id + ':target', actor, RequestType.CHOOSE_PLAYER,
+                    '龙魂：选择火杀目标', action.action_id, frame.frame_id,
+                    allowed_player_ids=self.slash_rule.target_candidates(state, actor)))
+            frame.step_index = 1
+            frame.local['target'] = actor
+        if frame.step_index == 1:
+            target = frame.local.get('target', frame.decision)
+            frame.decision = None
+            if not self.available(state, actor, action.definition_id, action.material_ids):
+                raise InvalidCardUse('龙魂材料已失效')
+            if action.definition_id == 'basic.fire_slash':
+                self.slash_rule.validate_targets(state, actor, (target,))
+                state.play_usage.record('basic.slash')
+            frame.local['target'] = target
+            self.moves.move(state, CardMove(action.action_id + ':processing',
+                action.material_ids, hand, processing, CardMoveReason.USE,
+                actor, action.action_id))
+            self.recorder.record(CardUsedEvent(action.action_id + ':used', actor,
+                action.material_ids[0], (target,), action.definition_id))
+            frame.step_index = 2
+            if action.definition_id == 'basic.peach':
+                return StepResult.push(RecoverAction(
+                    action.action_id + ':recover', actor, actor, 1))
+            virtual = VirtualCard(action.definition_id, action.material_ids,
+                effective_suit(state, action.material_ids[0], actor),
+                effective_color(state, action.material_ids[0], actor))
+            return StepResult.push(SlashSequence(
+                action.action_id + ':slash', actor, action.material_ids[0],
+                (target,), virtual))
+        still_processing = tuple(cid for cid in action.material_ids
+                                 if cid in state.cards_in(processing))
+        if still_processing:
+            self.moves.move(state, CardMove(action.action_id + ':discard',
+                still_processing, processing, ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.USE, actor, action.action_id))
+        return StepResult.complete()
 
 
 @dataclass(frozen=True, slots=True)

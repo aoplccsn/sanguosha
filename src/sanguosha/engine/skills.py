@@ -1232,11 +1232,25 @@ class SkillPlayOptions:
                              if state.cards[cid].definition_id == 'basic.dodge')
             if self.skills.has(state,pid,'jijiang') and not state.play_usage.count('skill.jijiang.attempted') and self.skills.allies(state,pid,Kingdom.SHU):
                 extra.append('skill:jijiang')
+        if self.skills.has(state, pid, 'longhun'):
+            from .gods import longhun_materials, LonghunUseHandler
+            handler = LonghunUseHandler(self.skills, None, None, self.slash_rule)
+            for kind, definition_id in (('peach', 'basic.peach'),
+                                        ('fire_slash', 'basic.fire_slash')):
+                for cards in longhun_materials(state, pid, definition_id):
+                    if handler.available(state, pid, definition_id, cards):
+                        extra.append('virtual:longhun:' + kind + ':' + ':'.join(cards))
         return (*ordinary,*extra)
 
     def build_action(self, state, pid, option, aid):
         if option not in self.options(state,pid):
             raise InvalidCardUse('skill option is no longer legal')
+        if option.startswith('virtual:longhun:'):
+            from .gods import LonghunUse
+            parts = option.split(':')
+            definition = ('basic.peach' if parts[2] == 'peach'
+                          else 'basic.fire_slash')
+            return LonghunUse(aid + ':longhun', pid, tuple(parts[3:]), definition)
         if option.startswith('virtual:lianhuan:'):
             from .fire import FireViewAsTrick
             return FireViewAsTrick(aid + ':lianhuan', pid, option.split(':', 2)[2], 'lianhuan')

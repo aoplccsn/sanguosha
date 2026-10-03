@@ -829,6 +829,14 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                         and self.skills.has(state, action.player_id, 'kanpo')):
                     eligible += tuple(f'virtual:kanpo:{cid}' for cid in hand
                         if effective_color(state, cid, action.player_id) is Color.BLACK)
+                if self.skills.has(state, action.player_id, 'longhun'):
+                    from .gods import longhun_materials, longhun_option
+                    transformed = ('basic.fire_slash' if action.required_definition_id == 'basic.slash'
+                                   else action.required_definition_id)
+                    if transformed in ('basic.fire_slash', 'basic.dodge',
+                                       'basic.peach', 'trick.nullification'):
+                        eligible += tuple(longhun_option(cards) for cards in
+                                          longhun_materials(state, action.player_id, transformed))
             frame.step_index = 1
             return StepResult.ask(PendingRequest(action.action_id + ':request', action.player_id,
                 RequestType.RESPOND_WITH_CARD, action.prompt, action.action_id, frame.frame_id,
@@ -917,6 +925,29 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 action.player_id, material, action.source_action_id,
                 'trick.nullification', action.response_number, action.response_total))
             self.moves.move(state, CardMove(action.action_id + ':kanpo-discard', (material,),
+                ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.RESPONSE, action.player_id))
+            return StepResult.complete(virtual)
+        if isinstance(choice, str) and choice.startswith('virtual:longhun:'):
+            from .gods import longhun_materials
+            materials = tuple(choice.split(':')[2:])
+            transformed = ('basic.fire_slash' if action.required_definition_id == 'basic.slash'
+                           else action.required_definition_id)
+            if (self.skills is None or not self.skills.has(state, action.player_id, 'longhun')
+                    or transformed not in ('basic.fire_slash', 'basic.dodge',
+                                           'basic.peach', 'trick.nullification')
+                    or materials not in longhun_materials(state, action.player_id, transformed)):
+                raise InvalidCardUse('龙魂材料不合法')
+            virtual = VirtualCard(transformed, materials,
+                effective_suit(state, materials[0], action.player_id),
+                effective_color(state, materials[0], action.player_id))
+            self.moves.move(state, CardMove(action.action_id + ':longhun-processing', materials,
+                ZoneRef(ZoneType.HAND, action.player_id), ZoneRef(ZoneType.PROCESSING),
+                CardMoveReason.RESPONSE, action.player_id))
+            self.recorder.record(CardRespondedEvent(action.action_id + ':longhun-responded',
+                action.player_id, materials[0], action.source_action_id,
+                str(transformed), action.response_number, action.response_total))
+            self.moves.move(state, CardMove(action.action_id + ':longhun-discard', materials,
                 ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE, action.player_id))
             return StepResult.complete(virtual)
