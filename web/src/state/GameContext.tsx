@@ -126,7 +126,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const connection = connectionRef.current
     const offStatus = connection.subscribeStatus((status) => {
       dispatch({ type: 'connection', payload: status })
-      if (status === 'disconnected') reconnectAttempted.current = false
+      if (status === 'offline') reconnectAttempted.current = false
     })
     const offMessage = connection.subscribe((message) => {
       const kind = String(message.type ?? '')

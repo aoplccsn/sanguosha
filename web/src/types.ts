@@ -1,4 +1,4 @@
-export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'reconnecting'
+export type ConnectionStatus = 'connecting' | 'connected' | 'reconnecting' | 'offline'
 export type Page = 'home' | 'lobby' | 'pregame' | 'game'
 
 export interface Seat {

@@ -1,6 +1,20 @@
 const base = process.env.GAME_ROOM_URL ?? 'http://127.0.0.1:8793';
 const version = 2;
 
+const catalogResponse = await fetch(`${base}/api/catalog/generals`);
+if (!catalogResponse.ok) throw new Error(`general catalog: HTTP ${catalogResponse.status}`);
+const catalog = await catalogResponse.json();
+if (catalog.length !== 65 || catalog.filter((item) => item.id.includes('_god_')).length !== 8)
+  throw new Error('general catalog must contain 65 entries including 8 gods');
+for (const item of catalog) {
+  if (!item.name || !/[\u3400-\u9fff]/u.test(item.name) || !item.portrait.endsWith('.webp') || !item.max_hp)
+    throw new Error(`incomplete general metadata: ${item.id}`);
+  if ('choices' in item || 'request' in item)
+    throw new Error(`catalog leaked private draft data: ${item.id}`);
+}
+const portraits = await Promise.all(catalog.map((item) => fetch(`${base}${item.portrait}`, { method: 'HEAD' })));
+if (portraits.some((response) => !response.ok)) throw new Error('missing production general portrait');
+
 function assert(condition, message) {
   if (!condition) throw new Error(message);
   console.log(`PASS ${message}`);

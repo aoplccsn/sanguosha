@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CardView, GeneralInfo, PendingRequest, PlayerView, PublicEvent, PortraitState } from '../types'
 import { useGame } from '../state/GameContext'
+import { cardImage, defaultCardImage, defaultGeneralPortrait, generalPortrait } from '../assets'
 import { Timer } from './Timer'
 import { CombatVFXLayer } from './CombatVFXLayer'
 import type { GodPortraitMode } from './GodPortrait'
@@ -14,21 +15,21 @@ const phaseNames: Record<string, string> = {
 }
 
 function assetForCard(card: CardView) {
-  if (card.definition_id === 'basic.slash') return '/assets/cards/basic/slash.png'
-  if (card.definition_id === 'basic.dodge') return '/assets/cards/basic/dodge.png'
-  if (card.definition_id === 'basic.peach') return '/assets/cards/basic/peach.png'
+  if (card.definition_id === 'basic.slash') return cardImage('basic/slash')
+  if (card.definition_id === 'basic.dodge') return cardImage('basic/dodge')
+  if (card.definition_id === 'basic.peach') return cardImage('basic/peach')
   if (/^(basic|trick|delayed)\./.test(card.definition_id)) {
-    return '/assets/cards/military/' + card.definition_id + '.png'
+    return cardImage('military/' + card.definition_id)
   }
   if (card.definition_id.startsWith('equipment.')) {
-    return '/assets/cards/military/' + card.definition_id + '-v2.png'
+    return cardImage('military/' + card.definition_id + '-v2')
   }
-  return '/assets/cards/default_card.png'
+  return defaultCardImage
 }
 
-function portraitFor(player: PlayerView) {
+function portraitFor(player: PlayerView, catalog: Record<string, GeneralInfo>) {
   const kingdom = ({ 魏: 'wei', 蜀: 'shu', 吴: 'wu', 群: 'qun' } as Record<string, string>)[player.faction] ?? 'qun'
-  return '/assets/generals/' + kingdom + '/' + player.character_id + '.png'
+  return generalPortrait(player.character_id, kingdom, catalog)
 }
 
 export function portraitState(player: PlayerView, selected: boolean, selectable: boolean, responding: boolean): PortraitState {
@@ -51,6 +52,7 @@ function PlayerPanel({ player, position, selected, selectable, responding, event
   onSelect(): void
   onDetail(): void
 }) {
+  const { state } = useGame()
   const portrait = portraitState(player, selected, selectable, responding)
   const buqu = player.special_piles?.buqu ?? []
   const field = player.special_piles?.tian ?? []
@@ -70,7 +72,7 @@ function PlayerPanel({ player, position, selected, selectable, responding, event
     + (!player.alive ? ' dead' : '')
   return <article data-player-id={player.player_id} className={classes} onClick={selectable ? onSelect : undefined}>
     <button className="portrait-button" onClick={(event) => { event.stopPropagation(); onDetail() }} aria-label={'查看' + player.character_name + '详情'}>
-      <img src={portraitFor(player)} onError={(event) => { event.currentTarget.src = '/assets/generals/default_general.png' }} alt={player.character_name} />
+      <img src={portraitFor(player, state.generals)} onError={(event) => { event.currentTarget.src = defaultGeneralPortrait }} alt={player.character_name} />
       {portrait.faceDown && <span className="face-down-mark">翻面</span>}
       {player.chained && <span className="chain-mark">锁</span>}
     </button>
@@ -110,7 +112,7 @@ function HandCard({ card, selected, eligible, onClick }: { card: CardView; selec
     title={card.details || card.name + ' · ' + card.suit + card.rank}
     aria-label={card.name + ' ' + card.suit + card.rank}
   >
-    <img src={assetForCard(card)} onError={(event) => { event.currentTarget.src = '/assets/cards/default_card.png' }} alt="" />
+    <img src={assetForCard(card)} onError={(event) => { event.currentTarget.src = defaultCardImage }} alt="" />
     <span className="card-corner"><b>{card.rank}</b>{card.suit}</span>
     <strong>{card.name}</strong>
   </button>
@@ -179,7 +181,7 @@ function DecisionPrompt({ request, canConfirm, onConfirm, onPass, onBoolean, onO
 function GeneralDetailPanel({ player, general, quality, onClose }: { player: PlayerView; general?: GeneralInfo; quality: VfxQuality; onClose(): void }) {
   return <div className="modal-backdrop" onClick={onClose}><aside className="game-general-detail paper-panel" onClick={(event) => event.stopPropagation()}>
     <button className="modal-close" onClick={onClose}>×</button>
-    <img src={portraitFor(player)} onError={(event) => { event.currentTarget.src = '/assets/generals/default_general.png' }} alt={player.character_name} />
+    <img src={generalPortrait(player.character_id, general?.kingdom ?? ({ 魏: 'wei', 蜀: 'shu', 吴: 'wu', 群: 'qun' } as Record<string, string>)[player.faction] ?? 'qun', general ? { [general.id]: general } : {})} onError={(event) => { event.currentTarget.src = defaultGeneralPortrait }} alt={player.character_name} />
     <div><p className="eyebrow">武将详情</p><h2>{player.character_name}<span>{player.faction}</span></h2><p>{player.hp} / {player.max_hp} 体力 · {player.identity_label}</p>
       {(general?.skills ?? []).map((skill) => <section key={skill.id}><h3>{skill.name}<em>{skill.type}</em></h3><p>{skill.description}</p>{skill.type === 'lord' && player.identity_label !== '主公' && <small>当前身份未启用</small>}</section>)}
       {!general && player.skill_labels.map((skill) => <section key={skill}><h3>{skill}</h3><p>详细说明可在武将目录载入后查看。</p></section>)}
@@ -218,7 +220,7 @@ export function ResultOverlay({ result, identity, godVictory = false, quality = 
     ? result.includes('主公') || result.includes('忠臣')
     : identity === '反贼' ? result.includes('反贼') : identity === '内奸' ? result.includes('内奸') : false
   return <div className={'result-overlay ' + (won ? 'victory' : 'defeat')} role="dialog" aria-label="对局结果"><div>
-    <p className="eyebrow">对局终了 · {identity ?? '身份未知'}</p>{won && godVictory && <div className="god-result-portrait"><img src="/assets/generals/qun/forest_god_lvbu.png" alt="神吕布胜利" /></div>}<h1>{won ? '胜利' : '败北'}</h1><p>{result || '本局已经结束'}</p>
+    <p className="eyebrow">对局终了 · {identity ?? '身份未知'}</p>{won && godVictory && <div className="god-result-portrait"><img src={generalPortrait('forest_god_lvbu', 'qun', {})} alt="神吕布胜利" /></div>}<h1>{won ? '胜利' : '败北'}</h1><p>{result || '本局已经结束'}</p>
     <button className="brush-button primary" onClick={onReplay}>再来一局</button>
     <button className="brush-button subtle" onClick={onHome}>返回首页</button>
   </div></div>

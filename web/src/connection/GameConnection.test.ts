@@ -54,7 +54,7 @@ describe('GameConnection', () => {
     expect(messages.at(-1)?.type).toBe('PONG')
     first.readyState = 3
     first.emit('close')
-    expect(statuses).toContain('disconnected')
+    expect(statuses).toContain('reconnecting')
     vi.advanceTimersByTime(800)
     expect(FakeSocket.instances).toHaveLength(2)
   })
@@ -85,5 +85,57 @@ describe('GameConnection', () => {
     second.emit('open')
     expect(second.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'RECONNECT'])
     expect(JSON.parse(second.sent[1]).token).toBe('secret')
+  })
+
+  it('ignores errors and closes from a socket replaced by a room connection', () => {
+    const connection = new GameConnection()
+    const statuses: string[] = []
+    const messages: Array<Record<string, unknown>> = []
+    connection.subscribeStatus((status) => statuses.push(status))
+    connection.subscribe((message) => messages.push(message))
+    connection.openRoom('ABC234', 'JOIN_ROOM', { name: '甲' })
+    const old = FakeSocket.instances[0]
+    connection.openRoom('EFG567', 'JOIN_ROOM', { name: '乙' })
+    const current = FakeSocket.instances[1]
+    old.emit('error')
+    old.emit('close')
+    current.readyState = FakeSocket.OPEN
+    current.emit('open')
+    expect(statuses.at(-1)).toBe('connected')
+    expect(messages).toEqual([])
+    vi.advanceTimersByTime(9000)
+    expect(FakeSocket.instances).toHaveLength(2)
+  })
+
+  it('treats a transport error as recoverable and clears the state on reconnect', () => {
+    const connection = new GameConnection()
+    const statuses: string[] = []
+    const messages: Array<Record<string, unknown>> = []
+    connection.subscribeStatus((status) => statuses.push(status))
+    connection.subscribe((message) => messages.push(message))
+    connection.connect()
+    const first = FakeSocket.instances[0]
+    first.emit('error')
+    expect(statuses.at(-1)).toBe('reconnecting')
+    expect(messages).toEqual([])
+    vi.advanceTimersByTime(800)
+    const next = FakeSocket.instances[1]
+    next.readyState = FakeSocket.OPEN
+    next.emit('open')
+    expect(statuses.at(-1)).toBe('connected')
+  })
+
+  it('retries the pending join if the socket drops before admission is confirmed', () => {
+    const connection = new GameConnection()
+    connection.openRoom('ABC234', 'JOIN_ROOM', { name: '甲', room_code: 'ABC234' })
+    const first = FakeSocket.instances[0]
+    first.readyState = FakeSocket.OPEN
+    first.emit('open')
+    first.close()
+    vi.advanceTimersByTime(800)
+    const second = FakeSocket.instances[1]
+    second.readyState = FakeSocket.OPEN
+    second.emit('open')
+    expect(second.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'JOIN_ROOM'])
   })
 })

@@ -9,6 +9,7 @@ from js import WebSocketPair
 from workers import DurableObject, Response, WorkerEntrypoint
 
 from sanguosha.engine.requests import Decision
+from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL, ALL_SKILL_CATALOGUE
 from sanguosha.model.ids import PlayerId
 from sanguosha.multiplayer.protocol import (
     MAX_MESSAGE_BYTES,
@@ -60,6 +61,18 @@ class Default(WorkerEntrypoint):
         path = parsed.path
         if path == "/health":
             return Response.json({"ok": True, "runtime": "cloudflare-python"})
+        if path == "/api/catalog/generals" and request.method == "GET":
+            skills = {str(skill.id): skill for skill in ALL_SKILL_CATALOGUE}
+            return Response.json([{
+                "id": str(character.id), "name": character.name,
+                "kingdom": character.kingdom.value, "max_hp": character.max_hp,
+                "gender": character.gender.value,
+                "portrait": f"/assets/generals/{character.kingdom.value}/{character.id}.webp",
+                "skills": [{"id": str(skill_id), "name": skills[str(skill_id)].name,
+                            "description": skills[str(skill_id)].description,
+                            "type": skills[str(skill_id)].skill_type.value}
+                           for skill_id in character.skill_ids],
+            } for character in ALL_65_GENERAL_POOL])
         if path == "/api/rooms" and request.method == "POST":
             for _ in range(32):
                 code = _room_code()

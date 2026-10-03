@@ -1,10 +1,10 @@
-:root { color: #24180f; background: #15110d; font-family: "Noto Serif SC", "Microsoft YaHei", serif; font-synthesis: none; }
+:root { color: #24180f; background: #15110d; font-family: "Noto Serif SC", "Microsoft YaHei", serif; font-synthesis: none; --table-background: none; }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; min-height: 100vh; overflow-x: hidden; }
 button, input { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: .42; }
-.table-background, .home-page { min-height: 100vh; background: #17130f url('/assets/backgrounds/table/ink_wash_v1.png') center/cover fixed; position: relative; }
+.table-background, .home-page { min-height: 100vh; background: #17130f var(--table-background) center/cover fixed; position: relative; }
 .table-background::before, .home-page::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(212,177,102,.12), transparent 42%), linear-gradient(180deg, rgba(9,7,5,.25), rgba(9,7,5,.68)); pointer-events: none; }
 .paper-panel { position: relative; background: linear-gradient(135deg, rgba(238,222,185,.96), rgba(203,181,133,.94)); border: 1px solid rgba(112,73,32,.7); box-shadow: 0 24px 80px rgba(0,0,0,.55), inset 0 0 60px rgba(97,61,25,.15); }
 .paper-panel::after { content: ''; position: absolute; inset: 5px; border: 1px solid rgba(108,69,30,.2); pointer-events: none; }

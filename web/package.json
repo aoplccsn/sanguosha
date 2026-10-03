@@ -6,7 +6,7 @@
   "scripts": {
     "predev": "python ../scripts/sync_web_assets.py",
     "dev": "vite",
-    "prebuild": "python ../scripts/sync_web_assets.py",
+    "prebuild": "python ../scripts/sync_web_assets.py --production",
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "test:watch": "vitest",

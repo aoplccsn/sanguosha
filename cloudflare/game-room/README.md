@@ -7,7 +7,9 @@ This is the production-shaped local Cloudflare Workers adapter for the existing 
 From the repository root:
 
 ```powershell
+.\.venv\Scripts\python.exe -m pip install ".[web-build]"
 .\.venv\Scripts\python.exe scripts\sync_cloudflare_game_room.py
+.\.venv\Scripts\Activate.ps1
 $env:CLOUDFLARE_ROOMS='1'
 Push-Location web
 npm run build

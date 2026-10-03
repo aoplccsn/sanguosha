@@ -12,6 +12,7 @@ dependencies = ["PySide6-Essentials>=6.7", "websockets>=12,<16", "fastapi>=0.115
 [project.optional-dependencies]
 dev = ["pytest>=8", "PyInstaller>=6.10", "httpx>=0.27,<1"]
 gui = ["PySide6>=6.7"]
+web-build = ["Pillow>=10"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

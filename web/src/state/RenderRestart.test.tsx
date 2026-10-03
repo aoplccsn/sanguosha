@@ -1,4 +1,5 @@
 import { act, render, screen, waitFor } from '@testing-library/react'
+import { StrictMode } from 'react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import App from '../App'
 import { GameProvider } from './GameContext'
@@ -48,4 +49,18 @@ it('shows a return-home message when a saved room disappeared after restart', as
   await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('服务器已重新启动，本局已结束'))
   expect(screen.getByRole('button', { name: '返回首页' })).toBeInTheDocument()
   expect(localStorage.getItem('sanguosha.web.session.v1')).toBeNull()
+})
+
+it('ignores a StrictMode cleanup socket after its replacement connects', async () => {
+  render(<StrictMode><GameProvider><App /></GameProvider></StrictMode>)
+  expect(FakeSocket.instances).toHaveLength(2)
+  const [old, current] = FakeSocket.instances
+  act(() => {
+    old.emit('error')
+    old.emit('close')
+    current.readyState = FakeSocket.OPEN
+    current.emit('open')
+  })
+  await waitFor(() => expect(screen.getByText('服务器已连接')).toBeInTheDocument())
+  expect(screen.queryByText('无法连接游戏服务器')).not.toBeInTheDocument()
 })
