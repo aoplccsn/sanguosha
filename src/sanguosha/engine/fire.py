@@ -517,6 +517,8 @@ class FireHandLimit:
 
     def __call__(self, state, player_id):
         value = self.base(state, player_id)
+        if self.skills.has(state, player_id, 'juejing'):
+            value += 2
         if (self.skills.has(state, player_id, 'xueyi')
                 and state.players[player_id].identity is Identity.LORD):
             value += 2 * sum(1 for pid in state.seat_order if pid != player_id

@@ -271,3 +271,19 @@ def test_wumou_pays_rage_before_non_delayed_trick_resolves():
         session.engine.submit_decision(Decision(request.request_id, request.player_id,
                                                 request.timeout_value()))
     assert card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+
+
+def test_juejing_draws_for_missing_hp_and_increases_hand_limit():
+    from sanguosha.engine.phases import PhaseAction
+    from sanguosha.engine.fire import FireHandLimit
+    from sanguosha.engine.wind import WindHandLimit
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_god_zhaoyun'
+    state.players['p1'].max_hp = 2
+    state.players['p1'].hp = 1
+    state.current_player_id = 'p1'
+    before = len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1')))
+    session.engine.start_action(PhaseAction('juejing-draw', 'p1', Phase.DRAW))
+    assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == before + 3
+    assert FireHandLimit(WindHandLimit(), session.skills)(state, 'p1') == 3

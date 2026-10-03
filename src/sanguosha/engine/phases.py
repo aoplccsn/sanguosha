@@ -125,6 +125,17 @@ class PhaseActionHandler:
             frame.step_index = 1
             return StepResult.continue_()
         if frame.step_index == 4:
+            if (action.phase is Phase.DRAW and self.skills is not None
+                    and not frame.local.get('juejing_drawn')
+                    and self.skills.has(state, action.player_id, 'juejing')
+                    and state.players[action.player_id].is_alive):
+                from .deck import DrawCardsAction
+                frame.local['juejing_drawn'] = True
+                missing = max(0, state.players[action.player_id].max_hp
+                              - state.players[action.player_id].hp)
+                if missing:
+                    return StepResult.push(DrawCardsAction(
+                        f'{action.action_id}:juejing', action.player_id, missing))
             if (action.phase is Phase.FINISH and self.skills is not None
                     and not frame.local.get('star_weather_offered')
                     and self.skills.has(state, action.player_id, 'qixing')
