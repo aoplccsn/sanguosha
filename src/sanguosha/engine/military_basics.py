@@ -274,6 +274,14 @@ class MilitaryDamageHandler(DamageActionHandler):
             from .forest import FangzhuAction
             frame.local['fangzhu_offered'] = True
             return StepResult.push(FangzhuAction(action.action_id + ':fangzhu', action.target_id))
+        if (frame.step_index == 1 and self.skills is not None and target.is_alive
+                and self.skills.has(state, action.target_id, 'guixin')
+                and frame.local.get('guixin_count', 0) < int(frame.local['amount'])):
+            from .gods import GuixinAction
+            index = frame.local.get('guixin_count', 0)
+            frame.local['guixin_count'] = index + 1
+            return StepResult.push(GuixinAction(
+                action.action_id + f':guixin:{index}', action.target_id))
         if frame.step_index == 1 and not frame.local.get('baonue_offered'):
             frame.local['baonue_offered'] = True
             source = action.source_id

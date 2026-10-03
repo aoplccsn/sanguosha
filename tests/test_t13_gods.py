@@ -3,7 +3,8 @@
 from dataclasses import replace
 
 from sanguosha.engine.card_moves import CardMove, CardMoveReason
-from sanguosha.engine.gods import WushenUse, WuhunDeathAction, ShelieAction, GongxinAction, QinyinAction, YeyanAction
+from sanguosha.engine.gods import WushenUse, WuhunDeathAction, ShelieAction, GongxinAction, QinyinAction, YeyanAction, GuixinAction
+from sanguosha.engine.distance import DistanceSystem
 from sanguosha.engine.requests import Decision
 from sanguosha.model.enums import Phase, Suit
 from sanguosha.model.usage import PlayUsageState
@@ -145,3 +146,48 @@ def test_yeyan_great_pays_four_distinct_suits_and_hp():
     assert player.hp == 3
     assert state.players['p2'].hp == state.players['p2'].max_hp - 3
     assert set(cards) <= set(state.cards_in(ZoneRef(ZoneType.DISCARD_PILE)))
+
+
+def test_guixin_gains_one_card_per_other_player_and_turns_over():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'forest_god_caocao'
+    before = len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1')))
+    session.engine.start_action(GuixinAction('guixin', 'p1'))
+    while session.engine.pending_request is not None:
+        request = session.engine.pending_request
+        choice = True if request.request_type.value == 'yes_no' else request.eligible_card_ids[0]
+        session.engine.submit_decision(Decision(request.request_id, request.player_id, choice))
+    assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == before + 4
+    assert not state.players['p1'].face_up
+
+
+def test_feiying_increases_distance_to_god_cao_cao():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p3'].character_id = 'forest_god_caocao'
+    distance = DistanceSystem()
+    assert distance.distance_between(state, 'p1', 'p3') == 3
+    state.players['p3'].disabled_skills.add('feiying')
+    assert distance.distance_between(state, 'p1', 'p3') == 2
+
+
+def test_guixin_triggers_once_per_damage_point():
+    from sanguosha.engine.military_basics import MilitaryDamageAction
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'forest_god_caocao'
+    state.players['p1'].max_hp = 5
+    state.players['p1'].hp = 5
+    session.engine.start_action(MilitaryDamageAction('damage-guixin', 'p2', 'p1', 2))
+    offers = 0
+    while session.engine.pending_request is not None:
+        request = session.engine.pending_request
+        if request.request_type.value == 'yes_no':
+            offers += 1
+            choice = False
+        else:
+            choice = request.timeout_value()
+        session.engine.submit_decision(Decision(request.request_id, request.player_id, choice))
+    assert offers == 2
+    assert state.players['p1'].hp == 3

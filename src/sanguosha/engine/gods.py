@@ -499,3 +499,76 @@ class YeyanHandler:
                 frame.action.action_id + f':fire:{frame.cursor}', actor, target,
                 amount, DamageNature.FIRE))
         return StepResult.continue_()
+
+
+@dataclass(frozen=True, slots=True)
+class GuixinAction(Action):
+    player_id: str
+
+
+class GuixinHandler:
+    def __init__(self, skills, moves):
+        self.skills = skills
+        self.moves = moves
+
+    def candidates(self, state, actor, target):
+        return tuple(cid for ref, zone in state.zones.items()
+                     if ref.player_id == target and ref.zone_type in
+                     (ZoneType.HAND, ZoneType.EQUIPMENT, ZoneType.JUDGMENT)
+                     for cid in zone.card_ids)
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        if frame.step_index == 0:
+            if not state.players[actor].is_alive or not self.skills.has(state, actor, 'guixin'):
+                return StepResult.complete()
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':offer', actor, RequestType.YES_NO,
+                '是否发动【归心】，从每名其他角色处获得一张牌并翻面？',
+                frame.action.action_id, frame.frame_id))
+        if frame.step_index == 1:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted:
+                return StepResult.complete()
+            frame.local['targets'] = tuple(pid for pid in state.seat_order
+                                           if pid != actor and state.players[pid].is_alive)
+            frame.step_index = 2
+        if frame.step_index == 2:
+            targets = frame.local['targets']
+            if frame.cursor >= len(targets):
+                frame.step_index = 4
+            else:
+                target = targets[frame.cursor]
+                if not state.players[target].is_alive or not self.candidates(state, actor, target):
+                    frame.cursor += 1
+                    return StepResult.continue_()
+                frame.local['target'] = target
+                frame.step_index = 3
+                return StepResult.ask(PendingRequest(
+                    frame.action.action_id + f':card:{frame.cursor}', actor,
+                    RequestType.CHOOSE_CARD, '归心：选择获得该角色的一张牌',
+                    frame.action.action_id, frame.frame_id,
+                    eligible_card_ids=self.candidates(state, actor, target),
+                    subject_player_id=target))
+        if frame.step_index == 3:
+            target = frame.local['target']
+            card = frame.decision
+            frame.decision = None
+            if card not in self.candidates(state, actor, target):
+                raise InvalidCardUse('归心目标牌已不可用')
+            source = next(ref for ref, zone in state.zones.items()
+                          if ref.player_id == target and card in zone.card_ids)
+            self.moves.move(state, CardMove(
+                frame.action.action_id + f':gain:{frame.cursor}', (card,), source,
+                ZoneRef(ZoneType.HAND, actor), CardMoveReason.SYSTEM,
+                actor, frame.action.action_id))
+            frame.cursor += 1
+            frame.step_index = 2
+            return StepResult.continue_()
+        if frame.step_index == 4:
+            from .turnover import TurnoverAction
+            frame.step_index = 5
+            return StepResult.push(TurnoverAction(frame.action.action_id + ':turnover', actor))
+        return StepResult.complete()

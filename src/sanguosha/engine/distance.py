@@ -38,6 +38,10 @@ class CharacterDistanceModifier:
     def distance_delta(self, state: GameState, source: PlayerId, target: PlayerId) -> int:
         character = _CHARACTERS.get(state.players[source].character_id)
         delta = -1 if character is not None and 'mashu' in character.skill_ids else 0
+        target_character = _CHARACTERS.get(state.players[target].character_id)
+        if (target_character is not None and 'feiying' in target_character.skill_ids
+                and 'feiying' not in state.players[target].disabled_skills):
+            delta += 1
         if character is not None and 'tuntian' in character.skill_ids and 'tuntian' not in state.players[source].disabled_skills:
             delta -= len(state.cards_in(ZoneRef(ZoneType.SPECIAL, source, special_key='tian')))
         return delta
