@@ -110,7 +110,8 @@ class MilitaryTrickRule:
             if d == 'trick.fire_attack':
                 return bool(state.cards_in(ZoneRef(ZoneType.HAND,pid)))
             if d.startswith('delayed.'):
-                return not self._duplicate(state,pid) and (d != 'delayed.supply_shortage' or self.distance.distance_between(state,user,pid) <= 1)
+                supply_range = (2 if self.skills is not None and self.skills.has(state, user, 'duanliang') else 1)
+                return not self._duplicate(state,pid) and (d != 'delayed.supply_shortage' or self.distance.distance_between(state,user,pid) <= supply_range)
             return True
         return tuple(pid for pid in state.seat_order if valid(pid))
     def target_bounds(self, state, user, card):
@@ -129,16 +130,20 @@ class MilitaryTrickRule:
         return TrickAction(aid,user,card,self.definition,targets)
 
 class TrickHandler:
-    def __init__(self,moves,deck,recorder):
+    def __init__(self,moves,deck,recorder,skills=None):
         self.moves=moves
         self.deck=deck
         self.recorder=recorder
+        self.skills=skills
     def step(self,state,frame):
         a=frame.action
         d=a.definition_id
         if frame.step_index == 0:
+            from .forest import weimu_blocks
             if d.startswith('delayed.'):
                 target = a.targets[0] if a.targets else a.source_id
+                if weimu_blocks(state, target, a.card_id, d, a.source_id, self.skills):
+                    raise InvalidCardUse('帷幕阻止黑色锦囊成为目标')
                 self.moves.move(state,CardMove(a.action_id+':attach',(a.card_id,),ZoneRef(ZoneType.PROCESSING),
                     ZoneRef(ZoneType.JUDGMENT,target),CardMoveReason.USE,a.source_id))
                 return StepResult.complete()
@@ -155,6 +160,8 @@ class TrickHandler:
                 targets=tuple(pid for pid in order if pid != a.source_id and state.players[pid].is_alive)
             elif d in ('trick.god_salvation','trick.amazing_grace'):
                 targets=tuple(pid for pid in order if state.players[pid].is_alive)
+            targets=tuple(pid for pid in targets if not weimu_blocks(
+                state, pid, a.card_id, d, a.source_id, self.skills))
             frame.local['targets']='|'.join(targets)
             if len(targets) > 1 and not a.targets:
                 self.recorder.record(TrickTargetsDeclaredEvent(a.action_id+':targets',
@@ -186,6 +193,10 @@ class TrickHandler:
         frame.cursor+=1
         if not state.players[target].is_alive:
             return StepResult.continue_()
+        if d == 'trick.savage_assault':
+            from .forest import savage_effect_immune
+            if savage_effect_immune(state, target, self.skills):
+                return StepResult.continue_()
         frame.step_index=2
         return StepResult.push(NullificationWindow(f'{a.action_id}:window:{frame.cursor}',target))
 
@@ -242,10 +253,12 @@ class TargetTrickHandler:
                 f.decision=None
                 return StepResult.complete()
             if d == 'trick.fire_attack':
-                suit=state.cards[f.decision].suit
+                from .suits import effective_suit
+                suit=effective_suit(state, f.decision, a.target_id)
                 f.decision=None
                 f.step_index=2
-                eligible=tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND,a.source_id)) if state.cards[cid].suit == suit)
+                eligible=tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND,a.source_id))
+                               if effective_suit(state, cid, a.source_id) == suit)
                 return self.ask(a,f,a.source_id,RequestType.RESPOND_WITH_CARD,f'火攻：展示花色 {suit.value}，弃同花色手牌或放弃',eligible_card_ids=eligible,allow_pass=True)
             if d == 'trick.borrowed_sword':
                 f.local['victim']=str(f.decision)
@@ -273,6 +286,9 @@ class TargetTrickHandler:
                 f.local.pop('duel_second',None)
                 who=str(f.local['who'])
                 source=(a.target_id if who == a.source_id else a.source_id) if d == 'trick.duel' else a.source_id
+                if d == 'trick.savage_assault':
+                    from .forest import savage_damage_source
+                    source = savage_damage_source(state, a.source_id, self.skills)
                 return StepResult.push(MilitaryDamageAction(a.action_id+':damage',source,who,1,card_id=a.card_id))
             return StepResult.complete()
         if f.step_index == 2:
@@ -364,7 +380,7 @@ def register_military_tricks(definitions,rules,registry,moves,events,deck,bodies
     for key,_ in DELAYED:
         rules.register('delayed.'+key,MilitaryTrickRule('delayed.'+key,distance,skills))
     registry.register(NullificationWindow,NullificationHandler())
-    registry.register(TrickAction,TrickHandler(moves,deck,events))
+    registry.register(TrickAction,TrickHandler(moves,deck,events,skills))
     registry.register(TargetTrick,TargetTrickHandler(moves,distance,skills))
     registry.register(ResolveDelayed,DelayedHandler(moves))
     bodies.register(Phase.JUDGMENT,JudgmentPhaseBody())

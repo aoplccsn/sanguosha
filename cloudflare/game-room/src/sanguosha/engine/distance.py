@@ -7,7 +7,7 @@ small DistanceModifier protocol.
 
 from typing import Protocol
 
-from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL
+from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL
 from sanguosha.model.enums import EquipmentSlot
 from sanguosha.model.ids import PlayerId
 from sanguosha.model.state import GameState
@@ -37,13 +37,20 @@ class CharacterDistanceModifier:
 
     def distance_delta(self, state: GameState, source: PlayerId, target: PlayerId) -> int:
         character = _CHARACTERS.get(state.players[source].character_id)
-        return -1 if character is not None and 'mashu' in character.skill_ids else 0
+        delta = -1 if character is not None and 'mashu' in character.skill_ids else 0
+        target_character = _CHARACTERS.get(state.players[target].character_id)
+        if (target_character is not None and 'feiying' in target_character.skill_ids
+                and 'feiying' not in state.players[target].disabled_skills):
+            delta += 1
+        if character is not None and 'tuntian' in character.skill_ids and 'tuntian' not in state.players[source].disabled_skills:
+            delta -= len(state.cards_in(ZoneRef(ZoneType.SPECIAL, source, special_key='tian')))
+        return delta
 
     def attack_range(self, state: GameState, player: PlayerId, current: int) -> int:
         return current
 
 
-_CHARACTERS = {character.id: character for character in STANDARD_25_GENERAL_POOL}
+_CHARACTERS = {character.id: character for character in ALL_65_GENERAL_POOL}
 
 
 class DistanceSystem:
@@ -81,3 +88,4 @@ class DistanceSystem:
             return self.distance_between(state, source, target) <= self.attack_range(state, source)
         except ValueError:
             return False
+

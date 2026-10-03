@@ -14,7 +14,7 @@ from sanguosha.engine.card_rules import CardRuleRegistry, CardUseValidator, Targ
 from sanguosha.engine.card_use import LegalPlayActionProvider, UseCardAction, UseCardActionHandler
 from sanguosha.engine.damage import DamageAction, DamageActionHandler
 from sanguosha.engine.death import DeathAction, DeathActionHandler
-from sanguosha.engine.deck import DeckService, DrawCardsAction, DrawCardsHandler, DrawPhaseBody, basic_deck, classic_military_deck
+from sanguosha.engine.deck import DeckService, DrawCardsAction, DrawCardsHandler, DrawPhaseBody, RevealTopCardsAction, RevealTopCardsHandler, basic_deck, classic_military_deck
 from sanguosha.engine.discard import DiscardPhaseBody
 from sanguosha.engine.dying import DyingAction, DyingActionHandler
 from sanguosha.engine.engine import EngineStatus, GameEngine
@@ -33,6 +33,7 @@ from sanguosha.model.ids import CharacterId, PlayerId
 from sanguosha.model.player import PlayerState
 from sanguosha.model.state import GameState, GameStatus
 from sanguosha.pregame import Pregame, SetupStage
+from sanguosha.game_modes import game_mode
 
 
 CHARACTER_NAMES = ("曹操", "刘备", "孙权", "吕布", "关羽")
@@ -84,14 +85,17 @@ class GameSession:
 
     @classmethod
     def new_game(cls, seed: int = 6, *, military: bool = False, five_generals: bool = False,
-                 setup: Pregame | None = None) -> "GameSession":
+                 setup: Pregame | None = None, mode_id: str | None = None) -> "GameSession":
         if setup is not None and setup.stage is not SetupStage.COMPLETE:
             raise ValueError('general draft must finish before starting a match')
         if setup is not None and not military:
             raise ValueError('standard general draft requires the military ruleset')
         rng = setup.rng if setup is not None else PythonRandomSource(seed)
         card_instances, draw_zone = classic_military_deck(rng) if military else basic_deck(rng)
-        ids = tuple(PlayerId(f"p{i}") for i in range(1, 6))
+        mode = game_mode(mode_id or (setup.mode_id if setup is not None else 'military-five'))
+        ids = mode.seats
+        if setup is not None and set(setup.identities) != set(ids):
+            raise ValueError('draft seats do not match game mode')
         if five_generals and not military:
             raise ValueError('five generals require the military ruleset')
         skills = None
@@ -101,20 +105,29 @@ class GameSession:
             skills = SkillRegistry()
             # Seat order follows the original portrait order.
             characters = (tuple(skills.characters[setup.generals[pid]] for pid in ids) if setup is not None else
-                          tuple(skills.characters[key] for key in ('caocao','liubei','sunquan','lvbu','guanyu')))
-        identities = tuple(setup.identities[pid] for pid in ids) if setup is not None else IDENTITIES
+                          tuple(skills.characters[key] for key in
+                                ('caocao','liubei','sunquan','lvbu','guanyu',
+                                 'simayi','zhangliao','zhaoyun')[:mode.seat_count]))
+        identities = tuple(setup.identities[pid] for pid in ids) if setup is not None else mode.roles
         players = {}
         for index, pid in enumerate(ids):
             character = characters[index] if characters else None
-            maximum = character.max_hp + (1 if identities[index] is Identity.LORD and characters else 0) if character else 4
+            maximum = character.max_hp + (mode.lord_hp_bonus if identities[index] is Identity.LORD and characters else 0) if character else 4
             players[pid] = PlayerState(pid, index, character.id if character else CharacterId(f'blank-{index+1}'),
                                        identities[index], maximum, maximum)
         state = GameState(
             "classic-military" if military else "t5-basic-identity", players=players, seat_order=ids,
             cards=card_instances, zones={draw_zone.ref: draw_zone},
             status=GameStatus.ACTIVE,
+            metadata={'mode_id': mode.mode_id},
             revealed_identities={setup.lord_id} if setup is not None else {ids[0]},
         )
+        for player in players.values():
+            if player.character_id == 'forest_god_lvbu':
+                player.marks['rage'] = 2
+            if skills is not None and player.character_id == 'mountain_zuoci':
+                from sanguosha.engine.mountain import draw_transformations
+                draw_transformations(state, player.player_id, 2, skills, rng)
         events = EventRecorder()
         events.record(Event("game-start", "game-start"))
         if military:
@@ -125,17 +138,26 @@ class GameSession:
         deck = DeckService(rng, moves)
         for pid in ids:
             deck.draw(state, pid, 4, f"initial-deal:{pid}")
+            if skills is not None and skills.has(state, pid, 'qixing'):
+                from sanguosha.engine.card_moves import CardMove, CardMoveReason
+                from sanguosha.model.zones import ZoneRef, ZoneType
+                deck.draw(state, pid, 7, f'initial-stars:{pid}')
+                stars = state.cards_in(ZoneRef(ZoneType.HAND, pid))[-7:]
+                moves.move(state, CardMove(f'initial-stars:{pid}:store', stars,
+                    ZoneRef(ZoneType.HAND, pid), ZoneRef(ZoneType.SPECIAL, pid, special_key='star'),
+                    CardMoveReason.SYSTEM, pid))
         definitions = CardDefinitionRegistry()
         card_rules = CardRuleRegistry()
         register_basic_cards(definitions, card_rules)
-        validator = CardUseValidator(definitions, card_rules, TargetValidator())
+        validator = CardUseValidator(definitions, card_rules, TargetValidator(), skills)
         bodies = standard_phase_bodies(LegalPlayActionProvider(validator))
         bodies.register(Phase.DRAW, DrawPhaseBody(skills))
         bodies.register(Phase.DISCARD, DiscardPhaseBody(moves, skills, events))
         registry = ActionHandlerRegistry()
-        registry.register(TurnAction, TurnActionHandler(events))
-        registry.register(PhaseAction, PhaseActionHandler(bodies, events))
+        registry.register(TurnAction, TurnActionHandler(events, skills=skills))
+        registry.register(PhaseAction, PhaseActionHandler(bodies, events, skills))
         registry.register(DrawCardsAction, DrawCardsHandler(deck))
+        registry.register(RevealTopCardsAction, RevealTopCardsHandler(deck, events))
         registry.register(UseCardAction, UseCardActionHandler(validator, moves, events, skills))
         registry.register(SlashEffectAction, SlashEffectHandler())
         registry.register(RespondWithCardAction, RespondWithCardHandler(moves, events))
@@ -145,9 +167,15 @@ class GameSession:
             events, lambda action: DyingAction(f"{action.action_id}:dying-resolution", action.target_id, action.source_id),
         ))
         registry.register(DyingAction, DyingActionHandler(events, skills))
-        from sanguosha.engine.hp import LoseHpAction, LoseHpHandler
+        from sanguosha.engine.hp import (LoseHpAction, LoseHpHandler,
+                                         LoseMaxHpAction, LoseMaxHpHandler,
+                                         GainMaxHpAction, GainMaxHpHandler)
         registry.register(LoseHpAction, LoseHpHandler(events))
-        registry.register(DeathAction, DeathActionHandler(moves, IdentitySystem(), events))
+        registry.register(LoseMaxHpAction, LoseMaxHpHandler(events))
+        registry.register(GainMaxHpAction, GainMaxHpHandler(events))
+        registry.register(DeathAction, DeathActionHandler(moves, IdentitySystem(), events, skills))
+        from sanguosha.engine.turnover import TurnoverAction, TurnoverHandler
+        registry.register(TurnoverAction, TurnoverHandler(events))
         if military:
             from sanguosha.engine.military_basics import register_military_basics
             register_military_basics(definitions, card_rules, registry, moves, events, bodies, skills)
@@ -168,6 +196,7 @@ class GameSession:
                     YijiAction, YijiHandler, JieyinAction, JieyinHandler,
                     QixiUse, QixiUseHandler, GuoseUse, GuoseUseHandler, FanjianAction, FanjianHandler,
                     LijianAction, LijianHandler, LongdanUse, LongdanUseHandler)
+                from sanguosha.engine.god_lvbu import WuqianAction, WuqianHandler, ShenfenAction, ShenfenHandler
                 slash_rule = card_rules.get('basic.slash')
                 provider = SkillPlayOptions(provider, skills, slash_rule)
                 registry.register(RendeAction, RendeHandler(moves))
@@ -190,6 +219,101 @@ class GameSession:
                 registry.register(FanjianAction, FanjianHandler(skills, moves, rng))
                 registry.register(LijianAction, LijianHandler(skills, moves, events))
                 registry.register(LongdanUse, LongdanUseHandler(skills, moves, events, slash_rule))
+                registry.register(WuqianAction, WuqianHandler(events))
+                registry.register(ShenfenAction, ShenfenHandler(events, moves))
+                from sanguosha.engine.pindian import PindianAction, PindianHandler
+                registry.register(PindianAction, PindianHandler(moves, events))
+                from sanguosha.engine.fire import (QiangxiAction, QiangxiHandler,
+                    QuhuAction, QuhuHandler, JiemingAction, JiemingHandler,
+                    NiepanAction, NiepanHandler, NiepanOffer, FirstDyingOffer,
+                    FireViewAsTrick, FireViewAsTrickHandler, TianyiAction, TianyiHandler,
+                    MengjinAction, MengjinHandler)
+                registry.register(QiangxiAction, QiangxiHandler(skills, moves, definitions))
+                registry.register(QuhuAction, QuhuHandler(skills, definitions))
+                registry.register(JiemingAction, JiemingHandler())
+                registry.register(NiepanAction, NiepanHandler(moves))
+                registry.register(FireViewAsTrick,
+                    FireViewAsTrickHandler(skills, moves, events, card_rules))
+                registry.register(TianyiAction, TianyiHandler(skills))
+                registry.register(MengjinAction, MengjinHandler(skills, moves))
+                from sanguosha.engine.fire import (ShuangxiongAction, ShuangxiongHandler,
+                    LuanjiAction, LuanjiHandler, FireHandLimit)
+                registry.register(ShuangxiongAction, ShuangxiongHandler(skills))
+                registry.register(LuanjiAction, LuanjiHandler(skills, moves, events))
+                from sanguosha.engine.forest import (XingshangAction, XingshangHandler,
+                    FangzhuAction, FangzhuHandler, SongweiAction, SongweiHandler,
+                    DuanliangUse, DuanliangHandler, ZaiqiAction, ZaiqiHandler,
+                    LierenAction, LierenHandler, YinghunAction, YinghunHandler,
+                    HaoshiGiveAction, HaoshiGiveHandler, DimengAction, DimengHandler,
+                    BenghuaiAction, BenghuaiHandler, BaonueAction, BaonueHandler,
+                    LuanwuAction, LuanwuHandler, JiuchiUse, JiuchiHandler)
+                from sanguosha.engine.forced_cards import (ForcedDiscardAction,
+                    ForcedDiscardHandler, SwapHandsAction, SwapHandsHandler)
+                registry.register(XingshangAction, XingshangHandler(skills, moves))
+                registry.register(FangzhuAction, FangzhuHandler(skills))
+                registry.register(SongweiAction, SongweiHandler(skills))
+                registry.register(DuanliangUse, DuanliangHandler(skills, moves, events,
+                    definitions, card_rules.get('delayed.supply_shortage')))
+                registry.register(ZaiqiAction, ZaiqiHandler(skills, moves))
+                registry.register(LierenAction, LierenHandler(skills, moves, rng))
+                registry.register(ForcedDiscardAction, ForcedDiscardHandler(moves))
+                registry.register(SwapHandsAction, SwapHandsHandler(moves))
+                registry.register(YinghunAction, YinghunHandler(skills))
+                registry.register(HaoshiGiveAction, HaoshiGiveHandler(moves))
+                registry.register(DimengAction, DimengHandler(skills))
+                registry.register(BenghuaiAction, BenghuaiHandler(skills))
+                registry.register(BaonueAction, BaonueHandler(skills))
+                registry.register(LuanwuAction, LuanwuHandler(skills, slash_rule))
+                registry.register(JiuchiUse, JiuchiHandler(skills, moves, events,
+                    card_rules.get('basic.wine')))
+                from sanguosha.engine.wind import (WindPhaseOffers, ShensuAction, ShensuHandler,
+                    BuquAction, BuquHandler, BuquOffer, WindHandLimit,
+                    LeijiAction, LeijiHandler)
+                offers = WindPhaseOffers(skills, definitions)
+                registry.register(TurnAction, TurnActionHandler(events, offers, skills))
+                registry.register(ShensuAction, ShensuHandler(offers, moves))
+                from sanguosha.engine.mountain import QiaobianAction, QiaobianHandler, TuntianAction, TuntianHandler, ZaoxianAction, ZaoxianHandler, JixiUse, JixiHandler, FangquanSkipAction, FangquanSkipHandler, FangquanEndAction, FangquanEndHandler, RuoyuAction, RuoyuHandler, TiaoxinAction, TiaoxinHandler, ZhijiAction, ZhijiHandler, JiangAction, JiangHandler, HunziAction, HunziHandler, ZhibaAction, ZhibaHandler, ZhijianAction, ZhijianHandler, GuzhengAction, GuzhengHandler, HuashenAction, HuashenHandler, XinshengAction, XinshengHandler, BeigeAction, BeigeHandler
+                registry.register(QiaobianAction, QiaobianHandler(skills, moves, rng, definitions))
+                registry.register(TuntianAction, TuntianHandler(skills, moves))
+                registry.register(ZaoxianAction, ZaoxianHandler(skills))
+                registry.register(JixiUse, JixiHandler(skills, moves, events, card_rules.get('trick.snatch')))
+                registry.register(FangquanSkipAction, FangquanSkipHandler(skills))
+                registry.register(FangquanEndAction, FangquanEndHandler(moves))
+                registry.register(RuoyuAction, RuoyuHandler(skills))
+                registry.register(TiaoxinAction, TiaoxinHandler(skills, moves, slash_rule, definitions))
+                registry.register(ZhijiAction, ZhijiHandler(skills))
+                registry.register(JiangAction, JiangHandler(skills))
+                registry.register(HunziAction, HunziHandler(skills))
+                registry.register(ZhibaAction, ZhibaHandler(skills, moves, events))
+                registry.register(ZhijianAction, ZhijianHandler(skills, moves, definitions))
+                registry.register(GuzhengAction, GuzhengHandler(skills, moves))
+                registry.register(HuashenAction, HuashenHandler(skills, rng))
+                registry.register(XinshengAction, XinshengHandler(skills, rng))
+                registry.register(BeigeAction, BeigeHandler(skills, moves))
+                from sanguosha.engine.gods import WushenUse, WushenHandler, WuhunDeathAction, WuhunDeathHandler, ShelieAction, ShelieHandler, GongxinAction, GongxinHandler, QinyinAction, QinyinHandler, YeyanAction, YeyanHandler, GuixinAction, GuixinHandler, QixingExchangeAction, QixingExchangeHandler, StarWeatherAction, StarWeatherHandler, LonghunUse, LonghunUseHandler, BaiyinAction, BaiyinHandler, JiluePlayAction, JiluePlayHandler
+                registry.register(WushenUse, WushenHandler(skills, moves, slash_rule))
+                registry.register(WuhunDeathAction, WuhunDeathHandler(skills))
+                registry.register(ShelieAction, ShelieHandler(skills, moves))
+                registry.register(GongxinAction, GongxinHandler(skills, moves))
+                registry.register(QinyinAction, QinyinHandler(skills))
+                registry.register(YeyanAction, YeyanHandler(skills, moves))
+                registry.register(GuixinAction, GuixinHandler(skills, moves))
+                registry.register(QixingExchangeAction, QixingExchangeHandler(skills, moves))
+                registry.register(StarWeatherAction, StarWeatherHandler(skills, moves))
+                registry.register(LonghunUse, LonghunUseHandler(skills, moves, events, slash_rule))
+                registry.register(BaiyinAction, BaiyinHandler(skills))
+                registry.register(JiluePlayAction, JiluePlayHandler(skills))
+                registry.register(BuquAction, BuquHandler(deck, moves))
+                registry.register(LeijiAction, LeijiHandler())
+                from sanguosha.engine.wind_guhuo import GuhuoAction, GuhuoHandler
+                registry.register(GuhuoAction, GuhuoHandler(
+                    skills, definitions, card_rules, moves, events))
+                from sanguosha.engine.wind_lord import HuangtianAction, HuangtianHandler
+                registry.register(HuangtianAction, HuangtianHandler(skills, moves))
+                registry.register(DyingAction, DyingActionHandler(events, skills,
+                    FirstDyingOffer(NiepanOffer(skills), BuquOffer(skills))))
+                bodies.register(Phase.DISCARD, DiscardPhaseBody(moves, skills, events,
+                    FireHandLimit(WindHandLimit(), skills)))
             registry.register(UseSpear,UseSpearHandler(provider,moves))
             bodies.register(Phase.PLAY,PlayPhaseBody(provider))
             if skills is not None:
@@ -203,7 +327,7 @@ class GameSession:
         return cls(
             engine, events, definitions, ids[0],
             AIDecisionProvider(ids[0]),
-            {pid: characters[index].name for index, pid in enumerate(ids)} if setup is not None else dict(zip(ids, CHARACTER_NAMES)),
+            {pid: characters[index].name for index, pid in enumerate(ids)} if characters is not None else dict(zip(ids, CHARACTER_NAMES)),
             skills,
             rng=rng,
         )
@@ -227,8 +351,8 @@ class GameSession:
             return True
         if self.engine.status in (EngineStatus.IDLE, EngineStatus.COMPLETED):
             current = self.state.current_player_id
-            next_player = (next(pid for pid in self.state.seat_order if self.state.players[pid].identity is Identity.LORD)
-                           if current is None else next_alive_player(self.state, current))
+            from sanguosha.engine.turn_order import next_scheduled_player
+            next_player = next_scheduled_player(self.state)
             self.engine.start_action(TurnAction(f"turn-{self.state.turn_number + 1}", next_player))
             return True
         request = self.engine.pending_request

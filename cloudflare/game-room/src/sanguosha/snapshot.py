@@ -108,6 +108,9 @@ def snapshot_session(session: GameSession) -> bytes:
         "human_id": str(session.human_id),
         "character_names": _encode(session.character_names),
         "declined_nullification_windows": _encode(session.declined_nullification_windows),
+        "move_reactions": _encode(
+            session.engine.reaction_provider.__self__.reactions
+            if session.engine.reaction_provider is not None else []),
     }
     return json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
 
@@ -120,13 +123,16 @@ def restore_session(blob: bytes) -> GameSession:
         raise ValueError(f"incompatible GameSnapshot schema: {version!r}")
     state = _decode(data["state"])
     military = state.ruleset_id == "classic-military"
+    mode_id = state.metadata.get('mode_id', 'military-five')
     generals = {pid: CharacterId(player.character_id) for pid, player in state.players.items()}
     with_generals = military and all(not str(general).startswith("blank-") for general in generals.values())
     setup = None
     if with_generals:
         identities = {pid: Identity(player.identity) for pid, player in state.players.items()}
-        setup = Pregame(PythonRandomSource(0), identities, (), SetupStage.COMPLETE, generals)
-    session = GameSession.new_game(seed=0, military=military, setup=setup)
+        setup = Pregame(PythonRandomSource(0), identities, (), SetupStage.COMPLETE,
+                        generals, mode_id=mode_id)
+    session = GameSession.new_game(seed=0, military=military, setup=setup,
+                                   mode_id=mode_id)
     engine = session.engine
     engine.state = state
     engine.stack = ResolutionStack()
@@ -145,4 +151,6 @@ def restore_session(blob: bytes) -> GameSession:
     session.ai = AIDecisionProvider(session.human_id)
     session.character_names = _decode(data["character_names"])
     session.declined_nullification_windows = _decode(data["declined_nullification_windows"])
+    if engine.reaction_provider is not None:
+        engine.reaction_provider.__self__.reactions = _decode(data.get("move_reactions", []))
     return session

@@ -22,13 +22,15 @@ class DeathAction(Action):
 
 
 class DeathActionHandler:
-    def __init__(self, moves: CardMoveService, identity: IdentitySystem, recorder: EventRecorder) -> None:
+    def __init__(self, moves: CardMoveService, identity: IdentitySystem, recorder: EventRecorder,
+                 skills=None) -> None:
         self.moves = moves
         self.identity = identity
         self.recorder = recorder
+        self.skills = skills
 
     def _discard_all(self, state: GameState, player_id: PlayerId, action_id: str) -> None:
-        personal = (ZoneType.HAND, ZoneType.EQUIPMENT, ZoneType.JUDGMENT)
+        personal = (ZoneType.HAND, ZoneType.EQUIPMENT, ZoneType.JUDGMENT, ZoneType.SPECIAL)
         refs = sorted(
             (ref for ref in state.zones if ref.player_id == player_id and ref.zone_type in personal),
             key=lambda ref: (ref.zone_type.value, ref.equipment_slot.value if ref.equipment_slot else ""),
@@ -48,11 +50,28 @@ class DeathActionHandler:
         if frame.step_index == 0:
             victim.status = PlayerStatus.DEAD
             state.revealed_identities.add(action.target_id)
+            if (self.skills is not None and self.skills.has(state, action.target_id, 'duanchang')
+                    and action.killer_id is not None and action.killer_id != action.target_id
+                    and state.players[action.killer_id].is_alive):
+                self.skills.suppress_character_skills(state, action.killer_id)
+            frame.step_index = 3
+            if (self.skills is not None and any(
+                    pid != action.target_id and state.players[pid].is_alive
+                    and self.skills.has(state, pid, 'xingshang') for pid in state.seat_order)):
+                from .forest import XingshangAction
+                return StepResult.push(XingshangAction(action.action_id + ':xingshang',
+                                                       action.target_id))
+            return StepResult.continue_()
+        if frame.step_index == 3:
             self._discard_all(state, action.target_id, action.action_id)
             self.recorder.record(PlayerDiedEvent(
                 f"{action.action_id}:died", action.target_id, victim.identity, action.killer_id,
             ))
             killer = state.players.get(action.killer_id) if action.killer_id is not None else None
+            if (killer is not None and killer.is_alive and self.skills is not None
+                    and self.skills.has(state, killer.player_id, 'lianpo')
+                    and state.current_player_id is not None):
+                killer.marks['lianpo_pending'] = 1
             if victim.identity is Identity.REBEL and killer is not None and killer.is_alive:
                 frame.step_index = 1
                 return StepResult.push(DrawCardsAction(f"{action.action_id}:reward", action.killer_id, 3))
@@ -69,6 +88,11 @@ class DeathActionHandler:
             ))
             frame.step_index = 2
             return StepResult.continue_()
+        if (frame.step_index == 2 and not frame.local.get('wuhun_resolved')
+                and self.skills is not None and self.skills.has(state, action.target_id, 'wuhun')):
+            from .gods import WuhunDeathAction
+            frame.local['wuhun_resolved'] = True
+            return StepResult.push(WuhunDeathAction(action.action_id + ':wuhun', action.target_id))
         victory = self.identity.evaluate(state)
         if victory is not None:
             state.victory = victory

@@ -32,6 +32,8 @@ class GameState:
     play_usage: PlayUsageState | None = None
     revealed_identities: set[PlayerId] = field(default_factory=set)
     victory: VictoryResult | None = None
+    extra_turn_queue: list[PlayerId] = field(default_factory=list)
+    extra_turn_anchor: PlayerId | None = None
 
     def __post_init__(self) -> None:
         if not self.ruleset_id:
@@ -48,6 +50,10 @@ class GameState:
             raise ValueError("seat_order must follow seat numbers")
         if self.current_player_id is not None and self.current_player_id not in self.players:
             raise ValueError("current player must exist")
+        if any(player_id not in self.players for player_id in self.extra_turn_queue):
+            raise ValueError("extra turn queue contains an unknown player")
+        if self.extra_turn_anchor is not None and self.extra_turn_anchor not in self.players:
+            raise ValueError("extra turn anchor is unknown")
         if any(card.instance_id != key for key, card in self.cards.items()):
             raise ValueError("card keys must match instance IDs")
         located: list[CardInstanceId] = []

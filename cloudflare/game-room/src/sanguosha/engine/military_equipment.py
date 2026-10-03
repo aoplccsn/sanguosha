@@ -31,10 +31,52 @@ class MilitaryMoveService(CardMoveService):
         if lost_equipment and state.players[owner].is_alive:
             from .skills import XiaojiAction
             self.reactions.append(XiaojiAction(move.move_id+':xiaoji',owner,len(move.card_ids)))
+        if (owner is not None and move.from_zone.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
+                and state.current_player_id != owner and state.players[owner].is_alive
+                and self.skills is not None and self.skills.has(state, owner, 'tuntian')):
+            from .mountain import TuntianAction
+            self.reactions.append(TuntianAction(move.move_id + ':tuntian', owner))
     def next_reaction(self,state):
+        cursor = state.metadata.get('reaction_event_cursor', 0)
+        new_events = self.recorder.events[cursor:]
+        state.metadata['reaction_event_cursor'] = len(self.recorder.events)
+        if self.skills is not None:
+            from .events import CardUsedEvent, AfterDamageEvent
+            from .suits import effective_color
+            from sanguosha.model.enums import Color
+            from .mountain import JiangAction, XinshengAction, BeigeAction
+            for event in new_events:
+                if isinstance(event, AfterDamageEvent):
+                    if (event.source_id is not None and state.players[event.target_id].is_alive
+                            and self.skills.has(state, event.target_id, 'wuhun')):
+                        source = state.players[event.source_id]
+                        source.marks['nightmare'] = source.marks.get('nightmare', 0) + event.amount
+                    if (state.players[event.target_id].is_alive
+                            and self.skills.has(state, event.target_id, 'xinsheng')):
+                        self.reactions.append(XinshengAction(
+                            event.event_id + ':xinsheng', event.target_id, event.amount))
+                    if event.card_kind == 'slash':
+                        for pid in state.seat_order:
+                            if (pid != event.target_id and state.players[pid].is_alive
+                                    and self.skills.has(state, pid, 'beige')):
+                                self.reactions.append(BeigeAction(
+                                    event.event_id + ':beige:' + pid, pid,
+                                    event.target_id, event.source_id))
+                    continue
+                if not isinstance(event, CardUsedEvent):
+                    continue
+                definition = event.virtual_definition_id or state.cards[event.card_id].definition_id
+                if (definition != 'trick.duel'
+                        and (definition not in ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash')
+                             or effective_color(state, event.card_id, event.player_id) is not Color.RED)):
+                    continue
+                for pid in dict.fromkeys((event.player_id, *event.target_ids)):
+                    if state.players[pid].is_alive and self.skills.has(state, pid, 'jiang'):
+                        self.reactions.append(JiangAction(event.event_id + ':jiang:' + pid, pid))
         while self.reactions:
             action=self.reactions.pop(0)
-            target=getattr(action,'target_id',getattr(action,'player_id',None))
+            target=getattr(action,'target_id',getattr(action,'player_id',
+                           getattr(action,'owner_id',None)))
             if target is not None and state.players[target].is_alive:
                 return action
         return None

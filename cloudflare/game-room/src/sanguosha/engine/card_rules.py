@@ -56,10 +56,11 @@ class TargetValidator:
 
 
 class CardUseValidator:
-    def __init__(self, definitions: CardDefinitionRegistry, rules: CardRuleRegistry, targets: TargetValidator) -> None:
+    def __init__(self, definitions: CardDefinitionRegistry, rules: CardRuleRegistry, targets: TargetValidator, skills=None) -> None:
         self.definitions = definitions
         self.rules = rules
         self.targets = targets
+        self.skills = skills
 
     def rule_for(self, state: GameState, card_id: CardInstanceId) -> CardRule:
         try:
@@ -70,6 +71,23 @@ class CardUseValidator:
             raise InvalidCardUse(f"unknown card instance {card_id}") from exc
         except UnknownCardDefinition as exc:
             raise InvalidCardUse(f"unregistered card definition for {card_id}") from exc
+
+    def target_candidates(self, state: GameState, user_id: PlayerId, card_id: CardInstanceId) -> tuple[PlayerId, ...]:
+        rule = self.rule_for(state, card_id)
+        candidates = rule.target_candidates(state, user_id)
+        if self.skills is None:
+            return candidates
+        from .forest import weimu_blocks
+        definition_id = str(state.cards[card_id].definition_id)
+        return tuple(pid for pid in candidates if not weimu_blocks(
+            state, pid, card_id, definition_id, user_id, self.skills))
+
+    def validate_targets_for_card(self, rule: CardRule, state: GameState,
+                                  user_id: PlayerId, card_id: CardInstanceId,
+                                  targets: tuple[PlayerId, ...]) -> None:
+        self.targets.validate(rule, state, user_id, targets)
+        if any(pid not in self.target_candidates(state, user_id, card_id) for pid in targets):
+            raise InvalidCardUse("target is protected from this card")
 
     def validate_card(self, state: GameState, user_id: PlayerId, card_id: CardInstanceId) -> CardRule:
         if user_id not in state.players or not state.players[user_id].is_alive:
@@ -91,12 +109,12 @@ class CardUseValidator:
 
     def validate_final(self, state: GameState, user_id: PlayerId, card_id: CardInstanceId, targets: tuple[PlayerId, ...]) -> CardRule:
         rule = self.validate_card(state, user_id, card_id)
-        self.targets.validate(rule, state, user_id, targets)
+        self.validate_targets_for_card(rule, state, user_id, card_id, targets)
         return rule
 
     def can_offer(self, state: GameState, user_id: PlayerId, card_id: CardInstanceId) -> bool:
         try:
             rule = self.validate_card(state, user_id, card_id)
-            return not rule.requires_target_selection or bool(rule.target_candidates(state, user_id))
+            return not rule.requires_target_selection or bool(self.target_candidates(state, user_id, card_id))
         except InvalidCardUse:
             return False

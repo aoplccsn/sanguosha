@@ -8,10 +8,11 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Callable
 
-from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL
+from sanguosha.content.characters.standard import PLAYABLE_57_GENERAL_POOL, PLAYABLE_65_GENERAL_POOL
+from sanguosha.game_modes import game_mode
 from sanguosha.decisions.ai import AIDecisionProvider
 from sanguosha.engine.requests import Decision, PendingRequest, RequestType
-from sanguosha.engine.events import (CardUsedEvent, CardRespondedEvent, TrickTargetsDeclaredEvent,
+from sanguosha.engine.events import (Event, CardUsedEvent, CardRespondedEvent, TrickTargetsDeclaredEvent,
                                      VirtualResponseEvent, DamageDealtEvent, HpRecoveredEvent,
                                      PlayerDiedEvent, GameEndedEvent)
 from sanguosha.engine.rng import PythonRandomSource
@@ -90,11 +91,18 @@ class NetworkDecisionProvider:
 class MultiplayerRoom:
     """One game state lives here; a send callback receives only viewer-safe messages."""
 
-    def __init__(self, *, seed: int | None = None, timeout_seconds: float = TIMEOUT_SECONDS):
-        self.seats = {pid: Seat(pid) for pid in SEATS}
+    def __init__(self, *, seed: int | None = None, timeout_seconds: float = TIMEOUT_SECONDS,
+                 review_god_lvbu: bool = False, mode_id: str = 'military-five',
+                 allow_gods: bool = False):
+        self.mode = game_mode(mode_id)
+        if type(allow_gods) is not bool:
+            raise RoomError('allow_gods must be boolean')
+        self.allow_gods = allow_gods
+        self.seats = {pid: Seat(pid) for pid in self.mode.seats}
         self.phase = RoomPhase.OPEN
         self.host_id: PlayerId | None = None
         self.seed = seed
+        self.review_god_lvbu = review_god_lvbu
         self.timeout_seconds = timeout_seconds
         self.pregame: Pregame | None = None
         self.draft_requests: dict[PlayerId, PendingRequest] = {}
@@ -103,7 +111,7 @@ class MultiplayerRoom:
         self.request_deadline: float | None = None
         self._last_request_id: str | None = None
         self._seen_events = 0
-        self._ai = AIDecisionProvider(SEATS[0])
+        self._ai = AIDecisionProvider(self.mode.seats[0])
         self.network_decisions = NetworkDecisionProvider(self)
         self._revision = 0
         self.auto_step_budget = 20_000
@@ -142,12 +150,18 @@ class MultiplayerRoom:
         if not seat.connected:
             return
         seat.connected, seat.send = False, None
-        if self.phase in (RoomPhase.OPEN, RoomPhase.READY):
-            seat.controller, seat.name, seat.ready, seat.token = Controller.EMPTY, "", False, ""
-            if pid == self.host_id:
-                self.host_id = next((s.player_id for s in self.seats.values() if s.controller is Controller.HUMAN), None)
         self._broadcast(envelope("PLAYER_DISCONNECTED", seat_id=str(pid)))
         self._broadcast_lobby()
+
+    def leave(self, pid: PlayerId) -> None:
+        self.disconnect(pid)
+        if self.phase in (RoomPhase.OPEN, RoomPhase.READY):
+            self.seats[pid] = Seat(pid)
+            if pid == self.host_id:
+                self.host_id = next((s.player_id for s in self.seats.values()
+                                     if s.controller is Controller.HUMAN), None)
+            self.phase = RoomPhase.READY if any(s.ready for s in self.seats.values()) else RoomPhase.OPEN
+            self._broadcast_lobby()
 
     def ready(self, pid: PlayerId, value: bool) -> None:
         if self.phase not in (RoomPhase.OPEN, RoomPhase.READY) or pid == self.host_id:
@@ -155,6 +169,37 @@ class MultiplayerRoom:
         if self.seats[pid].controller is not Controller.HUMAN or not self.seats[pid].connected or type(value) is not bool:
             raise RoomError("invalid ready state")
         self.seats[pid].ready = value
+        self.phase = RoomPhase.READY if any(s.ready for s in self.seats.values()) else RoomPhase.OPEN
+        self._broadcast_lobby()
+
+    def configure(self, host_id: PlayerId, *, mode_id: str | None = None,
+                  allow_gods: bool | None = None) -> None:
+        if host_id != self.host_id or self.phase not in (RoomPhase.OPEN, RoomPhase.READY):
+            raise RoomError('only the host can configure an open room')
+        if mode_id is not None and mode_id != self.mode.mode_id:
+            mode = game_mode(mode_id)
+            removed = set(self.seats) - set(mode.seats)
+            if any(self.seats[pid].controller is Controller.HUMAN for pid in removed):
+                raise RoomError('cannot remove an occupied human seat')
+            self.seats = {pid: self.seats.get(pid, Seat(pid)) for pid in mode.seats}
+            self.mode = mode
+            self._ai = AIDecisionProvider(mode.seats[0])
+        if allow_gods is not None:
+            if type(allow_gods) is not bool:
+                raise RoomError('allow_gods must be boolean')
+            self.allow_gods = allow_gods
+        self._broadcast_lobby()
+
+    def kick(self, host_id: PlayerId, target_id: PlayerId) -> None:
+        if host_id != self.host_id or self.phase not in (RoomPhase.OPEN, RoomPhase.READY):
+            raise RoomError('only the host can kick before the game starts')
+        if target_id == host_id or target_id not in self.seats:
+            raise RoomError('invalid kick target')
+        seat = self.seats[target_id]
+        if seat.controller is not Controller.HUMAN:
+            raise RoomError('target is not a human player')
+        self._send(target_id, envelope('KICKED', reason='房主已将你移出房间'))
+        self.seats[target_id] = Seat(target_id)
         self.phase = RoomPhase.READY if any(s.ready for s in self.seats.values()) else RoomPhase.OPEN
         self._broadcast_lobby()
 
@@ -169,9 +214,10 @@ class MultiplayerRoom:
             if seat.controller is Controller.EMPTY:
                 seat.controller, seat.name = Controller.AI, f"电脑{seat.player_id[1:]}"
         rng = PythonRandomSource(self.seed)
-        roles = list(ROLE_SET)
+        roles = list(self.mode.roles)
         rng.shuffle(roles)
-        self.pregame = Pregame(rng, dict(zip(SEATS, roles)), (), SetupStage.CHOOSE_GENERAL)
+        self.pregame = Pregame(rng, dict(zip(self.mode.seats, roles)), (),
+                               SetupStage.CHOOSE_GENERAL, mode_id=self.mode.mode_id)
         self.phase = RoomPhase.DRAFT
         self._broadcast_lobby()
         for seat in self.seats.values():
@@ -181,9 +227,15 @@ class MultiplayerRoom:
 
     def _new_draft_request(self, pid: PlayerId) -> None:
         assert self.pregame is not None
-        remaining = [c.id for c in STANDARD_25_GENERAL_POOL if c.id not in self.pregame.generals.values()]
+        pool = PLAYABLE_65_GENERAL_POOL if self.allow_gods else PLAYABLE_57_GENERAL_POOL
+        remaining = [c.id for c in pool if c.id not in self.pregame.generals.values()]
         self.pregame.rng.shuffle(remaining)
-        candidates = tuple(map(str, remaining[:10]))
+        candidates = tuple(map(str, remaining[:9])) + (('forest_god_lvbu',) if self.review_god_lvbu and pid == self.host_id else (str(remaining[9]),))
+        first_choices = {request.choices[0] for other_pid, request in self.draft_requests.items() if other_pid != pid}
+        if candidates[0] in first_choices:
+            alternative = next((choice for choice in candidates[1:] if choice not in first_choices), None)
+            if alternative is not None:
+                candidates = (alternative,) + tuple(choice for choice in candidates if choice != alternative)
         old = self.draft_requests.get(pid)
         serial = int(old.request_id.rsplit(":", 1)[-1]) + 1 if old else 1
         request = PendingRequest(f"draft:{pid}:{serial}", pid, RequestType.CHOOSE_OPTION,
@@ -232,7 +284,8 @@ class MultiplayerRoom:
         if self.draft_requests:
             return
         assert self.pregame is not None
-        available = [c.id for c in STANDARD_25_GENERAL_POOL if c.id not in self.pregame.generals.values()]
+        pool = PLAYABLE_65_GENERAL_POOL if self.allow_gods else PLAYABLE_57_GENERAL_POOL
+        available = [c.id for c in pool if c.id not in self.pregame.generals.values()]
         for seat in self.seats.values():
             if seat.controller is Controller.AI:
                 selected = self.pregame.rng.choice(available)
@@ -240,9 +293,31 @@ class MultiplayerRoom:
                 self.pregame.generals[seat.player_id] = selected
         self.pregame.stage = SetupStage.COMPLETE
         self.session = GameSession.new_game(military=True, setup=self.pregame)
+        if self.review_god_lvbu:
+            self._prepare_lvbu_review_match()
         self.phase = RoomPhase.IN_GAME
         self._broadcast_lobby()
         self.pump()
+
+    def _prepare_lvbu_review_match(self) -> None:
+        """Prepare cards and rage only in the explicit local review fixture."""
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        state = self.session.state
+        actor = self.host_id
+        if state.players[actor].character_id != 'forest_god_lvbu':
+            return
+        state.players[actor].marks['rage'] = 8
+        hand = state.zones[ZoneRef(ZoneType.HAND, actor)].card_ids
+        for definition in ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash'):
+            if any(state.cards[cid].definition_id == definition for cid in hand):
+                continue
+            for ref, zone in state.zones.items():
+                if ref.zone_type is ZoneType.DRAW_PILE:
+                    found = next((cid for cid in zone.card_ids if state.cards[cid].definition_id == definition), None)
+                    if found is not None:
+                        zone.card_ids.remove(found)
+                        hand.append(found)
+                    break
 
     def pump(self, max_steps: int | None = None) -> None:
         if self.session is None:
@@ -338,6 +413,8 @@ class MultiplayerRoom:
 
     def lobby_state(self) -> dict:
         return {"phase": self.phase.value, "host_id": self.host_id,
+                "mode_id": self.mode.mode_id, "seat_count": self.mode.seat_count,
+                "allow_gods": self.allow_gods,
                 "seats": [seat.public() for seat in self.seats.values()]}
 
     def _named_projection(self, view, viewer):
@@ -349,8 +426,19 @@ class MultiplayerRoom:
 
     def _public_event(self, event) -> dict | None:
         """Allowlist semantic facts; card instance IDs and hidden moves are excluded."""
-        result = {"kind": type(event).__name__}
-        if isinstance(event, (CardUsedEvent, TrickTargetsDeclaredEvent)):
+        result = {"kind": type(event).__name__, "event_id": event.event_id}
+        if isinstance(event, Event) and event.event_type in ('skill_wuwei', 'skill_shenfen'):
+            result.update(kind='GodSkillEvent', source_id=str(event.source_id),
+                          target_ids=list(map(str, event.target_ids)),
+                          skill_id=str(event.metadata['skill_id']), level=int(event.metadata['level']))
+        elif isinstance(event, Event) and event.event_type in ('guhuo_declare', 'guhuo_reveal'):
+            result.update(kind='GuhuoEvent', source_id=str(event.source_id),
+                          stage='declare' if event.event_type == 'guhuo_declare' else 'reveal',
+                          declared=str(event.metadata['declared']))
+            if event.event_type == 'guhuo_reveal':
+                result.update(actual=str(event.metadata['actual']),
+                              suit=str(event.metadata['suit']), truth=bool(event.metadata['truth']))
+        elif isinstance(event, (CardUsedEvent, TrickTargetsDeclaredEvent)):
             result.update(source_id=str(event.player_id), target_ids=list(map(str, event.target_ids)))
             definition_id = (event.virtual_definition_id or str(self.session.state.cards[event.card_id].definition_id)
                              if isinstance(event, CardUsedEvent) else event.definition_id)
@@ -385,3 +473,5 @@ class MultiplayerRoom:
         seat = self.seats[pid]
         if seat.connected and seat.send:
             seat.send(message)
+
+

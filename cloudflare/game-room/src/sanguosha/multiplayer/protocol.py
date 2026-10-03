@@ -16,7 +16,7 @@ DEFAULT_GAME_PORT = 28765
 MAX_MESSAGE_BYTES = 256_000
 MESSAGE_TYPES = frozenset({
     "HELLO", "WELCOME", "CREATE_ROOM", "ROOM_CREATED", "JOIN_ROOM", "LEAVE_ROOM", "RECONNECT",
-    "LOBBY_STATE", "READY", "START_GAME",
+    "LOBBY_STATE", "READY", "START_GAME", "CONFIGURE_ROOM", "KICK_PLAYER", "KICKED",
     "DRAFT_REQUEST", "PROJECTION_UPDATE", "PENDING_REQUEST", "SUBMIT_DECISION",
     "DECISION_RESULT", "PUBLIC_EVENT", "PING", "PONG", "PLAYER_DISCONNECTED",
     "PLAYER_RECONNECTED", "TAKEOVER_AI", "GAME_OVER", "VERSION_MISMATCH", "ERROR",
@@ -78,7 +78,11 @@ def deserialize_projection(payload: dict[str, Any]) -> TableView:
         return PlayerView(**{**raw,
                              "equipment": tuple(card(x) for x in raw["equipment"]),
                              "judgments": tuple(card(x) for x in raw["judgments"]),
-                             "skill_labels": tuple(raw["skill_labels"])})
+                             "skill_labels": tuple(raw["skill_labels"]),
+                             "transformation_pool": tuple(raw.get("transformation_pool", ())),
+                             "revealed_hand": tuple(card(x) for x in raw.get("revealed_hand", ())),
+                             "special_piles": {key: tuple(card(x) for x in cards)
+                                               for key, cards in raw.get("special_piles", {}).items()}})
 
     return TableView(tuple(player(x) for x in payload["players"]),
                      tuple(card(x) for x in payload["hand"]), payload["current_phase"],

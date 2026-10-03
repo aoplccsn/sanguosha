@@ -13,10 +13,11 @@ from .resolution import ResolutionFrame
 
 
 class DiscardPhaseBody:
-    def __init__(self, moves: CardMoveService, skills=None, events=None) -> None:
+    def __init__(self, moves: CardMoveService, skills=None, events=None, hand_limit=None) -> None:
         self.moves = moves
         self.skills = skills
         self.events = events
+        self.hand_limit = hand_limit or (lambda state, player_id: max(0, state.players[player_id].hp))
 
     def _may_keji(self, state, player_id):
         if self.skills is None or self.events is None or not self.skills.has(state, player_id, 'keji'):
@@ -47,7 +48,7 @@ class DiscardPhaseBody:
         hand = ZoneRef(ZoneType.HAND, action.player_id)
         if frame.step_index == 1:
             eligible = state.cards_in(hand)
-            limit = max(0, state.players[action.player_id].hp)
+            limit = self.hand_limit(state, action.player_id)
             excess = len(eligible) - limit
             if excess <= 0:
                 return StepResult.complete()
@@ -63,7 +64,7 @@ class DiscardPhaseBody:
             if skip:
                 return StepResult.complete(0)
             eligible = state.cards_in(hand)
-            excess = len(eligible) - max(0, state.players[action.player_id].hp)
+            excess = len(eligible) - self.hand_limit(state, action.player_id)
             if excess <= 0:
                 return StepResult.complete(0)
             return self._ask_discard(state, frame, eligible, excess)

@@ -63,5 +63,6 @@ def test_worker_bundle_uses_authoritative_room_and_snapshot():
     assert "setAlarm" in source
     assert 'kind == "HELLO"' in source
     assert "self.room._send_current(pid)" in source
-    assert "self.room.seed = seed" in source
+    assert "self.room = MultiplayerRoom(seed=seed" in source
+    assert "mode_id=message.get('mode_id'" in source
     assert "asyncio.sleep" not in source

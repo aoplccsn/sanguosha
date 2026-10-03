@@ -27,7 +27,7 @@ class ZoneRef:
 
     def __post_init__(self) -> None:
         personal = self.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT, ZoneType.JUDGMENT)
-        if personal != (self.player_id is not None):
+        if self.zone_type is not ZoneType.SPECIAL and personal != (self.player_id is not None):
             raise ValueError("personal zones require a player; shared zones must not have one")
         if (self.zone_type is ZoneType.EQUIPMENT) != (self.equipment_slot is not None):
             raise ValueError("equipment slot is required only for equipment zones")

@@ -21,9 +21,10 @@ class DyingAction(Action):
 
 
 class DyingActionHandler:
-    def __init__(self, recorder: EventRecorder, skills=None) -> None:
+    def __init__(self, recorder: EventRecorder, skills=None, before_rescue=None) -> None:
         self.recorder = recorder
         self.skills = skills
+        self.before_rescue = before_rescue
 
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
@@ -33,6 +34,13 @@ class DyingActionHandler:
             if target.hp > 0:
                 self.recorder.record(DyingRescuedEvent(f"{action.action_id}:rescued", action.target_id, target.hp))
                 return StepResult.complete("rescued")
+            if self.before_rescue is not None and not frame.local.get('before_rescue_checked'):
+                frame.local['before_rescue_checked'] = True
+                offer = self.before_rescue(state, action.target_id,
+                                           action.action_id + ':before-rescue')
+                if offer is not None:
+                    frame.step_index = 4
+                    return StepResult.push(offer)
             order = state.seat_order
             if frame.cursor >= len(order):
                 frame.step_index = 3
@@ -41,6 +49,12 @@ class DyingActionHandler:
             candidate = order[(start + frame.cursor) % len(order)]
             frame.cursor += 1
             if not state.players[candidate].is_alive:
+                return StepResult.continue_()
+            turn_owner = state.current_player_id
+            if (self.skills is not None and turn_owner in state.players
+                    and state.players[turn_owner].is_alive
+                    and self.skills.has(state, turn_owner, 'wansha')
+                    and candidate not in (turn_owner, action.target_id)):
                 return StepResult.continue_()
             frame.step_index = 1
             round_number = int(frame.local.get("round", 0))
@@ -65,6 +79,9 @@ class DyingActionHandler:
         if frame.step_index == 2:
             frame.cursor = 0
             frame.local["round"] = int(frame.local.get("round", 0)) + 1
+            frame.step_index = 0
+            return StepResult.continue_()
+        if frame.step_index == 4:
             frame.step_index = 0
             return StepResult.continue_()
         return StepResult.complete("dead")

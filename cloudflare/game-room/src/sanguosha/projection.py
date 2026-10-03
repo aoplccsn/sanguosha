@@ -1,9 +1,10 @@
 """Human-visible read-only snapshots; opponent hands and identities stay hidden."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from sanguosha.engine.card_registry import CardDefinitionRegistry
 from sanguosha.engine.distance import DistanceSystem
+from sanguosha.engine.suits import effective_suit
 from sanguosha.model.enums import Identity, Suit
 from sanguosha.model.ids import CardInstanceId, PlayerId
 from sanguosha.model.state import GameState
@@ -56,6 +57,14 @@ class PlayerView:
     effective_distance: int | None = None
     attack_range: int = 1
     skill_labels: tuple[str, ...] = ()
+    # Presentation state is deliberately read-only and derived from runtime
+    # state so Web and PySide can share the same avatar semantics.
+    face_up: bool = True
+    marks: dict[str, int] | None = None
+    special_piles: dict[str, tuple[CardView, ...]] = field(default_factory=dict)
+    active_transformation: str = ""
+    transformation_pool: tuple[str, ...] = ()
+    revealed_hand: tuple[CardView, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -89,7 +98,7 @@ def project_for_human(
                 detail += f"\n攻击范围：{definition.attack_range}"
             summary = definition.metadata.get("effect_summary", "暂无效果说明")
             detail += f"\n效果：{summary}"
-        return CardView(cid,definition.name,SUIT_SYMBOLS[card.suit],RANK_LABELS.get(card.rank,str(card.rank)),
+        return CardView(cid,definition.name,SUIT_SYMBOLS[effective_suit(state, cid)],RANK_LABELS.get(card.rank,str(card.rank)),
                         str(definition_id),definition.category.value, equipment_slot, detail)
     players = []
     distance = DistanceSystem(definitions)
@@ -106,7 +115,7 @@ def project_for_human(
             len(state.cards_in(ZoneRef(ZoneType.HAND, pid))),
             player.is_alive, state.current_player_id == pid,
             str(player.character_id) if player.character_id in skills.characters else GENERAL_PRESENTATION.get(str(player.character_id), (str(player.character_id), "群"))[0],
-            {"wei":"魏", "shu":"蜀", "wu":"吴", "qun":"群"}[skills.characters[player.character_id].kingdom.value]
+            {"wei":"魏", "shu":"蜀", "wu":"吴", "qun":"群"}[skills.faction(state, pid).value]
             if player.character_id in skills.characters else GENERAL_PRESENTATION.get(str(player.character_id), ("", "群"))[1], player.chained,
             tuple(card_view(cid, ref.equipment_slot.value) for ref,z in state.zones.items() if ref.player_id==pid and ref.zone_type is ZoneType.EQUIPMENT for cid in z.card_ids),
             tuple(card_view(cid, judgment=True) for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid))),
@@ -115,21 +124,47 @@ def project_for_human(
             distance.attack_range(state,pid) if player.is_alive else 1,
             tuple(skills.skills[sid].name + (" · 已用" if sid == 'zhiheng' and state.play_usage and state.play_usage.player_id == pid
                                          and state.play_usage.count('skill.zhiheng') else "") +
-                  (" · 主公技" if skills.skills[sid].metadata.get('lord') else "")
-                  for sid in skills.characters[player.character_id].skill_ids)
+                  (" · 主公技" if skills.skills[sid].metadata.get('lord') else "") +
+                  (" · 已失去" if sid in player.disabled_skills else "")
+                  for sid in dict.fromkeys((*skills.characters[player.character_id].skill_ids,
+                                            *player.granted_skills,
+                                            *((player.transformation_skill,) if player.transformation_skill else ()))))
             if player.character_id in skills.characters else (),
+            player.face_up, dict(player.marks),
+            {ref.special_key: tuple(
+                card_view(cid) if ((not ref.special_key.startswith('committed:')
+                    and ref.special_key != 'star')
+                    or pid == human_id
+                    or state.metadata.get('revealed_committed', {}).get(cid))
+                else CardView('hidden:' + ref.special_key, '未知扣置牌', '', '')
+                for cid in zone.card_ids)
+             for ref, zone in state.zones.items()
+             if ref.zone_type is ZoneType.SPECIAL and ref.player_id == pid and zone.card_ids},
+            player.active_transformation or "",
+            tuple(player.transformation_pool) if pid == human_id else (),
+            tuple(card_view(cid) for cid in state.cards_in(ZoneRef(ZoneType.HAND, pid)))
+            if (state.metadata.get('gongxin_reveal', {}).get('actor') == human_id
+                and state.metadata.get('gongxin_reveal', {}).get('target') == pid
+                and state.players[human_id].is_alive) else (),
         ))
     hand = tuple(card_view(card_id) for card_id in state.cards_in(ZoneRef(ZoneType.HAND, human_id)))
     discard = state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
     top = discard[-1] if discard else None
-    top_view = (CardView(top, definitions.get(state.cards[top].definition_id).name,
-                         SUIT_SYMBOLS[state.cards[top].suit],
-                         RANK_LABELS.get(state.cards[top].rank, str(state.cards[top].rank)),
-                         str(state.cards[top].definition_id), definitions.get(state.cards[top].definition_id).category.value) if top else None)
+    concealed = state.metadata.get('concealed_discard_cards', {}).get(top)
+    if top is not None and concealed:
+        definition = definitions.get(concealed)
+        top_view = CardView('hidden-discard', '蛊惑·' + definition.name, '', '',
+                            str(concealed), definition.category.value)
+    else:
+        top_view = (CardView(top, definitions.get(state.cards[top].definition_id).name,
+                             SUIT_SYMBOLS[state.cards[top].suit],
+                             RANK_LABELS.get(state.cards[top].rank, str(state.cards[top].rank)),
+                             str(state.cards[top].definition_id), definitions.get(state.cards[top].definition_id).category.value) if top else None)
     return TableView(
         tuple(players), hand, state.current_phase.value if state.current_phase else "—",
         state.turn_number, len(state.cards_in(ZoneRef(ZoneType.DRAW_PILE))),
         len(state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))),
         state.victory.label if state.victory else None, top_view,
-        tuple(card_view(cid) for ref,z in state.zones.items() if ref.zone_type is ZoneType.SPECIAL for cid in z.card_ids),
+        tuple(card_view(cid) for ref,z in state.zones.items()
+              if ref.zone_type is ZoneType.SPECIAL and ref.player_id is None for cid in z.card_ids),
     )

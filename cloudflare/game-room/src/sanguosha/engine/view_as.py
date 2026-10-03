@@ -6,6 +6,7 @@ from .card_rules import InvalidCardUse
 from .card_moves import CardMove,CardMoveReason
 from .requests import PendingRequest,RequestType
 from .military_basics import equipped,SlashSequence
+from .suits import effective_suit
 from sanguosha.model.virtual_card import VirtualCard
 from sanguosha.model.enums import EquipmentSlot,Phase
 from sanguosha.model.zones import ZoneRef,ZoneType
@@ -16,7 +17,14 @@ class UseSpear(Action):
 
 class MilitaryPlayOptions(LegalPlayActionProvider):
     def spear_legal(self,state,pid):
-        return equipped(state,pid,EquipmentSlot.WEAPON)=='equipment.weapon.serpent_spear' and len(state.cards_in(ZoneRef(ZoneType.HAND,pid)))>=2 and state.play_usage.count('basic.slash')<1 and bool(self.validator.rules.get('basic.slash').target_candidates(state,pid))
+        rule = self.validator.rules.get('basic.slash')
+        limit = rule.usage_limit(state, pid)
+        usage = state.play_usage
+        return (equipped(state,pid,EquipmentSlot.WEAPON)=='equipment.weapon.serpent_spear'
+                and len(state.cards_in(ZoneRef(ZoneType.HAND,pid)))>=2
+                and usage is not None and rule.can_use(state, pid)
+                and (limit is None or usage.count('basic.slash') < limit)
+                and bool(rule.target_candidates(state,pid)))
     def options(self,state,pid):
         ordinary=super().options(state,pid)
         return (*ordinary,'virtual:spear') if self.spear_legal(state,pid) else ordinary
@@ -55,7 +63,7 @@ class UseSpearHandler:
             target=f.decision
             f.decision=None
             self.provider.validator.rules.get('basic.slash').validate_targets(state,a.player_id,(target,))
-            virtual=VirtualCard.spear(state,materials)
+            virtual=VirtualCard.spear(state,materials,effective_suit)
             self.moves.move(state,CardMove(a.action_id+':processing',materials,hand,ZoneRef(ZoneType.PROCESSING),CardMoveReason.USE,a.player_id))
             state.play_usage.record('basic.slash')
             f.step_index=3

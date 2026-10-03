@@ -13,6 +13,7 @@ from sanguosha.model.zones import CardZone, ZoneRef, ZoneType
 
 from .actions import Action, StepResult
 from .card_moves import CardMove, CardMoveReason, CardMoveService
+from .events import Event
 from .resolution import ResolutionFrame
 from .requests import PendingRequest, RequestType
 from .rng import RandomSource
@@ -123,6 +124,38 @@ class DrawCardsHandler:
         return StepResult.complete(self.deck.draw(state, action.player_id, action.count, action.action_id))
 
 
+@dataclass(frozen=True, slots=True)
+class RevealTopCardsAction(Action):
+    player_id: PlayerId
+    count: int
+
+
+class RevealTopCardsHandler:
+    """Reveal physical top cards publicly without drawing them into a hand."""
+
+    def __init__(self, deck: DeckService, events):
+        self.deck, self.events = deck, events
+
+    def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
+        action = frame.action
+        if action.count < 0:
+            raise ValueError('reveal count must be nonnegative')
+        revealed = []
+        for index in range(action.count):
+            if not self.deck.ensure_draw(state, f'{action.action_id}:ensure:{index}'):
+                break
+            card_id = state.cards_in(DRAW)[0]
+            self.deck.moves.move(state, CardMove(
+                f'{action.action_id}:reveal:{index}', (card_id,), DRAW,
+                ZoneRef(ZoneType.PROCESSING), CardMoveReason.SYSTEM,
+                action.player_id, action.action_id))
+            self.events.record(Event(f'{action.action_id}:shown:{index}',
+                'card_revealed', action.player_id,
+                metadata={'card_id': str(card_id)}))
+            revealed.append(card_id)
+        return StepResult.complete(tuple(revealed))
+
+
 class DrawPhaseBody:
     def __init__(self, skills=None):
         self.skills = skills
@@ -131,6 +164,21 @@ class DrawPhaseBody:
         if frame.step_index == 1:
             action = frame.action
             state.players[action.player_id].marks.pop('luoyi', None)
+            if (self.skills is not None and not frame.local.get('haoshi_offered')
+                    and self.skills.has(state, action.player_id, 'haoshi')):
+                frame.local['haoshi_offered'] = True
+                frame.step_index = 9
+                return StepResult.ask(PendingRequest(action.action_id + ':haoshi',
+                    action.player_id, RequestType.YES_NO,
+                    '是否发动【好施】额外摸两张牌？', action.action_id, frame.frame_id))
+            if (self.skills is not None and not frame.local.get('zaiqi_offered')
+                    and self.skills.has(state, action.player_id, 'zaiqi')
+                    and state.players[action.player_id].hp < state.players[action.player_id].max_hp):
+                frame.local['zaiqi_offered'] = True
+                frame.step_index = 7
+                return StepResult.ask(PendingRequest(action.action_id + ':zaiqi',
+                    action.player_id, RequestType.YES_NO,
+                    '是否发动【再起】代替正常摸牌？', action.action_id, frame.frame_id))
             if (self.skills is not None and self.skills.has(state, action.player_id, 'tuxi')
                     and any(pid != action.player_id and state.players[pid].is_alive
                             and state.cards_in(ZoneRef(ZoneType.HAND, pid)) for pid in state.seat_order)):
@@ -164,4 +212,30 @@ class DrawPhaseBody:
                 from .skills import TuxiAction
                 return StepResult.push(TuxiAction(action.action_id + ':tuxi', action.player_id))
             return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id, 2))
+        if frame.step_index == 7:
+            action = frame.action
+            wanted = frame.decision is True
+            frame.decision = None
+            if wanted:
+                from .forest import ZaiqiAction
+                frame.step_index = 2
+                return StepResult.push(ZaiqiAction(action.action_id + ':zaiqi', action.player_id))
+            frame.step_index = 1
+            return StepResult.continue_()
+        if frame.step_index == 9:
+            action = frame.action
+            wanted = frame.decision is True
+            frame.decision = None
+            if wanted:
+                frame.step_index = 10
+                return StepResult.push(DrawCardsAction(action.action_id + ':haoshi-draw',
+                                                       action.player_id, 4))
+            frame.step_index = 1
+            return StepResult.continue_()
+        if frame.step_index == 10:
+            from .forest import HaoshiGiveAction
+            action = frame.action
+            frame.step_index = 2
+            return StepResult.push(HaoshiGiveAction(action.action_id + ':haoshi-give',
+                                                    action.player_id))
         return StepResult.complete(frame.child_result)

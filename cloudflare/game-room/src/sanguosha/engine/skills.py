@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 import json
 
-from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL as CHARACTERS, STANDARD_SKILL_CATALOGUE as SKILLS
+from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL as CHARACTERS, ALL_SKILL_CATALOGUE as SKILLS
 from sanguosha.model.enums import Identity, Phase, Color, Kingdom, EquipmentSlot, Suit, Gender
 from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.model.virtual_card import VirtualCard
@@ -17,6 +17,7 @@ from .card_rules import InvalidCardUse
 from .hp import LoseHpAction
 from .judgment import JudgmentAction, JudgmentPattern
 from .events import CardUsedEvent
+from .suits import effective_color, effective_suit
 
 
 class SkillRegistry:
@@ -25,18 +26,48 @@ class SkillRegistry:
         self.skills = {skill.id: skill for skill in SKILLS}
 
     def has(self, state, player_id, skill_id):
-        character = self.characters.get(state.players[player_id].character_id)
-        if character is None or skill_id not in character.skill_ids:
+        player = state.players[player_id]
+        if skill_id in player.disabled_skills:
+            return False
+        character = self.characters.get(player.character_id)
+        transformed = (skill_id == player.transformation_skill
+                       and player.active_transformation in player.transformation_pool
+                       and player.character_id == 'mountain_zuoci'
+                       and 'huashen' not in player.disabled_skills)
+        if skill_id == 'wushuang' and state.players[player_id].marks.get('wuwei', 0):
+            return True
+        if skill_id == 'wansha' and player.marks.get('jilue_wansha', 0):
+            return True
+        if character is None or (skill_id not in character.skill_ids
+                                 and skill_id not in player.granted_skills
+                                 and not transformed):
             return False
         skill = self.skills[skill_id]
         return not skill.metadata.get('lord') or state.players[player_id].identity is Identity.LORD
 
+    def suppress_character_skills(self, state, player_id):
+        player = state.players[player_id]
+        character = self.characters.get(player.character_id)
+        if character is None:
+            return ()
+        skills = tuple(dict.fromkeys((*character.skill_ids, *player.granted_skills,
+                                      *((player.transformation_skill,)
+                                        if player.transformation_skill else ()))))
+        player.disabled_skills.update(skills)
+        return skills
+
     def faction(self, state, player_id):
-        character = self.characters.get(state.players[player_id].character_id)
+        player = state.players[player_id]
+        transformed = (player.active_transformation if player.character_id == 'mountain_zuoci'
+                       and 'huashen' not in player.disabled_skills else None)
+        character = self.characters.get(transformed or player.character_id)
         return character.kingdom if character else None
 
     def gender(self, state, player_id):
-        character = self.characters.get(state.players[player_id].character_id)
+        player = state.players[player_id]
+        transformed = (player.active_transformation if player.character_id == 'mountain_zuoci'
+                       and 'huashen' not in player.disabled_skills else None)
+        character = self.characters.get(transformed or player.character_id)
         return character.gender if character else None
 
     def allies(self, state, player_id, faction):
@@ -48,14 +79,14 @@ class SkillRegistry:
         if not self.has(state, player_id, 'wusheng'):
             return ()
         return tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, player_id))
-                     if state.cards[cid].color is Color.RED)
+                     if effective_color(state, cid, player_id) is Color.RED)
 
     def emergency_peach_materials(self, state, player_id):
         if not self.has(state, player_id, 'jijiu') or state.current_player_id == player_id:
             return ()
         return tuple(cid for ref, zone in state.zones.items()
                      if ref.player_id == player_id and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
-                     for cid in zone.card_ids if state.cards[cid].color is Color.RED)
+                     for cid in zone.card_ids if effective_color(state, cid, player_id) is Color.RED)
 
 
 class FinishSkillBody:
@@ -68,8 +99,24 @@ class FinishSkillBody:
     def step(self, state, frame):
         actor = frame.action.player_id
         if frame.step_index == 1:
+            if state.players[actor].marks.pop('fangquan_pending', 0):
+                from .mountain import FangquanEndAction
+                frame.step_index = 10
+                return StepResult.push(FangquanEndAction(frame.action.action_id + ':fangquan-end', actor))
+            if (not frame.local.get('benghuai_offered')
+                    and self.skills.has(state, actor, 'benghuai')
+                    and state.players[actor].is_alive):
+                from .forest import BenghuaiAction
+                frame.local['benghuai_offered'] = True
+                frame.step_index = 10
+                return StepResult.push(BenghuaiAction(frame.action.action_id + ':benghuai', actor))
             if self.base is not None:
                 self.base.step(state, frame)
+            if self.skills.has(state, actor, 'jushou') and state.players[actor].is_alive:
+                frame.step_index = 5
+                return StepResult.ask(PendingRequest(frame.action.action_id + ':jushou', actor,
+                    RequestType.YES_NO, '是否发动【据守】摸三张牌并翻面？',
+                    frame.action.action_id, frame.frame_id))
             if not self.skills.has(state, actor, 'biyue') or not state.players[actor].is_alive:
                 return StepResult.complete()
             frame.step_index = 2
@@ -82,6 +129,19 @@ class FinishSkillBody:
                 return StepResult.complete()
             frame.step_index = 3
             return StepResult.push(DrawCardsAction(frame.action.action_id + ':biyue-draw', actor, 1))
+        if frame.step_index == 5:
+            wanted = frame.decision is True
+            frame.decision = None
+            if not wanted:
+                return StepResult.complete()
+            frame.step_index = 6
+            return StepResult.push(DrawCardsAction(frame.action.action_id + ':jushou-draw', actor, 3))
+        if frame.step_index == 6:
+            state.players[actor].face_up = not state.players[actor].face_up
+            return StepResult.complete()
+        if frame.step_index == 10:
+            frame.step_index = 1
+            return StepResult.continue_()
         return StepResult.complete(frame.child_result)
 
 
@@ -94,6 +154,22 @@ class PreparationSkillBody:
         actor = frame.action.player_id
         if not state.players[actor].is_alive:
             return StepResult.complete()
+        if (frame.step_index == 1 and not frame.local.get('baiyin_checked')
+                and self.skills.has(state, actor, 'baoyin')):
+            from .gods import BaiyinAction
+            frame.local['baiyin_checked'] = True
+            frame.step_index = 20
+            return StepResult.push(BaiyinAction(frame.action.action_id + ':baiyin', actor))
+        if frame.step_index == 20:
+            frame.step_index = 1
+            return StepResult.continue_()
+        if (frame.step_index == 1 and not frame.local.get('yinghun_offered')
+                and self.skills.has(state, actor, 'yinghun')
+                and state.players[actor].hp < state.players[actor].max_hp):
+            from .forest import YinghunAction
+            frame.local['yinghun_offered'] = True
+            frame.step_index = 20
+            return StepResult.push(YinghunAction(frame.action.action_id + ':yinghun', actor))
         if self.skills.has(state, actor, 'guanxing'):
             return self._guanxing(state, frame, actor)
         if not self.skills.has(state, actor, 'luoshen') or not state.players[actor].is_alive:
@@ -548,6 +624,12 @@ class QixiUseHandler:
     def __init__(self, skills, moves, recorder, trick_rule):
         self.skills, self.moves, self.recorder, self.trick_rule = skills, moves, recorder, trick_rule
 
+    def targets(self, state, player_id, material_id):
+        from .forest import weimu_blocks
+        return tuple(pid for pid in self.trick_rule.target_candidates(state, player_id)
+                     if not weimu_blocks(state, pid, material_id,
+                         'trick.dismantlement', player_id, self.skills))
+
     def validate_start(self, state, action):
         source = next((ref for ref, zone in state.zones.items()
                        if action.material_id in zone.card_ids), None)
@@ -555,8 +637,8 @@ class QixiUseHandler:
                 or state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY
                 or source is None or source.player_id != action.player_id
                 or source.zone_type not in (ZoneType.HAND, ZoneType.EQUIPMENT)
-                or state.cards[action.material_id].color is not Color.BLACK
-                or not self.trick_rule.target_candidates(state, action.player_id)):
+                or effective_color(state, action.material_id, action.player_id) is not Color.BLACK
+                or not self.targets(state, action.player_id, action.material_id)):
             raise InvalidCardUse('奇袭不可用')
 
     def step(self, state, frame):
@@ -567,12 +649,15 @@ class QixiUseHandler:
             frame.step_index = 1
             return StepResult.ask(PendingRequest(action.action_id + ':target', action.player_id,
                 RequestType.CHOOSE_PLAYER, '奇袭：选择【过河拆桥】目标', action.action_id,
-                frame.frame_id, allowed_player_ids=self.trick_rule.target_candidates(state, action.player_id)))
+                frame.frame_id, allowed_player_ids=self.targets(state, action.player_id,
+                                                                  action.material_id)))
         if frame.step_index == 1:
             target = frame.decision
             frame.decision = None
             self.validate_start(state, action)
             self.trick_rule.validate_targets(state, action.player_id, (target,))
+            if target not in self.targets(state, action.player_id, action.material_id):
+                raise InvalidCardUse('帷幕阻止该奇袭目标')
             source = next(ref for ref, zone in state.zones.items()
                           if action.material_id in zone.card_ids)
             self.moves.move(state, CardMove(action.action_id + ':processing', (action.material_id,),
@@ -608,7 +693,7 @@ class GuoseUseHandler:
                 or state.current_player_id != action.player_id or state.current_phase is not Phase.PLAY
                 or source is None or source.player_id != action.player_id
                 or source.zone_type not in (ZoneType.HAND, ZoneType.EQUIPMENT)
-                or state.cards[action.material_id].suit is not Suit.DIAMOND
+                or effective_suit(state, action.material_id, action.player_id) is not Suit.DIAMOND
                 or not self.trick_rule.target_candidates(state, action.player_id)):
             raise InvalidCardUse('国色不可用')
 
@@ -674,7 +759,9 @@ class LongdanUseHandler:
             frame.decision = None
             self.slash_rule.validate_targets(state, action.player_id, (target,))
             card = state.cards[action.material_id]
-            virtual = VirtualCard('basic.slash', (action.material_id,), card.suit, card.color)
+            virtual = VirtualCard('basic.slash', (action.material_id,),
+                                  effective_suit(state, action.material_id, action.player_id),
+                                  effective_color(state, action.material_id, action.player_id))
             self.moves.move(state, CardMove(action.action_id + ':processing', (action.material_id,),
                 hand, ZoneRef(ZoneType.PROCESSING), CardMoveReason.USE,
                 action.player_id, action.action_id))
@@ -739,7 +826,7 @@ class FanjianHandler:
             self.moves.move(state, CardMove(action.action_id + ':give', (material,), hand,
                 ZoneRef(ZoneType.HAND, target), CardMoveReason.SYSTEM,
                 action.player_id, action.action_id))
-            if state.cards[material].suit.value != guess:
+            if effective_suit(state, material, action.player_id).value != guess:
                 from .military_basics import MilitaryDamageAction
                 frame.step_index = 3
                 return StepResult.push(MilitaryDamageAction(action.action_id + ':damage',
@@ -949,7 +1036,9 @@ class WushengUseHandler:
             target = frame.decision
             self.slash_rule.validate_targets(state, action.player_id, (target,))
             card = state.cards[action.material_id]
-            virtual = VirtualCard('basic.slash', (action.material_id,), card.suit, card.color)
+            virtual = VirtualCard('basic.slash', (action.material_id,),
+                                  effective_suit(state, action.material_id, action.player_id),
+                                  effective_color(state, action.material_id, action.player_id))
             self.moves.move(state, CardMove(action.action_id+':processing', (action.material_id,),
                 ZoneRef(ZoneType.HAND,action.player_id), ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.USE, action.player_id))
@@ -1025,8 +1114,18 @@ class SkillPlayOptions:
                 ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT) and zone.card_ids
                 for ref,zone in state.zones.items()):
             extra.append('skill:zhiheng')
+        if self.skills.has(state, pid, 'jilue') and state.players[pid].marks.get('ren', 0) > 0:
+            if not state.play_usage.count('skill.zhiheng') and materials:
+                extra.append('skill:jilue-zhiheng')
+            if not state.players[pid].marks.get('jilue_wansha'):
+                extra.append('skill:jilue-wansha')
         if self.skills.has(state,pid,'kurou'):
             extra.append('skill:kurou')
+        if self.skills.has(state,pid,'wuwei') and state.players[pid].marks.get('rage', 0) >= 2:
+            extra.append('skill:wuwei')
+        if (self.skills.has(state,pid,'shenfen') and state.players[pid].marks.get('rage', 0) >= 6
+                and not state.play_usage.count('skill.shenfen')):
+            extra.append('skill:shenfen')
         if (self.skills.has(state,pid,'qingnang') and not state.play_usage.count('skill.qingnang') and hand
                 and any(p.is_alive and p.hp < p.max_hp for p in state.players.values())):
             extra.append('skill:qingnang')
@@ -1037,12 +1136,66 @@ class SkillPlayOptions:
         if self.skills.has(state,pid,'qixi'):
             dismantlement = self.validator.rules.get('trick.dismantlement')
             if dismantlement.target_candidates(state,pid):
-                extra.extend(f'virtual:qixi:{cid}' for cid in materials if state.cards[cid].color is Color.BLACK)
+                from .forest import weimu_blocks
+                extra.extend(f'virtual:qixi:{cid}' for cid in materials
+                             if effective_color(state, cid, pid) is Color.BLACK
+                             and any(not weimu_blocks(state, target, cid,
+                                 'trick.dismantlement', pid, self.skills)
+                                 for target in dismantlement.target_candidates(state, pid)))
         if self.skills.has(state,pid,'guose'):
             indulgence = self.validator.rules.get('delayed.indulgence')
             if indulgence.target_candidates(state,pid):
                 extra.extend(f'virtual:guose:{cid}' for cid in materials
-                             if state.cards[cid].suit is Suit.DIAMOND)
+                             if effective_suit(state, cid, pid) is Suit.DIAMOND)
+        if self.skills.has(state, pid, 'duanliang'):
+            from .forest import DuanliangHandler
+            shortage = self.validator.rules.get('delayed.supply_shortage')
+            handler = DuanliangHandler(self.skills, None, None,
+                                      self.validator.definitions, shortage)
+            if handler.available(state, pid):
+                extra.extend(f'virtual:duanliang:{cid}' for cid in handler.materials(state, pid))
+        if self.skills.has(state, pid, 'jixi'):
+            from .mountain import JixiHandler, field_zone
+            handler = JixiHandler(self.skills, None, None, self.validator.rules.get('trick.snatch'))
+            if handler.available(state, pid):
+                extra.extend(f'virtual:jixi:{cid}' for cid in state.cards_in(field_zone(pid)))
+        if self.skills.has(state, pid, 'wushen'):
+            from .gods import WushenHandler
+            handler = WushenHandler(self.skills, None, self.slash_rule)
+            if handler.available(state, pid):
+                extra.extend(f'virtual:wushen:{cid}' for cid in handler.materials(state, pid))
+        if self.skills.has(state, pid, 'tiaoxin'):
+            from .mountain import TiaoxinHandler
+            handler = TiaoxinHandler(self.skills, None, self.slash_rule,
+                                    self.validator.definitions)
+            if handler.available(state, pid):
+                extra.append('skill:tiaoxin')
+        from .mountain import ZhibaHandler
+        if ZhibaHandler(self.skills, None, None).available(state, pid):
+            extra.append('skill:zhiba')
+        from .mountain import ZhijianHandler
+        if ZhijianHandler(self.skills, None, self.validator.definitions).available(state, pid):
+            extra.append('skill:zhijian')
+        from .gods import GongxinHandler
+        if GongxinHandler(self.skills, None).available(state, pid):
+            extra.append('skill:gongxin')
+        from .gods import YeyanHandler
+        if YeyanHandler(self.skills, None).available(state, pid):
+            extra.append('skill:yeyan')
+        if self.skills.has(state, pid, 'dimeng'):
+            from .forest import DimengHandler
+            if DimengHandler(self.skills).available(state, pid):
+                extra.append('skill:dimeng')
+        if self.skills.has(state, pid, 'luanwu'):
+            from .forest import LuanwuHandler
+            if LuanwuHandler(self.skills, self.slash_rule).available(state, pid):
+                extra.append('skill:luanwu')
+        if self.skills.has(state, pid, 'jiuchi'):
+            from .forest import JiuchiHandler
+            wine = self.validator.rules.get('basic.wine')
+            handler = JiuchiHandler(self.skills, None, None, wine)
+            if handler.available(state, pid):
+                extra.extend(f'virtual:jiuchi:{cid}' for cid in handler.materials(state, pid))
         if (self.skills.has(state,pid,'fanjian') and not state.play_usage.count('skill.fanjian')
                 and hand and any(q != pid and p.is_alive for q,p in state.players.items())):
             extra.append('skill:fanjian')
@@ -1052,8 +1205,39 @@ class SkillPlayOptions:
                 and sum(q != pid and p.is_alive and self.skills.gender(state,q) is Gender.MALE
                         for q,p in state.players.items()) >= 2):
             extra.append('skill:lijian')
+        from .wind_lord import huangtian_lord
+        lord = huangtian_lord(state, self.skills)
+        if (lord is not None and lord != pid and self.skills.faction(state, pid) is Kingdom.QUN
+                and not state.play_usage.count('skill.huangtian')
+                and any(state.cards[cid].definition_id in ('basic.dodge', 'delayed.lightning')
+                        for cid in hand)):
+            extra.append('skill:huangtian')
+        if self.skills.has(state, pid, 'guhuo') and hand:
+            from .wind_guhuo import GuhuoHandler
+            if GuhuoHandler(self.skills, self.validator.definitions,
+                            self.validator.rules, None, None).available(state, pid):
+                extra.append('skill:guhuo')
+        from .fire import QiangxiHandler, QuhuHandler, LuanjiHandler
+        if QiangxiHandler(self.skills, None, self.validator.definitions).available(state, pid):
+            extra.append('skill:qiangxi')
+        if QuhuHandler(self.skills, self.validator.definitions).available(state, pid):
+            extra.append('skill:quhu')
+        luanji = LuanjiHandler(self.skills, None, None)
+        if self.skills.has(state, pid, 'luanji'):
+            extra.extend(f'virtual:luanji:{a}:{b}' for a, b in luanji.pairs(state, pid))
+        from .fire import TianyiHandler
+        if TianyiHandler(self.skills).available(state, pid):
+            extra.append('skill:tianyi')
+        from .fire import FireViewAsTrickHandler
+        fire_tricks = FireViewAsTrickHandler(self.skills, None, None, self.validator.rules)
+        if fire_tricks.available(state, pid, 'lianhuan'):
+            extra.extend(f'virtual:lianhuan:{cid}' for cid in fire_tricks.materials(state, pid, 'lianhuan'))
+        if fire_tricks.available(state, pid, 'huoji'):
+            extra.extend(f'virtual:huoji:{cid}' for cid in fire_tricks.materials(state, pid, 'huoji'))
+        if fire_tricks.available(state, pid, 'shuangxiong'):
+            extra.extend(f'virtual:shuangxiong:{cid}' for cid in fire_tricks.materials(state, pid, 'shuangxiong'))
         limit = self.slash_rule.usage_limit(state,pid)
-        slash_available = (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
+        slash_available = self.slash_rule.can_use(state, pid) and (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
         if slash_available:
             extra.extend(f'virtual:wusheng:{cid}' for cid in self.skills.red_slash_materials(state,pid))
             if self.skills.has(state,pid,'longdan'):
@@ -1061,11 +1245,50 @@ class SkillPlayOptions:
                              if state.cards[cid].definition_id == 'basic.dodge')
             if self.skills.has(state,pid,'jijiang') and not state.play_usage.count('skill.jijiang.attempted') and self.skills.allies(state,pid,Kingdom.SHU):
                 extra.append('skill:jijiang')
+        if self.skills.has(state, pid, 'longhun'):
+            from .gods import longhun_materials, LonghunUseHandler
+            handler = LonghunUseHandler(self.skills, None, None, self.slash_rule)
+            for kind, definition_id in (('peach', 'basic.peach'),
+                                        ('fire_slash', 'basic.fire_slash')):
+                for cards in longhun_materials(state, pid, definition_id):
+                    if handler.available(state, pid, definition_id, cards):
+                        extra.append('virtual:longhun:' + kind + ':' + ':'.join(cards))
         return (*ordinary,*extra)
 
     def build_action(self, state, pid, option, aid):
         if option not in self.options(state,pid):
             raise InvalidCardUse('skill option is no longer legal')
+        if option.startswith('skill:jilue-'):
+            from .gods import JiluePlayAction
+            return JiluePlayAction(aid + ':jilue', pid, option.split('-', 1)[1])
+        if option.startswith('virtual:longhun:'):
+            from .gods import LonghunUse
+            parts = option.split(':')
+            definition = ('basic.peach' if parts[2] == 'peach'
+                          else 'basic.fire_slash')
+            return LonghunUse(aid + ':longhun', pid, tuple(parts[3:]), definition)
+        if option.startswith('virtual:lianhuan:'):
+            from .fire import FireViewAsTrick
+            return FireViewAsTrick(aid + ':lianhuan', pid, option.split(':', 2)[2], 'lianhuan')
+        if option.startswith('virtual:huoji:'):
+            from .fire import FireViewAsTrick
+            return FireViewAsTrick(aid + ':huoji', pid, option.split(':', 2)[2], 'huoji')
+        if option.startswith('virtual:shuangxiong:'):
+            from .fire import FireViewAsTrick
+            return FireViewAsTrick(aid + ':shuangxiong', pid, option.split(':', 2)[2], 'shuangxiong')
+        if option == 'skill:qiangxi':
+            from .fire import QiangxiAction
+            return QiangxiAction(aid + ':qiangxi', pid)
+        if option == 'skill:quhu':
+            from .fire import QuhuAction
+            return QuhuAction(aid + ':quhu', pid)
+        if option.startswith('virtual:luanji:'):
+            from .fire import LuanjiAction
+            _, _, first, second = option.split(':', 3)
+            return LuanjiAction(aid + ':luanji', pid, (first, second))
+        if option == 'skill:tianyi':
+            from .fire import TianyiAction
+            return TianyiAction(aid + ':tianyi', pid)
         if option == 'skill:rende':
             return RendeAction(aid+':rende',pid)
         if option == 'skill:zhiheng':
@@ -1074,6 +1297,12 @@ class SkillPlayOptions:
             return JijiangUse(aid+':jijiang',pid)
         if option == 'skill:kurou':
             return KurouAction(aid+':kurou', pid)
+        if option == 'skill:wuwei':
+            from .god_lvbu import WuqianAction
+            return WuqianAction(aid+':wuwei', pid)
+        if option == 'skill:shenfen':
+            from .god_lvbu import ShenfenAction
+            return ShenfenAction(aid+':shenfen', pid)
         if option == 'skill:qingnang':
             return QingnangAction(aid+':qingnang', pid)
         if option == 'skill:jieyin':
@@ -1082,12 +1311,53 @@ class SkillPlayOptions:
             return FanjianAction(aid+':fanjian', pid)
         if option == 'skill:lijian':
             return LijianAction(aid+':lijian', pid)
+        if option == 'skill:dimeng':
+            from .forest import DimengAction
+            return DimengAction(aid + ':dimeng', pid)
+        if option == 'skill:luanwu':
+            from .forest import LuanwuAction
+            return LuanwuAction(aid + ':luanwu', pid)
+        if option.startswith('virtual:jiuchi:'):
+            from .forest import JiuchiUse
+            return JiuchiUse(aid + ':jiuchi', pid, option.split(':', 2)[2])
+        if option == 'skill:huangtian':
+            from .wind_lord import HuangtianAction
+            return HuangtianAction(aid+':huangtian', pid)
+        if option == 'skill:guhuo':
+            from .wind_guhuo import GuhuoAction
+            return GuhuoAction(aid+':guhuo', pid)
         if option.startswith('virtual:wusheng:'):
             return WushengUse(aid+':wusheng',pid,option.split(':',2)[2])
         if option.startswith('virtual:qixi:'):
             return QixiUse(aid+':qixi',pid,option.split(':',2)[2])
         if option.startswith('virtual:guose:'):
             return GuoseUse(aid+':guose',pid,option.split(':',2)[2])
+        if option.startswith('virtual:duanliang:'):
+            from .forest import DuanliangUse
+            return DuanliangUse(aid + ':duanliang', pid, option.split(':', 2)[2])
+        if option.startswith('virtual:jixi:'):
+            from .mountain import JixiUse
+            return JixiUse(aid + ':jixi', pid, option.split(':', 2)[2])
+        if option.startswith('virtual:wushen:'):
+            from .gods import WushenUse
+            return WushenUse(aid + ':wushen', pid, option.split(':', 2)[2])
+        if option == 'skill:tiaoxin':
+            from .mountain import TiaoxinAction
+            return TiaoxinAction(aid + ':tiaoxin', pid)
+        if option == 'skill:zhiba':
+            from .mountain import ZhibaAction
+            return ZhibaAction(aid + ':zhiba', pid)
+        if option == 'skill:zhijian':
+            from .mountain import ZhijianAction
+            return ZhijianAction(aid + ':zhijian', pid)
+        if option == 'skill:gongxin':
+            from .gods import GongxinAction
+            return GongxinAction(aid + ':gongxin', pid)
+        if option == 'skill:yeyan':
+            from .gods import YeyanAction
+            return YeyanAction(aid + ':yeyan', pid)
         if option.startswith('virtual:longdan:'):
             return LongdanUse(aid+':longdan',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)
+
+

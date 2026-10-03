@@ -11,6 +11,7 @@ from .events import EventRecorder, PhaseSkippedEvent, TurnEndedEvent, TurnStarte
 from .phases import PhaseAction
 from .resolution import ResolutionFrame
 from .turn_order import InvalidTurn
+from .requests import PendingRequest, RequestType
 
 
 STANDARD_PHASE_ORDER: tuple[Phase, ...] = (
@@ -27,8 +28,10 @@ class TurnAction(Action):
 
 
 class TurnActionHandler:
-    def __init__(self, recorder: EventRecorder) -> None:
+    def __init__(self, recorder: EventRecorder, before_phase=None, skills=None) -> None:
         self.recorder = recorder
+        self.before_phase = before_phase
+        self.skills = skills
 
     def validate_start(self, state: GameState, action: Action) -> None:
         assert isinstance(action, TurnAction)
@@ -44,24 +47,62 @@ class TurnActionHandler:
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
         assert isinstance(action, TurnAction)
+        if frame.step_index == 9:
+            wanted = frame.decision is True
+            frame.decision = None
+            if wanted and state.players[frame.local['lianpo_actor']].is_alive:
+                from .turn_order import queue_extra_turn
+                queue_extra_turn(state, frame.local['lianpo_actor'])
+            frame.step_index = 1
+            return StepResult.continue_()
         if frame.step_index == 0:
             state.current_player_id = action.player_id
             state.current_phase = None
             state.turn_number += 1
             self.recorder.record(TurnStartedEvent(f"{action.action_id}:start", action.player_id, state.turn_number))
+            if not state.players[action.player_id].face_up:
+                state.players[action.player_id].face_up = True
+                frame.cursor = len(action.phases)
             frame.step_index = 1
             return StepResult.continue_()
         # A player who dies during a phase must not continue the rest of the turn.
         if (frame.cursor == len(action.phases) or state.status is GameStatus.FINISHED
                 or not state.players[action.player_id].is_alive):
+            if self.skills is not None and state.status is not GameStatus.FINISHED:
+                eligible = next((pid for pid in state.seat_order
+                    if state.players[pid].is_alive
+                    and state.players[pid].marks.pop('lianpo_pending', 0)
+                    and self.skills.has(state, pid, 'lianpo')), None)
+                if eligible is not None:
+                    frame.local['lianpo_actor'] = eligible
+                    frame.step_index = 9
+                    return StepResult.ask(PendingRequest(
+                        f'{action.action_id}:lianpo:{eligible}', eligible,
+                        RequestType.YES_NO, '连破：本回合结束后进行一个额外回合？',
+                        action.action_id, frame.frame_id))
             if state.ruleset_id == 'classic-military':
                 state.players[action.player_id].marks.pop('wine', None)
+                state.players[action.player_id].marks.pop('jilue_wansha', None)
+                for key in ('slash_quota_bonus', 'slash_ignore_distance',
+                            'slash_extra_targets', 'slash_prohibited',
+                            'shuangxiong_color'):
+                    state.players[action.player_id].marks.pop(key, None)
+                if state.players[action.player_id].character_id == 'forest_god_lvbu':
+                    state.players[action.player_id].marks.pop('wuwei', None)
+                    for other in state.players.values():
+                        other.marks.pop('wuwei_target_' + action.player_id, None)
             state.current_phase = None
             self.recorder.record(TurnEndedEvent(f"{action.action_id}:end", action.player_id, state.turn_number))
             return StepResult.complete()
         phase = action.phases[frame.cursor]
+        if self.before_phase is not None and frame.local.get('before_phase_cursor') != frame.cursor:
+            frame.local['before_phase_cursor'] = frame.cursor
+            offer = self.before_phase(state, action.player_id, phase,
+                                      f'{action.action_id}:before:{frame.cursor}')
+            if offer is not None:
+                return StepResult.push(offer)
         frame.cursor += 1
-        marked_skip = phase in (Phase.PLAY, Phase.DRAW) and state.players[action.player_id].marks.pop('skip_' + phase.value, 0)
+        marked_skip = state.players[action.player_id].marks.pop('skip_' + phase.value, 0)
         if phase in action.skipped_phases or marked_skip:
             self.recorder.record(PhaseSkippedEvent(f"{action.action_id}:{frame.cursor}:skipped", action.player_id, phase))
             return StepResult.continue_()

@@ -100,9 +100,10 @@ class PlayPhaseBody:
 
 
 class PhaseActionHandler:
-    def __init__(self, bodies: PhaseBodyRegistry, recorder: EventRecorder) -> None:
+    def __init__(self, bodies: PhaseBodyRegistry, recorder: EventRecorder, skills=None) -> None:
         self.bodies = bodies
         self.recorder = recorder
+        self.skills = skills
 
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
@@ -114,14 +115,73 @@ class PhaseActionHandler:
             if state.status is GameStatus.FINISHED or not state.players[action.player_id].is_alive:
                 return StepResult.complete()
             state.current_phase = action.phase
+            if action.phase is Phase.PREPARATION:
+                for player in state.players.values():
+                    player.marks.pop('wind:' + action.player_id, None)
+                    player.marks.pop('fog:' + action.player_id, None)
             if action.phase is Phase.PLAY:
                 state.play_usage = PlayUsageState(action.player_id, state.turn_number)
             self.recorder.record(PhaseStartedEvent(f"{action.action_id}:start", action.player_id, action.phase))
             frame.step_index = 1
             return StepResult.continue_()
         if frame.step_index == 4:
-            self.recorder.record(PhaseEndedEvent(f"{action.action_id}:end", action.player_id, action.phase))
-            state.current_phase = None
+            if (action.phase is Phase.DRAW and self.skills is not None
+                    and not frame.local.get('juejing_drawn')
+                    and self.skills.has(state, action.player_id, 'juejing')
+                    and state.players[action.player_id].is_alive):
+                from .deck import DrawCardsAction
+                frame.local['juejing_drawn'] = True
+                missing = max(0, state.players[action.player_id].max_hp
+                              - state.players[action.player_id].hp)
+                if missing:
+                    return StepResult.push(DrawCardsAction(
+                        f'{action.action_id}:juejing', action.player_id, missing))
+            if (action.phase is Phase.FINISH and self.skills is not None
+                    and not frame.local.get('star_weather_offered')
+                    and self.skills.has(state, action.player_id, 'qixing')
+                    and state.players[action.player_id].is_alive):
+                from .gods import StarWeatherAction
+                frame.local['star_weather_offered'] = True
+                return StepResult.push(StarWeatherAction(
+                    f'{action.action_id}:weather', action.player_id))
+            if (action.phase is Phase.DRAW and self.skills is not None
+                    and not frame.local.get('qixing_exchanged')
+                    and self.skills.has(state, action.player_id, 'qixing')
+                    and state.players[action.player_id].is_alive):
+                from .gods import QixingExchangeAction
+                frame.local['qixing_exchanged'] = True
+                return StepResult.push(QixingExchangeAction(
+                    f'{action.action_id}:qixing', action.player_id))
+            if not frame.local.get('phase_end_recorded'):
+                self.recorder.record(PhaseEndedEvent(f"{action.action_id}:end", action.player_id, action.phase))
+                state.current_phase = None
+                frame.local['phase_end_recorded'] = True
+                if action.phase is Phase.DISCARD and self.skills is not None:
+                    from .events import phase_rule_discards
+                    cards = phase_rule_discards(self.recorder.events, action.action_id, action.player_id)
+                    if self.skills.has(state, action.player_id, 'renjie'):
+                        player = state.players[action.player_id]
+                        player.marks['ren'] = player.marks.get('ren', 0) + len(cards)
+                    if (len(cards) >= 2 and self.skills.has(state, action.player_id, 'qinyin')
+                            and state.players[action.player_id].is_alive):
+                        frame.local['qinyin_pending'] = True
+                    frame.local['guzheng_cards'] = cards
+                    frame.local['guzheng_owners'] = tuple(pid for pid in state.seat_order
+                        if pid != action.player_id and state.players[pid].is_alive
+                        and self.skills.has(state, pid, 'guzheng')) if cards else ()
+                    frame.local['guzheng_cursor'] = 0
+            if frame.local.pop('qinyin_pending', False):
+                from .gods import QinyinAction
+                return StepResult.push(QinyinAction(
+                    f'{action.action_id}:qinyin', action.player_id))
+            owners = frame.local.get('guzheng_owners', ())
+            index = frame.local.get('guzheng_cursor', 0)
+            if index < len(owners):
+                frame.local['guzheng_cursor'] = index + 1
+                from .mountain import GuzhengAction
+                return StepResult.push(GuzhengAction(
+                    f'{action.action_id}:guzheng:{index}', owners[index],
+                    action.player_id, frame.local['guzheng_cards']))
             return StepResult.complete()
         if state.status is GameStatus.FINISHED or not state.players[action.player_id].is_alive:
             frame.step_index = 4
