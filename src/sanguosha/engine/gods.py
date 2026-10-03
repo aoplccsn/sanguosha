@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from sanguosha.model.enums import Phase, Suit
+from sanguosha.model.enums import DamageNature, Phase, Suit
 from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.model.virtual_card import VirtualCard
 
@@ -13,6 +13,8 @@ from .judgment import JudgmentAction, JudgmentPattern
 from .deck import RevealTopCardsAction
 from .recovery import RecoverAction
 from .hp import LoseHpAction
+from .military_basics import MilitaryDamageAction
+from .forced_cards import discardable_cards
 from .military_basics import SlashSequence
 from .requests import PendingRequest, RequestType
 from .suits import effective_color, effective_suit
@@ -345,4 +347,155 @@ class QinyinHandler:
                     frame.action.action_id + f':recover:{frame.cursor}', actor, target, 1))
             return StepResult.push(LoseHpAction(
                 frame.action.action_id + f':lose:{frame.cursor}', target, 1))
+        return StepResult.continue_()
+
+
+@dataclass(frozen=True, slots=True)
+class YeyanAction(Action):
+    player_id: str
+
+
+class YeyanHandler:
+    def __init__(self, skills, moves):
+        self.skills = skills
+        self.moves = moves
+
+    def targets(self, state, actor):
+        return tuple(pid for pid in state.seat_order
+                     if pid != actor and state.players[pid].is_alive)
+
+    def suit_costs(self, state, actor):
+        cards = discardable_cards(state, actor)
+        return {suit: tuple(cid for cid in cards
+                            if effective_suit(state, cid, actor) is suit)
+                for suit in (Suit.HEART, Suit.DIAMOND, Suit.CLUB, Suit.SPADE)}
+
+    def available(self, state, actor):
+        targets = self.targets(state, actor)
+        can_great = all(self.suit_costs(state, actor).values())
+        return (self.skills.has(state, actor, 'yeyan')
+                and state.current_player_id == actor
+                and state.current_phase is Phase.PLAY
+                and state.play_usage is not None
+                and not state.players[actor].marks.get('yeyan_used')
+                and bool(targets) and (len(targets) >= 3 or can_great))
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        if frame.step_index == 0:
+            if not self.available(state, actor):
+                raise InvalidCardUse('业炎当前不可用')
+            frame.step_index = 1
+            modes = (('small',) if len(self.targets(state, actor)) >= 3 else ())
+            if all(self.suit_costs(state, actor).values()):
+                modes += ('great',)
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':mode', actor, RequestType.CHOOSE_OPTION,
+                '业炎：选择小业炎或大业炎', frame.action.action_id,
+                frame.frame_id, choices=modes))
+        if frame.step_index == 1:
+            mode = frame.decision
+            frame.decision = None
+            frame.local['mode'] = mode
+            if mode == 'small':
+                targets = self.targets(state, actor)
+                if len(targets) < 3:
+                    raise InvalidCardUse('小业炎需要三名目标')
+                frame.step_index = 2
+                return StepResult.ask(PendingRequest(
+                    frame.action.action_id + ':small-targets', actor,
+                    RequestType.CHOOSE_PLAYERS, '小业炎：选择三名目标，各造成一点火焰伤害',
+                    frame.action.action_id, frame.frame_id,
+                    allowed_player_ids=targets, min_count=3, max_count=3))
+            if mode != 'great' or not all(self.suit_costs(state, actor).values()):
+                raise InvalidCardUse('大业炎花色代价不足')
+            frame.step_index = 3
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':great-first', actor, RequestType.CHOOSE_PLAYER,
+                '大业炎：选择受到两点火焰伤害的角色',
+                frame.action.action_id, frame.frame_id,
+                allowed_player_ids=self.targets(state, actor)))
+        if frame.step_index == 2:
+            targets = tuple(frame.decision)
+            frame.decision = None
+            if len(set(targets)) != 3 or any(pid not in self.targets(state, actor) for pid in targets):
+                raise InvalidCardUse('小业炎目标不合法')
+            frame.local['damage_targets'] = targets
+            frame.step_index = 8
+        if frame.step_index == 3:
+            first = frame.decision
+            frame.decision = None
+            if first not in self.targets(state, actor):
+                raise InvalidCardUse('大业炎目标不合法')
+            frame.local['first'] = first
+            frame.step_index = 4
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':great-second', actor, RequestType.CHOOSE_PLAYER,
+                '大业炎：选择受到剩余一点火焰伤害的角色',
+                frame.action.action_id, frame.frame_id,
+                allowed_player_ids=self.targets(state, actor)))
+        if frame.step_index == 4:
+            second = frame.decision
+            frame.decision = None
+            if second not in self.targets(state, actor):
+                raise InvalidCardUse('大业炎第二目标不合法')
+            frame.local['damage_targets'] = (frame.local['first'], frame.local['first'], second)
+            frame.local['cost_cards'] = ()
+            frame.local['suit_index'] = 0
+            frame.step_index = 5
+        if frame.step_index == 5:
+            suits = (Suit.HEART, Suit.DIAMOND, Suit.CLUB, Suit.SPADE)
+            index = frame.local['suit_index']
+            if index >= len(suits):
+                frame.step_index = 7
+            else:
+                suit = suits[index]
+                choices = self.suit_costs(state, actor)[suit]
+                if not choices:
+                    raise InvalidCardUse('大业炎花色代价已不可用')
+                frame.step_index = 6
+                return StepResult.ask(PendingRequest(
+                    frame.action.action_id + f':cost:{suit.value}', actor,
+                    RequestType.CHOOSE_CARD, f'大业炎：弃置一张{suit.value}牌',
+                    frame.action.action_id, frame.frame_id,
+                    eligible_card_ids=choices))
+        if frame.step_index == 6:
+            card_id = frame.decision
+            frame.decision = None
+            suits = (Suit.HEART, Suit.DIAMOND, Suit.CLUB, Suit.SPADE)
+            suit = suits[frame.local['suit_index']]
+            if card_id not in self.suit_costs(state, actor)[suit]:
+                raise InvalidCardUse('大业炎花色代价不合法')
+            source = next(ref for ref, zone in state.zones.items()
+                          if ref.player_id == actor and card_id in zone.card_ids)
+            self.moves.move(state, CardMove(
+                frame.action.action_id + f':cost:{suit.value}', (card_id,), source,
+                ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD,
+                actor, frame.action.action_id))
+            frame.local['suit_index'] += 1
+            frame.step_index = 5
+            return StepResult.continue_()
+        if frame.step_index == 7:
+            frame.step_index = 8
+            return StepResult.push(LoseHpAction(
+                frame.action.action_id + ':hp-cost', actor, 3))
+        if frame.step_index == 8:
+            state.players[actor].marks['yeyan_used'] = 1
+            state.play_usage.record('skill.yeyan')
+            frame.step_index = 9
+        if frame.step_index == 9:
+            targets = frame.local['damage_targets']
+            if frame.cursor >= len(targets) or state.status.value == 'finished':
+                return StepResult.complete()
+            target = targets[frame.cursor]
+            frame.cursor += 1
+            amount = 1
+            while frame.cursor < len(targets) and targets[frame.cursor] == target:
+                amount += 1
+                frame.cursor += 1
+            if not state.players[target].is_alive:
+                return StepResult.continue_()
+            return StepResult.push(MilitaryDamageAction(
+                frame.action.action_id + f':fire:{frame.cursor}', actor, target,
+                amount, DamageNature.FIRE))
         return StepResult.continue_()

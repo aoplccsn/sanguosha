@@ -275,12 +275,13 @@ class GameSession:
                 registry.register(HuashenAction, HuashenHandler(skills, rng))
                 registry.register(XinshengAction, XinshengHandler(skills, rng))
                 registry.register(BeigeAction, BeigeHandler(skills, moves))
-                from sanguosha.engine.gods import WushenUse, WushenHandler, WuhunDeathAction, WuhunDeathHandler, ShelieAction, ShelieHandler, GongxinAction, GongxinHandler, QinyinAction, QinyinHandler
+                from sanguosha.engine.gods import WushenUse, WushenHandler, WuhunDeathAction, WuhunDeathHandler, ShelieAction, ShelieHandler, GongxinAction, GongxinHandler, QinyinAction, QinyinHandler, YeyanAction, YeyanHandler
                 registry.register(WushenUse, WushenHandler(skills, moves, slash_rule))
                 registry.register(WuhunDeathAction, WuhunDeathHandler(skills))
                 registry.register(ShelieAction, ShelieHandler(skills, moves))
                 registry.register(GongxinAction, GongxinHandler(skills, moves))
                 registry.register(QinyinAction, QinyinHandler(skills))
+                registry.register(YeyanAction, YeyanHandler(skills, moves))
                 registry.register(BuquAction, BuquHandler(deck, moves))
                 registry.register(LeijiAction, LeijiHandler())
                 from sanguosha.engine.wind_guhuo import GuhuoAction, GuhuoHandler

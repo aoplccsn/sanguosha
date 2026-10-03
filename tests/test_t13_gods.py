@@ -3,7 +3,7 @@
 from dataclasses import replace
 
 from sanguosha.engine.card_moves import CardMove, CardMoveReason
-from sanguosha.engine.gods import WushenUse, WuhunDeathAction, ShelieAction, GongxinAction, QinyinAction
+from sanguosha.engine.gods import WushenUse, WuhunDeathAction, ShelieAction, GongxinAction, QinyinAction, YeyanAction
 from sanguosha.engine.requests import Decision
 from sanguosha.model.enums import Phase, Suit
 from sanguosha.model.usage import PlayUsageState
@@ -104,3 +104,44 @@ def test_qinyin_uses_recover_actions_for_all_living_players():
         request = session.engine.pending_request
         session.engine.submit_decision(Decision(request.request_id, 'p1', choice))
     assert state.players['p2'].hp == state.players['p2'].max_hp
+
+
+def test_yeyan_small_deals_three_fire_damage_through_shared_pipeline():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'fire_god_zhouyu'
+    state.current_player_id = 'p1'
+    state.current_phase = Phase.PLAY
+    state.turn_number = 1
+    state.play_usage = PlayUsageState('p1', 1)
+    before = {pid: state.players[pid].hp for pid in ('p2', 'p3', 'p4')}
+    session.engine.start_action(YeyanAction('yeyan-small', 'p1'))
+    for choice in ('small', ('p2', 'p3', 'p4')):
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, 'p1', choice))
+    assert all(state.players[pid].hp == before[pid] - 1 for pid in before)
+    assert state.players['p1'].marks['yeyan_used'] == 1
+
+
+def test_yeyan_great_pays_four_distinct_suits_and_hp():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    player = state.players['p1']
+    player.character_id = 'fire_god_zhouyu'
+    player.max_hp = 6
+    player.hp = 6
+    state.current_player_id = 'p1'
+    state.current_phase = Phase.PLAY
+    state.turn_number = 1
+    state.play_usage = PlayUsageState('p1', 1)
+    cards = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[:4]
+    suits = (Suit.HEART, Suit.DIAMOND, Suit.CLUB, Suit.SPADE)
+    for cid, suit in zip(cards, suits):
+        state.cards[cid] = replace(state.cards[cid], suit=suit)
+    session.engine.start_action(YeyanAction('yeyan-great', 'p1'))
+    for choice in ('great', 'p2', 'p2', *cards):
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, 'p1', choice))
+    assert player.hp == 3
+    assert state.players['p2'].hp == state.players['p2'].max_hp - 3
+    assert set(cards) <= set(state.cards_in(ZoneRef(ZoneType.DISCARD_PILE)))

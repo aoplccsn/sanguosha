@@ -1166,6 +1166,9 @@ class SkillPlayOptions:
         from .gods import GongxinHandler
         if GongxinHandler(self.skills, None).available(state, pid):
             extra.append('skill:gongxin')
+        from .gods import YeyanHandler
+        if YeyanHandler(self.skills, None).available(state, pid):
+            extra.append('skill:yeyan')
         if self.skills.has(state, pid, 'dimeng'):
             from .forest import DimengHandler
             if DimengHandler(self.skills).available(state, pid):
@@ -1320,6 +1323,9 @@ class SkillPlayOptions:
         if option == 'skill:gongxin':
             from .gods import GongxinAction
             return GongxinAction(aid + ':gongxin', pid)
+        if option == 'skill:yeyan':
+            from .gods import YeyanAction
+            return YeyanAction(aid + ':yeyan', pid)
         if option.startswith('virtual:longdan:'):
             return LongdanUse(aid+':longdan',pid,option.split(':',2)[2])
         return self.base.build_action(state,pid,option,aid)
