@@ -586,3 +586,14 @@ def test_static_god_portraits_are_registered_for_web_and_pyside():
         assert character.metadata['portrait_mode'] == 'static'
         assert QImageReader(str(root / 'assets' / asset)).canRead()
         assert (root / 'web' / 'public' / 'assets' / asset).is_file()
+
+
+def test_ai_priority_does_not_read_hidden_opponent_identity():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    ai = session.ai
+    before = ai._priority(state, 'p1', 'p3')
+    state.players['p3'].identity = Identity.LOYALIST
+    assert ai._priority(state, 'p1', 'p3') == before
+    state.metadata['public_hostility_to_lord'] = {'p3': 2}
+    assert ai._priority(state, 'p1', 'p3') > before

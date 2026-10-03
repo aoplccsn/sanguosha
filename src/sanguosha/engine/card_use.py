@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 
 from sanguosha.model.ids import CardInstanceId, PlayerId
-from sanguosha.model.enums import CardCategory
+from sanguosha.model.enums import CardCategory, Identity
 from sanguosha.model.state import GameState
 from sanguosha.model.zones import ZoneRef, ZoneType
 
@@ -71,10 +71,16 @@ class UseCardActionHandler:
             assert usage is not None
             usage.record(getattr(rule, 'usage_key', state.cards[action.card_id].definition_id))
         self.recorder.record(CardUsedEvent(f"{action.action_id}:used", action.user_id, action.card_id, targets))
+        if (any(state.players[pid].identity is Identity.LORD for pid in targets)
+                and str(state.cards[action.card_id].definition_id) in
+                ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash',
+                 'trick.duel', 'trick.snatch', 'trick.dismantlement')):
+            hostility = state.metadata.setdefault('public_hostility_to_lord', {})
+            hostility[action.user_id] = int(hostility.get(action.user_id, 0)) + 1
         return StepResult.push(effect)
 
-    def _commit_with_jizhi(self, state, frame, action, targets):
-        outcome = self._commit(state, action, targets)
+    def _commit_with_jizhi(self, state, frame, action, targets, committed_effect=None):
+        outcome = StepResult.push(committed_effect) if committed_effect is not None else self._commit(state, action, targets)
         definition = self.validator.definitions.get(state.cards[action.card_id].definition_id)
         native_jizhi = self.skills is not None and self.skills.has(state, action.user_id, 'jizhi')
         jilue_jizhi = (self.skills is not None and self.skills.has(state, action.user_id, 'jilue')
@@ -93,7 +99,9 @@ class UseCardActionHandler:
         definition = self.validator.definitions.get(state.cards[action.card_id].definition_id)
         if (self.skills is not None and self.skills.has(state, action.user_id, 'wumou')
                 and definition.category is CardCategory.TRICK):
+            committed = self._commit(state, action, targets)
             frame.local['wumou_targets'] = tuple(targets)
+            frame.local['wumou_effect'] = committed.child
             frame.step_index = 5
             choices = ('lose_hp', 'rage') if state.players[action.user_id].marks.get('rage', 0) else ('lose_hp',)
             return StepResult.ask(PendingRequest(
@@ -148,9 +156,13 @@ class UseCardActionHandler:
             else:
                 raise InvalidCardUse('无谋代价不合法')
         if frame.step_index in (5, 6):
+            if not state.players[action.user_id].is_alive:
+                frame.step_index = 2
+                return StepResult.continue_()
             frame.step_index = 2
             return self._commit_with_jizhi(state, frame, action,
-                                           frame.local['wumou_targets'])
+                                           frame.local['wumou_targets'],
+                                           frame.local['wumou_effect'])
         if frame.step_index == 3:
             draw = frame.decision is True
             frame.decision = None

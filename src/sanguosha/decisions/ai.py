@@ -15,18 +15,18 @@ class AIDecisionProvider:
 
     def _priority(self, state: GameState, actor: PlayerId, target: PlayerId) -> int:
         role = state.players[actor].identity
-        opponent = state.players[target].identity
+        known_lord = target in state.revealed_identities and state.players[target].identity is Identity.LORD
+        public_hostility = int(state.metadata.get('public_hostility_to_lord', {}).get(target, 0))
         if role is Identity.REBEL:
-            return 100 if opponent is Identity.LORD else -100
-        if role is Identity.LOYALIST:
-            return 100 if opponent is Identity.REBEL else 60 if opponent is Identity.RENEGADE else -100
-        if role is Identity.LORD:
-            return 100 if opponent is Identity.REBEL else 60 if opponent is Identity.RENEGADE else -100
-        # The renegade weakens the leading side, and finishes the lord last.
-        living_rebels = sum(p.is_alive and p.identity is Identity.REBEL for p in state.players.values())
-        if living_rebels:
-            return 100 if opponent is Identity.REBEL else 20 if opponent is Identity.LOYALIST else -50
-        return 100 if opponent is Identity.LORD else 20
+            return 100 if known_lord else -20
+        if role in (Identity.LOYALIST, Identity.LORD):
+            return -100 if known_lord else 20 + 20 * min(public_hostility, 3)
+        # Hidden roles are unknown to the AI. The renegade conserves the lord
+        # until only the two of them remain, using only public seat information.
+        living = sum(player.is_alive for player in state.players.values())
+        if known_lord:
+            return 100 if living == 2 else -20
+        return 20 + 10 * min(public_hostility, 3)
 
     def decide(self, state: GameState, request: PendingRequest) -> Decision:
         player_id = request.player_id
