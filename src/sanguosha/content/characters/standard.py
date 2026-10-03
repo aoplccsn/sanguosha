@@ -83,11 +83,15 @@ assert len({character.id for character in STANDARD_25_GENERAL_POOL}) == 25
 from sanguosha.content.characters.myth import MYTH_40_GENERAL_POOL, MYTH_SKILL_CATALOGUE
 ALL_65_GENERAL_POOL = STANDARD_25_GENERAL_POOL + MYTH_40_GENERAL_POOL
 ALL_SKILL_CATALOGUE = STANDARD_SKILL_CATALOGUE + MYTH_SKILL_CATALOGUE
-PLAYABLE_57_GENERAL_POOL = tuple(c for c in ALL_65_GENERAL_POOL if c.metadata.get("playable", True))
-DISABLED_GOD_POOL = tuple(c for c in ALL_65_GENERAL_POOL if not c.metadata.get("playable", True))
+PLAYABLE_57_GENERAL_POOL = tuple(c for c in ALL_65_GENERAL_POOL if '_god_' not in str(c.id))
+GOD_GENERAL_POOL = tuple(c for c in ALL_65_GENERAL_POOL if '_god_' in str(c.id))
+PLAYABLE_65_GENERAL_POOL = tuple(c for c in ALL_65_GENERAL_POOL if c.metadata.get('playable', True))
+DISABLED_GOD_POOL = tuple(c for c in GOD_GENERAL_POOL if not c.metadata.get('playable', True))
 assert len(ALL_65_GENERAL_POOL) == 65
 assert len({character.id for character in ALL_65_GENERAL_POOL}) == 65
 assert len(PLAYABLE_57_GENERAL_POOL) == 57
-assert len(DISABLED_GOD_POOL) == 8
+assert len(GOD_GENERAL_POOL) == 8
+assert len(PLAYABLE_65_GENERAL_POOL) == 65
+assert not DISABLED_GOD_POOL
 
 

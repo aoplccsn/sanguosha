@@ -64,6 +64,7 @@ class PlayerView:
     special_piles: dict[str, tuple[CardView, ...]] = field(default_factory=dict)
     active_transformation: str = ""
     transformation_pool: tuple[str, ...] = ()
+    revealed_hand: tuple[CardView, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -141,6 +142,10 @@ def project_for_human(
              if ref.zone_type is ZoneType.SPECIAL and ref.player_id == pid and zone.card_ids},
             player.active_transformation or "",
             tuple(player.transformation_pool) if pid == human_id else (),
+            tuple(card_view(cid) for cid in state.cards_in(ZoneRef(ZoneType.HAND, pid)))
+            if (state.metadata.get('gongxin_reveal', {}).get('actor') == human_id
+                and state.metadata.get('gongxin_reveal', {}).get('target') == pid
+                and state.players[human_id].is_alive) else (),
         ))
     hand = tuple(card_view(card_id) for card_id in state.cards_in(ZoneRef(ZoneType.HAND, human_id)))
     discard = state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))

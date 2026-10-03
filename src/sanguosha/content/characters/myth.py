@@ -13,11 +13,10 @@ _F = Gender.FEMALE
 _W, _S, _U, _Q, _GOD = Kingdom.WEI, Kingdom.SHU, Kingdom.WU, Kingdom.QUN, Kingdom.QUN
 
 def _c(cid, name, kingdom, hp, gender, skills):
-    disabled = "_god_" in f"_{cid}_"
     return CharacterDefinition(cid, name, kingdom, hp, gender, tuple(skills), {
         "pack": cid.split("_", 1)[0], "resource_id": f"general.{cid}",
-        "implemented": not disabled, "playable": not disabled,
-        "portrait_mode": "animated" if disabled else "static",
+        "implemented": True, "playable": True,
+        "portrait_mode": "static",
     })
 
 MYTH_CHARACTERS = (
@@ -45,6 +44,10 @@ MYTH_CHARACTERS = (
 
 _NAMES = {
     'kuangbao':'狂暴','wumou':'无谋','wuwei':'无前','shenfen':'神愤','shensu':'神速','jushou':'据守','liegong':'烈弓','kuanggu':'狂骨','tianxiang':'天香','hongyan':'红颜','buqu':'不屈','leiji':'雷击','guidao':'鬼道','huangtian':'黄天','guhuo':'蛊惑',
+    'wushen':'武神','wuhun':'武魂','shelie':'涉猎','gongxin':'攻心',
+    'qinyin':'琴音','yeyan':'业炎','qixing':'七星','kuangfeng':'狂风',
+    'dawu':'大雾','guixin':'归心','feiying':'飞影','juejing':'绝境',
+    'longhun':'龙魂','renjie':'忍戒','baoyin':'拜印','lianpo':'连破',
 }
 _WIND_DESCRIPTIONS = {
     'shensu': '你可跳过判定阶段和摸牌阶段，视为使用一张无距离限制的杀；亦可跳过出牌阶段并弃置一张装备牌，视为使用一张无距离限制的杀。两项可分别发动。',
@@ -144,11 +147,45 @@ _MOUNTAIN_TYPES = {
     'xinsheng': SkillType.TRIGGERED, 'beige': SkillType.TRIGGERED,
     'duanchang': SkillType.LOCKED, 'guanxing': SkillType.TRIGGERED,
 }
+_GOD_DESCRIPTIONS = {
+    'wushen': '锁定技，你的红桃牌可以当无距离限制的杀使用或打出。',
+    'wuhun': '锁定技，你受到伤害后令来源获得等量梦魇；死亡时令梦魇最多者判定，非桃则死亡。',
+    'shelie': '摸牌阶段可改为亮出牌堆顶五张牌，每种花色获得一张，其余弃置。',
+    'gongxin': '出牌阶段限一次，查看一名其他角色手牌，可将其中一张红桃牌弃置或置于牌堆顶。',
+    'qinyin': '弃牌阶段弃置至少两张牌后，可令所有角色各回复或失去一点体力。',
+    'yeyan': '限定技，小业炎对三名角色各造成一点火焰伤害；大业炎弃四种花色各一张并失去三点体力，分配三点火焰伤害。',
+    'qixing': '开局拥有七张星牌；摸牌阶段结束时可将任意张手牌与等量星牌交换。',
+    'kuangfeng': '结束阶段可弃一张星，令一名角色直到你下次准备阶段受到的火焰伤害加一。',
+    'dawu': '结束阶段可弃任意张星，令等量角色直到你下次准备阶段防止非雷电伤害。',
+    'guixin': '每受到一点伤害，可从每名其他角色处获得一张牌，然后将武将牌翻面。',
+    'feiying': '锁定技，其他角色计算与你的距离时加一。',
+    'kuangbao': '锁定技，开局获得两枚怒；每造成或受到一点伤害，获得一枚怒。',
+    'wumou': '锁定技，使用非延时锦囊时弃一枚怒或失去一点体力。',
+    'wuwei': '出牌阶段可弃两枚怒，令一名角色本回合受到你的杀时防具无效，且你获得无双。',
+    'shenfen': '出牌阶段限一次，弃六枚怒，对所有其他角色造成一点伤害，令其弃装备与四张手牌，然后翻面。',
+    'juejing': '锁定技，摸牌阶段额外摸已损失体力值张牌；手牌上限加二。',
+    'longhun': '可将等同于当前体力值的同花色牌分别当桃、火杀、闪或无懈可击使用或打出。',
+    'renjie': '锁定技，每受到一点伤害或在弃牌阶段因规则弃置一张牌，获得一枚忍。',
+    'baoyin': '觉醒技，准备阶段若忍不少于四，减少一点体力上限并获得极略。',
+    'lianpo': '当你于一回合内杀死角色，可在此回合结束后进行一个额外回合。',
+}
+_GOD_TYPES = {
+    'wushen': SkillType.VIEW_AS, 'wuhun': SkillType.LOCKED,
+    'shelie': SkillType.TRIGGERED, 'gongxin': SkillType.ACTIVE,
+    'qinyin': SkillType.TRIGGERED, 'yeyan': SkillType.ACTIVE,
+    'qixing': SkillType.TRIGGERED, 'kuangfeng': SkillType.TRIGGERED,
+    'dawu': SkillType.TRIGGERED, 'guixin': SkillType.TRIGGERED,
+    'feiying': SkillType.LOCKED, 'kuangbao': SkillType.LOCKED,
+    'wumou': SkillType.LOCKED, 'wuwei': SkillType.ACTIVE,
+    'shenfen': SkillType.ACTIVE, 'juejing': SkillType.LOCKED,
+    'longhun': SkillType.VIEW_AS, 'renjie': SkillType.LOCKED,
+    'baoyin': SkillType.TRIGGERED, 'lianpo': SkillType.TRIGGERED,
+}
 MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(
     s, _NAMES.get(s, _FOREST_NAMES.get(s, _MOUNTAIN_NAMES.get(s, s))),
-    _WIND_DESCRIPTIONS.get(s, _FOREST_DESCRIPTIONS.get(s,
-                           _MOUNTAIN_DESCRIPTIONS.get(s, '经典神话再临规则摘要。'))),
-    _WIND_TYPES.get(s, _FOREST_TYPES.get(s, _MOUNTAIN_TYPES.get(s, SkillType.ACTIVE))),
+    _GOD_DESCRIPTIONS.get(s, _WIND_DESCRIPTIONS.get(s, _FOREST_DESCRIPTIONS.get(s,
+                           _MOUNTAIN_DESCRIPTIONS.get(s, '经典神话再临规则摘要。')))),
+    _GOD_TYPES.get(s, _WIND_TYPES.get(s, _FOREST_TYPES.get(s, _MOUNTAIN_TYPES.get(s, SkillType.ACTIVE)))),
     {key: True for key, enabled in (
         ('lord', s in ('huangtian', 'songwei', 'baonue', 'ruoyu', 'zhiba')),
         ('awakening', s in ('zaoxian', 'zhiji', 'hunzi', 'ruoyu', 'baoyin')),

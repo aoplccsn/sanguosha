@@ -261,10 +261,9 @@ class GongxinHandler:
                 raise InvalidCardUse('攻心目标不合法')
             state.play_usage.record('skill.gongxin')
             frame.local['target'] = target
+            state.metadata['gongxin_reveal'] = {'actor': actor, 'target': target}
             heart = tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, target))
                           if effective_suit(state, cid, target) is Suit.HEART)
-            if not heart:
-                return StepResult.complete()
             frame.step_index = 2
             return StepResult.ask(PendingRequest(
                 frame.action.action_id + ':heart', actor, RequestType.CHOOSE_OPTION,
@@ -275,6 +274,7 @@ class GongxinHandler:
             choice = frame.decision
             frame.decision = None
             if choice == 'done':
+                state.metadata.pop('gongxin_reveal', None)
                 return StepResult.complete()
             target = frame.local['target']
             if (choice not in state.cards_in(ZoneRef(ZoneType.HAND, target))
@@ -298,6 +298,7 @@ class GongxinHandler:
             frame.action.action_id + ':move', (card,), ZoneRef(ZoneType.HAND, target),
             destination, CardMoveReason.SYSTEM, actor, frame.action.action_id,
             to_top=mode == 'top'))
+        state.metadata.pop('gongxin_reveal', None)
         return StepResult.complete()
 
 

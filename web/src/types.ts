@@ -89,6 +89,7 @@ export interface PlayerView {
   special_piles?: Record<string, CardView[]>
   active_transformation?: string
   transformation_pool?: string[]
+  revealed_hand?: CardView[]
 }
 
 export interface PortraitState {

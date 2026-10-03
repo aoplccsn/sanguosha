@@ -821,6 +821,9 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             if self.skills is not None:
                 if action.required_definition_id == 'basic.slash':
                     eligible += tuple(f'virtual:wusheng:{cid}' for cid in self.skills.red_slash_materials(state,action.player_id))
+                    if self.skills.has(state, action.player_id, 'wushen'):
+                        eligible += tuple(f'virtual:wushen:{cid}' for cid in hand
+                            if effective_suit(state, cid, action.player_id) is Suit.HEART)
                     if self.skills.has(state,action.player_id,'jijiang') and self.skills.allies(state,action.player_id,Kingdom.SHU):
                         eligible += ('virtual:jijiang',)
                 if action.required_definition_id == 'basic.dodge' and self.skills.has(state,action.player_id,'hujia') and self.skills.allies(state,action.player_id,Kingdom.WEI):
@@ -947,6 +950,26 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 action.player_id, material, action.source_action_id,
                 'trick.nullification', action.response_number, action.response_total))
             self.moves.move(state, CardMove(action.action_id + ':kanpo-discard', (material,),
+                ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
+                CardMoveReason.RESPONSE, action.player_id))
+            return StepResult.complete(virtual)
+        if isinstance(choice, str) and choice.startswith('virtual:wushen:'):
+            material = choice.split(':', 2)[2]
+            if (self.skills is None or not self.skills.has(state, action.player_id, 'wushen')
+                    or action.required_definition_id != 'basic.slash'
+                    or material not in state.cards_in(ZoneRef(ZoneType.HAND, action.player_id))
+                    or effective_suit(state, material, action.player_id) is not Suit.HEART):
+                raise InvalidCardUse('武神响应材料不合法')
+            virtual = VirtualCard('basic.slash', (material,),
+                effective_suit(state, material, action.player_id),
+                effective_color(state, material, action.player_id))
+            self.moves.move(state, CardMove(action.action_id + ':wushen-processing', (material,),
+                ZoneRef(ZoneType.HAND, action.player_id), ZoneRef(ZoneType.PROCESSING),
+                CardMoveReason.RESPONSE, action.player_id))
+            self.recorder.record(CardRespondedEvent(action.action_id + ':wushen-responded',
+                action.player_id, material, action.source_action_id, 'basic.slash',
+                action.response_number, action.response_total))
+            self.moves.move(state, CardMove(action.action_id + ':wushen-discard', (material,),
                 ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE, action.player_id))
             return StepResult.complete(virtual)

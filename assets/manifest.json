@@ -120,5 +120,13 @@
   "general.mountain_sunce": "generals/wu/mountain_sunce.png",
   "general.mountain_zhang_zhaozhang": "generals/wu/mountain_zhang_zhaozhang.png",
   "general.mountain_zuoci": "generals/qun/mountain_zuoci.png",
-  "general.mountain_cai_wenji": "generals/qun/mountain_cai_wenji.png"
+  "general.mountain_cai_wenji": "generals/qun/mountain_cai_wenji.png",
+  "general.wind_god_guanyu": "generals/qun/wind_god_guanyu.png",
+  "general.wind_god_lvmeng": "generals/qun/wind_god_lvmeng.png",
+  "general.fire_god_zhouyu": "generals/qun/fire_god_zhouyu.png",
+  "general.fire_god_zhugeliang": "generals/qun/fire_god_zhugeliang.png",
+  "general.forest_god_caocao": "generals/qun/forest_god_caocao.png",
+  "general.forest_god_lvbu": "generals/qun/forest_god_lvbu.png",
+  "general.mountain_god_zhaoyun": "generals/qun/mountain_god_zhaoyun.png",
+  "general.mountain_god_simayi": "generals/qun/mountain_god_simayi.png"
 }

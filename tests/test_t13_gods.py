@@ -43,6 +43,23 @@ def test_wushen_heart_card_uses_real_slash_pipeline():
     assert card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
 
 
+def test_wushen_heart_card_can_respond_as_slash():
+    from sanguosha.engine.response import RespondWithCardAction
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'wind_god_guanyu'
+    card = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    state.cards[card] = replace(state.cards[card], suit=Suit.HEART,
+                                definition_id='basic.peach')
+    session.engine.start_action(RespondWithCardAction('wushen-response', 'p1',
+                                                      'basic.slash', 'duel'))
+    request = session.engine.pending_request
+    option = f'virtual:wushen:{card}'
+    assert option in request.eligible_card_ids
+    session.engine.submit_decision(Decision(request.request_id, 'p1', option))
+    assert card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+
+
 def test_wuhun_nonpeach_judgment_kills_max_nightmare_target():
     session = GameSession.new_game(military=True, five_generals=True)
     state = session.state
@@ -98,6 +115,29 @@ def test_gongxin_places_selected_heart_on_draw_top():
         session.engine.submit_decision(Decision(request.request_id, 'p1', choice))
     assert state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0] == heart
     assert state.play_usage.count('skill.gongxin') == 1
+
+
+def test_gongxin_private_reveal_survives_reconnect_without_leaking():
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'wind_god_lvmeng'
+    state.current_player_id = 'p1'
+    state.current_phase = Phase.PLAY
+    state.turn_number = 1
+    state.play_usage = PlayUsageState('p1', 1)
+    card = state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))[0]
+    state.cards[card] = replace(state.cards[card], suit=Suit.HEART)
+    session.engine.start_action(GongxinAction('gongxin-privacy', 'p1'))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', 'p2'))
+    restored = restore_session(snapshot_session(session))
+    owner = project_for_human(restored.state, restored.definitions, 'p1', restored.character_names)
+    other = project_for_human(restored.state, restored.definitions, 'p3', restored.character_names)
+    assert card in {view.card_id for view in owner.players[1].revealed_hand}
+    assert not other.players[1].revealed_hand
+    request = restored.engine.pending_request
+    restored.engine.submit_decision(Decision(request.request_id, 'p1', 'done'))
+    assert 'gongxin_reveal' not in restored.state.metadata
 
 
 def test_qinyin_uses_recover_actions_for_all_living_players():
@@ -511,3 +551,38 @@ def test_renjie_counts_only_own_discard_phase_rule_discards():
     session.engine.submit_decision(Decision(request.request_id, 'p1',
         tuple(request.eligible_card_ids[:before - 1])))
     assert player.marks['ren'] == before - 1
+
+
+def test_all_eight_gods_finish_mixed_ai_games():
+    groups = (
+        ('wind_god_guanyu', 'wind_god_lvmeng', 'fire_god_zhouyu',
+         'fire_god_zhugeliang', 'forest_god_caocao'),
+        ('forest_god_lvbu', 'mountain_god_zhaoyun', 'mountain_god_simayi',
+         'wind_god_guanyu', 'fire_god_zhouyu'),
+    )
+    for group in groups:
+        session = GameSession.new_game(military=True, five_generals=True)
+        for pid, character_id in zip(session.state.seat_order, group):
+            player = session.state.players[pid]
+            player.character_id = character_id
+            player.max_hp = session.skills.characters[character_id].max_hp
+            player.hp = player.max_hp
+            if character_id == 'forest_god_lvbu':
+                player.marks['rage'] = 2
+        session.human_id = 'automated'
+        session.pump_until_human_or_end(10000)
+        assert session.state.status.value == 'finished'
+
+
+def test_static_god_portraits_are_registered_for_web_and_pyside():
+    import json
+    from pathlib import Path
+    from PySide6.QtGui import QImageReader
+    from sanguosha.content.characters.standard import GOD_GENERAL_POOL
+    root = Path(__file__).resolve().parents[1]
+    manifest = json.loads((root / 'assets' / 'manifest.json').read_text(encoding='utf-8'))
+    for character in GOD_GENERAL_POOL:
+        asset = manifest[f'general.{character.id}']
+        assert character.metadata['portrait_mode'] == 'static'
+        assert QImageReader(str(root / 'assets' / asset)).canRead()
+        assert (root / 'web' / 'public' / 'assets' / asset).is_file()
