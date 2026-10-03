@@ -68,6 +68,10 @@ class DeathActionHandler:
                 f"{action.action_id}:died", action.target_id, victim.identity, action.killer_id,
             ))
             killer = state.players.get(action.killer_id) if action.killer_id is not None else None
+            if (killer is not None and killer.is_alive and self.skills is not None
+                    and self.skills.has(state, killer.player_id, 'lianpo')
+                    and state.current_player_id is not None):
+                killer.marks['lianpo_pending'] = 1
             if victim.identity is Identity.REBEL and killer is not None and killer.is_alive:
                 frame.step_index = 1
                 return StepResult.push(DrawCardsAction(f"{action.action_id}:reward", action.killer_id, 3))

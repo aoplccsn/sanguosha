@@ -152,6 +152,12 @@ class PreparationSkillBody:
         actor = frame.action.player_id
         if not state.players[actor].is_alive:
             return StepResult.complete()
+        if (frame.step_index == 1 and not frame.local.get('baiyin_checked')
+                and self.skills.has(state, actor, 'baoyin')):
+            from .gods import BaiyinAction
+            frame.local['baiyin_checked'] = True
+            frame.step_index = 20
+            return StepResult.push(BaiyinAction(frame.action.action_id + ':baiyin', actor))
         if frame.step_index == 20:
             frame.step_index = 1
             return StepResult.continue_()

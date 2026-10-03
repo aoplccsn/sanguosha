@@ -156,5 +156,6 @@ MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(
     ) if enabled})
     for c in MYTH_CHARACTERS for s in c.skill_ids) + (
         SkillDefinition('jixi', '急袭', '你可以将一张田当【顺手牵羊】使用。', SkillType.VIEW_AS),
+        SkillDefinition('jilue', '极略', '你可以弃一枚忍标记，发动鬼才、放逐、集智、制衡或完杀对应效果。', SkillType.ACTIVE),
     )
 MYTH_40_GENERAL_POOL = MYTH_CHARACTERS

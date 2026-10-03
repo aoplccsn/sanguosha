@@ -159,6 +159,9 @@ class PhaseActionHandler:
                 if action.phase is Phase.DISCARD and self.skills is not None:
                     from .events import phase_rule_discards
                     cards = phase_rule_discards(self.recorder.events, action.action_id, action.player_id)
+                    if self.skills.has(state, action.player_id, 'renjie'):
+                        player = state.players[action.player_id]
+                        player.marks['ren'] = player.marks.get('ren', 0) + len(cards)
                     if (len(cards) >= 2 and self.skills.has(state, action.player_id, 'qinyin')
                             and state.players[action.player_id].is_alive):
                         frame.local['qinyin_pending'] = True

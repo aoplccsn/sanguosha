@@ -113,6 +113,8 @@ class MilitaryDamageHandler(DamageActionHandler):
             frame.local['chain'] = '|'.join(chain)
             self.recorder.record(BeforeDamageEvent(action.action_id + ':before', action.source_id, action.target_id, amount))
             target.hp -= amount
+            if self.skills is not None and self.skills.has(state, action.target_id, 'renjie'):
+                target.marks['ren'] = target.marks.get('ren', 0) + amount
             self.recorder.record(DamageDealtEvent(action.action_id + ':dealt', action.source_id, action.target_id, amount, target.hp))
             from .god_lvbu import grant_rage_on_damage
             grant_rage_on_damage(state, action.source_id, action.target_id, amount)

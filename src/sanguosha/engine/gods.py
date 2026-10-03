@@ -14,6 +14,7 @@ from .judgment import JudgmentAction, JudgmentPattern
 from .deck import RevealTopCardsAction
 from .recovery import RecoverAction
 from .hp import LoseHpAction
+from .hp import LoseMaxHpAction
 from .military_basics import MilitaryDamageAction
 from .forced_cards import discardable_cards
 from .military_basics import SlashSequence
@@ -805,3 +806,29 @@ class StarWeatherHandler:
         frame.local[frame.local['mode'] + '_used'] = True
         frame.step_index = 0
         return StepResult.continue_()
+
+
+@dataclass(frozen=True, slots=True)
+class BaiyinAction(Action):
+    player_id: str
+
+
+class BaiyinHandler:
+    def __init__(self, skills):
+        self.skills = skills
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        player = state.players[actor]
+        if frame.step_index == 0:
+            if (not player.is_alive or not self.skills.has(state, actor, 'baoyin')
+                    or player.marks.get('awakened_baiyin')
+                    or player.marks.get('ren', 0) < 4):
+                return StepResult.complete(False)
+            player.marks['awakened_baiyin'] = 1
+            frame.step_index = 1
+            return StepResult.push(LoseMaxHpAction(
+                frame.action.action_id + ':max-hp', actor, 1))
+        if player.is_alive:
+            player.granted_skills['jilue'] = 'baoyin'
+        return StepResult.complete(player.is_alive)

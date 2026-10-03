@@ -349,3 +349,41 @@ def test_longhun_peach_is_offered_and_recovers():
     session.engine.start_action(LonghunUse('longhun-peach', 'p1', (card,), 'basic.peach'))
     assert state.players['p1'].hp == 2
     assert card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+
+
+def test_renjie_marks_damage_and_baiyin_awakens_once():
+    from sanguosha.engine.military_basics import MilitaryDamageAction
+    from sanguosha.engine.gods import BaiyinAction
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    player = state.players['p1']
+    player.character_id = 'mountain_god_simayi'
+    session.engine.start_action(MilitaryDamageAction('renjie-damage', 'p2', 'p1', 2))
+    while session.engine.pending_request is not None:
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, request.player_id,
+                                                request.timeout_value()))
+    assert player.marks['ren'] == 2
+    player.marks['ren'] = 4
+    maximum = player.max_hp
+    session.engine.start_action(BaiyinAction('baiyin', 'p1'))
+    assert player.max_hp == maximum - 1
+    assert player.granted_skills['jilue'] == 'baoyin'
+    session.engine.start_action(BaiyinAction('baiyin-again', 'p1'))
+    assert player.max_hp == maximum - 1
+
+
+def test_lianpo_offers_extra_turn_after_kill_at_turn_end():
+    from sanguosha.engine.death import DeathAction
+    from sanguosha.engine.turns import TurnAction
+    session = GameSession.new_game(military=True, five_generals=True)
+    state = session.state
+    state.players['p1'].character_id = 'mountain_god_simayi'
+    state.current_player_id = 'p1'
+    session.engine.start_action(DeathAction('lianpo-kill', 'p3', 'p1'))
+    assert state.players['p1'].marks['lianpo_pending'] == 1
+    session.engine.start_action(TurnAction('lianpo-turn', 'p1', (Phase.PREPARATION,)))
+    request = session.engine.pending_request
+    assert request is not None and request.player_id == 'p1'
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    assert state.extra_turn_queue == ['p1']
