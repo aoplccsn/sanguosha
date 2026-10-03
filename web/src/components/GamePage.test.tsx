@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GamePage, ResultOverlay, portraitState } from './GamePage'
 
+vi.mock('../idlePortraits', () => ({ idlePortrait: (id: string) => id.includes('god_') || id === 'wind_zhang_jiao' ? { video: '/test-idle.mp4' } : undefined }))
+
 const submitDecision = vi.fn()
 const returnHome = vi.fn()
 let request: any
@@ -162,5 +164,30 @@ describe('ResultOverlay', () => {
   it('shows defeat when the server winning side differs from the player identity', () => {
     render(<ResultOverlay result="反贼胜利" identity="主公" onHome={returnHome} onReplay={vi.fn()} />)
     expect(screen.getByRole('heading', { name: '败北' })).toBeInTheDocument()
+  })
+})
+
+describe('T15 dynamic target interaction', () => {
+  it('selects immediately on the first portrait click with multiple dynamic panels', async () => {
+    const originals = players.map(p => p.character_id)
+    players[0].character_id = 'wind_zhang_jiao'
+    players[1].character_id = 'forest_god_lvbu'
+    players[2].character_id = 'wind_god_guanyu'
+    players[3].character_id = 'fire_god_zhouyu'
+    players[4].character_id = 'mountain_god_zhaoyun'
+    request = { request_id: 't15-target', player_id: 'p1', request_type: 'choose_option', prompt: 'Choose a play action or end the play phase', choices: ['use:slash-1', 'end_play_phase'], allowed_player_ids: [], eligible_card_ids: [], allow_pass: false, min_count: 0, max_count: 0, remaining_ms: 60000, play_card_targets: { 'use:slash-1': { targets: ['p2'], min: 1, max: 1 } } }
+    Object.defineProperty(HTMLMediaElement.prototype, 'play', { configurable: true, value: vi.fn(() => Promise.resolve()) })
+    Object.defineProperty(HTMLMediaElement.prototype, 'pause', { configurable: true, value: vi.fn() })
+    vi.stubGlobal('IntersectionObserver', undefined)
+    try {
+      const { container } = render(<GamePage />)
+      expect(container.querySelectorAll('video')).toHaveLength(5)
+      await userEvent.click(screen.getByRole('button', { name: /杀/ }))
+      const panel = container.querySelector('[data-player-id="p2"]')!
+      await userEvent.click(panel.querySelector('.portrait-button')!)
+      expect(panel).toHaveClass('selected-target')
+      expect(container.querySelector('.game-general-detail')).toBeNull()
+      expect(screen.getByRole('button', { name: '确定' })).toBeEnabled()
+    } finally { players.forEach((p, i) => p.character_id = originals[i]); vi.unstubAllGlobals() }
   })
 })

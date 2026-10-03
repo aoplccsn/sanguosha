@@ -522,3 +522,11 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .god-cinematic-blade-outer { stroke: #6d261f; stroke-width: 25; opacity: .62; }
 .god-cinematic-blade-core { stroke: #bb7951; stroke-width: 10; }
 .god-cinematic-blade-edge { stroke: #fff6df; stroke-width: 3; }
+
+/* Native idle media stays inside the existing portrait content layer. */
+.dynamic-portrait { display: block; position: relative; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+.dynamic-portrait > img, .dynamic-portrait > video { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.dynamic-portrait > video { position: absolute; inset: 0; }
+.game-general-detail > .dynamic-portrait { height: 360px; max-height: 430px; border: 2px solid #74502c; }
+.player-panel.face-down .dynamic-portrait > video { filter: brightness(.48) saturate(.35); transform: scaleX(-1); }
+@media (max-width: 720px) { .game-general-detail > .dynamic-portrait { height: 240px; } }

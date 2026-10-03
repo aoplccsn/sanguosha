@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body><div id="root"></div>
+<script type="module">
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import { GamePage } from '/src/components/GamePage.tsx'
+import '/src/styles.css'
+const ids = ['wind_zhang_jiao', 'forest_god_lvbu', 'wind_god_guanyu', 'fire_god_zhouyu', 'mountain_god_zhaoyun']
+const names = ['张角', '神吕布', '神关羽', '神周瑜', '神赵云']
+window.__t15DynamicIds = new URLSearchParams(location.search).has('single') ? ['forest_god_lvbu'] : ids
+window.__t15State = {
+  seatId: 'p1', connection: 'connected', decisionProcessing: null, requestEpoch: 0,
+  projection: {
+    players: ids.map((id,i) => ({player_id:'p'+(i+1), name:'玩家'+(i+1), character_id:id, character_name:names[i], identity_label:i===0?'主公':'未知', hp:4,max_hp:4,hand_count:4,alive:true,active:i===0,faction:'群',chained:false,equipment:[],judgments:[],attack_range:1,effective_distance:1,skill_labels:['技能']})),
+    hand:[{card_id:'slash-1',name:'杀',suit:'♠',rank:'7',definition_id:'basic.slash',category:'basic',equipment_slot:'',details:''}],
+    current_phase:'play',turn_number:1,deck_count:120,discard_count:5,result:null,discard_top:null,shared_cards:[]
+  },
+  pendingRequest:{request_id:'t15',player_id:'p1',request_type:'choose_option',prompt:'Choose a play action or end the play phase',choices:['use:slash-1','end_play_phase'],allowed_player_ids:[],eligible_card_ids:[],allow_pass:false,min_count:0,max_count:0,remaining_ms:60000,play_card_targets:{'use:slash-1':{targets:['p2'],min:1,max:1}}},
+  generals:{},publicEvents:[],result:null,error:''
+}
+// A synthetic browser-recorded WebM exercises native playback only. It is never
+// registered/copied as production artwork or used for character visual acceptance.
+if (!new URLSearchParams(location.search).has('missing')) {
+  const canvas=document.createElement('canvas'); canvas.width=160; canvas.height=240
+  const stream=canvas.captureStream(24), recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp8'})
+  const chunks=[]
+  recorder.ondataavailable=e=>chunks.push(e.data)
+  const stopped=new Promise(resolve=>recorder.onstop=resolve)
+  recorder.start()
+  for(let i=0;i<8;i++) { const ctx=canvas.getContext('2d');ctx.fillStyle=i%2?'#8b6940':'#74502c';ctx.fillRect(0,0,160,240);await new Promise(resolve=>setTimeout(resolve,45)) }
+  recorder.stop();await stopped;stream.getTracks().forEach(t=>t.stop())
+  window.__t15VideoUrl=URL.createObjectURL(new Blob(chunks,{type:'video/webm'}))
+} else window.__t15VideoUrl='/missing-runtime.mp4'
+const root=createRoot(document.getElementById('root'))
+window.__t15Render=()=>root.render(React.createElement(GamePage))
+window.__t15Render()
+</script></body></html>

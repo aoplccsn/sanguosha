@@ -3,6 +3,8 @@ import type { CardView, GeneralInfo, PendingRequest, PlayerView, Projection, Pub
 import { useGame } from '../state/GameContext'
 import { cardImage, defaultCardImage, defaultGeneralPortrait, generalPortrait } from '../assets'
 import { Timer } from './Timer'
+import { DynamicPortrait } from './DynamicPortrait'
+import { idlePortrait } from '../idlePortraits'
 import { markLabel, skillTypeLabel } from '../labels'
 import { CombatVFXLayer } from './CombatVFXLayer'
 import type { GodPortraitMode } from './GodPortrait'
@@ -40,7 +42,7 @@ export function portraitState(player: PlayerView, selected: boolean, selectable:
     judgment: false }
 }
 
-function PlayerPanel({ player, position, selected, selectable, responding, eventKind, eventCue, godCue, vfxQuality, onSelect, onDetail }: {
+export function PlayerPanel({ player, position, selected, selectable, responding, eventKind, eventCue, godCue, vfxQuality, onSelect, onDetail }: {
   player: PlayerView
   position: string
   selected: boolean
@@ -72,8 +74,8 @@ function PlayerPanel({ player, position, selected, selectable, responding, event
     + (eventKind?.includes('Recover') ? ' healing-flash' : '')
     + (!player.alive ? ' dead' : '')
   return <article data-player-id={player.player_id} className={classes} onClick={selectable ? onSelect : undefined}>
-    <button className="portrait-button" onClick={(event) => { event.stopPropagation(); onDetail() }} aria-label={'查看' + player.character_name + '详情'}>
-      <img src={portraitFor(player, state.generals)} onError={(event) => { event.currentTarget.src = defaultGeneralPortrait }} alt={player.character_name} />
+    <button className="portrait-button" onClick={(event) => { event.stopPropagation(); if (selectable) onSelect(); else onDetail() }} aria-label={'查看' + player.character_name + '详情'}>
+      <DynamicPortrait staticPortrait={portraitFor(player, state.generals)} idleVideo={idlePortrait(player.character_id)?.video} objectPosition={idlePortrait(player.character_id)?.objectPosition} name={player.character_name} quality={vfxQuality} />
       {portrait.faceDown && <span className="face-down-mark">翻面</span>}
       {player.chained && <span className="chain-mark">锁</span>}
     </button>
@@ -209,10 +211,10 @@ function DecisionPrompt({ request, projection, canConfirm, processing, summary, 
   </section>
 }
 
-function GeneralDetailPanel({ player, general, quality, onClose }: { player: PlayerView; general?: GeneralInfo; quality: VfxQuality; onClose(): void }) {
+export function GeneralDetailPanel({ player, general, quality, onClose }: { player: PlayerView; general?: GeneralInfo; quality: VfxQuality; onClose(): void }) {
   return <div className="modal-backdrop" onClick={onClose}><aside className="game-general-detail paper-panel" onClick={(event) => event.stopPropagation()}>
     <button className="modal-close" onClick={onClose}>×</button>
-    <img src={generalPortrait(player.character_id, general?.kingdom ?? ({ 魏: 'wei', 蜀: 'shu', 吴: 'wu', 群: 'qun' } as Record<string, string>)[player.faction] ?? 'qun', general ? { [general.id]: general } : {})} onError={(event) => { event.currentTarget.src = defaultGeneralPortrait }} alt={player.character_name} />
+    <DynamicPortrait staticPortrait={generalPortrait(player.character_id, general?.kingdom ?? ({ 魏: 'wei', 蜀: 'shu', 吴: 'wu', 群: 'qun' } as Record<string, string>)[player.faction] ?? 'qun', general ? { [general.id]: general } : {})} idleVideo={idlePortrait(player.character_id)?.video} objectPosition={idlePortrait(player.character_id)?.objectPosition} name={player.character_name} quality={quality} />
     <div><p className="eyebrow">武将详情</p><h2>{player.character_name}<span>{player.faction}</span></h2><p>{player.hp} / {player.max_hp} 体力 · {player.identity_label}</p>
       {(general?.skills ?? []).map((skill) => <section key={skill.id}><h3>{skill.name}<em>{skillTypeLabel(skill.type)}</em></h3><p>{skill.description}</p>{skill.type === 'lord' && player.identity_label !== '主公' && <small>当前身份未启用</small>}</section>)}
       {!general && player.skill_labels.map((skill) => <section key={skill}><h3>{skill}</h3><p>详细说明可在武将目录载入后查看。</p></section>)}

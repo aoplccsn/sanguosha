@@ -11,10 +11,30 @@ TARGET = ROOT / 'web' / 'public' / 'assets'
 
 PRODUCTION = '--production' in sys.argv
 
+# Only explicitly registered cleaned runtime videos can enter public/dist.
+idle_manifest = json.loads((SOURCE / 'idle_portraits.json').read_text(encoding='utf-8'))
+runtime_videos = set()
+for entry in idle_manifest.values():
+    url = entry['video']
+    if not url.startswith('/assets/portraits/idle/') or not url.endswith('.mp4'):
+        raise ValueError(f'Invalid idle runtime URL: {url}')
+    path = (SOURCE / url.removeprefix('/assets/')).resolve()
+    if not path.is_relative_to((SOURCE / 'portraits' / 'idle').resolve()) or not path.is_file():
+        raise ValueError(f'Missing or unsafe idle runtime video: {url}')
+    runtime_videos.add(path)
+
+def development_ignore(directory, names):
+    ignored = set(shutil.ignore_patterns('source_art', '*.py', '*.qss')(directory, names))
+    for name in names:
+        path = Path(directory) / name
+        if path.suffix.lower() in {'.mp4', '.mov', '.webm'} and path.resolve() not in runtime_videos:
+            ignored.add(name)
+    return ignored
+
 if not PRODUCTION:
     if TARGET.exists():
         shutil.rmtree(TARGET)
-    shutil.copytree(SOURCE, TARGET, ignore=shutil.ignore_patterns('source_art', '*.py', '*.qss'))
+    shutil.copytree(SOURCE, TARGET, ignore=development_ignore)
 else:
     from PIL import Image
 
@@ -42,6 +62,8 @@ else:
         relative = source.relative_to(SOURCE)
         if ('source_art' in relative.parts or relative.parts[0] == 'gods'
                 or source.suffix.lower() in {'.py', '.qss', '.gitkeep'}):
+            continue
+        if source.suffix.lower() in {'.mp4', '.mov', '.webm'} and source.resolve() not in runtime_videos:
             continue
         group = relative.parts[0]
         if source in undersized_webp:

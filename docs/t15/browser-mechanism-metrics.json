@@ -1,0 +1,63 @@
+{
+  "fixture": "synthetic 160x240 WebM; final MP4 artwork not available",
+  "loop": {
+    "wraps": 3,
+    "before": {
+      "x": 100.59375,
+      "y": 119,
+      "width": 68,
+      "height": 90,
+      "top": 119,
+      "right": 168.59375,
+      "bottom": 209,
+      "left": 100.59375
+    },
+    "after": {
+      "x": 100.59375,
+      "y": 119,
+      "width": 68,
+      "height": 90,
+      "top": 119,
+      "right": 168.59375,
+      "bottom": 209,
+      "left": 100.59375
+    }
+  },
+  "playback": [
+    {
+      "width": 160,
+      "height": 240,
+      "total": 40,
+      "dropped": 4,
+      "paused": false
+    },
+    {
+      "width": 160,
+      "height": 240,
+      "total": 40,
+      "dropped": 4,
+      "paused": false
+    },
+    {
+      "width": 160,
+      "height": 240,
+      "total": 40,
+      "dropped": 4,
+      "paused": false
+    },
+    {
+      "width": 160,
+      "height": 240,
+      "total": 40,
+      "dropped": 4,
+      "paused": false
+    },
+    {
+      "width": 160,
+      "height": 240,
+      "total": 40,
+      "dropped": 4,
+      "paused": false
+    }
+  ]
+}
