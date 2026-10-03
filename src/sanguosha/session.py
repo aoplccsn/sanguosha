@@ -131,6 +131,14 @@ class GameSession:
         deck = DeckService(rng, moves)
         for pid in ids:
             deck.draw(state, pid, 4, f"initial-deal:{pid}")
+            if skills is not None and skills.has(state, pid, 'qixing'):
+                from sanguosha.engine.card_moves import CardMove, CardMoveReason
+                from sanguosha.model.zones import ZoneRef, ZoneType
+                deck.draw(state, pid, 7, f'initial-stars:{pid}')
+                stars = state.cards_in(ZoneRef(ZoneType.HAND, pid))[-7:]
+                moves.move(state, CardMove(f'initial-stars:{pid}:store', stars,
+                    ZoneRef(ZoneType.HAND, pid), ZoneRef(ZoneType.SPECIAL, pid, special_key='star'),
+                    CardMoveReason.SYSTEM, pid))
         definitions = CardDefinitionRegistry()
         card_rules = CardRuleRegistry()
         register_basic_cards(definitions, card_rules)
@@ -275,7 +283,7 @@ class GameSession:
                 registry.register(HuashenAction, HuashenHandler(skills, rng))
                 registry.register(XinshengAction, XinshengHandler(skills, rng))
                 registry.register(BeigeAction, BeigeHandler(skills, moves))
-                from sanguosha.engine.gods import WushenUse, WushenHandler, WuhunDeathAction, WuhunDeathHandler, ShelieAction, ShelieHandler, GongxinAction, GongxinHandler, QinyinAction, QinyinHandler, YeyanAction, YeyanHandler, GuixinAction, GuixinHandler
+                from sanguosha.engine.gods import WushenUse, WushenHandler, WuhunDeathAction, WuhunDeathHandler, ShelieAction, ShelieHandler, GongxinAction, GongxinHandler, QinyinAction, QinyinHandler, YeyanAction, YeyanHandler, GuixinAction, GuixinHandler, QixingExchangeAction, QixingExchangeHandler
                 registry.register(WushenUse, WushenHandler(skills, moves, slash_rule))
                 registry.register(WuhunDeathAction, WuhunDeathHandler(skills))
                 registry.register(ShelieAction, ShelieHandler(skills, moves))
@@ -283,6 +291,7 @@ class GameSession:
                 registry.register(QinyinAction, QinyinHandler(skills))
                 registry.register(YeyanAction, YeyanHandler(skills, moves))
                 registry.register(GuixinAction, GuixinHandler(skills, moves))
+                registry.register(QixingExchangeAction, QixingExchangeHandler(skills, moves))
                 registry.register(BuquAction, BuquHandler(deck, moves))
                 registry.register(LeijiAction, LeijiHandler())
                 from sanguosha.engine.wind_guhuo import GuhuoAction, GuhuoHandler

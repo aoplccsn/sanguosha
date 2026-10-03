@@ -121,6 +121,14 @@ class PhaseActionHandler:
             frame.step_index = 1
             return StepResult.continue_()
         if frame.step_index == 4:
+            if (action.phase is Phase.DRAW and self.skills is not None
+                    and not frame.local.get('qixing_exchanged')
+                    and self.skills.has(state, action.player_id, 'qixing')
+                    and state.players[action.player_id].is_alive):
+                from .gods import QixingExchangeAction
+                frame.local['qixing_exchanged'] = True
+                return StepResult.push(QixingExchangeAction(
+                    f'{action.action_id}:qixing', action.player_id))
             if not frame.local.get('phase_end_recorded'):
                 self.recorder.record(PhaseEndedEvent(f"{action.action_id}:end", action.player_id, action.phase))
                 state.current_phase = None

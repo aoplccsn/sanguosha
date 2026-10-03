@@ -131,7 +131,8 @@ def project_for_human(
             if player.character_id in skills.characters else (),
             player.face_up, dict(player.marks),
             {ref.special_key: tuple(
-                card_view(cid) if (not ref.special_key.startswith('committed:')
+                card_view(cid) if ((not ref.special_key.startswith('committed:')
+                    and ref.special_key != 'star')
                     or pid == human_id
                     or state.metadata.get('revealed_committed', {}).get(cid))
                 else CardView('hidden:' + ref.special_key, '未知扣置牌', '', '')

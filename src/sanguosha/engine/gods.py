@@ -572,3 +572,59 @@ class GuixinHandler:
             frame.step_index = 5
             return StepResult.push(TurnoverAction(frame.action.action_id + ':turnover', actor))
         return StepResult.complete()
+
+
+def star_zone(player_id):
+    return ZoneRef(ZoneType.SPECIAL, player_id, special_key='star')
+
+
+@dataclass(frozen=True, slots=True)
+class QixingExchangeAction(Action):
+    player_id: str
+
+
+class QixingExchangeHandler:
+    def __init__(self, skills, moves):
+        self.skills, self.moves = skills, moves
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        hand = ZoneRef(ZoneType.HAND, actor)
+        stars = star_zone(actor)
+        if frame.step_index == 0:
+            if not self.skills.has(state, actor, 'qixing') or not state.cards_in(stars):
+                return StepResult.complete()
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':hand', actor, RequestType.CHOOSE_CARDS,
+                '七星：选择要与星交换的手牌，可不交换',
+                frame.action.action_id, frame.frame_id,
+                eligible_card_ids=state.cards_in(hand), min_count=0,
+                max_count=min(len(state.cards_in(hand)), len(state.cards_in(stars)))))
+        if frame.step_index == 1:
+            selected = tuple(frame.decision)
+            frame.decision = None
+            if not selected:
+                return StepResult.complete()
+            if len(set(selected)) != len(selected) or any(cid not in state.cards_in(hand) for cid in selected):
+                raise InvalidCardUse('七星手牌选择不合法')
+            frame.local['hand_cards'] = selected
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':stars', actor, RequestType.CHOOSE_CARDS,
+                '七星：选择等量的星牌换入手牌',
+                frame.action.action_id, frame.frame_id,
+                eligible_card_ids=state.cards_in(stars),
+                min_count=len(selected), max_count=len(selected)))
+        selected_stars = tuple(frame.decision)
+        selected_hand = frame.local['hand_cards']
+        frame.decision = None
+        if (len(selected_stars) != len(selected_hand) or len(set(selected_stars)) != len(selected_stars)
+                or any(cid not in state.cards_in(stars) for cid in selected_stars)
+                or any(cid not in state.cards_in(hand) for cid in selected_hand)):
+            raise InvalidCardUse('七星交换牌已失效')
+        self.moves.move(state, CardMove(frame.action.action_id + ':out', selected_hand,
+            hand, stars, CardMoveReason.SYSTEM, actor, frame.action.action_id))
+        self.moves.move(state, CardMove(frame.action.action_id + ':in', selected_stars,
+            stars, hand, CardMoveReason.SYSTEM, actor, frame.action.action_id))
+        return StepResult.complete()

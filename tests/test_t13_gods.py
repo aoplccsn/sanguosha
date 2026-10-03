@@ -5,6 +5,11 @@ from dataclasses import replace
 from sanguosha.engine.card_moves import CardMove, CardMoveReason
 from sanguosha.engine.gods import WushenUse, WuhunDeathAction, ShelieAction, GongxinAction, QinyinAction, YeyanAction, GuixinAction
 from sanguosha.engine.distance import DistanceSystem
+from sanguosha.engine.gods import QixingExchangeAction, star_zone
+from sanguosha.engine.rng import PythonRandomSource
+from sanguosha.pregame import Pregame, SetupStage
+from sanguosha.projection import project_for_human
+from sanguosha.model.enums import Identity
 from sanguosha.engine.requests import Decision
 from sanguosha.model.enums import Phase, Suit
 from sanguosha.model.usage import PlayUsageState
@@ -191,3 +196,30 @@ def test_guixin_triggers_once_per_damage_point():
         session.engine.submit_decision(Decision(request.request_id, request.player_id, choice))
     assert offers == 2
     assert state.players['p1'].hp == 3
+
+
+def test_qixing_initial_stars_private_and_exchange_reconnect_safe():
+    ids = tuple(f'p{i}' for i in range(1, 6))
+    setup = Pregame(PythonRandomSource(9), dict(zip(ids,
+        (Identity.LORD, Identity.LOYALIST, Identity.REBEL,
+         Identity.REBEL, Identity.RENEGADE))), (), stage=SetupStage.COMPLETE,
+        generals=dict(zip(ids, ('fire_god_zhugeliang', 'caocao', 'liubei',
+                                 'sunquan', 'guanyu'))))
+    session = GameSession.new_game(military=True, setup=setup)
+    state = session.state
+    stars = state.cards_in(star_zone('p1'))
+    assert len(stars) == 7
+    assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == 4
+    owner = project_for_human(state, session.definitions, 'p1', session.character_names)
+    other = project_for_human(state, session.definitions, 'p2', session.character_names)
+    assert owner.players[0].special_piles['star'][0].card_id == stars[0]
+    assert all(card.card_id != star for card in other.players[0].special_piles['star'] for star in stars)
+    hand = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
+    session.engine.start_action(QixingExchangeAction('qixing', 'p1'))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', (hand,)))
+    restored = restore_session(snapshot_session(session))
+    request = restored.engine.pending_request
+    restored.engine.submit_decision(Decision(request.request_id, 'p1', (stars[0],)))
+    assert hand in restored.state.cards_in(star_zone('p1'))
+    assert stars[0] in restored.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
