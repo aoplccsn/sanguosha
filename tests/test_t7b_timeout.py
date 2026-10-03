@@ -1,4 +1,4 @@
-"""Human setup and engine decisions share the thirty-second policy."""
+"""Human setup and engine decisions share the sixty-second policy."""
 
 from sanguosha.engine.phases import PhaseAction
 from sanguosha.model.enums import Phase
@@ -9,13 +9,13 @@ from sanguosha.ui.pregame_dialog import PregameDialog
 from sanguosha.ui.timing import PREGAME_GENERAL_TIMEOUT_MS
 
 
-def test_human_pending_request_and_general_draft_use_thirty_seconds():
-    assert HUMAN_DECISION_TIMEOUT_MS == PREGAME_GENERAL_TIMEOUT_MS == 30_000
+def test_human_pending_request_and_general_draft_use_sixty_seconds():
+    assert HUMAN_DECISION_TIMEOUT_MS == PREGAME_GENERAL_TIMEOUT_MS == 60_000
     setup = Pregame.create(4)
     dialog = PregameDialog(setup)
     dialog._reveal_identity()
     dialog._show_candidates()
-    assert dialog._timer.interval() == 30_000
+    assert dialog._timer.interval() == 60_000
     dialog.close()
 
     session = GameSession.new_game(military=True, five_generals=True)
@@ -25,9 +25,9 @@ def test_human_pending_request_and_general_draft_use_thirty_seconds():
     window = MainWindow()
     window.session = session
     window._render()
-    assert window._decision_remaining_ms == 30_000
+    assert window._decision_remaining_ms == 60_000
     assert window.table.panels['p1'].decision_progress == 1.0
     window._decision_countdown()
-    assert window._decision_remaining_ms == 29_900
-    assert window.table.panels['p1'].decision_progress == 29_900 / 30_000
+    assert window._decision_remaining_ms == 59_900
+    assert window.table.panels['p1'].decision_progress == 59_900 / 60_000
     window.close()

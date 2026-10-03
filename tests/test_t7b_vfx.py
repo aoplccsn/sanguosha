@@ -16,9 +16,9 @@ from sanguosha.ui.card_vfx import CardVfxDirector, VfxCue
 from sanguosha.ui.game_table import GameTable
 
 
-def test_human_decision_and_draft_timeout_share_thirty_seconds():
+def test_human_decision_and_draft_timeout_share_sixty_seconds():
     from sanguosha.ui.timing import HUMAN_DECISION_TIMEOUT_MS, PREGAME_GENERAL_TIMEOUT_MS
-    assert HUMAN_DECISION_TIMEOUT_MS == PREGAME_GENERAL_TIMEOUT_MS == 30_000
+    assert HUMAN_DECISION_TIMEOUT_MS == PREGAME_GENERAL_TIMEOUT_MS == 60_000
 
 
 def test_selected_human_target_creates_preview_beam():
