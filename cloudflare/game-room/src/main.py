@@ -72,6 +72,12 @@ class Default(WorkerEntrypoint):
                 if response.status == 201:
                     return Response.json({"room_code": code}, status=201)
             return Response.json({"error": "unable to allocate room code"}, status=503)
+        if path.startswith("/api/rooms/") and request.method == "GET":
+            try:
+                code = _normalize_room_code(path.removeprefix("/api/rooms/"))
+            except ValueError as exc:
+                return Response.json({"error": str(exc)}, status=400)
+            return await self.env.GAME_ROOMS.getByName(code).fetch(request)
         if path.startswith("/room/"):
             if request.headers.get('Upgrade', '').lower() != 'websocket':
                 return await self.env.ASSETS.fetch(request)

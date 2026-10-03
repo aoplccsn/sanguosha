@@ -104,7 +104,7 @@ await restored.wait('PROJECTION_UPDATE');
 assert(reconnectWelcome.seat_id === guestIdentity.seat_id, 'reconnect restores same seat');
 assert(restored.messages.some((m) => m.type === 'PROJECTION_UPDATE'), 'reconnect restores projection');
 
-const status = await (await fetch(`${base}/room/${code}`)).json();
+const status = await (await fetch(`${base}/api/rooms/${code}`)).json();
 assert(status.phase === 'IN_GAME', 'SQLite snapshot reports active game');
 
 host.ws.close();

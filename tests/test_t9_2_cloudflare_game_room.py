@@ -81,3 +81,61 @@ def test_worker_engine_bundle_matches_authoritative_source():
         for path in worker_root.rglob("*.py")
     }
     assert worker_files == source_files
+
+
+def test_http_room_status_route(worker_module, monkeypatch):
+    import asyncio
+    from types import SimpleNamespace
+
+    calls = []
+
+    class FakeResponse:
+        @staticmethod
+        def json(payload, status=200):
+            return SimpleNamespace(status=status, payload=payload)
+
+    class FakeStub:
+        async def fetch(self, request):
+            calls.append(("stub", request.url))
+            return FakeResponse.json({"room_code": "ABC234", "phase": "IN_GAME"})
+
+    class FakeRooms:
+        def getByName(self, code):
+            calls.append(("room", code))
+            return FakeStub()
+
+    class FakeAssets:
+        async def fetch(self, request):
+            calls.append(("assets", request.url))
+            return SimpleNamespace(status=200, payload="<html>SPA</html>")
+
+    monkeypatch.setattr(worker_module, "Response", FakeResponse)
+    worker = worker_module.Default()
+    worker.env = SimpleNamespace(GAME_ROOMS=FakeRooms(), ASSETS=FakeAssets())
+
+    def get(path):
+        request = SimpleNamespace(
+            url=f"https://example.test{path}",
+            method="GET",
+            headers={},
+        )
+        return asyncio.run(worker.fetch(request))
+
+    active = get("/api/rooms/abc234")
+    assert active.status == 200
+    assert active.payload == {"room_code": "ABC234", "phase": "IN_GAME"}
+    assert calls == [
+        ("room", "ABC234"),
+        ("stub", "https://example.test/api/rooms/abc234"),
+    ]
+
+    calls.clear()
+    invalid = get("/api/rooms/ABC10I")
+    assert invalid.status == 400
+    assert invalid.payload == {"error": "invalid room code"}
+    assert calls == []
+
+    spa = get("/room/ABC234")
+    assert spa.status == 200
+    assert spa.payload == "<html>SPA</html>"
+    assert calls == [("assets", "https://example.test/room/ABC234")]
