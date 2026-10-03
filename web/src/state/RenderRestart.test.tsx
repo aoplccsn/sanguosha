@@ -38,6 +38,8 @@ it('shows a return-home message when a saved room disappeared after restart', as
     roomCode: 'ABC234', playerName: '房主', seatId: 'p1', reconnectToken: 'old-token',
   }))
   render(<GameProvider><App /></GameProvider>)
+  expect(screen.getByText(/检测到上次对局/)).toBeInTheDocument()
+  screen.getByRole('button', { name: '继续对局' }).click()
   const socket = FakeSocket.instances[0]
   act(() => {
     socket.readyState = FakeSocket.OPEN

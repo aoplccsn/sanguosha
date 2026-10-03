@@ -1,5 +1,5 @@
 type Listener = (message: Record<string, unknown>) => void
-type Status = 'connecting' | 'connected' | 'reconnecting' | 'offline'
+type Status = 'idle' | 'connecting' | 'connected' | 'reconnecting' | 'offline' | 'fatal'
 type StatusListener = (status: Status) => void
 
 export function websocketUrl(protocol: string, host: string, roomCode = ''): string {
@@ -128,5 +128,9 @@ export class GameConnection {
     this.socket = null
     this.pendingMessage = null
     this.reconnectMessage = null
+    this.roomCode = ''
+    this.failures = 0
+    this.reconnectDelay = 800
+    this.setStatus('idle')
   }
 }

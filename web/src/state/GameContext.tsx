@@ -6,7 +6,7 @@ const SESSION_KEY = 'sanguosha.web.session.v1'
 
 const initialState: ClientState = {
   page: 'home',
-  connection: 'connecting',
+  connection: 'idle',
   roomCode: '',
   playerName: '',
   seatId: '',
@@ -15,6 +15,10 @@ const initialState: ClientState = {
   draft: null,
   projection: null,
   pendingRequest: null,
+  requestEpoch: 0,
+  decisionProcessing: null,
+  notice: '',
+  resumeSession: null,
   publicEvents: [],
   generals: {},
   error: '',
@@ -29,7 +33,11 @@ type Action = { type: string; payload?: unknown }
 function reducer(state: ClientState, action: Action): ClientState {
   switch (action.type) {
     case 'connection':
-      return { ...state, connection: action.payload as ClientState['connection'] }
+      return { ...state, connection: action.payload as ClientState['connection'],
+        pendingRequest: action.payload === 'reconnecting' || action.payload === 'offline' ? null : state.pendingRequest,
+        requestEpoch: action.payload === 'reconnecting' || action.payload === 'offline' ? state.requestEpoch + 1 : state.requestEpoch,
+        decisionProcessing: action.payload === 'reconnecting' || action.payload === 'offline' ? null : state.decisionProcessing,
+        notice: action.payload === 'connected' && state.connection === 'reconnecting' ? '连接已恢复' : state.notice }
     case 'catalog':
       return { ...state, generals: action.payload as Record<string, GeneralInfo> }
     case 'server-version': {
@@ -62,13 +70,30 @@ function reducer(state: ClientState, action: Action): ClientState {
       return { ...state, lobby, page }
     }
     case 'draft':
-      return { ...state, draft: action.payload as DraftState, page: 'pregame', selectedGeneral: '', error: '' }
-    case 'projection':
-      return { ...state, projection: action.payload as Projection, page: 'game', draft: null, error: '' }
+      return { ...state, draft: action.payload as DraftState, page: 'pregame', selectedGeneral: '', decisionProcessing: null, error: '' }
+    case 'projection': {
+      const { projection, activeRequestId } = action.payload as { projection: Projection; activeRequestId: string | null }
+      const keepsRequest = !!activeRequestId && state.pendingRequest?.request_id === activeRequestId
+      return { ...state, projection, page: 'game', draft: null, error: '',
+        pendingRequest: keepsRequest ? state.pendingRequest : null,
+        requestEpoch: keepsRequest || !state.pendingRequest ? state.requestEpoch : state.requestEpoch + 1 }
+    }
     case 'pending':
-      return { ...state, pendingRequest: action.payload as PendingRequest }
+      return { ...state, pendingRequest: action.payload as PendingRequest, decisionProcessing: null,
+        requestEpoch: state.pendingRequest?.request_id === (action.payload as PendingRequest).request_id ? state.requestEpoch : state.requestEpoch + 1,
+        notice: state.pendingRequest?.request_id !== (action.payload as PendingRequest).request_id ? '当前响应已更新' : state.notice }
     case 'decision-result':
-      return { ...state, pendingRequest: null, error: '' }
+      return state.decisionProcessing === action.payload
+        ? { ...state, pendingRequest: state.pendingRequest?.request_id === action.payload ? null : state.pendingRequest,
+            decisionProcessing: null, notice: '操作已提交', error: '' } : state
+    case 'decision-begin':
+      return { ...state, decisionProcessing: action.payload as string, notice: '处理中…', error: '' }
+    case 'decision-rejected':
+      return { ...state, decisionProcessing: null, notice: action.payload as string }
+    case 'notice':
+      return { ...state, notice: action.payload as string }
+    case 'resume-session':
+      return { ...state, resumeSession: action.payload as SessionRecord | null }
     case 'event':
       return { ...state, publicEvents: [...state.publicEvents.slice(-39), action.payload as PublicEvent] }
     case 'result':
@@ -80,9 +105,9 @@ function reducer(state: ClientState, action: Action): ClientState {
     case 'set-name':
       return { ...state, playerName: action.payload as string }
     case 'home':
-      return { ...initialState, connection: state.connection, generals: state.generals }
+      return { ...initialState, connection: 'idle', generals: state.generals }
     case 'server-restarted':
-      return { ...initialState, connection: state.connection, generals: state.generals,
+      return { ...initialState, connection: 'fatal', generals: state.generals,
         error: '服务器已重新启动，本局已结束。请返回首页创建新房间。' }
     default:
       return state
@@ -99,6 +124,9 @@ interface GameActions {
   selectGeneral(id: string): void
   confirmGeneral(): void
   submitDecision(requestId: string, value: unknown): void
+  continueSession(): void
+  discardSession(): void
+  notify(message: string): void
   clearError(): void
   returnHome(): void
 }
@@ -111,6 +139,7 @@ function friendlyError(message: string) {
   if (message.includes('incompatible')) return '客户端版本与服务器不兼容，请刷新页面。'
   if (message.includes('invalid reconnect')) return '原对局已失效，请重新加入。'
   if (message.includes('already connected')) return '该座位已在其他页面连接。'
+  if (/stale|expired|duplicate/i.test(message)) return '当前响应已更新，请重新选择。'
   if (message.includes('all guests must be ready')) return '所有来宾准备后才能开始。'
   return message || '发生未知错误。'
 }
@@ -118,15 +147,25 @@ function friendlyError(message: string) {
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState)
   const connectionRef = useRef(new GameConnection())
-  const reconnectAttempted = useRef(false)
   const recovering = useRef(false)
   const playerNameRef = useRef('玩家')
+  const activeRequestRef = useRef<string | null>(null)
+  const submittingRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!state.notice || state.notice === '处理中…') return
+    const timer = window.setTimeout(() => dispatch({ type: 'notice', payload: '' }), 2800)
+    return () => window.clearTimeout(timer)
+  }, [state.notice])
 
   useEffect(() => {
     const connection = connectionRef.current
     const offStatus = connection.subscribeStatus((status) => {
       dispatch({ type: 'connection', payload: status })
-      if (status === 'offline') reconnectAttempted.current = false
+      if (status === 'reconnecting' || status === 'offline') {
+        activeRequestRef.current = null
+        submittingRef.current = null
+      }
     })
     const offMessage = connection.subscribe((message) => {
       const kind = String(message.type ?? '')
@@ -148,8 +187,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
             reconnectToken: String(message.reconnect_token),
           }
           localStorage.setItem(SESSION_KEY, JSON.stringify(record))
-        } else if (!reconnectAttempted.current) {
-          reconnectAttempted.current = true
+          dispatch({ type: 'resume-session', payload: null })
+        } else if (!__CLOUDFLARE_ROOMS__ && recovering.current) {
           const saved = localStorage.getItem(SESSION_KEY)
           if (saved) {
             try {
@@ -172,23 +211,43 @@ export function GameProvider({ children }: { children: ReactNode }) {
       } else if (kind === 'LOBBY_STATE') {
         dispatch({ type: 'lobby', payload: message as unknown as LobbyState })
       } else if (kind === 'DRAFT_REQUEST') {
+        activeRequestRef.current = (message as unknown as DraftState).request.request_id
         dispatch({ type: 'draft', payload: message as unknown as DraftState })
       } else if (kind === 'PROJECTION_UPDATE') {
-        dispatch({ type: 'projection', payload: message.projection as Projection })
+        const activeRequestId = String(message.active_request_id ?? '') || null
+        activeRequestRef.current = activeRequestId
+        dispatch({ type: 'projection', payload: { projection: message.projection as Projection, activeRequestId } })
       } else if (kind === 'PENDING_REQUEST') {
-        dispatch({ type: 'pending', payload: message.request as PendingRequest })
+        const next = message.request as PendingRequest
+        if (import.meta.env.DEV) console.debug('[game] request replaced', next.request_id)
+        activeRequestRef.current = next.request_id
+        submittingRef.current = null
+        dispatch({ type: 'pending', payload: next })
       } else if (kind === 'DECISION_RESULT') {
-        dispatch({ type: 'decision-result' })
+        const requestId = String(message.request_id ?? '')
+        if (submittingRef.current === requestId) submittingRef.current = null
+        if (activeRequestRef.current === requestId) activeRequestRef.current = null
+        if (import.meta.env.DEV) console.debug('[game] submit success', requestId)
+        dispatch({ type: 'decision-result', payload: requestId })
       } else if (kind === 'PUBLIC_EVENT') {
         dispatch({ type: 'event', payload: message.event as PublicEvent })
       } else if (kind === 'GAME_OVER') {
         dispatch({ type: 'result', payload: String(message.result ?? '') })
       } else if (kind === 'KICKED') {
         connection.send('LEAVE_ROOM')
+        connection.disconnect()
         localStorage.removeItem(SESSION_KEY)
         dispatch({ type: 'home' })
         dispatch({ type: 'error', payload: String(message.reason ?? '已离开房间') })
       } else if (kind === 'ERROR') {
+        const rejectedRequest = String(message.request_id ?? '')
+        if (rejectedRequest && (submittingRef.current ?? activeRequestRef.current)
+            && rejectedRequest !== (submittingRef.current ?? activeRequestRef.current)) {
+          dispatch({ type: 'notice', payload: '此前的响应已更新' })
+          return
+        }
+        const wasSubmitting = submittingRef.current !== null
+        submittingRef.current = null
         if (recovering.current && /room not found|invalid reconnect/i.test(String(message.message ?? ''))) {
           localStorage.removeItem(SESSION_KEY)
           recovering.current = false
@@ -196,28 +255,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
           return
         }
         const friendly = friendlyError(String(message.message ?? ''))
-        dispatch({ type: 'error', payload: friendly })
+        if (import.meta.env.DEV) console.debug('[game] submit rejected', friendly)
+        dispatch({ type: 'decision-rejected', payload: /stale|expired|duplicate/i.test(String(message.message ?? '')) ? '当前响应已更新' : friendly })
+        if (!wasSubmitting) dispatch({ type: 'error', payload: friendly })
         if (friendly.includes('原对局已失效')) localStorage.removeItem(SESSION_KEY)
       }
     })
 
     const savedSession = localStorage.getItem(SESSION_KEY)
-    if (__CLOUDFLARE_ROOMS__ && savedSession) {
+    if (savedSession) {
       try {
         const session = JSON.parse(savedSession) as SessionRecord
         playerNameRef.current = session.playerName
         dispatch({ type: 'set-name', payload: session.playerName })
-        reconnectAttempted.current = true
-        recovering.current = true
-        connection.openRoom(session.roomCode, 'RECONNECT', {
-          room_code: session.roomCode,
-          name: session.playerName,
-          token: session.reconnectToken,
-        })
+        dispatch({ type: 'resume-session', payload: session })
       } catch {
         localStorage.removeItem(SESSION_KEY)
       }
-    } else if (!__CLOUDFLARE_ROOMS__) {
+    }
+    if (!__CLOUDFLARE_ROOMS__) {
       connection.connect()
     }
     fetch('/api/catalog/generals')
@@ -256,6 +312,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       playerNameRef.current = clean
       dispatch({ type: 'set-name', payload: clean })
       localStorage.removeItem(SESSION_KEY)
+      dispatch({ type: 'resume-session', payload: null })
       const seedParameter = new URLSearchParams(window.location.search).get('seed')
       const requestedSeed = seedParameter === null ? NaN : Number(seedParameter)
       const fields = {
@@ -288,6 +345,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       playerNameRef.current = clean
       dispatch({ type: 'set-name', payload: clean })
       localStorage.removeItem(SESSION_KEY)
+      dispatch({ type: 'resume-session', payload: null })
       const normalized = roomCode.trim().toUpperCase()
       if (__CLOUDFLARE_ROOMS__) {
         connectionRef.current.openRoom(normalized, 'JOIN_ROOM', { name: clean, room_code: normalized })
@@ -312,20 +370,57 @@ export function GameProvider({ children }: { children: ReactNode }) {
     },
     confirmGeneral() {
       if (!state.draft || !state.selectedGeneral) return
-      sendWhenConnected('SUBMIT_DECISION', {
-        decision: { request_id: state.draft.request.request_id, value: state.selectedGeneral },
-      })
+      const requestId = state.draft.request.request_id
+      if (activeRequestRef.current !== requestId || submittingRef.current === requestId) return
+      submittingRef.current = requestId
+      dispatch({ type: 'decision-begin', payload: requestId })
+      if (!connectionRef.current.send('SUBMIT_DECISION', {
+        decision: { request_id: requestId, value: state.selectedGeneral },
+      })) { submittingRef.current = null; dispatch({ type: 'decision-rejected', payload: '连接恢复中，请稍候重试' }) }
     },
     submitDecision(requestId, value) {
-      sendWhenConnected('SUBMIT_DECISION', { decision: { request_id: requestId, value } })
+      if (activeRequestRef.current !== requestId || submittingRef.current === requestId) {
+        dispatch({ type: 'notice', payload: activeRequestRef.current !== requestId ? '当前响应已更新' : '正在处理，请稍候' })
+        return
+      }
+      submittingRef.current = requestId
+      if (import.meta.env.DEV) console.debug('[game] submit begin', requestId)
+      dispatch({ type: 'decision-begin', payload: requestId })
+      if (!connectionRef.current.send('SUBMIT_DECISION', { decision: { request_id: requestId, value } })) {
+        submittingRef.current = null
+        dispatch({ type: 'decision-rejected', payload: '连接恢复中，请稍候重试' })
+      }
+    },
+    continueSession() {
+      const saved = localStorage.getItem(SESSION_KEY)
+      if (!saved) { dispatch({ type: 'resume-session', payload: null }); return }
+      try {
+        const session = JSON.parse(saved) as SessionRecord
+        playerNameRef.current = session.playerName
+        recovering.current = true
+        dispatch({ type: 'resume-session', payload: null })
+        if (__CLOUDFLARE_ROOMS__) connectionRef.current.openRoom(session.roomCode, 'RECONNECT', {
+          room_code: session.roomCode, name: session.playerName, token: session.reconnectToken,
+        })
+        else connectionRef.current.connect()
+      } catch { localStorage.removeItem(SESSION_KEY); dispatch({ type: 'resume-session', payload: null }) }
+    },
+    discardSession() {
+      localStorage.removeItem(SESSION_KEY)
+      dispatch({ type: 'resume-session', payload: null })
+    },
+    notify(message) {
+      dispatch({ type: 'notice', payload: message })
     },
     clearError() {
       dispatch({ type: 'error', payload: '' })
     },
     returnHome() {
       connectionRef.current.send('LEAVE_ROOM')
+      connectionRef.current.disconnect()
       localStorage.removeItem(SESSION_KEY)
-      reconnectAttempted.current = true
+      activeRequestRef.current = null
+      submittingRef.current = null
       recovering.current = false
       dispatch({ type: 'home' })
     },

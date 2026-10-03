@@ -218,6 +218,7 @@ class GameRoomDurableObject(DurableObject):
     async def webSocketMessage(self, ws, raw):
         attachment = _attachment(ws)
         session_id = attachment.get("session_id", "")
+        message = {}
         try:
             self._check_rate(session_id)
             if not isinstance(raw, str) or len(raw.encode("utf-8")) > MAX_MESSAGE_BYTES:
@@ -227,7 +228,9 @@ class GameRoomDurableObject(DurableObject):
             await self._handle_message(ws, attachment, message)
             await self._persist()
         except (ProtocolError, RoomError, ValueError, KeyError, json.JSONDecodeError) as exc:
-            ws.send(json.dumps(envelope("ERROR", message=str(exc))))
+            decision = message.get("decision", {}) if isinstance(message, dict) else {}
+            request_id = decision.get("request_id", "") if isinstance(decision, dict) else ""
+            ws.send(json.dumps(envelope("ERROR", message=str(exc), request_id=request_id)))
 
     async def _handle_message(self, ws, attachment: dict, message: dict) -> None:
         assert self.room is not None

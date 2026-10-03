@@ -37,7 +37,7 @@ export function PregamePage() {
           </div>
         </> : <p>请选择一名武将查看技能详情。</p>}
       </aside>
-      <div className="pregame-actions"><button className="brush-button primary" disabled={!selected} onClick={actions.confirmGeneral}>确认武将</button></div>
+      <div className="pregame-actions"><button className="brush-button primary" disabled={!selected || !!state.decisionProcessing} onClick={actions.confirmGeneral}>{state.decisionProcessing ? '处理中…' : '确认武将'}</button></div>
     </section>
   </main>
 }

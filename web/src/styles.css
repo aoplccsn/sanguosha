@@ -154,9 +154,9 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .hand { position: relative; flex: 1; height: 190px; display: flex; justify-content: center; align-items: flex-end; padding: 0 18px; overflow: visible; }
 .hand-card { position: relative; width: clamp(72px, 7.3vw, 108px); min-width: 72px; aspect-ratio: 2/3; margin-left: clamp(-34px, -2.3vw, -18px); padding: 0; overflow: hidden; color: #2b1a0d; background: #ddc89e; border: 2px solid #75502d; border-radius: 7px; box-shadow: 0 5px 15px rgba(0,0,0,.48); transition: transform .16s, filter .16s; }
 .hand-card:first-child { margin-left: 0; }
-.hand-card:hover:not(:disabled) { z-index: 20; transform: translateY(-28px) scale(1.04); }
-.hand-card.selected { z-index: 15; transform: translateY(-38px); border-color: #f1bd48; box-shadow: 0 0 0 2px #8b3f1d, 0 10px 25px #000; }
-.hand-card.disabled { filter: grayscale(.7) brightness(.55); opacity: .64; }
+.hand-card:hover { z-index: 20; box-shadow: 0 0 0 2px #f1bd48, 0 10px 25px #000; }
+.hand-card.selected { z-index: 25; border-color: #f1bd48; box-shadow: 0 0 0 4px #f1bd48, 0 10px 25px #000; }
+.hand-card.disabled { filter: grayscale(.7) brightness(.55); opacity: .64; cursor: help; }
 .hand-card img { width: 100%; height: 100%; object-fit: cover; }
 .hand-card > strong { position: absolute; inset: auto 4px 4px; padding: 2px; color: #fff2ce; background: rgba(45,24,12,.76); font-size: 12px; }
 .card-corner { position: absolute; left: 3px; top: 2px; display: grid; color: #25150d; text-shadow: 0 1px #f5e5c5; }
@@ -164,7 +164,12 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .skill-bar { align-self: center; width: 94px; display: grid; gap: 5px; }
 .skill-bar button { min-height: 30px; color: #d8c39c; background: rgba(42,30,20,.9); border: 1px solid #80603a; }
 .skill-bar button.selected { color: #29190d; background: #e1af50; }
-.decision-prompt { position: absolute; z-index: 30; left: 50%; bottom: 220px; width: min(880px, 76vw); transform: translateX(-50%); min-height: 76px; display: flex; align-items: center; justify-content: center; gap: 9px; padding: 10px 16px; color: #2a190e; background: linear-gradient(100deg, rgba(233,214,171,.98), rgba(190,156,96,.98)); border: 2px solid #a15b25; box-shadow: 0 13px 35px #000; }
+.skill-bar button[aria-disabled="true"] { opacity: .55; cursor: help; }
+.decision-prompt { position: absolute; z-index: 30; left: 50%; bottom: 220px; width: min(880px, 76vw); transform: translateX(-50%); min-height: 76px; display: flex; align-items: center; justify-content: center; gap: 9px; padding: 10px 16px; color: #2a190e; background: linear-gradient(100deg, rgba(233,214,171,.98), rgba(190,156,96,.98)); border: 2px solid #a15b25; box-shadow: 0 13px 35px #000; pointer-events: none; }
+.decision-prompt button { pointer-events: auto; }
+.interaction-hint { position: fixed; z-index: 45; left: 50%; bottom: 198px; transform: translateX(-50%); padding: 8px 16px; color: #fff2d2; background: #793e24; border: 1px solid #d6a45b; pointer-events: none; }
+.game-notice { position: fixed; z-index: 50; right: 18px; top: 62px; padding: 8px 14px; color: #fff0cd; background: #4a3621; border: 1px solid #b78f52; pointer-events: none; }
+.resume-panel { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
 .prompt-copy { flex: 1; }
 .prompt-copy strong, .prompt-copy small { display: block; }
 .prompt-copy strong { font-size: 18px; }

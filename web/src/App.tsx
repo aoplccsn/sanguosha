@@ -14,8 +14,9 @@ export default function App() {
     : state.page === 'pregame' ? <PregamePage />
       : state.page === 'game' ? <GamePage /> : <HomePage />
   return <>
-    {state.connection === 'reconnecting' && <div role="status" className="connection-banner">连接中断，正在重新连接…</div>}
-    {state.connection === 'offline' && <div role="alert" className="connection-banner">网络暂不可用，仍在尝试重新连接…</div>}
+    {state.page !== 'home' && state.connection === 'reconnecting' && <div role="status" className="connection-banner">连接波动，正在恢复…</div>}
+    {state.page !== 'home' && state.connection === 'offline' && <div role="alert" className="connection-banner">无法连接到房间，仍在尝试恢复…</div>}
+    {state.notice && <div role="status" className="game-notice">{state.notice}</div>}
     {state.error.includes('服务器已重新启动') && <div role="alert" className="connection-banner">
       {state.error} <button onClick={actions.returnHome}>返回首页</button>
     </div>}

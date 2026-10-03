@@ -1,4 +1,4 @@
-export type ConnectionStatus = 'connecting' | 'connected' | 'reconnecting' | 'offline'
+export type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'reconnecting' | 'offline' | 'fatal'
 export type Page = 'home' | 'lobby' | 'pregame' | 'game'
 
 export interface Seat {
@@ -151,6 +151,10 @@ export interface ClientState {
   draft: DraftState | null
   projection: Projection | null
   pendingRequest: PendingRequest | null
+  requestEpoch: number
+  decisionProcessing: string | null
+  notice: string
+  resumeSession: SessionRecord | null
   publicEvents: PublicEvent[]
   generals: Record<string, GeneralInfo>
   error: string

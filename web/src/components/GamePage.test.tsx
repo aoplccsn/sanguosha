@@ -18,6 +18,8 @@ vi.mock('../state/GameContext', () => ({
   useGame: () => ({
     state: {
       seatId: 'p1',
+      connection: 'connected',
+      decisionProcessing: null,
       projection: { players, hand: [card], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
       pendingRequest: request,
       publicEvents: [],
@@ -40,7 +42,7 @@ describe('GamePage', () => {
   it('renders the five-player table, hand and skill bar', () => {
     render(<GamePage />)
     expect(screen.getAllByText(/手牌/)).toHaveLength(5)
-    expect(screen.getByRole('button', { name: /杀/ })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /杀/ })).toHaveAttribute('aria-disabled', 'true')
     expect(screen.getByLabelText('技能栏')).toBeInTheDocument()
   })
 

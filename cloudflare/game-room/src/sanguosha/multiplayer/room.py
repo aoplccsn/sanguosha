@@ -11,7 +11,7 @@ from typing import Callable
 from sanguosha.content.characters.standard import PLAYABLE_57_GENERAL_POOL, PLAYABLE_65_GENERAL_POOL
 from sanguosha.game_modes import game_mode
 from sanguosha.decisions.ai import AIDecisionProvider
-from sanguosha.engine.requests import Decision, PendingRequest, RequestType
+from sanguosha.engine.requests import Decision, PendingRequest, RequestType, PASS_RESPONSE
 from sanguosha.engine.events import (Event, CardUsedEvent, CardRespondedEvent, TrickTargetsDeclaredEvent,
                                      VirtualResponseEvent, DamageDealtEvent, HpRecoveredEvent,
                                      PlayerDiedEvent, GameEndedEvent)
@@ -258,6 +258,8 @@ class MultiplayerRoom:
         if self.phase is RoomPhase.DRAFT:
             request = self.draft_requests.get(pid)
             if request is None or request.request_id != decision.request_id:
+                if request is not None:
+                    self._send_draft(pid)
                 raise RoomError("stale or duplicate draft decision")
             request.validate(decision.value)
             assert self.pregame is not None
@@ -273,6 +275,9 @@ class MultiplayerRoom:
         if self.phase is not RoomPhase.IN_GAME or self.session is None:
             raise RoomError("no active game request")
         request = self.session.engine.pending_request
+        if request is None or request.request_id != decision.request_id:
+            self._send_current(pid)
+            raise RoomError("stale request; current response refreshed")
         if request is not None and request.request_id == decision.request_id:
             decision = self._resolve_hidden_choice(request, decision)
         self.network_decisions.validate(pid, decision)
@@ -334,6 +339,10 @@ class MultiplayerRoom:
                 raise RuntimeError("multiplayer match step limit exceeded")
             request = self.session.engine.pending_request
             if request is not None and self.seats[request.player_id].controller is Controller.HUMAN:
+                if (request.request_type is RequestType.RESPOND_WITH_CARD
+                        and request.allow_pass and not request.has_legal_response()):
+                    self.session.engine.submit_decision(Decision(request.request_id, request.player_id, PASS_RESPONSE))
+                    continue
                 self.network_decisions.dispatch(request)
                 return
             if request is not None:
@@ -384,18 +393,20 @@ class MultiplayerRoom:
     def _sync(self) -> None:
         assert self.session is not None
         self._revision += 1
+        request = self.session.engine.pending_request
         for seat in self.seats.values():
             if seat.controller is Controller.HUMAN and seat.connected:
                 view = project_for_human(self.session.state, self.session.definitions,
                                          seat.player_id, self.session.character_names)
+                active_id = request.request_id if request is not None and request.player_id == seat.player_id else None
                 self._send(seat.player_id, envelope("PROJECTION_UPDATE", revision=self._revision,
+                                                    active_request_id=active_id,
                                                     projection=self._named_projection(view, seat.player_id)))
         for event in self.session.events.events[self._seen_events:]:
             public = self._public_event(event)
             if public:
                 self._broadcast(envelope("PUBLIC_EVENT", event=public))
         self._seen_events = len(self.session.events.events)
-        request = self.session.engine.pending_request
         if request is not None and self.seats[request.player_id].controller is Controller.HUMAN:
             self._send(request.player_id, envelope("PENDING_REQUEST", request=self._request_payload(request)))
 
@@ -405,9 +416,11 @@ class MultiplayerRoom:
             self._send_draft(pid)
         elif self.session is not None:
             view = project_for_human(self.session.state, self.session.definitions, pid, self.session.character_names)
-            self._send(pid, envelope("PROJECTION_UPDATE", revision=self._revision,
-                                     projection=self._named_projection(view, pid)))
             request = self.session.engine.pending_request
+            active_id = request.request_id if request is not None and request.player_id == pid else None
+            self._send(pid, envelope("PROJECTION_UPDATE", revision=self._revision,
+                                     active_request_id=active_id,
+                                     projection=self._named_projection(view, pid)))
             if request is not None and request.player_id == pid and self.request_deadline is not None:
                 self._send(pid, envelope("PENDING_REQUEST", request=self._request_payload(request)))
 
