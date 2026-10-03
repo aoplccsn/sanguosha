@@ -38,7 +38,7 @@ describe('GameConnection', () => {
     vi.unstubAllGlobals()
   })
 
-  it('uses the current host, sends HELLO, dispatches messages and reconnects', () => {
+  it('uses the current host and stops reconnecting while no room was requested', () => {
     const connection = new GameConnection()
     const messages: Array<Record<string, unknown>> = []
     const statuses: string[] = []
@@ -54,9 +54,9 @@ describe('GameConnection', () => {
     expect(messages.at(-1)?.type).toBe('PONG')
     first.readyState = 3
     first.emit('close')
-    expect(statuses).toContain('reconnecting')
+    expect(statuses.at(-1)).toBe('idle')
     vi.advanceTimersByTime(800)
-    expect(FakeSocket.instances).toHaveLength(2)
+    expect(FakeSocket.instances).toHaveLength(1)
   })
 
   it('opens a room route and sends the queued join after connecting', () => {
@@ -66,7 +66,7 @@ describe('GameConnection', () => {
     expect(socket.url).toContain('/room/ABC234')
     socket.readyState = FakeSocket.OPEN
     socket.emit('open')
-    expect(socket.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'JOIN_ROOM'])
+    expect(socket.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'PING', 'JOIN_ROOM'])
   })
 
   it('rejoins the same seat after a WebSocket reconnect', () => {
@@ -83,8 +83,8 @@ describe('GameConnection', () => {
     const second = FakeSocket.instances[1]
     second.readyState = FakeSocket.OPEN
     second.emit('open')
-    expect(second.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'RECONNECT'])
-    expect(JSON.parse(second.sent[1]).token).toBe('secret')
+    expect(second.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'PING', 'RECONNECT'])
+    expect(JSON.parse(second.sent[2]).token).toBe('secret')
   })
 
   it('ignores errors and closes from a socket replaced by a room connection', () => {
@@ -113,7 +113,7 @@ describe('GameConnection', () => {
     const messages: Array<Record<string, unknown>> = []
     connection.subscribeStatus((status) => statuses.push(status))
     connection.subscribe((message) => messages.push(message))
-    connection.connect()
+    connection.openRoom('ABC234', 'JOIN_ROOM', { name: '甲', room_code: 'ABC234' })
     const first = FakeSocket.instances[0]
     first.emit('error')
     expect(statuses.at(-1)).toBe('reconnecting')
@@ -136,6 +136,6 @@ describe('GameConnection', () => {
     const second = FakeSocket.instances[1]
     second.readyState = FakeSocket.OPEN
     second.emit('open')
-    expect(second.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'JOIN_ROOM'])
+    expect(second.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'PING', 'JOIN_ROOM'])
   })
 })

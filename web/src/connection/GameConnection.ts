@@ -1,3 +1,5 @@
+import { recordPing } from './diagnostics'
+
 type Listener = (message: Record<string, unknown>) => void
 type Status = 'idle' | 'connecting' | 'connected' | 'reconnecting' | 'offline' | 'fatal'
 type StatusListener = (status: Status) => void
@@ -13,6 +15,7 @@ export class GameConnection {
   private listeners = new Set<Listener>()
   private statusListeners = new Set<StatusListener>()
   private heartbeat: number | null = null
+  private pingSentAt: number | null = null
   private intentionallyClosed = false
   private reconnectTimer: number | null = null
   private failures = 0
@@ -49,20 +52,27 @@ export class GameConnection {
       this.failures = 0
       this.setStatus('connected')
       this.send('HELLO')
+      this.pingSentAt = performance.now()
+      if (!this.send('PING')) this.pingSentAt = null
       if (this.pendingMessage) {
         const pending = this.pendingMessage
         this.send(pending.type, pending.fields)
       } else if (this.reconnectMessage) {
         this.send(this.reconnectMessage.type, this.reconnectMessage.fields)
       }
-      if (!__CLOUDFLARE_ROOMS__) {
-        this.heartbeat = window.setInterval(() => this.send('PING'), 15000)
-      }
+      this.heartbeat = window.setInterval(() => {
+        if (this.pingSentAt !== null && performance.now() - this.pingSentAt > 30000) this.pingSentAt = null
+        if (this.pingSentAt === null && this.send('PING')) this.pingSentAt = performance.now()
+      }, 15000)
     })
     socket.addEventListener('message', (event) => {
       if (this.socket !== socket) return
       try {
         const message = JSON.parse(String(event.data)) as Record<string, unknown>
+        if (message.type === 'PONG' && this.pingSentAt !== null) {
+          recordPing(performance.now() - this.pingSentAt, typeof message.server_time_ms === 'number' ? message.server_time_ms : undefined)
+          this.pingSentAt = null
+        }
         if ((message.type === 'WELCOME' || message.type === 'ROOM_CREATED') && message.room_code && message.reconnect_token) {
           this.pendingMessage = null
           this.reconnectMessage = { type: 'RECONNECT', fields: {
@@ -80,9 +90,15 @@ export class GameConnection {
       this.socket = null
       if (this.heartbeat !== null) window.clearInterval(this.heartbeat)
       this.heartbeat = null
+      this.pingSentAt = null
       if (!this.intentionallyClosed) {
+        if (!this.pendingMessage && !this.reconnectMessage) {
+          this.setStatus('idle')
+          return
+        }
         this.failures += 1
         this.setStatus(this.failures >= 6 ? 'offline' : 'reconnecting')
+        if (this.intentionallyClosed) return
         const delay = this.reconnectDelay
         this.reconnectDelay = Math.min(this.reconnectDelay * 1.7, 8000)
         this.reconnectTimer = window.setTimeout(() => {
@@ -101,6 +117,7 @@ export class GameConnection {
     this.reconnectTimer = null
     if (this.heartbeat !== null) window.clearInterval(this.heartbeat)
     this.heartbeat = null
+    this.pingSentAt = null
     this.socket?.close()
     this.socket = null
     this.intentionallyClosed = false
@@ -124,6 +141,7 @@ export class GameConnection {
     if (this.reconnectTimer !== null) window.clearTimeout(this.reconnectTimer)
     this.reconnectTimer = null
     if (this.heartbeat !== null) window.clearInterval(this.heartbeat)
+    this.pingSentAt = null
     this.socket?.close()
     this.socket = null
     this.pendingMessage = null

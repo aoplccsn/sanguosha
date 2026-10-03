@@ -33,7 +33,7 @@ afterEach(() => {
   localStorage.clear()
 })
 
-it('shows a return-home message when a saved room disappeared after restart', async () => {
+it('returns to the home banner when a saved room disappeared after restart', async () => {
   localStorage.setItem('sanguosha.web.session.v1', JSON.stringify({
     roomCode: 'ABC234', playerName: '房主', seatId: 'p1', reconnectToken: 'old-token',
   }))
@@ -48,8 +48,8 @@ it('shows a return-home message when a saved room disappeared after restart', as
   })
   expect(socket.sent.some((item) => JSON.parse(item).type === 'RECONNECT')).toBe(true)
   act(() => socket.emit('message', { data: JSON.stringify({ type: 'ERROR', message: 'room not found' }) }))
-  await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('服务器已重新启动，本局已结束'))
-  expect(screen.getByRole('button', { name: '返回首页' })).toBeInTheDocument()
+  await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('无法恢复上一局'))
+  expect(screen.getByRole('button', { name: '创建多人房间' })).toBeInTheDocument()
   expect(localStorage.getItem('sanguosha.web.session.v1')).toBeNull()
 })
 

@@ -43,6 +43,10 @@ MYTH_CHARACTERS = (
 )
 
 _NAMES = {
+    'qiangxi':'强袭','quhu':'驱虎','jieming':'节命','lianhuan':'连环',
+    'niepan':'涅槃','bazhen':'八阵','huoji':'火计','kanpo':'看破',
+    'tianyi':'天义','mashu':'马术','mengjin':'猛进','shuangxiong':'双雄',
+    'luanji':'乱击','xueyi':'血裔',
     'kuangbao':'狂暴','wumou':'无谋','wuwei':'无前','shenfen':'神愤','shensu':'神速','jushou':'据守','liegong':'烈弓','kuanggu':'狂骨','tianxiang':'天香','hongyan':'红颜','buqu':'不屈','leiji':'雷击','guidao':'鬼道','huangtian':'黄天','guhuo':'蛊惑',
     'wushen':'武神','wuhun':'武魂','shelie':'涉猎','gongxin':'攻心',
     'qinyin':'琴音','yeyan':'业炎','qixing':'七星','kuangfeng':'狂风',

@@ -1,5 +1,7 @@
 import asyncio
 import json
+import time
+from unittest.mock import patch
 
 import pytest
 
@@ -124,6 +126,27 @@ def test_disconnect_reconnect_and_timeout():
     restored = []
     assert room.join("host", restored.append, token=token)[0] == p1
     assert any(m["type"] == "PROJECTION_UPDATE" for m in restored)
+
+
+def test_draft_commit_survives_deadline_and_delayed_ack():
+    messages = []
+    room = MultiplayerRoom(seed=4)
+    pid, _ = room.join("host", messages.append)
+    room.start(pid)
+    request = room.draft_requests[pid]
+    choice = request.choices[0]
+    room.draft_deadlines[pid] = time.time() + 0.1
+    deadline = room.draft_deadlines[pid]
+    room.submit(pid, Decision(request.request_id, pid, choice),
+                defer_resolution=True, send_ack=False)
+    assert pid not in room.draft_requests
+    assert room.pregame.generals[pid] == choice
+    with patch("sanguosha.multiplayer.room.time.time", return_value=deadline + 2):
+        room.poll()
+    assert room.pregame.generals[pid] == choice
+    assert not any(m["type"] == "DECISION_RESULT" for m in messages)
+    room.resolve_accepted()
+    assert room.pregame.generals[pid] == choice
 
 
 @pytest.mark.parametrize("humans", range(1, 6))

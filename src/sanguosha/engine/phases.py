@@ -1,6 +1,6 @@
 """Phase actions and pluggable phase bodies using T2 frames."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Protocol
 
 from sanguosha.model.enums import Phase
@@ -77,16 +77,43 @@ class PlayPhaseBody:
             if END_PLAY_PHASE in options or len(options) != len(set(options)):
                 raise ResolutionError("provider options must be unique and exclude end_play_phase")
             request_id = f"{frame.frame_id}-play-{frame.cursor}"
+            play_card_targets = {}
+            validator = getattr(self.provider, 'validator', None)
+            if validator is not None:
+                for option in options:
+                    if not option.startswith('use:'):
+                        continue
+                    card_id = option[4:]
+                    rule = validator.rule_for(state, card_id)
+                    if rule.requires_target_selection:
+                        low, high = rule.target_bounds(state, action.player_id, card_id) if hasattr(rule, 'target_bounds') else (1, 1)
+                        targets = validator.target_candidates(state, action.player_id, card_id)
+                    else:
+                        low, high, targets = 0, 0, ()
+                    play_card_targets[option] = (targets, low, high)
             frame.cursor += 1
             frame.step_index = 2
             return StepResult.ask(PendingRequest(
                 request_id, action.player_id, RequestType.CHOOSE_OPTION,
                 "Choose a play action or end the play phase", action.action_id,
                 frame.frame_id, choices=(*options, END_PLAY_PHASE),
+                play_card_targets=play_card_targets,
             ))
         if frame.step_index == 2:
             choice = frame.decision
             frame.decision = None
+            if isinstance(choice, dict):
+                from .card_use import UseCardAction
+                option = choice['option']
+                if option not in self.provider.options(state, action.player_id):
+                    raise ResolutionError('play option is no longer legal')
+                built = self.provider.build_action(state, action.player_id, option,
+                                                   f"{frame.frame_id}-play-{frame.cursor-1}")
+                if not isinstance(built, UseCardAction):
+                    raise ResolutionError('combined decision requires a physical card')
+                frame.step_index = 3
+                return StepResult.push(replace(built, target_ids=tuple(choice['targets']),
+                                               targets_confirmed=True))
             if choice == END_PLAY_PHASE:
                 return StepResult.complete()
             if not isinstance(choice, str):

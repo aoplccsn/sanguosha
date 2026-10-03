@@ -1,6 +1,6 @@
 """Typed serial decision requests and their validation."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, StrEnum
 
 from sanguosha.model.ids import CardDefinitionId, CardInstanceId, PlayerId
@@ -24,7 +24,7 @@ class ResponsePass(Enum):
 
 
 PASS_RESPONSE = ResponsePass.PASS
-ChoiceValue = bool | str | PlayerId | CardInstanceId | ResponsePass | tuple[str, ...]
+ChoiceValue = bool | str | PlayerId | CardInstanceId | ResponsePass | tuple[str, ...] | dict
 
 
 @dataclass(frozen=True, slots=True)
@@ -43,6 +43,7 @@ class PendingRequest:
     min_count: int = 0
     max_count: int = 0
     subject_player_id: PlayerId | None = None
+    play_card_targets: dict[str, tuple[tuple[str, ...], int, int]] = field(default_factory=dict)
 
     def has_legal_response(self) -> bool:
         """The rule handler supplies physical and virtual response candidates here."""
@@ -76,6 +77,13 @@ class PendingRequest:
             valid = type(value) is bool
         elif kind is RequestType.CHOOSE_OPTION:
             valid = type(value) is str and value in self.choices
+            if type(value) is dict and set(value) == {'option', 'targets'}:
+                option, targets = value['option'], value['targets']
+                spec = self.play_card_targets.get(option) if type(option) is str else None
+                valid = (spec is not None and type(targets) is tuple
+                         and spec[1] <= len(targets) <= spec[2]
+                         and len(targets) == len(set(targets))
+                         and all(type(target) is str and target in spec[0] for target in targets))
         elif kind is RequestType.CHOOSE_PLAYER:
             valid = type(value) is str and value in self.allowed_player_ids
         elif kind is RequestType.RESPOND_WITH_CARD:

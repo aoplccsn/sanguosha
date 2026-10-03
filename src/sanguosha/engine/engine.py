@@ -55,7 +55,7 @@ class GameEngine:
         self.last_result = None
         return self.run_until_blocked()
 
-    def submit_decision(self, decision: Decision) -> EngineStatus:
+    def submit_decision(self, decision: Decision, *, defer_resolution: bool = False) -> EngineStatus:
         request = self.pending_request
         if request is None or self.status is not EngineStatus.WAITING_FOR_DECISION:
             raise UnknownRequest("no pending request")
@@ -70,6 +70,9 @@ class GameEngine:
         frame.decision = decision.value
         frame.status = FrameStatus.READY
         self.pending_request = None
+        self.status = EngineStatus.RUNNING
+        if defer_resolution:
+            return self.status
         return self.run_until_blocked()
 
     def run_until_blocked(self) -> EngineStatus:

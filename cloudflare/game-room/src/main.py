@@ -20,6 +20,7 @@ from sanguosha.multiplayer.protocol import (
 )
 from sanguosha.multiplayer.room import MultiplayerRoom, RoomError, RoomPhase
 from sanguosha.room_snapshot import restore_room, snapshot_room
+from sanguosha.timing import HUMAN_DECISION_TIMEOUT_SECONDS
 
 ROOM_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"
 ROOM_CODE_LENGTH = 6
@@ -109,6 +110,7 @@ class GameRoomDurableObject(DurableObject):
         self.room_code = ""
         self.sockets: dict[str, object] = {}
         self.rate: dict[str, tuple[int, int]] = {}
+        self._active_decision_id: str | None = None
         for ws in self.ctx.getWebSockets():
             attachment = _attachment(ws)
             if attachment and attachment.get("session_id"):
@@ -124,6 +126,8 @@ class GameRoomDurableObject(DurableObject):
         if isinstance(blob, str):
             blob = blob.encode("utf-8")
         self.room = restore_room(blob)
+        # New requests use the current service policy; existing deadlines remain authoritative.
+        self.room.timeout_seconds = HUMAN_DECISION_TIMEOUT_SECONDS
         self._rebind_sockets()
         return True
 
@@ -146,6 +150,9 @@ class GameRoomDurableObject(DurableObject):
 
     def _sender(self, ws):
         def send(message: dict) -> None:
+            if message.get("type") == "PROJECTION_UPDATE" and self._active_decision_id:
+                message = {**message, "after_request_id": self._active_decision_id,
+                           "server_emitted_ms": time.time() * 1000}
             ws.send(json.dumps(message, ensure_ascii=False, separators=(",", ":")))
         return send
 
@@ -162,6 +169,8 @@ class GameRoomDurableObject(DurableObject):
             return
         now_ms = int(time.time() * 1000) if now_ms is None else now_ms
         deadlines = list(self.room.draft_deadlines.values())
+        if getattr(self.room, "accepted_request_id", None):
+            deadlines.append(now_ms / 1000 + 0.001)
         if self.room.request_deadline is not None:
             deadlines.append(self.room.request_deadline)
         ttl_seconds = int(getattr(self.env, "ROOM_TTL_SECONDS", "7200"))
@@ -216,6 +225,8 @@ class GameRoomDurableObject(DurableObject):
             raise ProtocolError("message rate limit exceeded")
 
     async def webSocketMessage(self, ws, raw):
+        received_at = time.perf_counter()
+        received_epoch_ms = time.time() * 1000
         attachment = _attachment(ws)
         session_id = attachment.get("session_id", "")
         message = {}
@@ -225,8 +236,25 @@ class GameRoomDurableObject(DurableObject):
                 raise ProtocolError("message is too large")
             message = json.loads(raw)
             check_message(message)
+            if not await self._load():
+                raise RoomError('room not found')
             await self._handle_message(ws, attachment, message)
-            await self._persist()
+            accepted_at = time.perf_counter()
+            accepted_epoch_ms = time.time() * 1000
+            # Commit the accepted request before running potentially long AI resolution.
+            if message["type"] not in {"HELLO", "PING"}:
+                await self._persist()
+            if message["type"] == "SUBMIT_DECISION":
+                request_id = message["decision"]["request_id"]
+                # A durable alarm continues resolution in a separate event. The ACK
+                # is never held behind an entire synchronous engine/AI chain.
+                ws.send(json.dumps(envelope("DECISION_ACCEPTED", request_id=request_id,
+                                            accepted=True, server_received_ms=received_epoch_ms,
+                                            server_accepted_ms=accepted_epoch_ms,
+                                            server_ack_ms=time.time() * 1000, server_timing_ms={
+                                                "receive_to_accept": round((accepted_at - received_at) * 1000, 2),
+                                                "accept_to_ack": round((time.perf_counter() - accepted_at) * 1000, 2),
+                                            })))
         except (ProtocolError, RoomError, ValueError, KeyError, json.JSONDecodeError) as exc:
             decision = message.get("decision", {}) if isinstance(message, dict) else {}
             request_id = decision.get("request_id", "") if isinstance(decision, dict) else ""
@@ -238,8 +266,9 @@ class GameRoomDurableObject(DurableObject):
         if kind == "HELLO":
             return
         if kind == "PING":
-            ws.send(json.dumps(envelope("PONG")))
+            ws.send(json.dumps(envelope("PONG", server_time_ms=time.time() * 1000)))
             return
+        await self._continue_resolution()
         if kind not in {"JOIN_ROOM", "RECONNECT"} and not attachment.get("player_id"):
             raise ProtocolError("join or reconnect is required")
         if kind in {"JOIN_ROOM", "RECONNECT"}:
@@ -291,7 +320,8 @@ class GameRoomDurableObject(DurableObject):
         elif kind == "START_GAME":
             self.room.start(pid)
         elif kind == "SUBMIT_DECISION":
-            self.room.submit(pid, decision_from_wire(message.get("decision"), pid))
+            self.room.submit(pid, decision_from_wire(message.get("decision"), pid),
+                             defer_resolution=True, send_ack=False)
         elif kind == "TAKEOVER_AI":
             self.room.takeover_ai(pid, PlayerId(message["seat_id"]))
         elif kind == "LEAVE_ROOM":
@@ -321,9 +351,20 @@ class GameRoomDurableObject(DurableObject):
                 self.room.disconnect(PlayerId(player_id))
                 await self._persist()
 
+    async def _continue_resolution(self):
+        request_id = getattr(self.room, "accepted_request_id", None)
+        if request_id:
+            self._active_decision_id = request_id
+            try:
+                self.room.resolve_accepted()
+                await self._persist()
+            finally:
+                self._active_decision_id = None
+
     async def alarm(self):
         if not await self._load():
             return
+        await self._continue_resolution()
         now = time.time()
         last_active_ms = await self.ctx.storage.get(LAST_ACTIVE_KEY) or int(now * 1000)
         ttl_seconds = int(getattr(self.env, "ROOM_TTL_SECONDS", "7200"))

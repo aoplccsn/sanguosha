@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from 'react'
 import { GameConnection } from '../connection/GameConnection'
+import { diagnostics, recordDecision, type DecisionSample } from '../connection/diagnostics'
 import type { ClientState, DraftState, GeneralInfo, LobbyState, PendingRequest, Projection, PublicEvent, ServerVersion, SessionRecord } from '../types'
 
 const SESSION_KEY = 'sanguosha.web.session.v1'
@@ -17,6 +18,7 @@ const initialState: ClientState = {
   pendingRequest: null,
   requestEpoch: 0,
   decisionProcessing: null,
+  decisionAccepted: null,
   notice: '',
   resumeSession: null,
   publicEvents: [],
@@ -70,24 +72,28 @@ function reducer(state: ClientState, action: Action): ClientState {
       return { ...state, lobby, page }
     }
     case 'draft':
-      return { ...state, draft: action.payload as DraftState, page: 'pregame', selectedGeneral: '', decisionProcessing: null, error: '' }
+      return { ...state, draft: action.payload as DraftState, page: 'pregame', selectedGeneral: '', decisionProcessing: null, decisionAccepted: null, error: '' }
     case 'projection': {
       const { projection, activeRequestId } = action.payload as { projection: Projection; activeRequestId: string | null }
       const keepsRequest = !!activeRequestId && state.pendingRequest?.request_id === activeRequestId
-      return { ...state, projection, page: 'game', draft: null, error: '',
+      return { ...state, projection, page: 'game', draft: null, error: '', decisionAccepted: null,
         pendingRequest: keepsRequest ? state.pendingRequest : null,
         requestEpoch: keepsRequest || !state.pendingRequest ? state.requestEpoch : state.requestEpoch + 1 }
     }
     case 'pending':
-      return { ...state, pendingRequest: action.payload as PendingRequest, decisionProcessing: null,
+      return { ...state, pendingRequest: action.payload as PendingRequest, decisionProcessing: null, decisionAccepted: null,
         requestEpoch: state.pendingRequest?.request_id === (action.payload as PendingRequest).request_id ? state.requestEpoch : state.requestEpoch + 1,
         notice: state.pendingRequest?.request_id !== (action.payload as PendingRequest).request_id ? '当前响应已更新' : state.notice }
     case 'decision-result':
       return state.decisionProcessing === action.payload
         ? { ...state, pendingRequest: state.pendingRequest?.request_id === action.payload ? null : state.pendingRequest,
-            decisionProcessing: null, notice: '操作已提交', error: '' } : state
+            decisionProcessing: null, decisionAccepted: action.payload as string, notice: state.draft?.request.request_id === action.payload
+              ? '已确认，等待其他玩家…' : '已确认，正在结算…', error: '' } : state
     case 'decision-begin':
-      return { ...state, decisionProcessing: action.payload as string, notice: '处理中…', error: '' }
+      return { ...state, decisionProcessing: action.payload as string, decisionAccepted: null, notice: '正在提交…', error: '' }
+    case 'decision-slow':
+      return state.decisionProcessing === action.payload
+        ? { ...state, notice: '服务器响应较慢，请稍候…' } : state
     case 'decision-rejected':
       return { ...state, decisionProcessing: null, notice: action.payload as string }
     case 'notice':
@@ -107,8 +113,8 @@ function reducer(state: ClientState, action: Action): ClientState {
     case 'home':
       return { ...initialState, connection: 'idle', generals: state.generals }
     case 'server-restarted':
-      return { ...initialState, connection: 'fatal', generals: state.generals,
-        error: '服务器已重新启动，本局已结束。请返回首页创建新房间。' }
+      return { ...initialState, connection: 'idle', generals: state.generals,
+        error: '无法恢复上一局' }
     default:
       return state
   }
@@ -151,12 +157,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const playerNameRef = useRef('玩家')
   const activeRequestRef = useRef<string | null>(null)
   const submittingRef = useRef<string | null>(null)
+  const timingRef = useRef(new Map<string, { click: number; sent: number; ack?: number; sample?: DecisionSample }>())
 
   useEffect(() => {
-    if (!state.notice || state.notice === '处理中…') return
+    if (!state.notice || state.decisionProcessing || state.decisionAccepted) return
     const timer = window.setTimeout(() => dispatch({ type: 'notice', payload: '' }), 2800)
     return () => window.clearTimeout(timer)
-  }, [state.notice])
+  }, [state.notice, state.decisionProcessing, state.decisionAccepted])
+
+  useEffect(() => {
+    if (!state.decisionProcessing) return
+    const requestId = state.decisionProcessing
+    const timer = window.setTimeout(() => dispatch({ type: 'decision-slow', payload: requestId }), 2000)
+    return () => window.clearTimeout(timer)
+  }, [state.decisionProcessing])
 
   useEffect(() => {
     const connection = connectionRef.current
@@ -165,6 +179,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
       if (status === 'reconnecting' || status === 'offline') {
         activeRequestRef.current = null
         submittingRef.current = null
+        timingRef.current.clear()
+      }
+      if (status === 'offline') {
+        connection.disconnect()
+        recovering.current = false
+        dispatch({ type: 'home' })
+        dispatch({ type: 'error', payload: '无法连接到房间' })
+        const saved = localStorage.getItem(SESSION_KEY)
+        if (saved) {
+          try { dispatch({ type: 'resume-session', payload: JSON.parse(saved) as SessionRecord }) }
+          catch { localStorage.removeItem(SESSION_KEY) }
+        }
       }
     })
     const offMessage = connection.subscribe((message) => {
@@ -214,6 +240,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
         activeRequestRef.current = (message as unknown as DraftState).request.request_id
         dispatch({ type: 'draft', payload: message as unknown as DraftState })
       } else if (kind === 'PROJECTION_UPDATE') {
+        const completedId = String(message.after_request_id ?? '')
+        const timing = timingRef.current.get(completedId)
+        if (timing?.ack && timing.sample) {
+          timing.sample.t6_projection_emit_ms = Number(message.server_emitted_ms ?? 0) || undefined
+          window.requestAnimationFrame(() => {
+            timing.sample!.ack_to_projection_ms = Math.round((performance.now() - timing.ack!) * 100) / 100
+            timing.sample!.total_ms = Math.round((performance.now() - timing.click) * 100) / 100
+            timing.sample!.t7_render_ms = performance.timeOrigin + performance.now()
+            timingRef.current.delete(completedId)
+          })
+        }
         const activeRequestId = String(message.active_request_id ?? '') || null
         activeRequestRef.current = activeRequestId
         dispatch({ type: 'projection', payload: { projection: message.projection as Projection, activeRequestId } })
@@ -223,8 +260,32 @@ export function GameProvider({ children }: { children: ReactNode }) {
         activeRequestRef.current = next.request_id
         submittingRef.current = null
         dispatch({ type: 'pending', payload: next })
-      } else if (kind === 'DECISION_RESULT') {
+      } else if (kind === 'DECISION_ACCEPTED' || kind === 'DECISION_RESULT') {
         const requestId = String(message.request_id ?? '')
+        const timing = timingRef.current.get(requestId)
+        if (timing) {
+          timing.ack = performance.now()
+          const server = message.server_timing_ms as Record<string, number> | undefined
+          timing.sample = {
+            click_to_send_ms: Math.round((timing.sent - timing.click) * 100) / 100,
+            send_to_ack_ms: Math.round((timing.ack - timing.sent) * 100) / 100,
+            receive_to_accept_ms: server?.receive_to_accept ?? null,
+            accept_to_ack_ms: server?.accept_to_ack ?? null,
+            ack_to_projection_ms: null,
+            total_ms: null,
+            t0_click_ms: performance.timeOrigin + timing.click,
+            t1_send_ms: performance.timeOrigin + timing.sent,
+            t2_server_receive_ms: Number(message.server_received_ms ?? 0) || undefined,
+            t3_accept_ms: Number(message.server_accepted_ms ?? 0) || undefined,
+            t4_ack_emit_ms: Number(message.server_ack_ms ?? 0) || undefined,
+            t5_ack_receive_ms: performance.timeOrigin + timing.ack,
+            send_to_server_receive_ms: diagnostics.server_clock_offset_ms !== null && message.server_received_ms
+              ? Number(message.server_received_ms) - (performance.timeOrigin + timing.sent + diagnostics.server_clock_offset_ms)
+              : null,
+            network_clock_estimate: true,
+          }
+          recordDecision(timing.sample)
+        }
         if (submittingRef.current === requestId) submittingRef.current = null
         if (activeRequestRef.current === requestId) activeRequestRef.current = null
         if (import.meta.env.DEV) console.debug('[game] submit success', requestId)
@@ -241,6 +302,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'error', payload: String(message.reason ?? '已离开房间') })
       } else if (kind === 'ERROR') {
         const rejectedRequest = String(message.request_id ?? '')
+        if (rejectedRequest) timingRef.current.delete(rejectedRequest)
         if (rejectedRequest && (submittingRef.current ?? activeRequestRef.current)
             && rejectedRequest !== (submittingRef.current ?? activeRequestRef.current)) {
           dispatch({ type: 'notice', payload: '此前的响应已更新' })
@@ -248,9 +310,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
         }
         const wasSubmitting = submittingRef.current !== null
         submittingRef.current = null
-        if (recovering.current && /room not found|invalid reconnect/i.test(String(message.message ?? ''))) {
+        if (/room not found|invalid reconnect|room expired/i.test(String(message.message ?? ''))) {
           localStorage.removeItem(SESSION_KEY)
           recovering.current = false
+          connection.disconnect()
+          activeRequestRef.current = null
+          submittingRef.current = null
+          timingRef.current.clear()
           dispatch({ type: 'server-restarted' })
           return
         }
@@ -373,10 +439,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const requestId = state.draft.request.request_id
       if (activeRequestRef.current !== requestId || submittingRef.current === requestId) return
       submittingRef.current = requestId
+      const click = performance.now()
       dispatch({ type: 'decision-begin', payload: requestId })
-      if (!connectionRef.current.send('SUBMIT_DECISION', {
+      if (connectionRef.current.send('SUBMIT_DECISION', {
         decision: { request_id: requestId, value: state.selectedGeneral },
-      })) { submittingRef.current = null; dispatch({ type: 'decision-rejected', payload: '连接恢复中，请稍候重试' }) }
+      })) timingRef.current.set(requestId, { click, sent: performance.now() })
+      else { submittingRef.current = null; dispatch({ type: 'decision-rejected', payload: '连接恢复中，请稍候重试' }) }
     },
     submitDecision(requestId, value) {
       if (activeRequestRef.current !== requestId || submittingRef.current === requestId) {
@@ -384,9 +452,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
         return
       }
       submittingRef.current = requestId
+      const click = performance.now()
       if (import.meta.env.DEV) console.debug('[game] submit begin', requestId)
       dispatch({ type: 'decision-begin', payload: requestId })
-      if (!connectionRef.current.send('SUBMIT_DECISION', { decision: { request_id: requestId, value } })) {
+      if (connectionRef.current.send('SUBMIT_DECISION', { decision: { request_id: requestId, value } })) {
+        timingRef.current.set(requestId, { click, sent: performance.now() })
+      } else {
         submittingRef.current = null
         dispatch({ type: 'decision-rejected', payload: '连接恢复中，请稍候重试' })
       }
@@ -421,6 +492,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(SESSION_KEY)
       activeRequestRef.current = null
       submittingRef.current = null
+      timingRef.current.clear()
       recovering.current = false
       dispatch({ type: 'home' })
     },

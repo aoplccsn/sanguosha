@@ -22,6 +22,7 @@ class UseCardAction(Action):
     card_id: CardInstanceId
     target_ids: tuple[PlayerId, ...] = ()
     forced: bool = False
+    targets_confirmed: bool = False
 
 
 class UseCardActionHandler:
@@ -49,7 +50,7 @@ class UseCardActionHandler:
         if action.target_ids:
             self.validator.validate_targets_for_card(rule, state, action.user_id,
                                                      action.card_id, action.target_ids)
-        elif not rule.requires_target_selection:
+        elif not rule.requires_target_selection or action.targets_confirmed:
             self.validator.validate_targets_for_card(rule, state, action.user_id,
                                                      action.card_id, ())
         elif not self.validator.target_candidates(state, action.user_id, action.card_id):
@@ -121,7 +122,7 @@ class UseCardActionHandler:
         if frame.step_index == 0:
             self.validate_start(state, action)
             rule = self.validator.rule_for(state, action.card_id)
-            if rule.requires_target_selection and not action.target_ids:
+            if rule.requires_target_selection and not action.target_ids and not action.targets_confirmed:
                 frame.step_index = 1
                 low, high = rule.target_bounds(state, action.user_id, action.card_id) if hasattr(rule, 'target_bounds') else (1, 1)
                 return StepResult.ask(PendingRequest(

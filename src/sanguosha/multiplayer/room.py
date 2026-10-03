@@ -27,7 +27,8 @@ from sanguosha.session import GameSession
 from .protocol import envelope, serialize_projection, serialize_request
 
 Send = Callable[[dict], None]
-TIMEOUT_SECONDS = 30.0
+from sanguosha.timing import HUMAN_DECISION_TIMEOUT_SECONDS
+TIMEOUT_SECONDS = HUMAN_DECISION_TIMEOUT_SECONDS
 
 
 class RoomPhase(StrEnum):
@@ -110,6 +111,7 @@ class MultiplayerRoom:
         self.draft_deadlines: dict[PlayerId, float] = {}
         self.session: GameSession | None = None
         self.request_deadline: float | None = None
+        self.accepted_request_id: str | None = None
         self._last_request_id: str | None = None
         self._seen_events = 0
         self._ai = AIDecisionProvider(self.mode.seats[0])
@@ -250,7 +252,8 @@ class MultiplayerRoom:
             request, max(0, int((self.draft_deadlines[pid] - time.time()) * 1000))),
             identity=self.pregame.identities[pid].value, lord_id=str(self.pregame.lord_id)))
 
-    def submit(self, pid: PlayerId, decision: Decision) -> None:
+    def submit(self, pid: PlayerId, decision: Decision, *, defer_resolution: bool = False,
+               send_ack: bool = True) -> None:
         if self.seats[pid].controller is not Controller.HUMAN or not self.seats[pid].connected:
             raise RoomError("player is not connected")
         if decision.player_id != pid:
@@ -262,6 +265,9 @@ class MultiplayerRoom:
                     self._send_draft(pid)
                 raise RoomError("stale or duplicate draft decision")
             request.validate(decision.value)
+            if time.time() >= self.draft_deadlines[pid]:
+                self.poll()
+                raise RoomError('draft request timed out')
             assert self.pregame is not None
             if decision.value in self.pregame.generals.values():
                 self._new_draft_request(pid)
@@ -269,8 +275,12 @@ class MultiplayerRoom:
             self.pregame.generals[pid] = CharacterId(decision.value)
             del self.draft_requests[pid]
             del self.draft_deadlines[pid]
-            self._send(pid, envelope("DECISION_RESULT", request_id=decision.request_id, accepted=True))
-            self._complete_draft_if_ready()
+            if defer_resolution:
+                self.accepted_request_id = decision.request_id
+            if send_ack:
+                self._send(pid, envelope("DECISION_RESULT", request_id=decision.request_id, accepted=True))
+            if not defer_resolution:
+                self._complete_draft_if_ready()
             return
         if self.phase is not RoomPhase.IN_GAME or self.session is None:
             raise RoomError("no active game request")
@@ -281,11 +291,35 @@ class MultiplayerRoom:
         if request is not None and request.request_id == decision.request_id:
             decision = self._resolve_hidden_choice(request, decision)
         self.network_decisions.validate(pid, decision)
-        self.session.engine.submit_decision(decision)
-        self._send(pid, envelope("DECISION_RESULT", request_id=decision.request_id, accepted=True))
+        if isinstance(decision.value, dict):
+            from dataclasses import replace
+            from sanguosha.engine.card_use import UseCardAction
+            frame = self.session.engine.stack.top()
+            phase_handler = self.session.engine.registry.handler_for(frame.action)
+            body = phase_handler.bodies.body_for(frame.action.phase)
+            built = body.provider.build_action(self.session.state, pid, decision.value['option'],
+                                               f'{frame.frame_id}-play-{frame.cursor-1}')
+            if not isinstance(built, UseCardAction):
+                raise RoomError('combined decision requires a physical card')
+            built = replace(built, target_ids=decision.value['targets'], targets_confirmed=True)
+            self.session.engine.registry.handler_for(built).validate_start(self.session.state, built)
+        self.session.engine.submit_decision(decision, defer_resolution=defer_resolution)
+        if send_ack:
+            self._send(pid, envelope("DECISION_RESULT", request_id=decision.request_id, accepted=True))
         self._last_request_id = None
         self.request_deadline = None
-        self.pump()
+        if defer_resolution:
+            self.accepted_request_id = decision.request_id
+        if not defer_resolution:
+            self.pump()
+
+    def resolve_accepted(self) -> None:
+        """Advance a committed decision after its ACK has been sent."""
+        if self.phase is RoomPhase.DRAFT:
+            self._complete_draft_if_ready()
+        elif self.phase is RoomPhase.IN_GAME:
+            self.pump()
+        self.accepted_request_id = None
 
     def _complete_draft_if_ready(self) -> None:
         if self.draft_requests:
@@ -329,6 +363,10 @@ class MultiplayerRoom:
     def pump(self, max_steps: int | None = None) -> None:
         if self.session is None:
             return
+        if (self.session.engine.pending_request is None
+                and getattr(self.session.engine, 'stack', None) is not None
+                and not self.session.engine.stack.is_empty()):
+            self.session.engine.run_until_blocked()
         max_steps = self.auto_step_budget if max_steps is None else max_steps
         steps = 0
         while self.session.state.status is not GameStatus.FINISHED:
@@ -436,6 +474,8 @@ class MultiplayerRoom:
     def _request_payload(self, request: PendingRequest) -> dict:
         remaining = max(0, int((self.request_deadline - time.time()) * 1000)) if self.request_deadline else 0
         payload = serialize_request(request, remaining)
+        from .choice_labels import choice_labels
+        payload['choice_labels'] = choice_labels(self, request)
         aliases = self._hidden_hand_aliases(request)
         if aliases:
             reverse = {card_id: alias for alias, card_id in aliases.items()}

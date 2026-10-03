@@ -32,7 +32,42 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
-  beforeEach(() => { submitDecision.mockClear(); request = null; generals = {}; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
+  beforeEach(() => { submitDecision.mockClear(); request = null; generals = {}; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
+
+  it('selects a Slash target and submits card plus target with one final confirm', async () => {
+    request = { request_id: 'play-1', player_id: 'p1', request_type: 'choose_option', prompt: 'Choose a play action or end the play phase', choices: ['use:slash-1', 'end_play_phase'], allowed_player_ids: [], eligible_card_ids: [], required_definition_id: null, allow_pass: false, min_count: 0, max_count: 0, remaining_ms: 60000,
+      play_card_targets: { 'use:slash-1': { targets: ['p2'], min: 1, max: 1 } } }
+    render(<GamePage />)
+    await userEvent.click(screen.getByRole('button', { name: /杀/ }))
+    expect(screen.getByRole('button', { name: /杀/ })).toHaveClass('selected')
+    expect(screen.getByText('杀 → 请选择目标')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '确定' })).toBeDisabled()
+    await userEvent.click(screen.getByText('来宾'))
+    expect(screen.getByText('杀 → 来宾')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: '确定' }))
+    expect(submitDecision).toHaveBeenCalledOnce()
+    expect(submitDecision).toHaveBeenCalledWith('play-1', { option: 'use:slash-1', targets: ['p2'] })
+  })
+
+  it('confirms equipment without requesting a character target', async () => {
+    card.name = '的卢'; card.definition_id = 'equipment.horse.dilu'
+    request = { request_id: 'play-equip', player_id: 'p1', request_type: 'choose_option', prompt: 'Choose a play action or end the play phase', choices: ['use:slash-1', 'end_play_phase'], allowed_player_ids: [], eligible_card_ids: [], required_definition_id: null, allow_pass: false, min_count: 0, max_count: 0, remaining_ms: 60000,
+      play_card_targets: { 'use:slash-1': { targets: [], min: 0, max: 0 } } }
+    render(<GamePage />)
+    await userEvent.click(screen.getByRole('button', { name: /的卢/ }))
+    expect(screen.getAllByText('的卢')).toHaveLength(2)
+    expect(screen.getByRole('button', { name: '确定' })).toBeEnabled()
+    await userEvent.click(screen.getByRole('button', { name: '确定' }))
+    expect(submitDecision).toHaveBeenCalledWith('play-equip', { option: 'use:slash-1', targets: [] })
+  })
+
+  it('shows Chinese labels for Yinghun branches while preserving machine values', async () => {
+    request = { request_id: 'yinghun-1', player_id: 'p1', request_type: 'choose_option', prompt: '英魂：选择分支', choices: ['draw_x_discard_one', 'draw_one_discard_x'], allowed_player_ids: [], eligible_card_ids: [], required_definition_id: null, allow_pass: false, min_count: 0, max_count: 0, remaining_ms: 60000 }
+    render(<GamePage />)
+    await userEvent.click(screen.getByRole('button', { name: '摸 X 张，弃一张' }))
+    expect(submitDecision).toHaveBeenCalledWith('yinghun-1', 'draw_x_discard_one')
+    expect(screen.queryByText('draw_one_discard_x')).not.toBeInTheDocument()
+  })
 
   it('maps shared portrait state for turn, target, response and chain feedback', () => {
     const state = portraitState({ ...players[1], face_up: false, chained: true }, true, true, true)
@@ -52,7 +87,7 @@ describe('GamePage', () => {
     ;(players[0] as any).transformation_pool = ['wind_wei_yan', 'fire_xun_yu']
     render(<GamePage />)
     expect(screen.getByText('田 1')).toBeInTheDocument()
-    expect(screen.getByText('化身 wind_wei_yan')).toBeInTheDocument()
+    expect(screen.getByText('化身 已选择武将')).toBeInTheDocument()
     expect(screen.getByText('化身池 2')).toBeInTheDocument()
   })
 

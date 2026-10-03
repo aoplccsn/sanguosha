@@ -51,6 +51,7 @@ def snapshot_room(room: MultiplayerRoom) -> bytes:
         "last_request_id": room._last_request_id,
         "seen_events": room._seen_events,
         "revision": room._revision,
+        "accepted_request_id": getattr(room, "accepted_request_id", None),
     }
     return json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
 
@@ -94,4 +95,5 @@ def restore_room(blob: bytes) -> MultiplayerRoom:
     room._last_request_id = data["last_request_id"]
     room._seen_events = data["seen_events"]
     room._revision = data["revision"]
+    room.accepted_request_id = data.get("accepted_request_id")
     return room

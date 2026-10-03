@@ -1,0 +1,153 @@
+{
+  "environment": "local Cloudflare Durable Object with Chromium",
+  "network_one_way_is_clock_offset_estimate": true,
+  "samples": [
+    {
+      "click_to_send_ms": 0.1,
+      "send_to_server_receive_estimate_ms": -1.800537109375,
+      "server_receive_to_accept_ms": 0,
+      "accept_to_ack_ms": 1,
+      "send_to_ack_ms": 12.7,
+      "ack_to_projection_render_ms": 57.4,
+      "total_click_to_render_ms": 70.2,
+      "ack_emit_to_projection_emit_ms": 43.000244140625
+    },
+    {
+      "click_to_send_ms": 0.2,
+      "send_to_server_receive_estimate_ms": -3.750244140625,
+      "server_receive_to_accept_ms": 0,
+      "accept_to_ack_ms": 1,
+      "send_to_ack_ms": 12.7,
+      "ack_to_projection_render_ms": 52,
+      "total_click_to_render_ms": 64.9,
+      "ack_emit_to_projection_emit_ms": 33
+    },
+    {
+      "click_to_send_ms": 0.1,
+      "send_to_server_receive_estimate_ms": -2.050048828125,
+      "server_receive_to_accept_ms": 0,
+      "accept_to_ack_ms": 1,
+      "send_to_ack_ms": 11.9,
+      "ack_to_projection_render_ms": 64.4,
+      "total_click_to_render_ms": 76.4,
+      "ack_emit_to_projection_emit_ms": 48.000244140625
+    },
+    {
+      "click_to_send_ms": 0.1,
+      "send_to_server_receive_estimate_ms": -2.999755859375,
+      "server_receive_to_accept_ms": 1,
+      "accept_to_ack_ms": 1,
+      "send_to_ack_ms": 11.9,
+      "ack_to_projection_render_ms": 57,
+      "total_click_to_render_ms": 69,
+      "ack_emit_to_projection_emit_ms": 36
+    },
+    {
+      "click_to_send_ms": 0.1,
+      "send_to_server_receive_estimate_ms": -3.000244140625,
+      "server_receive_to_accept_ms": 0,
+      "accept_to_ack_ms": 1,
+      "send_to_ack_ms": 11.5,
+      "ack_to_projection_render_ms": 56.6,
+      "total_click_to_render_ms": 68.2,
+      "ack_emit_to_projection_emit_ms": 40.999755859375
+    },
+    {
+      "click_to_send_ms": 0.1,
+      "send_to_server_receive_estimate_ms": -2.19970703125,
+      "server_receive_to_accept_ms": 0,
+      "accept_to_ack_ms": 1,
+      "send_to_ack_ms": 12.7,
+      "ack_to_projection_render_ms": 60.4,
+      "total_click_to_render_ms": 73.3,
+      "ack_emit_to_projection_emit_ms": 40
+    },
+    {
+      "click_to_send_ms": 0.1,
+      "send_to_server_receive_estimate_ms": -1.39990234375,
+      "server_receive_to_accept_ms": 0,
+      "accept_to_ack_ms": 1,
+      "send_to_ack_ms": 11.9,
+      "ack_to_projection_render_ms": 55.5,
+      "total_click_to_render_ms": 67.5,
+      "ack_emit_to_projection_emit_ms": 39.000244140625
+    },
+    {
+      "click_to_send_ms": 0,
+      "send_to_server_receive_estimate_ms": -1.9501953125,
+      "server_receive_to_accept_ms": 1,
+      "accept_to_ack_ms": 1,
+      "send_to_ack_ms": 12.5,
+      "ack_to_projection_render_ms": 52.4,
+      "total_click_to_render_ms": 64.9,
+      "ack_emit_to_projection_emit_ms": 38
+    },
+    {
+      "click_to_send_ms": 0.1,
+      "send_to_server_receive_estimate_ms": -1.60009765625,
+      "server_receive_to_accept_ms": 0,
+      "accept_to_ack_ms": 1,
+      "send_to_ack_ms": 12,
+      "ack_to_projection_render_ms": 57.7,
+      "total_click_to_render_ms": 69.8,
+      "ack_emit_to_projection_emit_ms": 41.000244140625
+    },
+    {
+      "click_to_send_ms": 0.1,
+      "send_to_server_receive_estimate_ms": -1.94970703125,
+      "server_receive_to_accept_ms": 0,
+      "accept_to_ack_ms": 1,
+      "send_to_ack_ms": 13.8,
+      "ack_to_projection_render_ms": 59.1,
+      "total_click_to_render_ms": 73,
+      "ack_emit_to_projection_emit_ms": 39
+    }
+  ],
+  "summary": {
+    "click_to_send_ms": {
+      "count": 10,
+      "median": 0.1,
+      "p95": 0.2
+    },
+    "send_to_server_receive_estimate_ms": {
+      "count": 10,
+      "median": -2.0001220703125,
+      "p95": -1.39990234375
+    },
+    "server_receive_to_accept_ms": {
+      "count": 10,
+      "median": 0,
+      "p95": 1
+    },
+    "accept_to_ack_ms": {
+      "count": 10,
+      "median": 1,
+      "p95": 1
+    },
+    "send_to_ack_ms": {
+      "count": 10,
+      "median": 12.25,
+      "p95": 13.8
+    },
+    "ack_to_projection_render_ms": {
+      "count": 10,
+      "median": 57.2,
+      "p95": 64.4
+    },
+    "total_click_to_render_ms": {
+      "count": 10,
+      "median": 69.4,
+      "p95": 76.4
+    },
+    "ack_emit_to_projection_emit_ms": {
+      "count": 10,
+      "median": 39.5001220703125,
+      "p95": 48.000244140625
+    }
+  },
+  "ping_rtt_ms": {
+    "count": 10,
+    "median": 2.45,
+    "p95": 3.2
+  }
+}

@@ -26,6 +26,12 @@ class CardDefinition:
             raise ValueError("attack_range must be positive")
         object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
 
+    @property
+    def nullifiable(self) -> bool:
+        """Only trick effects may open a counter window; equipment/basic never do."""
+        return (self.category in (CardCategory.TRICK, CardCategory.DELAYED_TRICK)
+                and self.metadata.get('nullifiable', True) is not False)
+
 
 @dataclass(frozen=True, slots=True)
 class CardInstance:

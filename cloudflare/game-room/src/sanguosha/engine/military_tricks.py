@@ -130,11 +130,12 @@ class MilitaryTrickRule:
         return TrickAction(aid,user,card,self.definition,targets)
 
 class TrickHandler:
-    def __init__(self,moves,deck,recorder,skills=None):
+    def __init__(self,moves,deck,recorder,skills=None,definitions=None):
         self.moves=moves
         self.deck=deck
         self.recorder=recorder
         self.skills=skills
+        self.definitions=definitions
     def step(self,state,frame):
         a=frame.action
         d=a.definition_id
@@ -198,6 +199,9 @@ class TrickHandler:
             if savage_effect_immune(state, target, self.skills):
                 return StepResult.continue_()
         frame.step_index=2
+        if self.definitions is not None and not self.definitions.get(d).nullifiable:
+            frame.child_result = False
+            return StepResult.continue_()
         return StepResult.push(NullificationWindow(f'{a.action_id}:window:{frame.cursor}',target))
 
 class TargetTrickHandler:
@@ -317,13 +321,17 @@ class ResolveDelayed(Action):
     card_id: str
 
 class DelayedHandler:
-    def __init__(self,moves):
+    def __init__(self,moves,definitions=None):
         self.moves=moves
+        self.definitions=definitions
     def step(self,state,f):
         a=f.action
         d=delayed_definition(state, a.card_id)
         if f.step_index == 0:
             f.step_index=1
+            if self.definitions is not None and not self.definitions.get(d).nullifiable:
+                f.child_result = False
+                return StepResult.continue_()
             return StepResult.push(NullificationWindow(a.action_id+':window',a.player_id))
         if f.step_index == 1:
             if f.child_result:
@@ -380,7 +388,7 @@ def register_military_tricks(definitions,rules,registry,moves,events,deck,bodies
     for key,_ in DELAYED:
         rules.register('delayed.'+key,MilitaryTrickRule('delayed.'+key,distance,skills))
     registry.register(NullificationWindow,NullificationHandler())
-    registry.register(TrickAction,TrickHandler(moves,deck,events,skills))
+    registry.register(TrickAction,TrickHandler(moves,deck,events,skills,definitions))
     registry.register(TargetTrick,TargetTrickHandler(moves,distance,skills))
-    registry.register(ResolveDelayed,DelayedHandler(moves))
+    registry.register(ResolveDelayed,DelayedHandler(moves,definitions))
     bodies.register(Phase.JUDGMENT,JudgmentPhaseBody())

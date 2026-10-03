@@ -581,11 +581,12 @@ def test_static_god_portraits_are_registered_for_web_and_pyside():
     from sanguosha.content.characters.standard import GOD_GENERAL_POOL
     root = Path(__file__).resolve().parents[1]
     manifest = json.loads((root / 'assets' / 'manifest.json').read_text(encoding='utf-8'))
+    web_manifest = json.loads((root / 'web' / 'public' / 'assets' / 'manifest.json').read_text(encoding='utf-8'))
     for character in GOD_GENERAL_POOL:
         asset = manifest[f'general.{character.id}']
         assert character.metadata['portrait_mode'] == 'static'
         assert QImageReader(str(root / 'assets' / asset)).canRead()
-        assert (root / 'web' / 'public' / 'assets' / asset).is_file()
+        assert (root / 'web' / 'public' / 'assets' / web_manifest[f'general.{character.id}']).is_file()
 
 
 def test_ai_priority_does_not_read_hidden_opponent_identity():

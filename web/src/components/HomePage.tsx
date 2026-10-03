@@ -16,6 +16,11 @@ export function HomePage() {
   const [entering, setEntering] = useState(false)
 
   useEffect(() => { if (state.error || state.connection === 'offline' || state.connection === 'fatal') setEntering(false) }, [state.error, state.connection])
+  useEffect(() => {
+    if (!state.error) return
+    const timer = window.setTimeout(actions.clearError, 5000)
+    return () => window.clearTimeout(timer)
+  }, [state.error, actions])
 
   const remember = () => {
     const clean = name.trim() || '玩家'
@@ -56,7 +61,7 @@ export function HomePage() {
         <button className="brush-button compact" disabled={entering} onClick={() => { setEntering(true); actions.continueSession() }}>{entering ? '正在恢复…' : '继续对局'}</button>
         <button className="brush-button subtle compact" onClick={actions.discardSession}>放弃</button>
       </div>}
-      {state.error && !state.error.includes('服务器已重新启动') && <div className="error-banner" role="alert">{state.error}<button onClick={actions.clearError}>×</button></div>}
+      {state.error && <div className="error-banner" role="alert">{state.error}<button onClick={actions.clearError}>×</button></div>}
       {state.updateAvailable && <div className="version-banner" role="status">新版本可用：v{state.serverVersion?.app_version}</div>}
       <footer>
         <span><i className={`connection-dot ${state.connection}`} /> {state.connection === 'connected' ? '服务器已连接' : state.connection === 'idle' ? '等待进入房间' : '正在连接服务器'}</span>

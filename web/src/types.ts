@@ -49,6 +49,8 @@ export interface PendingRequest {
   max_count: number
   subject_player_id: string | null
   remaining_ms: number
+  play_card_targets?: Record<string, { targets: string[]; min: number; max: number }>
+  choice_labels?: Record<string, string>
 }
 
 export interface DraftState {
@@ -153,6 +155,7 @@ export interface ClientState {
   pendingRequest: PendingRequest | null
   requestEpoch: number
   decisionProcessing: string | null
+  decisionAccepted?: string | null
   notice: string
   resumeSession: SessionRecord | null
   publicEvents: PublicEvent[]

@@ -18,7 +18,7 @@ MESSAGE_TYPES = frozenset({
     "HELLO", "WELCOME", "CREATE_ROOM", "ROOM_CREATED", "JOIN_ROOM", "LEAVE_ROOM", "RECONNECT",
     "LOBBY_STATE", "READY", "START_GAME", "CONFIGURE_ROOM", "KICK_PLAYER", "KICKED",
     "DRAFT_REQUEST", "PROJECTION_UPDATE", "PENDING_REQUEST", "SUBMIT_DECISION",
-    "DECISION_RESULT", "PUBLIC_EVENT", "PING", "PONG", "PLAYER_DISCONNECTED",
+    "DECISION_ACCEPTED", "DECISION_RESULT", "PUBLIC_EVENT", "PING", "PONG", "PLAYER_DISCONNECTED",
     "PLAYER_RECONNECTED", "TAKEOVER_AI", "GAME_OVER", "VERSION_MISMATCH", "ERROR",
 })
 
@@ -100,6 +100,8 @@ def serialize_request(request: PendingRequest, remaining_ms: int) -> dict[str, A
         "eligible_card_ids": list(request.eligible_card_ids), "allow_pass": request.allow_pass,
         "min_count": request.min_count, "max_count": request.max_count,
         "subject_player_id": request.subject_player_id, "remaining_ms": remaining_ms,
+        "play_card_targets": {option: {"targets": list(spec[0]), "min": spec[1], "max": spec[2]}
+                              for option, spec in request.play_card_targets.items()},
     }
 
 
@@ -108,9 +110,14 @@ def decision_from_wire(payload: Any, player_id: PlayerId) -> Decision:
         raise ProtocolError("decision requires request_id")
     value = payload.get("value")
     if isinstance(value, dict):
-        if value != {"pass": True}:
+        if value == {"pass": True}:
+            value = PASS_RESPONSE
+        elif (set(value) == {"option", "targets"} and type(value["option"]) is str
+              and type(value["targets"]) is list and len(value["targets"]) <= 8
+              and all(type(item) is str for item in value["targets"])):
+            value = {"option": value["option"], "targets": tuple(value["targets"])}
+        else:
             raise ProtocolError("invalid decision value")
-        value = PASS_RESPONSE
     elif isinstance(value, list):
         if not all(type(item) is str for item in value):
             raise ProtocolError("invalid decision list")
@@ -123,4 +130,5 @@ def decision_from_wire(payload: Any, player_id: PlayerId) -> Decision:
 def decision_to_wire(decision: Decision) -> dict[str, Any]:
     value = decision.value
     return {"request_id": decision.request_id,
-            "value": {"pass": True} if value is PASS_RESPONSE else list(value) if isinstance(value, tuple) else value}
+            "value": {"pass": True} if value is PASS_RESPONSE else list(value) if isinstance(value, tuple)
+            else {"option": value["option"], "targets": list(value["targets"])} if isinstance(value, dict) else value}

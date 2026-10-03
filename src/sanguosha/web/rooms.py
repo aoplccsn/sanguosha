@@ -7,7 +7,7 @@ import secrets
 import time
 from dataclasses import dataclass, field
 
-from sanguosha.multiplayer.room import MultiplayerRoom, RoomPhase
+from sanguosha.multiplayer.room import HUMAN_DECISION_TIMEOUT_SECONDS, MultiplayerRoom, RoomPhase
 
 LOG = logging.getLogger(__name__)
 ROOM_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"
@@ -31,7 +31,8 @@ class ManagedRoom:
 
 class RoomManager:
     def __init__(self, *, max_rooms: int = 1000, room_ttl: float = 7200.0,
-                 reconnect_grace: float = 300.0, timeout_seconds: float = 30.0):
+                 reconnect_grace: float = 300.0,
+                 timeout_seconds: float = HUMAN_DECISION_TIMEOUT_SECONDS):
         self.max_rooms = max_rooms
         self.room_ttl = room_ttl
         self.reconnect_grace = reconnect_grace

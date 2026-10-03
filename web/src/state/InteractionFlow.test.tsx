@@ -66,7 +66,7 @@ it('first confirm shows processing, blocks duplicates, and rejection restores ac
   const socket = enterResponse()
   await userEvent.click(screen.getByRole('button', { name: /闪/ }))
   await userEvent.click(screen.getByRole('button', { name: '确定' }))
-  expect(screen.getByRole('button', { name: '处理中…' })).toBeDisabled()
+  expect(screen.getByRole('button', { name: '正在提交…' })).toBeDisabled()
   expect(socket.sent.filter((raw) => JSON.parse(raw).type === 'SUBMIT_DECISION')).toHaveLength(1)
   act(() => socket.message({ type: 'ERROR', request_id: 'r1', message: 'rejected' }))
   expect(screen.getByRole('button', { name: '确定' })).toBeEnabled()

@@ -11,14 +11,14 @@ from sanguosha.engine.errors import InvalidDecision
 
 from .protocol import (DEFAULT_GAME_PORT, MAX_MESSAGE_BYTES, PROTOCOL_VERSION,
                        ProtocolError, decision_from_wire, decode, encode, envelope)
-from .room import MultiplayerRoom, RoomError
+from .room import HUMAN_DECISION_TIMEOUT_SECONDS, MultiplayerRoom, RoomError
 
 LOG = logging.getLogger(__name__)
 
 
 class GameServer:
     def __init__(self, *, host: str = "0.0.0.0", port: int = DEFAULT_GAME_PORT,
-                 seed: int | None = None, timeout_seconds: float = 30.0):
+                 seed: int | None = None, timeout_seconds: float = HUMAN_DECISION_TIMEOUT_SECONDS):
         self.host, self.port = host, port
         self.room = MultiplayerRoom(seed=seed, timeout_seconds=timeout_seconds)
         self._server: asyncio.Server | None = None

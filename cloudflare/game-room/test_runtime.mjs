@@ -12,8 +12,10 @@ for (const item of catalog) {
   if ('choices' in item || 'request' in item)
     throw new Error(`catalog leaked private draft data: ${item.id}`);
 }
-const portraits = await Promise.all(catalog.map((item) => fetch(`${base}${item.portrait}`, { method: 'HEAD' })));
-if (portraits.some((response) => !response.ok)) throw new Error('missing production general portrait');
+if (process.env.FAST_METRICS !== '1') {
+  const portraits = await Promise.all(catalog.map((item) => fetch(`${base}${item.portrait}`, { method: 'HEAD' })));
+  if (portraits.some((response) => !response.ok)) throw new Error('missing production general portrait');
+}
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -101,9 +103,24 @@ const hostDraft = await host.wait('DRAFT_REQUEST');
 const guestDraft = await guest.wait('DRAFT_REQUEST');
 assert(hostDraft.request.choices.length === 10 && guestDraft.request.choices.length === 10, 'private general drafts delivered');
 assert(JSON.stringify(hostDraft.request.choices) !== JSON.stringify(guestDraft.request.choices), 'general candidates remain per-player');
+assert(hostDraft.request.remaining_ms > 58000 && hostDraft.request.remaining_ms <= 60000,
+  'human draft deadline is 60 seconds');
+const hostSentAt = performance.now();
 host.send('SUBMIT_DECISION', { decision: { request_id: hostDraft.request.request_id, value: hostDraft.request.choices[0] } });
+const hostAck = await host.wait('DECISION_ACCEPTED', 120000,
+  (message) => message.request_id === hostDraft.request.request_id);
+const hostAckAt = performance.now();
+const guestSentAt = performance.now();
 guest.send('SUBMIT_DECISION', { decision: { request_id: guestDraft.request.request_id, value: guestDraft.request.choices[0] } });
-await host.wait('PROJECTION_UPDATE');
+const guestAck = await guest.wait('DECISION_ACCEPTED', 120000,
+  (message) => message.request_id === guestDraft.request.request_id);
+const guestAckAt = performance.now();
+await guest.wait('PROJECTION_UPDATE', 120000,
+  (message) => message.after_request_id === guestDraft.request.request_id);
+const projectionAt = performance.now();
+assert(hostAck.server_timing_ms && guestAck.server_timing_ms,
+  'non-sensitive server decision timing is included in ACK');
+assert(guestAckAt <= projectionAt, 'ACK arrives before resulting projection');
 assert(host.messages.some((m) => m.type === 'PROJECTION_UPDATE'), 'authoritative GameSession started');
 
 guest.ws.close();
@@ -123,4 +140,12 @@ assert(status.phase === 'IN_GAME', 'SQLite snapshot reports active game');
 
 host.ws.close();
 restored.ws.close();
-console.log(JSON.stringify({ code, phase: status.phase, hostMessages: host.messages.length, guestMessages: guest.messages.length, reconnectMessages: restored.messages.length }));
+console.log(JSON.stringify({ code, phase: status.phase, hostMessages: host.messages.length,
+  guestMessages: guest.messages.length, reconnectMessages: restored.messages.length,
+  localDecisionTimingMs: {
+    hostSendToAck: +(hostAckAt - hostSentAt).toFixed(2),
+    guestSendToAck: +(guestAckAt - guestSentAt).toFixed(2),
+    guestAckToProjection: +(projectionAt - guestAckAt).toFixed(2),
+    hostServer: hostAck.server_timing_ms,
+    guestServer: guestAck.server_timing_ms,
+  } }));
