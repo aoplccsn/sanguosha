@@ -115,12 +115,24 @@ class PhaseActionHandler:
             if state.status is GameStatus.FINISHED or not state.players[action.player_id].is_alive:
                 return StepResult.complete()
             state.current_phase = action.phase
+            if action.phase is Phase.PREPARATION:
+                for player in state.players.values():
+                    player.marks.pop('wind:' + action.player_id, None)
+                    player.marks.pop('fog:' + action.player_id, None)
             if action.phase is Phase.PLAY:
                 state.play_usage = PlayUsageState(action.player_id, state.turn_number)
             self.recorder.record(PhaseStartedEvent(f"{action.action_id}:start", action.player_id, action.phase))
             frame.step_index = 1
             return StepResult.continue_()
         if frame.step_index == 4:
+            if (action.phase is Phase.FINISH and self.skills is not None
+                    and not frame.local.get('star_weather_offered')
+                    and self.skills.has(state, action.player_id, 'qixing')
+                    and state.players[action.player_id].is_alive):
+                from .gods import StarWeatherAction
+                frame.local['star_weather_offered'] = True
+                return StepResult.push(StarWeatherAction(
+                    f'{action.action_id}:weather', action.player_id))
             if (action.phase is Phase.DRAW and self.skills is not None
                     and not frame.local.get('qixing_exchanged')
                     and self.skills.has(state, action.player_id, 'qixing')

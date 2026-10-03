@@ -5,7 +5,7 @@ from dataclasses import replace
 from sanguosha.engine.card_moves import CardMove, CardMoveReason
 from sanguosha.engine.gods import WushenUse, WuhunDeathAction, ShelieAction, GongxinAction, QinyinAction, YeyanAction, GuixinAction
 from sanguosha.engine.distance import DistanceSystem
-from sanguosha.engine.gods import QixingExchangeAction, star_zone
+from sanguosha.engine.gods import QixingExchangeAction, StarWeatherAction, star_zone
 from sanguosha.engine.rng import PythonRandomSource
 from sanguosha.pregame import Pregame, SetupStage
 from sanguosha.projection import project_for_human
@@ -223,3 +223,27 @@ def test_qixing_initial_stars_private_and_exchange_reconnect_safe():
     restored.engine.submit_decision(Decision(request.request_id, 'p1', (stars[0],)))
     assert hand in restored.state.cards_in(star_zone('p1'))
     assert stars[0] in restored.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
+
+
+def test_star_weather_modifies_fire_and_prevents_non_thunder_damage():
+    ids = tuple(f'p{i}' for i in range(1, 6))
+    setup = Pregame(PythonRandomSource(10), dict(zip(ids,
+        (Identity.LORD, Identity.LOYALIST, Identity.REBEL,
+         Identity.REBEL, Identity.RENEGADE))), (), stage=SetupStage.COMPLETE,
+        generals=dict(zip(ids, ('fire_god_zhugeliang', 'caocao', 'liubei',
+                                 'sunquan', 'guanyu'))))
+    session = GameSession.new_game(military=True, setup=setup)
+    state = session.state
+    stars = state.cards_in(star_zone('p1'))
+    session.engine.start_action(StarWeatherAction('weather', 'p1'))
+    for choice in ('wind', ('p2',), (stars[0],), 'fog', ('p3',), (stars[1],)):
+        request = session.engine.pending_request
+        session.engine.submit_decision(Decision(request.request_id, 'p1', choice))
+    assert state.players['p2'].marks['wind:p1'] == 1
+    assert state.players['p3'].marks['fog:p1'] == 1
+    from sanguosha.engine.military_basics import MilitaryDamageAction
+    from sanguosha.model.enums import DamageNature
+    session.engine.start_action(MilitaryDamageAction('weather-fire', 'p4', 'p2', 1, DamageNature.FIRE))
+    assert state.players['p2'].hp == state.players['p2'].max_hp - 2
+    session.engine.start_action(MilitaryDamageAction('weather-fog', 'p4', 'p3', 1))
+    assert state.players['p3'].hp == state.players['p3'].max_hp

@@ -628,3 +628,82 @@ class QixingExchangeHandler:
         self.moves.move(state, CardMove(frame.action.action_id + ':in', selected_stars,
             stars, hand, CardMoveReason.SYSTEM, actor, frame.action.action_id))
         return StepResult.complete()
+
+
+@dataclass(frozen=True, slots=True)
+class StarWeatherAction(Action):
+    player_id: str
+
+
+class StarWeatherHandler:
+    def __init__(self, skills, moves):
+        self.skills, self.moves = skills, moves
+
+    def step(self, state, frame):
+        actor = frame.action.player_id
+        stars = star_zone(actor)
+        if not self.skills.has(state, actor, 'qixing') or not state.players[actor].is_alive:
+            return StepResult.complete()
+        if frame.step_index == 0:
+            available = []
+            if state.cards_in(stars):
+                if not frame.local.get('wind_used'):
+                    available.append('wind')
+                if not frame.local.get('fog_used'):
+                    available.append('fog')
+            if not available:
+                return StepResult.complete()
+            frame.step_index = 1
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + f':mode:{len(frame.local)}', actor,
+                RequestType.CHOOSE_OPTION, '七星：发动狂风或大雾',
+                frame.action.action_id, frame.frame_id,
+                choices=(*available, 'done')))
+        if frame.step_index == 1:
+            mode = frame.decision
+            frame.decision = None
+            if mode == 'done':
+                return StepResult.complete()
+            if mode not in ('wind', 'fog') or frame.local.get(mode + '_used'):
+                raise InvalidCardUse('七星天气选择不合法')
+            frame.local['mode'] = mode
+            targets = tuple(pid for pid in state.seat_order if state.players[pid].is_alive)
+            frame.step_index = 2
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + f':targets:{mode}', actor,
+                RequestType.CHOOSE_PLAYERS, '狂风指定一名角色；大雾指定至多星数名角色',
+                frame.action.action_id, frame.frame_id,
+                allowed_player_ids=targets, min_count=1,
+                max_count=1 if mode == 'wind' else min(len(targets), len(state.cards_in(stars)))))
+        if frame.step_index == 2:
+            targets = tuple(frame.decision)
+            frame.decision = None
+            living = {pid for pid in state.seat_order if state.players[pid].is_alive}
+            if (not targets or len(set(targets)) != len(targets)
+                    or any(pid not in living for pid in targets)
+                    or len(targets) > len(state.cards_in(stars))
+                    or (frame.local['mode'] == 'wind' and len(targets) != 1)):
+                raise InvalidCardUse('七星天气目标不合法')
+            frame.local['targets'] = targets
+            frame.step_index = 3
+            return StepResult.ask(PendingRequest(
+                frame.action.action_id + ':cost:' + frame.local['mode'], actor,
+                RequestType.CHOOSE_CARDS, '弃置与目标数量相同的星牌',
+                frame.action.action_id, frame.frame_id,
+                eligible_card_ids=state.cards_in(stars),
+                min_count=len(targets), max_count=len(targets)))
+        cards = tuple(frame.decision)
+        frame.decision = None
+        targets = frame.local['targets']
+        if (len(cards) != len(targets) or len(set(cards)) != len(cards)
+                or any(cid not in state.cards_in(stars) for cid in cards)):
+            raise InvalidCardUse('七星天气星牌代价不合法')
+        self.moves.move(state, CardMove(
+            frame.action.action_id + ':discard:' + frame.local['mode'], cards,
+            stars, ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD,
+            actor, frame.action.action_id))
+        for target in targets:
+            state.players[target].marks[frame.local['mode'] + ':' + actor] = 1
+        frame.local[frame.local['mode'] + '_used'] = True
+        frame.step_index = 0
+        return StepResult.continue_()

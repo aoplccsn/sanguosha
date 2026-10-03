@@ -68,6 +68,11 @@ class MilitaryDamageHandler(DamageActionHandler):
         target = state.players[action.target_id]
         if frame.step_index == 0:
             self.validate_start(state, action)
+            if (action.nature is not DamageNature.THUNDER
+                    and any(key.startswith('fog:') for key in target.marks)):
+                self.recorder.record(Event(action.action_id + ':fog', 'damage_prevented',
+                    action.target_id, metadata={'skill_id': 'dawu'}))
+                return StepResult.complete(0)
             if (not frame.local.get('tianxiang_offered') and not getattr(action, 'redirected', False)
                     and self.skills is not None and self.skills.has(state, action.target_id, 'tianxiang')):
                 hand = state.cards_in(ZoneRef(ZoneType.HAND, action.target_id))
@@ -83,6 +88,9 @@ class MilitaryDamageHandler(DamageActionHandler):
                         action.action_id, frame.frame_id,
                         choices=(f'damage:{action.amount}',), subject_player_id=action.source_id))
             amount = action.amount
+            if (action.nature is DamageNature.FIRE
+                    and any(key.startswith('wind:') for key in target.marks)):
+                amount += 1
             armor = equipped(state, action.target_id, EquipmentSlot.ARMOR)
             if (action.source_id is not None and state.current_player_id == action.source_id
                     and state.players[action.source_id].marks.get('luoyi')
