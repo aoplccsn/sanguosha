@@ -66,3 +66,18 @@ def test_worker_bundle_uses_authoritative_room_and_snapshot():
     assert "self.room = MultiplayerRoom(seed=seed" in source
     assert "mode_id=message.get('mode_id'" in source
     assert "asyncio.sleep" not in source
+
+def test_worker_engine_bundle_matches_authoritative_source():
+    source_root = ROOT / "src" / "sanguosha"
+    worker_root = ROOT / "cloudflare" / "game-room" / "src" / "sanguosha"
+    excluded = {"ui", "relay", "web"}
+    source_files = {
+        path.relative_to(source_root): path.read_bytes()
+        for path in source_root.rglob("*.py")
+        if not excluded.intersection(path.relative_to(source_root).parts)
+    }
+    worker_files = {
+        path.relative_to(worker_root): path.read_bytes()
+        for path in worker_root.rglob("*.py")
+    }
+    assert worker_files == source_files

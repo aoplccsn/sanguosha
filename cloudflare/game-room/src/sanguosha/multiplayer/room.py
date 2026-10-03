@@ -123,8 +123,6 @@ class MultiplayerRoom:
             seat = next((s for s in self.seats.values() if s.token == token and s.controller is Controller.HUMAN), None)
             if seat is None:
                 raise RoomError("invalid reconnect token")
-            if seat.connected:
-                raise RoomError("seat is already connected")
             seat.connected, seat.send = True, send
             self._send_current(seat.player_id)
             self._broadcast(envelope("PLAYER_RECONNECTED", seat_id=str(seat.player_id)))

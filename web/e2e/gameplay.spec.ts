@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const screenshotDir = path.resolve(process.cwd(), '../docs/t9_web_screenshots')
-type WireMessage = { type: string; revision?: number; request?: { player_id?: string; request_id?: string }; event?: { kind?: string; definition_id?: string } }
+type WireMessage = { type: string; revision?: number; projection?: { turn_number?: number }; request?: { player_id?: string; request_id?: string }; event?: { kind?: string; definition_id?: string } }
 
 function recordMessages(page: Page, messages: WireMessage[]) {
   page.on('websocket', (socket) => socket.on('framereceived', ({ payload }) => {
@@ -23,7 +23,7 @@ async function enterSeededGame(browser: Browser) {
   const guestMessages: WireMessage[] = []
   recordMessages(host, hostMessages)
   recordMessages(guest, guestMessages)
-  await host.goto('/?seed=5')
+  await host.goto('/?seed=464597')
   await host.getByLabel('玩家昵称').fill('房主')
   await host.getByRole('button', { name: '创建多人房间' }).click()
   const roomCode = (await host.locator('.room-code-box strong').textContent())?.trim()
@@ -99,16 +99,20 @@ test('real browser gameplay performs skill, Slash, Dodge and Nullification', asy
     await expect(host.locator('.shared-card-pool')).toBeVisible()
     await expect(guest.locator('.shared-card-pool')).toBeVisible()
     await host.screenshot({ path: path.join(screenshotDir, 'shared_card_pool.png'), fullPage: true })
-    for (let round = 0; round < 8; round += 1) {
+    for (let round = 0; round < 40; round += 1) {
+      if (Math.max(...game.hostMessages.map((message) => message.projection?.turn_number ?? 0)) >= 2) break
       const page = await host.locator('.decision-prompt').isVisible() ? host
         : await guest.locator('.decision-prompt').isVisible() ? guest : null
       if (!page) break
       const prompt = await page.locator('.decision-prompt').textContent() ?? ''
       if (prompt.includes('无懈可击')) {
         const legal = page.locator('.hand-card:not([disabled])').filter({ hasText: '无懈可击' })
-        if (await legal.count()) await legal.first().click()
-        else await page.getByRole('button', { name: '本次均不响应' }).click()
-        await page.getByRole('button', { name: '确定' }).click()
+        if (await legal.count()) {
+          await legal.first().click()
+          await page.getByRole('button', { name: '确定' }).click()
+        } else {
+          await page.getByRole('button', { name: '本次均不响应' }).click()
+        }
       } else if (await page.locator('.shared-card-pool').isVisible()) {
         await page.locator('.shared-card-pool .hand-card:not([disabled])').first().click()
         await page.getByRole('button', { name: '确定' }).click()
@@ -117,6 +121,20 @@ test('real browser gameplay performs skill, Slash, Dodge and Nullification', asy
       }
       await page.waitForTimeout(250)
     }
+    if (Math.max(...game.hostMessages.map((message) => message.projection?.turn_number ?? 0)) < 2
+        && await host.getByRole('button', { name: '结束出牌' }).isVisible()) {
+      await host.getByRole('button', { name: '结束出牌' }).click()
+      if (await host.getByRole('button', { name: '确定' }).isVisible()) {
+        try {
+          await host.getByRole('button', { name: '确定' }).click({ timeout: 1000 })
+        } catch (error) {
+          if (Math.max(...game.hostMessages.map((message) => message.projection?.turn_number ?? 0)) < 2) throw error
+        }
+      }
+    }
+    await expect.poll(() => Math.max(...game.hostMessages.map((message) => message.projection?.turn_number ?? 0))).toBeGreaterThanOrEqual(2)
+    await expect.poll(() => game.hostMessages.filter((message) => message.type === 'PROJECTION_UPDATE').at(-1)?.revision).toBe(
+      game.guestMessages.filter((message) => message.type === 'PROJECTION_UPDATE').at(-1)?.revision)
   } finally {
     await closeGame([game.hostContext, game.guestContext])
   }

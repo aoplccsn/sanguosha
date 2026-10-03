@@ -1,5 +1,6 @@
 """Five- and eight-seat identity mode contracts."""
 
+import pytest
 from collections import Counter
 
 from sanguosha.game_modes import MILITARY_EIGHT, MILITARY_FIVE
@@ -123,3 +124,101 @@ def test_hidden_opponent_hand_uses_opaque_choice_and_restores_after_snapshot():
     assert restored._request_payload(request)['eligible_card_ids'] == payload['eligible_card_ids']
     decision = restored._resolve_hidden_choice(request, Decision('private-choice', 'p1', 'hidden-hand:1'))
     assert decision.value == hand[0]
+
+def test_god_toggle_changes_private_draft_pool_and_reconnect_keeps_owner():
+    import json
+
+    def started(allow_gods):
+        wire = {"p1": [], "p2": []}
+        room = MultiplayerRoom(seed=2, allow_gods=allow_gods)
+        host, host_token = room.join("host", wire["p1"].append)
+        guest, guest_token = room.join("guest", wire["p2"].append)
+        room.ready(guest, True)
+        room.start(host)
+        return room, wire, host, guest, host_token, guest_token
+
+    ordinary, ordinary_wire, host, guest, host_token, guest_token = started(False)
+    enabled, enabled_wire, _, _, enabled_host_token, enabled_guest_token = started(True)
+    assert not any("_god_" in choice for choice in ordinary.draft_requests[host].choices)
+    assert any("_god_" in choice for choice in enabled.draft_requests[host].choices)
+    for room, wire, tokens in (
+        (ordinary, ordinary_wire, (host_token, guest_token)),
+        (enabled, enabled_wire, (enabled_host_token, enabled_guest_token)),
+    ):
+        host_request = next(message for message in wire["p1"] if message["type"] == "DRAFT_REQUEST")
+        guest_request = next(message for message in wire["p2"] if message["type"] == "DRAFT_REQUEST")
+        assert host_request["request"]["player_id"] == host
+        assert guest_request["request"]["player_id"] == guest
+        assert host_request["request"]["request_id"] != guest_request["request"]["request_id"]
+        assert all(token not in json.dumps(wire) for token in tokens)
+        room.disconnect(guest)
+        restored = []
+        assert room.join("guest", restored.append, token=tokens[1])[0] == guest
+        restored_request = next(message for message in restored if message["type"] == "DRAFT_REQUEST")["request"]
+        assert {key: value for key, value in restored_request.items() if key != "remaining_ms"} == {
+            key: value for key, value in guest_request["request"].items() if key != "remaining_ms"}
+        assert 0 <= restored_request["remaining_ms"] <= guest_request["request"]["remaining_ms"]
+        assert all(token not in json.dumps(restored) for token in tokens)
+
+def test_each_viewer_projection_hides_other_hands_and_unrevealed_roles():
+    import json
+
+    wire = {"p1": [], "p2": []}
+    room = MultiplayerRoom(seed=2, mode_id="military-five")
+    host, host_token = room.join("host", wire["p1"].append)
+    guest, guest_token = room.join("guest", wire["p2"].append)
+    room.ready(guest, True)
+    room.start(host)
+    for pid in (host, guest):
+        request = room.draft_requests[pid]
+        room.submit(pid, Decision(request.request_id, pid, request.choices[0]))
+    projections = {
+        pid: next(message["projection"] for message in wire[pid]
+                  if message["type"] == "PROJECTION_UPDATE")
+        for pid in (host, guest)
+    }
+
+    def all_card_ids(value):
+        if isinstance(value, dict):
+            result = {value["card_id"]} if "card_id" in value else set()
+            for child in value.values():
+                result.update(all_card_ids(child))
+            return result
+        if isinstance(value, (list, tuple)):
+            result = set()
+            for child in value:
+                result.update(all_card_ids(child))
+            return result
+        return set()
+
+    for viewer, opponent in ((host, guest), (guest, host)):
+        view = projections[viewer]
+        opponent_view = projections[opponent]
+        own_hand = {card["card_id"] for card in view["hand"]}
+        assert own_hand
+        assert own_hand.isdisjoint(all_card_ids(opponent_view))
+        assert host_token not in json.dumps(view) and guest_token not in json.dumps(view)
+        for player in view["players"]:
+            pid = player["player_id"]
+            if pid != viewer and pid != room.pregame.lord_id:
+                assert player["identity_label"] == "未知"
+
+@pytest.mark.parametrize("seed", [23, 47])
+def test_eight_player_random_roster_ai_match_finishes(seed):
+    import random
+    from sanguosha.content.characters.standard import PLAYABLE_65_GENERAL_POOL
+    from sanguosha.pregame import SetupStage
+
+    setup = Pregame.create(seed, "military-eight")
+    ids = tuple(setup.identities)
+    selected = random.Random(seed).sample([character.id for character in PLAYABLE_65_GENERAL_POOL], 8)
+    setup.generals = dict(zip(ids, selected))
+    setup.stage = SetupStage.COMPLETE
+    session = GameSession.new_game(military=True, setup=setup)
+    session.human_id = "automated"
+    session.pump_until_human_or_end(20_000)
+    assert session.state.status.value == "finished"
+    assert session.state.victory is not None
+    assert session.engine.pending_request is None
+    assert session.engine.stack.is_empty()
+    assert len(session.state.players) == 8

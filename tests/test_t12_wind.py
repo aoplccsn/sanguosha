@@ -822,7 +822,7 @@ def test_wind_catalogue_is_playable_without_placeholder_descriptions():
                for character in ordinary)
     assert all('规则摘要' not in skills[skill_id].description
                for character in ordinary for skill_id in character.skill_ids)
-    assert all(not character.metadata['implemented'] and not character.metadata['playable']
+    assert all(character.metadata['implemented'] and character.metadata['playable']
                for character in MYTH_CHARACTERS if character.id.startswith('wind_god_'))
 
 
