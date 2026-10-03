@@ -123,13 +123,16 @@ def restore_session(blob: bytes) -> GameSession:
         raise ValueError(f"incompatible GameSnapshot schema: {version!r}")
     state = _decode(data["state"])
     military = state.ruleset_id == "classic-military"
+    mode_id = state.metadata.get('mode_id', 'military-five')
     generals = {pid: CharacterId(player.character_id) for pid, player in state.players.items()}
     with_generals = military and all(not str(general).startswith("blank-") for general in generals.values())
     setup = None
     if with_generals:
         identities = {pid: Identity(player.identity) for pid, player in state.players.items()}
-        setup = Pregame(PythonRandomSource(0), identities, (), SetupStage.COMPLETE, generals)
-    session = GameSession.new_game(seed=0, military=military, setup=setup)
+        setup = Pregame(PythonRandomSource(0), identities, (), SetupStage.COMPLETE,
+                        generals, mode_id=mode_id)
+    session = GameSession.new_game(seed=0, military=military, setup=setup,
+                                   mode_id=mode_id)
     engine = session.engine
     engine.state = state
     engine.stack = ResolutionStack()

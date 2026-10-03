@@ -8,6 +8,7 @@ from sanguosha.engine.requests import Decision, PendingRequest, RequestType
 from sanguosha.engine.rng import PythonRandomSource, RandomSource
 from sanguosha.model.enums import Identity
 from sanguosha.model.ids import CharacterId, PlayerId
+from sanguosha.game_modes import game_mode
 
 
 SEATS = tuple(PlayerId(f'p{i}') for i in range(1, 6))
@@ -28,17 +29,21 @@ class Pregame:
     stage: SetupStage = SetupStage.IDENTITY_REVEAL
     generals: dict[PlayerId, CharacterId] = field(default_factory=dict)
     human_id: PlayerId = SEATS[0]
+    mode_id: str = 'military-five'
 
     @classmethod
-    def create(cls, seed: int | None = None) -> 'Pregame':
+    def create(cls, seed: int | None = None, mode_id: str = 'military-five') -> 'Pregame':
         rng = PythonRandomSource(seed)
-        roles = list(ROLE_SET)
+        mode = game_mode(mode_id)
+        roles = list(mode.roles)
         rng.shuffle(roles)
         # Preserve the established standard-mode draft; T10 clients can opt
         # into ALL_65_GENERAL_POOL through the pack-aware multiplayer path.
         roster = list(STANDARD_25_GENERAL_POOL)
         rng.shuffle(roster)
-        return cls(rng, dict(zip(SEATS, roles)), tuple(c.id for c in roster[:10]))
+        return cls(rng, dict(zip(mode.seats, roles)),
+                   tuple(c.id for c in roster[:mode.general_offer_count]),
+                   mode_id=mode_id)
 
     @property
     def lord_id(self) -> PlayerId:
@@ -69,7 +74,7 @@ class Pregame:
         chosen = CharacterId(decision.value)
         self.generals[self.human_id] = chosen
         available = [character.id for character in STANDARD_25_GENERAL_POOL if character.id != chosen]
-        for pid in SEATS[1:]:
+        for pid in game_mode(self.mode_id).seats[1:]:
             selected = self.rng.choice(available)
             available.remove(selected)
             self.generals[pid] = selected

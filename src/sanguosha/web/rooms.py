@@ -38,13 +38,16 @@ class RoomManager:
         self.timeout_seconds = timeout_seconds
         self.rooms: dict[str, ManagedRoom] = {}
 
-    def create(self, *, seed: int | None = None, review_god_lvbu: bool = False) -> ManagedRoom:
+    def create(self, *, seed: int | None = None, review_god_lvbu: bool = False,
+               mode_id: str = 'military-five', allow_gods: bool = False) -> ManagedRoom:
         if len(self.rooms) >= self.max_rooms:
             raise ValueError("server room limit reached")
         for _ in range(100):
             code = "".join(secrets.choice(ROOM_ALPHABET) for _ in range(6))
             if code not in self.rooms:
-                managed = ManagedRoom(code, MultiplayerRoom(seed=seed, timeout_seconds=self.timeout_seconds, review_god_lvbu=review_god_lvbu))
+                managed = ManagedRoom(code, MultiplayerRoom(seed=seed,
+                    timeout_seconds=self.timeout_seconds, review_god_lvbu=review_god_lvbu,
+                    mode_id=mode_id, allow_gods=allow_gods))
                 self.rooms[code] = managed
                 LOG.info("room created code=%s", code)
                 return managed

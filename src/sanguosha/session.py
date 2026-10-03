@@ -33,6 +33,7 @@ from sanguosha.model.ids import CharacterId, PlayerId
 from sanguosha.model.player import PlayerState
 from sanguosha.model.state import GameState, GameStatus
 from sanguosha.pregame import Pregame, SetupStage
+from sanguosha.game_modes import game_mode
 
 
 CHARACTER_NAMES = ("曹操", "刘备", "孙权", "吕布", "关羽")
@@ -84,14 +85,17 @@ class GameSession:
 
     @classmethod
     def new_game(cls, seed: int = 6, *, military: bool = False, five_generals: bool = False,
-                 setup: Pregame | None = None) -> "GameSession":
+                 setup: Pregame | None = None, mode_id: str | None = None) -> "GameSession":
         if setup is not None and setup.stage is not SetupStage.COMPLETE:
             raise ValueError('general draft must finish before starting a match')
         if setup is not None and not military:
             raise ValueError('standard general draft requires the military ruleset')
         rng = setup.rng if setup is not None else PythonRandomSource(seed)
         card_instances, draw_zone = classic_military_deck(rng) if military else basic_deck(rng)
-        ids = tuple(PlayerId(f"p{i}") for i in range(1, 6))
+        mode = game_mode(mode_id or (setup.mode_id if setup is not None else 'military-five'))
+        ids = mode.seats
+        if setup is not None and set(setup.identities) != set(ids):
+            raise ValueError('draft seats do not match game mode')
         if five_generals and not military:
             raise ValueError('five generals require the military ruleset')
         skills = None
@@ -101,18 +105,21 @@ class GameSession:
             skills = SkillRegistry()
             # Seat order follows the original portrait order.
             characters = (tuple(skills.characters[setup.generals[pid]] for pid in ids) if setup is not None else
-                          tuple(skills.characters[key] for key in ('caocao','liubei','sunquan','lvbu','guanyu')))
-        identities = tuple(setup.identities[pid] for pid in ids) if setup is not None else IDENTITIES
+                          tuple(skills.characters[key] for key in
+                                ('caocao','liubei','sunquan','lvbu','guanyu',
+                                 'simayi','zhangliao','zhaoyun')[:mode.seat_count]))
+        identities = tuple(setup.identities[pid] for pid in ids) if setup is not None else mode.roles
         players = {}
         for index, pid in enumerate(ids):
             character = characters[index] if characters else None
-            maximum = character.max_hp + (1 if identities[index] is Identity.LORD and characters else 0) if character else 4
+            maximum = character.max_hp + (mode.lord_hp_bonus if identities[index] is Identity.LORD and characters else 0) if character else 4
             players[pid] = PlayerState(pid, index, character.id if character else CharacterId(f'blank-{index+1}'),
                                        identities[index], maximum, maximum)
         state = GameState(
             "classic-military" if military else "t5-basic-identity", players=players, seat_order=ids,
             cards=card_instances, zones={draw_zone.ref: draw_zone},
             status=GameStatus.ACTIVE,
+            metadata={'mode_id': mode.mode_id},
             revealed_identities={setup.lord_id} if setup is not None else {ids[0]},
         )
         for player in players.values():
@@ -320,7 +327,7 @@ class GameSession:
         return cls(
             engine, events, definitions, ids[0],
             AIDecisionProvider(ids[0]),
-            {pid: characters[index].name for index, pid in enumerate(ids)} if setup is not None else dict(zip(ids, CHARACTER_NAMES)),
+            {pid: characters[index].name for index, pid in enumerate(ids)} if characters is not None else dict(zip(ids, CHARACTER_NAMES)),
             skills,
             rng=rng,
         )
