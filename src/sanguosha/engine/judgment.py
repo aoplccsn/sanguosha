@@ -103,6 +103,20 @@ class JudgmentHandler:
                         action.action_id, frame.frame_id, eligible_card_ids=candidates,
                         choices=tuple(f'better:{cid}' for cid in candidates if cid in preferred)))
             return StepResult.continue_()
+        if frame.step_index == 9:
+            replace_card = frame.decision is True
+            frame.decision = None
+            frame.step_index = 1
+            actor = PlayerId(str(frame.local['guicai_actor']))
+            if replace_card and state.players[actor].marks.get('ren', 0) > 0:
+                state.players[actor].marks['ren'] -= 1
+                candidates = state.cards_in(ZoneRef(ZoneType.HAND, actor))
+                frame.step_index = 5
+                return StepResult.ask(PendingRequest(
+                    f'{action.action_id}:jilue-guicai-card', actor,
+                    RequestType.CHOOSE_CARD, '极略·鬼才：选择替换判定牌的手牌',
+                    action.action_id, frame.frame_id, eligible_card_ids=candidates))
+            return StepResult.continue_()
         if frame.step_index == 5:
             actor = PlayerId(str(frame.local['guicai_actor']))
             material = CardInstanceId(str(frame.decision))
@@ -176,6 +190,20 @@ class JudgmentHandler:
                         RequestType.YES_NO, '判定牌已亮出，是否发动【鬼才】改判？',
                         action.action_id, frame.frame_id,
                         choices=(f'current:{int(current_match)}', *(f'better:{cid}' for cid in preferred)),
+                        subject_player_id=action.player_id))
+            if self.skills is not None and not frame.local.get('jilue_guicai_offered'):
+                frame.local['jilue_guicai_offered'] = True
+                actor = next((pid for pid in state.seat_order if state.players[pid].is_alive
+                              and self.skills.has(state, pid, 'jilue')
+                              and state.players[pid].marks.get('ren', 0) > 0
+                              and state.cards_in(ZoneRef(ZoneType.HAND, pid))), None)
+                if actor is not None:
+                    frame.local['guicai_actor'] = str(actor)
+                    frame.step_index = 9
+                    return StepResult.ask(PendingRequest(
+                        f'{action.action_id}:jilue-guicai', actor,
+                        RequestType.YES_NO, '是否弃一枚忍标记发动【极略·鬼才】？',
+                        action.action_id, frame.frame_id,
                         subject_player_id=action.player_id))
             if self.skills is not None and not frame.local.get('guidao_offered'):
                 frame.local['guidao_offered'] = True

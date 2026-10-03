@@ -283,7 +283,7 @@ class GameSession:
                 registry.register(HuashenAction, HuashenHandler(skills, rng))
                 registry.register(XinshengAction, XinshengHandler(skills, rng))
                 registry.register(BeigeAction, BeigeHandler(skills, moves))
-                from sanguosha.engine.gods import WushenUse, WushenHandler, WuhunDeathAction, WuhunDeathHandler, ShelieAction, ShelieHandler, GongxinAction, GongxinHandler, QinyinAction, QinyinHandler, YeyanAction, YeyanHandler, GuixinAction, GuixinHandler, QixingExchangeAction, QixingExchangeHandler, StarWeatherAction, StarWeatherHandler, LonghunUse, LonghunUseHandler, BaiyinAction, BaiyinHandler
+                from sanguosha.engine.gods import WushenUse, WushenHandler, WuhunDeathAction, WuhunDeathHandler, ShelieAction, ShelieHandler, GongxinAction, GongxinHandler, QinyinAction, QinyinHandler, YeyanAction, YeyanHandler, GuixinAction, GuixinHandler, QixingExchangeAction, QixingExchangeHandler, StarWeatherAction, StarWeatherHandler, LonghunUse, LonghunUseHandler, BaiyinAction, BaiyinHandler, JiluePlayAction, JiluePlayHandler
                 registry.register(WushenUse, WushenHandler(skills, moves, slash_rule))
                 registry.register(WuhunDeathAction, WuhunDeathHandler(skills))
                 registry.register(ShelieAction, ShelieHandler(skills, moves))
@@ -295,6 +295,7 @@ class GameSession:
                 registry.register(StarWeatherAction, StarWeatherHandler(skills, moves))
                 registry.register(LonghunUse, LonghunUseHandler(skills, moves, events, slash_rule))
                 registry.register(BaiyinAction, BaiyinHandler(skills))
+                registry.register(JiluePlayAction, JiluePlayHandler(skills))
                 registry.register(BuquAction, BuquHandler(deck, moves))
                 registry.register(LeijiAction, LeijiHandler())
                 from sanguosha.engine.wind_guhuo import GuhuoAction, GuhuoHandler

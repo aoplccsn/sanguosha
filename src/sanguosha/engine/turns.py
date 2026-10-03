@@ -82,6 +82,7 @@ class TurnActionHandler:
                         action.action_id, frame.frame_id))
             if state.ruleset_id == 'classic-military':
                 state.players[action.player_id].marks.pop('wine', None)
+                state.players[action.player_id].marks.pop('jilue_wansha', None)
                 for key in ('slash_quota_bonus', 'slash_ignore_distance',
                             'slash_extra_targets', 'slash_prohibited',
                             'shuangxiong_color'):

@@ -284,6 +284,26 @@ class MilitaryDamageHandler(DamageActionHandler):
             from .forest import FangzhuAction
             frame.local['fangzhu_offered'] = True
             return StepResult.push(FangzhuAction(action.action_id + ':fangzhu', action.target_id))
+        if frame.step_index == 14:
+            wanted = frame.decision is True
+            frame.decision = None
+            frame.step_index = 1
+            if wanted and target.marks.get('ren', 0) > 0:
+                target.marks['ren'] -= 1
+                from .forest import FangzhuAction
+                return StepResult.push(FangzhuAction(
+                    action.action_id + ':jilue-fangzhu', action.target_id))
+        if (frame.step_index == 1 and self.skills is not None and target.is_alive
+                and not frame.local.get('jilue_fangzhu_offered')
+                and self.skills.has(state, action.target_id, 'jilue')
+                and not self.skills.has(state, action.target_id, 'fangzhu')
+                and target.marks.get('ren', 0) > 0):
+            frame.local['jilue_fangzhu_offered'] = True
+            frame.step_index = 14
+            return StepResult.ask(PendingRequest(
+                action.action_id + ':jilue-fangzhu', action.target_id,
+                RequestType.YES_NO, '是否弃一枚忍标记发动【极略·放逐】？',
+                action.action_id, frame.frame_id))
         if (frame.step_index == 1 and self.skills is not None and target.is_alive
                 and self.skills.has(state, action.target_id, 'guixin')
                 and frame.local.get('guixin_count', 0) < int(frame.local['amount'])):

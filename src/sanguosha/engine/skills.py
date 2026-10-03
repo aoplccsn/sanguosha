@@ -36,6 +36,8 @@ class SkillRegistry:
                        and 'huashen' not in player.disabled_skills)
         if skill_id == 'wushuang' and state.players[player_id].marks.get('wuwei', 0):
             return True
+        if skill_id == 'wansha' and player.marks.get('jilue_wansha', 0):
+            return True
         if character is None or (skill_id not in character.skill_ids
                                  and skill_id not in player.granted_skills
                                  and not transformed):
@@ -1112,6 +1114,11 @@ class SkillPlayOptions:
                 ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT) and zone.card_ids
                 for ref,zone in state.zones.items()):
             extra.append('skill:zhiheng')
+        if self.skills.has(state, pid, 'jilue') and state.players[pid].marks.get('ren', 0) > 0:
+            if not state.play_usage.count('skill.zhiheng') and materials:
+                extra.append('skill:jilue-zhiheng')
+            if not state.players[pid].marks.get('jilue_wansha'):
+                extra.append('skill:jilue-wansha')
         if self.skills.has(state,pid,'kurou'):
             extra.append('skill:kurou')
         if self.skills.has(state,pid,'wuwei') and state.players[pid].marks.get('rage', 0) >= 2:
@@ -1251,6 +1258,9 @@ class SkillPlayOptions:
     def build_action(self, state, pid, option, aid):
         if option not in self.options(state,pid):
             raise InvalidCardUse('skill option is no longer legal')
+        if option.startswith('skill:jilue-'):
+            from .gods import JiluePlayAction
+            return JiluePlayAction(aid + ':jilue', pid, option.split('-', 1)[1])
         if option.startswith('virtual:longhun:'):
             from .gods import LonghunUse
             parts = option.split(':')

@@ -832,3 +832,41 @@ class BaiyinHandler:
         if player.is_alive:
             player.granted_skills['jilue'] = 'baoyin'
         return StepResult.complete(player.is_alive)
+
+
+@dataclass(frozen=True, slots=True)
+class JiluePlayAction(Action):
+    player_id: str
+    mode: str
+
+
+class JiluePlayHandler:
+    def __init__(self, skills):
+        self.skills = skills
+
+    def step(self, state, frame):
+        action = frame.action
+        actor = action.player_id
+        player = state.players[actor]
+        if frame.step_index == 0:
+            if (not self.skills.has(state, actor, 'jilue')
+                    or player.marks.get('ren', 0) < 1
+                    or state.current_player_id != actor
+                    or state.current_phase is not Phase.PLAY
+                    or state.play_usage is None):
+                raise InvalidCardUse('极略当前不可用')
+            if action.mode == 'zhiheng':
+                if state.play_usage.count('skill.zhiheng'):
+                    raise InvalidCardUse('极略制衡本阶段已用')
+                player.marks['ren'] -= 1
+                from .skills import ZhihengAction
+                frame.step_index = 1
+                return StepResult.push(ZhihengAction(action.action_id + ':zhiheng', actor))
+            if action.mode == 'wansha':
+                if player.marks.get('jilue_wansha'):
+                    raise InvalidCardUse('本回合已发动极略完杀')
+                player.marks['ren'] -= 1
+                player.marks['jilue_wansha'] = 1
+                return StepResult.complete()
+            raise InvalidCardUse('极略模式不合法')
+        return StepResult.complete(frame.child_result)
