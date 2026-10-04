@@ -1,0 +1,21 @@
+{
+  "runtime_count": 9,
+  "runtime_total_bytes": 53270072,
+  "maximum_runtime": "forest_god_lvbu",
+  "maximum_runtime_bytes": 7771456,
+  "dist_original_baseline": 11868359,
+  "dist_before_media": 11870771,
+  "dist_after_media": 65073876,
+  "source_total_bytes": 54774173,
+  "all_sources_unchanged": true,
+  "all_video_payloads_identical": true,
+  "all_static_pixels_match_source_frame": true,
+  "production_only_cleaned_videos": true,
+  "tools": {
+    "download": "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip",
+    "version": "9.0.2",
+    "portable_path": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\t15_tools\\ffmpeg-9.0.2-essentials_build\\bin",
+    "zip_sha256": "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba",
+    "authorization": "User explicitly approved portable tool download; no installation or system PATH changes."
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "forest_god_lvbu": {
+    "source": "C:/path/to/dynamic_portrait_sources/god_lubu_idle.mp4",
+    "objectPosition": "center top"
+  },
+  "mountain_god_zhaoyun": {
+    "source": "C:/path/to/dynamic_portrait_sources/god_zhaoyun_idle.mp4",
+    "objectPosition": "center top"
+  },
+  "fire_god_zhouyu": {
+    "source": "C:/path/to/dynamic_portrait_sources/god_zhouyu_idle.mp4",
+    "objectPosition": "center top"
+  },
+  "fire_god_zhugeliang": {
+    "source": "C:/path/to/dynamic_portrait_sources/god_zhugeliang_idle.mp4",
+    "objectPosition": "center top"
+  },
+  "forest_god_caocao": {
+    "source": "C:/path/to/dynamic_portrait_sources/god_caocao_idle.mp4",
+    "objectPosition": "center top"
+  },
+  "mountain_god_simayi": {
+    "source": "C:/path/to/dynamic_portrait_sources/god_simayi_idle.mp4",
+    "objectPosition": "center top"
+  },
+  "wind_god_guanyu": {
+    "source": "C:/path/to/dynamic_portrait_sources/god_guanyu_idle.mp4",
+    "objectPosition": "center top"
+  },
+  "wind_god_lvmeng": {
+    "source": "C:/path/to/dynamic_portrait_sources/god_lvmeng_idle.mp4",
+    "objectPosition": "center top"
+  },
+  "wind_zhang_jiao": {
+    "source": "C:/path/to/dynamic_portrait_sources/zhangjiao_idle.mp4",
+    "objectPosition": "center top"
+  }
+}

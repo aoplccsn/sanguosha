@@ -13,6 +13,7 @@ import json
 import shutil
 import struct
 import subprocess
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -54,6 +55,8 @@ def main():
     parser.add_argument('--sources', required=True, type=Path)
     parser.add_argument('--ffmpeg', default=shutil.which('ffmpeg'))
     parser.add_argument('--ffprobe', default=shutil.which('ffprobe'))
+    parser.add_argument('--static-from-first-frame', action='store_true',
+        help='Create a matching PNG/WebP fallback from the final video first frame if no static_master is supplied')
     args = parser.parse_args()
     if not args.ffmpeg or not args.ffprobe:
         parser.error('Existing ffmpeg and ffprobe required; no software will be installed.')
@@ -63,7 +66,9 @@ def main():
     manifest_path = ROOT / 'assets/idle_portraits.json'
     manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
     static_manifest = json.loads((ROOT / 'assets/manifest.json').read_text(encoding='utf-8'))
-    reports = []
+    report_path = ROOT / 'docs/t15/media_report.json'
+    existing_reports = json.loads(report_path.read_text(encoding='utf-8')) if report_path.exists() else []
+    reports = [item for item in existing_reports if item['id'] not in sources]
     # Validate all input files before creating any output.
     for entry in sources.values():
         for field in ('source', 'static_master'):
@@ -86,7 +91,7 @@ def main():
             parser.error('Pending runtime exists: ' + str(temporary))
         encode = ['-c:v', 'copy'] if copy else ['-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'slow']
         try:
-            subprocess.run([args.ffmpeg, '-nostdin', '-n', '-i', str(source), '-map', '0:v:0',
+            subprocess.run([args.ffmpeg, '-hide_banner', '-loglevel', 'warning', '-nostdin', '-n', '-i', str(source), '-map', '0:v:0',
                 *encode, '-an', '-movflags', '+faststart', str(temporary)], check=True)
             cleaned = probe(args.ffprobe, temporary)
             result = next(stream for stream in cleaned['streams'] if stream['codec_type'] == 'video')
@@ -99,26 +104,55 @@ def main():
         finally:
             if temporary.exists():
                 temporary.unlink()  # Only this invocation's scratch output.
+        encoded_video_hash = None
+        if copy:
+            def packet_hash(path):
+                return subprocess.check_output([args.ffmpeg, '-hide_banner', '-loglevel', 'error',
+                    '-i', str(path), '-map', '0:v:0', '-c:v', 'copy', '-f', 'hash',
+                    '-hash', 'sha256', '-'], text=True).strip()
+            encoded_video_hash = packet_hash(source)
+            assert packet_hash(output) == encoded_video_hash, 'Copied video payload changed'
         static_path = ROOT / 'assets' / static_manifest['general.' + general_id]
-        if 'static_master' in entry:
-            from PIL import Image
-            master = Path(entry['static_master']).resolve()
-            if master == static_path.resolve() or master == static_path.with_suffix('.webp').resolve():
-                parser.error('Static Master must be separate from runtime output')
-            with Image.open(master) as original:
-                original.save(static_path, 'PNG')
-                browser = original.copy()
-                browser.thumbnail((640, 900), Image.Resampling.LANCZOS)
-                browser.save(static_path.with_suffix('.webp'), 'WEBP', quality=90, method=6)
+        static_master_hash = None
+        static_pixels_hash = None
+        frame_fallback = args.static_from_first_frame and 'static_master' not in entry
+        with tempfile.TemporaryDirectory(prefix='t15-static-') as scratch:
+            if frame_fallback:
+                frame = Path(scratch) / 'first-frame.png'
+                subprocess.run([args.ffmpeg, '-hide_banner', '-loglevel', 'error', '-nostdin', '-n',
+                    '-i', str(source), '-map', '0:v:0', '-frames:v', '1', str(frame)], check=True)
+                master = frame
+            else:
+                master = Path(entry['static_master']).resolve() if 'static_master' in entry else None
+            if master is not None:
+                from PIL import Image
+                if master == static_path.resolve() or master == static_path.with_suffix('.webp').resolve():
+                    parser.error('Static Master must be separate from runtime output')
+                static_master_hash = digest(master)
+                with Image.open(master) as original:
+                    original.save(static_path, 'PNG')
+                    static_pixels_hash = hashlib.sha256(original.convert('RGB').tobytes()).hexdigest()
+                    browser = original.copy()
+                    browser.thumbnail((640, 900), Image.Resampling.LANCZOS)
+                    browser.save(static_path.with_suffix('.webp'), 'WEBP', quality=90, method=6)
+        assert digest(source) == before, 'Source changed during static extraction'
         url = '/assets/portraits/idle/' + output.name
         manifest[general_id] = {'video': url, 'objectPosition': entry.get('objectPosition', 'center top')}
         reports.append({'id': general_id, 'source': str(source), 'source_sha256': before,
-            'static': str(static_path.relative_to(ROOT)), 'runtime': str(output.relative_to(ROOT)),
+            'static': static_path.relative_to(ROOT).as_posix(), 'runtime': output.relative_to(ROOT).as_posix(),
             'codec': result['codec_name'], 'pixel_format': result['pix_fmt'],
             'resolution': [result['width'], result['height']], 'fps': result['avg_frame_rate'],
             'duration': cleaned['format']['duration'], 'bytes': output.stat().st_size,
             'audio': False, 'faststart': True, 'stream_copy': copy,
-            'source_probe': info, 'static_master_updated': 'static_master' in entry})
+            'source_probe': info, 'runtime_probe': cleaned,
+            'runtime_sha256': digest(output), 'static_sha256': digest(static_path),
+            'encoded_video_sha256': encoded_video_hash,
+            'video_payload_identical': copy, 'source_unchanged': digest(source) == before,
+            'static_master_sha256': static_master_hash,
+            'static_pixel_sha256': static_pixels_hash,
+            'static_master_updated': master is not None,
+            'static_from_final_frame': frame_fallback,
+            'static_frame_timestamp': 0 if frame_fallback else None})
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     report = ROOT / 'docs/t15/media_report.json'
     report.parent.mkdir(parents=True, exist_ok=True)

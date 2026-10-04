@@ -6,6 +6,9 @@ import { GamePage } from '/src/components/GamePage.tsx'
 import '/src/styles.css'
 const ids = ['wind_zhang_jiao', 'forest_god_lvbu', 'wind_god_guanyu', 'fire_god_zhouyu', 'mountain_god_zhaoyun']
 const names = ['张角', '神吕布', '神关羽', '神周瑜', '神赵云']
+const params = new URLSearchParams(location.search)
+if (params.has('second')) { ids.splice(0, 5, 'forest_god_caocao', 'mountain_god_simayi', 'fire_god_zhugeliang', 'wind_god_lvmeng', 'fire_god_zhouyu'); names.splice(0, 5, '神曹操', '神司马懿', '神诸葛亮', '神吕蒙', '神周瑜') }
+if (params.has('only-lvbu')) { ids.splice(0, 5, 'caocao', 'forest_god_lvbu', 'guanyu', 'zhouyu', 'zhaoyun'); names.splice(0, 5, '曹操', '神吕布', '关羽', '周瑜', '赵云') }
 window.__t15DynamicIds = new URLSearchParams(location.search).has('single') ? ['forest_god_lvbu'] : ids
 window.__t15State = {
   seatId: 'p1', connection: 'connected', decisionProcessing: null, requestEpoch: 0,
@@ -19,7 +22,7 @@ window.__t15State = {
 }
 // A synthetic browser-recorded WebM exercises native playback only. It is never
 // registered/copied as production artwork or used for character visual acceptance.
-if (!new URLSearchParams(location.search).has('missing')) {
+if (!params.has('real') && !params.has('missing')) {
   const canvas=document.createElement('canvas'); canvas.width=160; canvas.height=240
   const stream=canvas.captureStream(24), recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp8'})
   const chunks=[]

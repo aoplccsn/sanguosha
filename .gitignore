@@ -68,3 +68,6 @@ docs/t10_art/v3_source_existing/
 docs/t10_art/v3_preintegration_backup/
 docs/t10_art/v3_review/*.png
 docs/t10_art/v3_review/web_ui_smoke/
+
+# T15 machine-local source mapping (master videos remain external)
+docs/t15/sources.local.json

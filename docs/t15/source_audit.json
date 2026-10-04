@@ -1,0 +1,326 @@
+[
+  {
+    "id": "forest_god_lvbu",
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_lubu_idle.mp4",
+    "bytes": 7942202,
+    "browser": {
+      "width": 720,
+      "height": 1280,
+      "duration": 10.005,
+      "currentTime": 0,
+      "decodedFrames": 3
+    },
+    "sha256": "bfada76663f50b6c81273c6f9c5d3c62f97c42e44e48f1747bc57db1055c8f2d",
+    "container_tracks": [
+      {
+        "handler": "vide",
+        "codec": "avc1",
+        "timescale": 12288,
+        "duration": 10.0,
+        "width": 720,
+        "height": 1280,
+        "avc_profile": 100,
+        "avc_level": 31,
+        "frames": 240,
+        "fps": 24.0
+      },
+      {
+        "handler": "soun",
+        "codec": "mp4a",
+        "timescale": 48000,
+        "duration": 10.026666666666667
+      }
+    ],
+    "audio": true,
+    "faststart": true,
+    "inspection": "ISO-BMFF atom inspection + Chromium decode; ffprobe not installed; pixel format unverified"
+  },
+  {
+    "id": "mountain_god_zhaoyun",
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_zhaoyun_idle.mp4",
+    "bytes": 5117400,
+    "browser": {
+      "width": 720,
+      "height": 1280,
+      "duration": 10.005,
+      "currentTime": 0,
+      "decodedFrames": 3
+    },
+    "sha256": "b9757dc6152feed652afd0ba64539403020a8d5736ac4c4a7be51d3755f78f50",
+    "container_tracks": [
+      {
+        "handler": "vide",
+        "codec": "avc1",
+        "timescale": 12288,
+        "duration": 10.0,
+        "width": 720,
+        "height": 1280,
+        "avc_profile": 100,
+        "avc_level": 31,
+        "frames": 240,
+        "fps": 24.0
+      },
+      {
+        "handler": "soun",
+        "codec": "mp4a",
+        "timescale": 48000,
+        "duration": 10.026666666666667
+      }
+    ],
+    "audio": true,
+    "faststart": true,
+    "inspection": "ISO-BMFF atom inspection + Chromium decode; ffprobe not installed; pixel format unverified"
+  },
+  {
+    "id": "fire_god_zhouyu",
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_zhouyu_idle.mp4",
+    "bytes": 5475145,
+    "browser": {
+      "width": 720,
+      "height": 1280,
+      "duration": 10.005,
+      "currentTime": 0.003441,
+      "decodedFrames": 4
+    },
+    "sha256": "0d119c81f98d8a5e49dcbd568b5260fde0501873e327e51d4215451d521fcfcd",
+    "container_tracks": [
+      {
+        "handler": "vide",
+        "codec": "avc1",
+        "timescale": 90000,
+        "duration": 10.0,
+        "width": 720,
+        "height": 1280,
+        "avc_profile": 100,
+        "avc_level": 31,
+        "frames": 240,
+        "fps": 24.0
+      },
+      {
+        "handler": "soun",
+        "codec": "mp4a",
+        "timescale": 48000,
+        "duration": 10.026333333333334
+      }
+    ],
+    "audio": true,
+    "faststart": false,
+    "inspection": "ISO-BMFF atom inspection + Chromium decode; ffprobe not installed; pixel format unverified"
+  },
+  {
+    "id": "fire_god_zhugeliang",
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_zhugeliang_idle.mp4",
+    "bytes": 5707070,
+    "browser": {
+      "width": 720,
+      "height": 1280,
+      "duration": 10.005,
+      "currentTime": 0,
+      "decodedFrames": 3
+    },
+    "sha256": "57c7f90e13c53e8508c59ea0726ee87da718330044cb203f5cf1ed18afe7684e",
+    "container_tracks": [
+      {
+        "handler": "vide",
+        "codec": "avc1",
+        "timescale": 90000,
+        "duration": 10.0,
+        "width": 720,
+        "height": 1280,
+        "avc_profile": 100,
+        "avc_level": 31,
+        "frames": 240,
+        "fps": 24.0
+      },
+      {
+        "handler": "soun",
+        "codec": "mp4a",
+        "timescale": 48000,
+        "duration": 10.026333333333334
+      }
+    ],
+    "audio": true,
+    "faststart": false,
+    "inspection": "ISO-BMFF atom inspection + Chromium decode; ffprobe not installed; pixel format unverified"
+  },
+  {
+    "id": "forest_god_caocao",
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_caocao_idle.mp4",
+    "bytes": 5610595,
+    "browser": {
+      "width": 720,
+      "height": 1280,
+      "duration": 10.005,
+      "currentTime": 0,
+      "decodedFrames": 3
+    },
+    "sha256": "84acd0719d67d12f49a77f75903053de69f4b02698d35148280a02ef359f59e9",
+    "container_tracks": [
+      {
+        "handler": "vide",
+        "codec": "avc1",
+        "timescale": 90000,
+        "duration": 10.0,
+        "width": 720,
+        "height": 1280,
+        "avc_profile": 100,
+        "avc_level": 31,
+        "frames": 240,
+        "fps": 24.0
+      },
+      {
+        "handler": "soun",
+        "codec": "mp4a",
+        "timescale": 48000,
+        "duration": 10.026333333333334
+      }
+    ],
+    "audio": true,
+    "faststart": false,
+    "inspection": "ISO-BMFF atom inspection + Chromium decode; ffprobe not installed; pixel format unverified"
+  },
+  {
+    "id": "mountain_god_simayi",
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_simayi_idle.mp4",
+    "bytes": 4989017,
+    "browser": {
+      "width": 720,
+      "height": 1280,
+      "duration": 10.005,
+      "currentTime": 0,
+      "decodedFrames": 3
+    },
+    "sha256": "d08429e8e5e54997a0e10b2319519eb2f9f968fcc60eae427fa5b3f5f60a752c",
+    "container_tracks": [
+      {
+        "handler": "vide",
+        "codec": "avc1",
+        "timescale": 90000,
+        "duration": 10.0,
+        "width": 720,
+        "height": 1280,
+        "avc_profile": 100,
+        "avc_level": 31,
+        "frames": 240,
+        "fps": 24.0
+      },
+      {
+        "handler": "soun",
+        "codec": "mp4a",
+        "timescale": 48000,
+        "duration": 10.026333333333334
+      }
+    ],
+    "audio": true,
+    "faststart": false,
+    "inspection": "ISO-BMFF atom inspection + Chromium decode; ffprobe not installed; pixel format unverified"
+  },
+  {
+    "id": "wind_god_guanyu",
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_guanyu_idle.mp4",
+    "bytes": 6795933,
+    "browser": {
+      "width": 720,
+      "height": 1280,
+      "duration": 10.005,
+      "currentTime": 0,
+      "decodedFrames": 3
+    },
+    "sha256": "80837357fee3eddd4891347073e5557710af2dafdf1cf54c4fd896881e1834d9",
+    "container_tracks": [
+      {
+        "handler": "vide",
+        "codec": "avc1",
+        "timescale": 90000,
+        "duration": 10.0,
+        "width": 720,
+        "height": 1280,
+        "avc_profile": 100,
+        "avc_level": 31,
+        "frames": 240,
+        "fps": 24.0
+      },
+      {
+        "handler": "soun",
+        "codec": "mp4a",
+        "timescale": 48000,
+        "duration": 10.026333333333334
+      }
+    ],
+    "audio": true,
+    "faststart": false,
+    "inspection": "ISO-BMFF atom inspection + Chromium decode; ffprobe not installed; pixel format unverified"
+  },
+  {
+    "id": "wind_god_lvmeng",
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_lvmeng_idle.mp4",
+    "bytes": 5712018,
+    "browser": {
+      "width": 720,
+      "height": 1280,
+      "duration": 10.005,
+      "currentTime": 0,
+      "decodedFrames": 2
+    },
+    "sha256": "a7833e4e4421882d2fe70e5fb712e4f393c3a28481588b5445676c75846cd6ef",
+    "container_tracks": [
+      {
+        "handler": "vide",
+        "codec": "avc1",
+        "timescale": 90000,
+        "duration": 10.0,
+        "width": 720,
+        "height": 1280,
+        "avc_profile": 100,
+        "avc_level": 31,
+        "frames": 240,
+        "fps": 24.0
+      },
+      {
+        "handler": "soun",
+        "codec": "mp4a",
+        "timescale": 48000,
+        "duration": 10.026333333333334
+      }
+    ],
+    "audio": true,
+    "faststart": false,
+    "inspection": "ISO-BMFF atom inspection + Chromium decode; ffprobe not installed; pixel format unverified"
+  },
+  {
+    "id": "wind_zhang_jiao",
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\zhangjiao_idle.mp4",
+    "bytes": 7424793,
+    "browser": {
+      "width": 720,
+      "height": 1280,
+      "duration": 10.005,
+      "currentTime": 0,
+      "decodedFrames": 2
+    },
+    "sha256": "f3c4fb50f980fe1939225e68708b726b8470ffc7aeca62c5d2b95abeaba9a7b2",
+    "container_tracks": [
+      {
+        "handler": "vide",
+        "codec": "avc1",
+        "timescale": 12288,
+        "duration": 10.0,
+        "width": 720,
+        "height": 1280,
+        "avc_profile": 100,
+        "avc_level": 31,
+        "frames": 240,
+        "fps": 24.0
+      },
+      {
+        "handler": "soun",
+        "codec": "mp4a",
+        "timescale": 48000,
+        "duration": 10.026666666666667
+      }
+    ],
+    "audio": true,
+    "faststart": true,
+    "inspection": "ISO-BMFF atom inspection + Chromium decode; ffprobe not installed; pixel format unverified"
+  }
+]

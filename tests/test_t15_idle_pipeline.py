@@ -48,3 +48,26 @@ def test_outside_runtime_directory_is_rejected(tmp_path):
     result=subprocess.run([sys.executable,str(script),'--production'],capture_output=True,text=True)
     assert result.returncode!=0
     assert 'Missing or unsafe' in result.stderr
+
+
+def test_all_final_portraits_have_verified_audio_free_runtime_and_matched_static():
+    import hashlib
+    from PIL import Image
+    reports=json.loads((ROOT/'docs/t15/media_report.json').read_text(encoding='utf-8'))
+    manifest=json.loads((ROOT/'assets/idle_portraits.json').read_text(encoding='utf-8'))
+    expected={'forest_god_lvbu','mountain_god_zhaoyun','fire_god_zhouyu','fire_god_zhugeliang','forest_god_caocao','mountain_god_simayi','wind_god_guanyu','wind_god_lvmeng','wind_zhang_jiao'}
+    assert set(manifest)==expected
+    assert {r['id'] for r in reports}==expected
+    for report in reports:
+        runtime=ROOT/report['runtime']
+        assert hashlib.sha256(runtime.read_bytes()).hexdigest()==report['runtime_sha256']
+        assert runtime.stat().st_size==report['bytes']
+        assert manifest[report['id']]['video']=='/'+report['runtime']
+        assert report['faststart'] and not report['audio'] and report['video_payload_identical']
+        streams=report['runtime_probe']['streams']
+        assert len(streams)==1 and streams[0]['codec_type']=='video'
+        assert streams[0]['codec_name']=='h264' and streams[0]['pix_fmt']=='yuv420p'
+        assert streams[0]['width']==720 and streams[0]['height']==1280
+        with Image.open(ROOT/report['static']) as image:
+            assert image.size==(720,1280)
+            assert hashlib.sha256(image.convert('RGB').tobytes()).hexdigest()==report['static_pixel_sha256']
