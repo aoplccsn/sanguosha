@@ -1,0 +1,26 @@
+[
+  {
+    "count": 0,
+    "firstTargetClickMs": 3.600000023841858,
+    "cardFinalConfirm": true,
+    "responseFinalConfirm": true
+  },
+  {
+    "count": 1,
+    "firstTargetClickMs": 3.300000011920929,
+    "cardFinalConfirm": true,
+    "responseFinalConfirm": true
+  },
+  {
+    "count": 3,
+    "firstTargetClickMs": 2.899999976158142,
+    "cardFinalConfirm": true,
+    "responseFinalConfirm": true
+  },
+  {
+    "count": 5,
+    "firstTargetClickMs": 3.100000023841858,
+    "cardFinalConfirm": true,
+    "responseFinalConfirm": true
+  }
+]

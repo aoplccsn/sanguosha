@@ -77,7 +77,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
     + (eventKind?.includes('Damage') ? ' damage-flash' : '')
     + (eventKind?.includes('Recover') ? ' healing-flash' : '')
     + (!player.alive ? ' dead' : '')
-  return <article data-player-id={player.player_id} className={classes} onClick={selectable ? onSelect : undefined}>
+  return <article data-character-id={player.character_id} data-player-id={player.player_id} className={classes} onClick={selectable ? onSelect : undefined}>
     <button className="portrait-button" onClick={(event) => { event.stopPropagation(); if (selectable) onSelect(); else onDetail() }} aria-label={selectable ? '选择目标' + player.character_name : '查看' + player.character_name + '详情'}>
       <DynamicPortrait staticPortrait={portraitFor(player, state.generals)} idleVideo={idlePortrait(player.character_id)?.panelVideo ?? idlePortrait(player.character_id)?.video} objectPosition={idlePortrait(player.character_id)?.objectPosition} name={player.character_name} quality={vfxQuality} />
       {portrait.faceDown && <span className="face-down-mark">翻面</span>}

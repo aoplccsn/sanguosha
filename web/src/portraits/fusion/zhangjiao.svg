@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="506" height="900" viewBox="0 0 506 900" preserveAspectRatio="xMidYMin slice">
+  <defs>
+    <!-- Fixed alpha feather is rasterized with this mask asset, never the video. -->
+    <filter id="softContour" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="9"/></filter>
+    <filter id="weaponContour" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="3"/></filter>
+    <radialGradient id="surround" cx="47%" cy="54%" r="48%" gradientTransform="translate(.5 .5) scale(.9 1) translate(-.5 -.5)">
+      <stop offset="0" stop-color="white" stop-opacity=".7"/><stop offset=".42" stop-color="white" stop-opacity=".5"/><stop offset=".72" stop-color="white" stop-opacity=".15"/><stop offset="1" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="floor" x2="0" y2="1"><stop offset="0" stop-color="white"/><stop offset=".82" stop-color="white"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient>
+    <mask id="floorFade" maskUnits="userSpaceOnUse" x="0" y="0" width="506" height="900"><rect width="506" height="900" fill="url(#floor)"/></mask>
+  </defs>
+  <g mask="url(#floorFade)">
+    <rect width="506" height="900" fill="url(#surround)"/>
+    <path filter="url(#softContour)" d="M 191 120 L 205 102 L 258 101 L 269 116 L 289 149 L 288 192 L 274 226 L 295 258 L 319 269 L 323 295 L 316 326 L 325 379 L 351 407 L 363 480 L 401 515 L 416 568 L 424 626 L 401 650 L 375 609 L 341 579 L 356 689 L 386 751 L 398 808 L 372 842 L 314 829 L 262 791 L 213 758 L 171 712 L 128 716 L 58 746 L 0 774 L 0 724 L 36 680 L 78 640 L 88 581 L 51 518 L 0 543 L 0 472 L 40 402 L 76 371 L 98 345 L 87 313 L 57 298 L 32 311 L 0 319 L 0 221 L 58 202 L 102 216 L 145 207 L 168 182 Z" fill="white" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+    <path filter="url(#weaponContour)" d="M 486 211 L 506 211 L 505 275 L 485 303 L 480 424 L 493 469 L 475 511 L 467 584 L 450 714 L 437 842 L 424 882 L 416 869 L 430 737 L 444 565 L 456 421 L 469 284 Z" fill="white" stroke="white" stroke-width="6" stroke-linejoin="round"/>
+  </g>
+</svg>

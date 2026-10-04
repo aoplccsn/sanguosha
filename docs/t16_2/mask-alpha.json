@@ -1,0 +1,23 @@
+[
+  {
+    "name": "lvbu",
+    "face": 1,
+    "weapon": 1,
+    "corner": 0,
+    "topBackground": 0
+  },
+  {
+    "name": "guanyu",
+    "face": 1,
+    "weapon": 1,
+    "corner": 0,
+    "topBackground": 0
+  },
+  {
+    "name": "zhangjiao",
+    "face": 1,
+    "weapon": 1,
+    "corner": 0,
+    "topBackground": 0
+  }
+]

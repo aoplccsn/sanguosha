@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="506" height="900" viewBox="0 0 506 900" preserveAspectRatio="xMidYMin slice">
+  <defs>
+    <!-- Fixed alpha feather is rasterized with this mask asset, never the video. -->
+    <filter id="softContour" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="9"/></filter>
+    <filter id="weaponContour" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="3"/></filter>
+    <radialGradient id="surround" cx="57%" cy="52%" r="48%" gradientTransform="translate(.5 .5) scale(.9 1) translate(-.5 -.5)">
+      <stop offset="0" stop-color="white" stop-opacity=".7"/><stop offset=".42" stop-color="white" stop-opacity=".5"/><stop offset=".72" stop-color="white" stop-opacity=".15"/><stop offset="1" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="floor" x2="0" y2="1"><stop offset="0" stop-color="white"/><stop offset=".82" stop-color="white"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient>
+    <mask id="floorFade" maskUnits="userSpaceOnUse" x="0" y="0" width="506" height="900"><rect width="506" height="900" fill="url(#floor)"/></mask>
+  </defs>
+  <g mask="url(#floorFade)">
+    <rect width="506" height="900" fill="url(#surround)"/>
+    <path filter="url(#softContour)" d="M 237 110 L 281 100 L 304 125 L 302 175 L 331 193 L 367 216 L 358 256 L 342 310 L 369 341 L 389 393 L 409 418 L 411 448 L 391 464 L 372 439 L 343 396 L 331 392 L 335 454 L 358 516 L 391 586 L 391 623 L 356 630 L 324 618 L 317 672 L 322 729 L 286 746 L 255 735 L 245 662 L 218 592 L 211 531 L 171 545 L 145 578 L 117 578 L 126 523 L 163 428 L 180 362 L 155 327 L 113 279 L 91 267 L 68 239 L 55 245 L 43 233 L 43 185 L 58 167 L 75 179 L 79 201 L 112 218 L 139 189 L 165 174 L 200 180 L 225 162 Z" fill="white" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+    <path filter="url(#weaponContour)" d="M 62 0 L 85 0 L 58 350 L 76 432 L 104 485 L 87 539 L 65 598 L 50 710 L 19 800 L 14 752 L 22 634 L 27 513 L 11 455 L 17 392 L 37 364 Z" fill="white" stroke="white" stroke-width="6" stroke-linejoin="round"/>
+  </g>
+</svg>

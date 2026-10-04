@@ -1,0 +1,395 @@
+[
+  {
+    "count": 5,
+    "width": 1440,
+    "height": 1000,
+    "layout": [
+      {
+        "x": 172.796875,
+        "y": 90,
+        "w": 187.1875,
+        "h": 290,
+        "portraitRatio": 1,
+        "captionRatio": 0.26255387931034485,
+        "border": "0px"
+      },
+      {
+        "x": 626.390625,
+        "y": 68,
+        "w": 187.1875,
+        "h": 290,
+        "portraitRatio": 1,
+        "captionRatio": 0.20910560344827586,
+        "border": "0px"
+      },
+      {
+        "x": 1080.015625,
+        "y": 90,
+        "w": 187.1875,
+        "h": 290,
+        "portraitRatio": 1,
+        "captionRatio": 0.20910560344827586,
+        "border": "0px"
+      },
+      {
+        "x": 1209.625,
+        "y": 410,
+        "w": 187.1875,
+        "h": 290,
+        "portraitRatio": 1,
+        "captionRatio": 0.20910560344827586,
+        "border": "0px"
+      },
+      {
+        "x": 51.1875,
+        "y": 690,
+        "w": 216,
+        "h": 300,
+        "portraitRatio": 1,
+        "captionRatio": 0.15046875,
+        "border": "0px"
+      }
+    ]
+  },
+  {
+    "count": 8,
+    "width": 1440,
+    "height": 1000,
+    "layout": [
+      {
+        "x": 302.390625,
+        "y": 76,
+        "w": 187.1875,
+        "h": 290,
+        "portraitRatio": 1,
+        "captionRatio": 0.26255387931034485,
+        "border": "0px"
+      },
+      {
+        "x": 626.390625,
+        "y": 64,
+        "w": 187.1875,
+        "h": 290,
+        "portraitRatio": 1,
+        "captionRatio": 0.20910560344827586,
+        "border": "0px"
+      },
+      {
+        "x": 950.421875,
+        "y": 76,
+        "w": 187.1875,
+        "h": 290,
+        "portraitRatio": 1,
+        "captionRatio": 0.20910560344827586,
+        "border": "0px"
+      },
+      {
+        "x": 1224.015625,
+        "y": 320,
+        "w": 187.1875,
+        "h": 290,
+        "portraitRatio": 1,
+        "captionRatio": 0.20910560344827586,
+        "border": "0px"
+      },
+      {
+        "x": 1224.015625,
+        "y": 696,
+        "w": 187.1875,
+        "h": 290,
+        "portraitRatio": 1,
+        "captionRatio": 0.20910560344827586,
+        "border": "0px"
+      },
+      {
+        "x": 28.796875,
+        "y": 696,
+        "w": 187.1875,
+        "h": 290,
+        "portraitRatio": 1,
+        "captionRatio": 0.20910560344827586,
+        "border": "0px"
+      },
+      {
+        "x": 28.796875,
+        "y": 320,
+        "w": 187.1875,
+        "h": 290,
+        "portraitRatio": 1,
+        "captionRatio": 0.20910560344827586,
+        "border": "0px"
+      },
+      {
+        "x": 296,
+        "y": 690,
+        "w": 216,
+        "h": 300,
+        "portraitRatio": 1,
+        "captionRatio": 0.15046875,
+        "border": "0px"
+      }
+    ]
+  },
+  {
+    "count": 5,
+    "width": 1366,
+    "height": 768,
+    "layout": [
+      {
+        "x": 163.90625,
+        "y": 90,
+        "w": 177.578125,
+        "h": 222.71875,
+        "portraitRatio": 1,
+        "captionRatio": 0.41819840044899675,
+        "border": "0px"
+      },
+      {
+        "x": 594.203125,
+        "y": 68,
+        "w": 177.578125,
+        "h": 222.71875,
+        "portraitRatio": 1,
+        "captionRatio": 0.2722744492773958,
+        "border": "0px"
+      },
+      {
+        "x": 1024.515625,
+        "y": 90,
+        "w": 177.578125,
+        "h": 222.71875,
+        "portraitRatio": 1,
+        "captionRatio": 0.2722744492773958,
+        "border": "0px"
+      },
+      {
+        "x": 1147.453125,
+        "y": 314.875,
+        "w": 177.578125,
+        "h": 222.71875,
+        "portraitRatio": 1,
+        "captionRatio": 0.2722744492773958,
+        "border": "0px"
+      },
+      {
+        "x": 48.96875,
+        "y": 520,
+        "w": 171.359375,
+        "h": 238,
+        "portraitRatio": 1,
+        "captionRatio": 0.18966649159663865,
+        "border": "0px"
+      }
+    ]
+  },
+  {
+    "count": 8,
+    "width": 1366,
+    "height": 768,
+    "layout": [
+      {
+        "x": 286.859375,
+        "y": 76,
+        "w": 177.578125,
+        "h": 222.71875,
+        "portraitRatio": 1,
+        "captionRatio": 0.41819840044899675,
+        "border": "0px"
+      },
+      {
+        "x": 594.203125,
+        "y": 64,
+        "w": 177.578125,
+        "h": 222.71875,
+        "portraitRatio": 1,
+        "captionRatio": 0.2722744492773958,
+        "border": "0px"
+      },
+      {
+        "x": 901.5625,
+        "y": 76,
+        "w": 177.578125,
+        "h": 222.71875,
+        "portraitRatio": 1,
+        "captionRatio": 0.2722744492773958,
+        "border": "0px"
+      },
+      {
+        "x": 1161.109375,
+        "y": 245.75,
+        "w": 177.578125,
+        "h": 222.71875,
+        "portraitRatio": 1,
+        "captionRatio": 0.2722744492773958,
+        "border": "0px"
+      },
+      {
+        "x": 1161.109375,
+        "y": 531.28125,
+        "w": 177.578125,
+        "h": 222.71875,
+        "portraitRatio": 1,
+        "captionRatio": 0.2722744492773958,
+        "border": "0px"
+      },
+      {
+        "x": 27.3125,
+        "y": 531.28125,
+        "w": 177.578125,
+        "h": 222.71875,
+        "portraitRatio": 1,
+        "captionRatio": 0.2722744492773958,
+        "border": "0px"
+      },
+      {
+        "x": 27.3125,
+        "y": 245.75,
+        "w": 177.578125,
+        "h": 222.71875,
+        "portraitRatio": 1,
+        "captionRatio": 0.2722744492773958,
+        "border": "0px"
+      },
+      {
+        "x": 281.1875,
+        "y": 520,
+        "w": 171.359375,
+        "h": 238,
+        "portraitRatio": 1,
+        "captionRatio": 0.18966649159663865,
+        "border": "0px"
+      }
+    ]
+  },
+  {
+    "count": 5,
+    "width": 1024,
+    "height": 768,
+    "layout": [
+      {
+        "x": 122.875,
+        "y": 90,
+        "w": 145,
+        "h": 212,
+        "portraitRatio": 1,
+        "captionRatio": 0.439342570754717,
+        "border": "0px"
+      },
+      {
+        "x": 439.5,
+        "y": 68,
+        "w": 145,
+        "h": 212,
+        "portraitRatio": 1,
+        "captionRatio": 0.2860406839622642,
+        "border": "0px"
+      },
+      {
+        "x": 756.125,
+        "y": 90,
+        "w": 145,
+        "h": 212,
+        "portraitRatio": 1,
+        "captionRatio": 0.2860406839622642,
+        "border": "0px"
+      },
+      {
+        "x": 848.28125,
+        "y": 314.875,
+        "w": 145,
+        "h": 212,
+        "portraitRatio": 1,
+        "captionRatio": 0.2860406839622642,
+        "border": "0px"
+      },
+      {
+        "x": 38.71875,
+        "y": 520,
+        "w": 171.359375,
+        "h": 238,
+        "portraitRatio": 1,
+        "captionRatio": 0.18966649159663865,
+        "border": "0px"
+      }
+    ]
+  },
+  {
+    "count": 8,
+    "width": 1024,
+    "height": 768,
+    "layout": [
+      {
+        "x": 204.796875,
+        "y": 76,
+        "w": 145,
+        "h": 212,
+        "portraitRatio": 1,
+        "captionRatio": 0.439342570754717,
+        "border": "0px"
+      },
+      {
+        "x": 439.5,
+        "y": 64,
+        "w": 145,
+        "h": 212,
+        "portraitRatio": 1,
+        "captionRatio": 0.2860406839622642,
+        "border": "0px"
+      },
+      {
+        "x": 674.203125,
+        "y": 76,
+        "w": 145,
+        "h": 212,
+        "portraitRatio": 1,
+        "captionRatio": 0.2860406839622642,
+        "border": "0px"
+      },
+      {
+        "x": 858.53125,
+        "y": 245.75,
+        "w": 145,
+        "h": 212,
+        "portraitRatio": 1,
+        "captionRatio": 0.2860406839622642,
+        "border": "0px"
+      },
+      {
+        "x": 858.53125,
+        "y": 542,
+        "w": 145,
+        "h": 212,
+        "portraitRatio": 1,
+        "captionRatio": 0.2860406839622642,
+        "border": "0px"
+      },
+      {
+        "x": 20.46875,
+        "y": 542,
+        "w": 145,
+        "h": 212,
+        "portraitRatio": 1,
+        "captionRatio": 0.2860406839622642,
+        "border": "0px"
+      },
+      {
+        "x": 20.46875,
+        "y": 245.75,
+        "w": 145,
+        "h": 212,
+        "portraitRatio": 1,
+        "captionRatio": 0.2860406839622642,
+        "border": "0px"
+      },
+      {
+        "x": 192.3125,
+        "y": 520,
+        "w": 171.359375,
+        "h": 238,
+        "portraitRatio": 1,
+        "captionRatio": 0.18966649159663865,
+        "border": "0px"
+      }
+    ]
+  }
+]

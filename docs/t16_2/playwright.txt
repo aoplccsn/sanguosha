@@ -1,0 +1,58 @@
+
+[WebServer] INFO:     Started server process [22564]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+
+[WebServer] (node:13228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 11 tests using 1 worker
+
+(node:26284) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/11] [chromium] › e2e\t162-fusion.spec.ts:4:1 › three portrait samples before after and matched static fallback
+[2/11] [chromium] › e2e\t162-fusion.spec.ts:29:1 › prototype mask survives decode failure, quality and visibility with matching media geometry
+[3/11] [chromium] › e2e\t162-fusion.spec.ts:71:1 › fixed mask alpha preserves face and weapon cores while feathering outer background
+
+[WebServer] INFO:     127.0.0.1:57373 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:63681 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+[chromium] › e2e\t162-fusion.spec.ts:71:1 › fixed mask alpha preserves face and weapon cores while feathering outer background
+{"name":"lvbu","face":1,"weapon":1,"corner":0,"topBackground":0}
+
+{"name":"guanyu","face":1,"weapon":1,"corner":0,"topBackground":0}
+
+{"name":"zhangjiao","face":1,"weapon":1,"corner":0,"topBackground":0}
+
+[4/11] [chromium] › e2e\t162-interactions.spec.ts:4:1 › first target and final card/response clicks at zero one three five videos
+[5/11] [chromium] › e2e\t162-performance.spec.ts:3:1 › profile static and one three five visible portraits
+[chromium] › e2e\t162-performance.spec.ts:3:1 › profile static and one three five visible portraits
+[{"count":0,"fps":60.170871979347744,"longTasks":0,"stable":true,"calls":{"play":0,"pause":0,"observer":5,"mutations":0},"mutations":0,"task":0.9613569999999999,"script":0.195002},{"count":1,"fps":60.18587793192181,"longTasks":0,"stable":true,"calls":{"play":1,"pause":0,"observer":5,"mutations":0},"mutations":0,"task":1.3020589999999999,"script":0.24279699999999999},{"count":3,"fps":31.921791610554145,"longTasks":0,"stable":true,"calls":{"play":3,"pause":0,"observer":5,"mutations":0},"mutations":0,"task":0.6313899999999999,"script":0.18207700000000002},{"count":5,"fps":31.91542412600268,"longTasks":0,"stable":true,"calls":{"play":5,"pause":0,"observer":5,"mutations":0},"mutations":0,"task":0.6693020000000001,"script":0.182723}]
+
+[6/11] [chromium] › e2e\t162-table-regression.spec.ts:9:1 › incarnation hover, keyboard focus and touch detail retain first option click
+[7/11] [chromium] › e2e\t162-table-regression.spec.ts:19:1 › three speeds have measured intervals; human request bypasses queue
+[8/11] [chromium] › e2e\t162-table-regression.spec.ts:33:1 › five and eight seat visual layouts, live portraits, target beam and first click
+[9/11] [chromium] › e2e\t162-table-regression.spec.ts:48:1 › network diagnostics performs actual local HTTP/assets/WS/heartbeat and uses current origin
+
+[WebServer] INFO:     127.0.0.1:53912 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+
+[WebServer] INFO:     127.0.0.1:50061 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:65386 - "WebSocket /api/network/ws" [accepted]
+
+[WebServer] INFO:     connection open
+[10/11] [chromium] › e2e\t162-table-regression.spec.ts:61:1 › portrait area, dense edge information and seat separation at desktop and tablet sizes
+[11/11] [chromium] › e2e\t162-table-regression.spec.ts:100:1 › Slash and Dodge VFX render against full portrait seats
+  11 passed (1.3m)

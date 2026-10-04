@@ -1,0 +1,70 @@
+{
+  "verdict": "No measured regression",
+  "sampleSeconds": 6,
+  "scenarios": [
+    {
+      "count": 0,
+      "fps": 60.170871979347744,
+      "p95": 16.700000000000728,
+      "longTasks": 0,
+      "mediaMutations": 0,
+      "stableVideoNodes": true,
+      "beforeFps": 60.15864551369246,
+      "t151Fps": 60.06355755999934,
+      "beforeTaskMs": 1014.3449999999998,
+      "afterTaskMs": 961.3569999999999,
+      "beforeScriptMs": 205.25000000000006,
+      "afterScriptMs": 195.002,
+      "droppedFrames": 0,
+      "decodedFrames": 0
+    },
+    {
+      "count": 1,
+      "fps": 60.18587793192181,
+      "p95": 16.700000000000728,
+      "longTasks": 0,
+      "mediaMutations": 0,
+      "stableVideoNodes": true,
+      "beforeFps": 60.04257867062807,
+      "t151Fps": 60.15363337907599,
+      "beforeTaskMs": 1139.671,
+      "afterTaskMs": 1302.0589999999997,
+      "beforeScriptMs": 223.77899999999997,
+      "afterScriptMs": 242.797,
+      "droppedFrames": 0,
+      "decodedFrames": 147
+    },
+    {
+      "count": 3,
+      "fps": 31.921791610554145,
+      "p95": 33.400000000000546,
+      "longTasks": 0,
+      "mediaMutations": 0,
+      "stableVideoNodes": true,
+      "beforeFps": 31.787770861827873,
+      "t151Fps": 31.825907288299398,
+      "beforeTaskMs": 641.922,
+      "afterTaskMs": 631.3899999999999,
+      "beforeScriptMs": 174.55300000000003,
+      "afterScriptMs": 182.07700000000003,
+      "droppedFrames": 1,
+      "decodedFrames": 442
+    },
+    {
+      "count": 5,
+      "fps": 31.91542412600268,
+      "p95": 33.400000000000546,
+      "longTasks": 0,
+      "mediaMutations": 0,
+      "stableVideoNodes": true,
+      "beforeFps": 31.91807693599112,
+      "t151Fps": 31.75342055832464,
+      "beforeTaskMs": 686.337,
+      "afterTaskMs": 669.302,
+      "beforeScriptMs": 190.188,
+      "afterScriptMs": 182.72299999999998,
+      "droppedFrames": 1,
+      "decodedFrames": 739
+    }
+  ]
+}

@@ -1,0 +1,3669 @@
+{
+  "label": "before",
+  "scenarios": [
+    {
+      "count": 0,
+      "fps": 60.15864551369246,
+      "p95": 16.700000000000728,
+      "longTasks": 0,
+      "dpr": 1,
+      "memory": 10000000,
+      "callsBefore": {
+        "play": 0,
+        "pause": 0,
+        "observer": 5,
+        "mutations": 0
+      },
+      "callsAfter": {
+        "play": 0,
+        "pause": 0,
+        "observer": 5,
+        "mutations": 0
+      },
+      "mediaMutations": 0,
+      "stableVideoNodes": true,
+      "videos": [],
+      "performanceDelta": {
+        "Timestamp": 7.5086690000025555,
+        "AudioHandlers": 0,
+        "AudioWorkletProcessors": 0,
+        "Documents": 0,
+        "Frames": 0,
+        "JSEventListeners": 12,
+        "LayoutObjects": 0,
+        "MediaKeySessions": 0,
+        "MediaKeys": 0,
+        "Nodes": 0,
+        "Resources": 0,
+        "ContextLifecycleStateObservers": 2,
+        "V8PerContextDatas": 0,
+        "WorkerGlobalScopes": 0,
+        "UACSSResources": 0,
+        "RTCPeerConnections": 0,
+        "ResourceFetchers": 0,
+        "AdSubframes": 0,
+        "DetachedScriptStates": 0,
+        "ArrayBufferContents": 0,
+        "LayoutCount": 383,
+        "RecalcStyleCount": 453,
+        "LayoutDuration": 0.070734,
+        "RecalcStyleDuration": 0.03813999999999999,
+        "DevToolsCommandDuration": 0.0021769999999999984,
+        "ScriptDuration": 0.20525000000000004,
+        "V8CompileDuration": 0,
+        "TaskDuration": 1.0143449999999998,
+        "TaskOtherDuration": 0.6980440000000001,
+        "ThreadTime": 1.011598,
+        "ProcessTime": 1.547492,
+        "JSHeapUsedSize": 1600432,
+        "JSHeapTotalSize": 262144,
+        "FirstMeaningfulPaint": 334200.233917,
+        "DomContentLoaded": 0,
+        "NavigationStart": 0
+      },
+      "network": [],
+      "mediaProperties": [],
+      "traceDurations": {
+        "RunTask": {
+          "count": 14405,
+          "ms": 5320.694000000158
+        },
+        "EvaluateScript": {
+          "count": 3,
+          "ms": 1.4100000000000001
+        },
+        "LocalFrameView::ScheduleAnimation": {
+          "count": 1817,
+          "ms": 11.001999999999958
+        },
+        "Scheduler::BeginFrame": {
+          "count": 367,
+          "ms": 25.96700000000001
+        },
+        "Scheduler::BeginImplFrame": {
+          "count": 367,
+          "ms": 20.286999999999992
+        },
+        "AnimationHost::TickAnimations": {
+          "count": 933,
+          "ms": 1.7849999999999668
+        },
+        "ProxyImpl::SetNeedsOneBeginImplFrameOnImplThread": {
+          "count": 22,
+          "ms": 0.029000000000000012
+        },
+        "ProxyImpl::ScheduledActionSendBeginMainFrame": {
+          "count": 367,
+          "ms": 6.057999999999992
+        },
+        "ScrollTree::CollectScrollDeltas": {
+          "count": 346,
+          "ms": 0.5290000000000004
+        },
+        "Scheduler::ScheduleBeginImplFrameDeadline": {
+          "count": 367,
+          "ms": 2.153999999999991
+        },
+        "ProxyMain::BeginMainFrame": {
+          "count": 367,
+          "ms": 651.4530000000005
+        },
+        "Scheduler::OnBeginImplFrameDeadline": {
+          "count": 317,
+          "ms": 0.41400000000000026
+        },
+        "ProxyImpl::ScheduledActionDraw": {
+          "count": 367,
+          "ms": 94.94499999999996
+        },
+        "MainFrame.Draw": {
+          "count": 367,
+          "ms": 94.16299999999994
+        },
+        "LayerTreeHost::ApplyCompositorChanges": {
+          "count": 367,
+          "ms": 1.4099999999999941
+        },
+        "LayerTreeHostImpl::PrepareToDraw": {
+          "count": 367,
+          "ms": 25.40400000000002
+        },
+        "LayerTreeImpl::UpdateDrawProperties": {
+          "count": 380,
+          "ms": 13.032
+        },
+        "LayerTreeImpl::UpdateDrawProperties::CalculateDrawProperties": {
+          "count": 380,
+          "ms": 6.260999999999993
+        },
+        "draw_property_utils::FindLayersThatNeedUpdates": {
+          "count": 378,
+          "ms": 0.6530000000000005
+        },
+        "draw_property_utils::ComputeDrawPropertiesOfVisibleLayers": {
+          "count": 380,
+          "ms": 2.491999999999992
+        },
+        "CalculateRenderSurfaceLayerList": {
+          "count": 380,
+          "ms": 1.171999999999998
+        },
+        "LayerTreeImpl::UpdateDrawProperties::Occlusion": {
+          "count": 380,
+          "ms": 5.666999999999992
+        },
+        "LayerTreeImpl::UpdateTiles": {
+          "count": 380,
+          "ms": 3.871999999999993
+        },
+        "PrePaint": {
+          "count": 679,
+          "ms": 30.15600000000004
+        },
+        "HitTest": {
+          "count": 324,
+          "ms": 11.23
+        },
+        "ImageAnimationController::UpdateState": {
+          "count": 8,
+          "ms": 0.008
+        },
+        "TileManager::PrepareToDraw": {
+          "count": 367,
+          "ms": 6.281999999999992
+        },
+        "TileTaskManagerImpl::CheckForCompletedTasks": {
+          "count": 1041,
+          "ms": 4.408999999999943
+        },
+        "TileManager::CheckPendingGpuWorkAndIssueSignals": {
+          "count": 1040,
+          "ms": 25.34300000000001
+        },
+        "TileManager::IsReadyToDraw": {
+          "count": 367,
+          "ms": 2.3079999999999905
+        },
+        "LayerTreeHostImpl::CalculateRenderPasses": {
+          "count": 367,
+          "ms": 14.106000000000012
+        },
+        "FireAnimationFrame": {
+          "count": 728,
+          "ms": 45.65900000000006
+        },
+        "DrawLayers.FrameViewerTracing": {
+          "count": 222,
+          "ms": 0.2610000000000002
+        },
+        "FunctionCall": {
+          "count": 1475,
+          "ms": 178.4119999999995
+        },
+        "LayerTreeHostImpl::BuildHitTestData": {
+          "count": 367,
+          "ms": 1.6459999999999948
+        },
+        "AnimationHost::UpdateAnimationState": {
+          "count": 24,
+          "ms": 0.43100000000000005
+        },
+        "auto cc::Scheduler::FinishImplFrame()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 352,
+          "ms": 0.5140000000000003
+        },
+        "ProxyImpl::SetNeedsCommitOnImplThread": {
+          "count": 371,
+          "ms": 1.6119999999999928
+        },
+        "auto cc::SchedulerStateMachine::SetNeedsBeginMainFrame(bool, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 342,
+          "ms": 0.5820000000000004
+        },
+        "UpdateLayoutTree": {
+          "count": 369,
+          "ms": 30.493999999999996
+        },
+        "ProxyImpl::DidReceiveCompositorFrameAckOnImplThread": {
+          "count": 367,
+          "ms": 1.6649999999999943
+        },
+        "Layout": {
+          "count": 313,
+          "ms": 54.88699999999998
+        },
+        "ScrollTree::SetScrollOffset": {
+          "count": 43,
+          "ms": 0.09300000000000003
+        },
+        "IntersectionObserverController::computeIntersections": {
+          "count": 734,
+          "ms": 9.736999999999988
+        },
+        "Paint": {
+          "count": 617,
+          "ms": 53.44599999999989
+        },
+        "PaintImage": {
+          "count": 298,
+          "ms": 3.2879999999999954
+        },
+        "Layerize": {
+          "count": 367,
+          "ms": 17.150000000000006
+        },
+        "auto cc::LayerTreeHost::SetNeedsCommit(bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 13,
+          "ms": 0.013000000000000005
+        },
+        "Commit": {
+          "count": 367,
+          "ms": 324.45100000000014
+        },
+        "LayerTreeHost::DoUpdateLayers": {
+          "count": 367,
+          "ms": 287.8960000000002
+        },
+        "UpdateLayer": {
+          "count": 1739,
+          "ms": 6.0060000000000136
+        },
+        "RecordingSource::FinishDisplayItemListUpdate": {
+          "count": 286,
+          "ms": 0.4200000000000003
+        },
+        "ProxyMain::BeginMainFrame::commit": {
+          "count": 367,
+          "ms": 4.7919999999999865
+        },
+        "ProxyImpl::ReadyToCommit": {
+          "count": 367,
+          "ms": 90.29999999999995
+        },
+        "Scheduler::NotifyBeginMainFrameStarted": {
+          "count": 330,
+          "ms": 0.47700000000000037
+        },
+        "Scheduler::NotifyReadyToCommit": {
+          "count": 367,
+          "ms": 2.487999999999988
+        },
+        "ProxyImpl::Commit": {
+          "count": 367,
+          "ms": 31.451
+        },
+        "LayerTreeHostImpl::BeginCommit": {
+          "count": 367,
+          "ms": 4.516999999999991
+        },
+        "ProxyImpl::OnCanDrawStateChanged": {
+          "count": 619,
+          "ms": 1.0130000000000001
+        },
+        "LayerTreeHostImpl::FinishCommit": {
+          "count": 367,
+          "ms": 21.313
+        },
+        "LayerTreeImpl::PullProperties": {
+          "count": 367,
+          "ms": 19.959999999999983
+        },
+        "TreeSynchronizer::PushLayerPropertiesTo.Main": {
+          "count": 367,
+          "ms": 3.5209999999999897
+        },
+        "TextureLayer::PushPropertiesTo": {
+          "count": 365,
+          "ms": 0.6900000000000005
+        },
+        "DiscardableImageMap::Generate": {
+          "count": 311,
+          "ms": 7.497000000000001
+        },
+        "LayerTreeHost::AnimationHost::PushProperties": {
+          "count": 367,
+          "ms": 1.1709999999999972
+        },
+        "LayerTreeHostImpl::CommitComplete": {
+          "count": 367,
+          "ms": 51.09900000000002
+        },
+        "LayerTreeHost::WaitForCommitCompletion": {
+          "count": 367,
+          "ms": 2.288999999999988
+        },
+        "ImageAnimationController::AnimateImagesForSyncTree": {
+          "count": 354,
+          "ms": 0.5090000000000003
+        },
+        "LayerTreeImpl::InvalidateRegionForImages": {
+          "count": 367,
+          "ms": 1.0550000000000002
+        },
+        "auto cc::LayerTreeHostImpl::PrepareTiles()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 367,
+          "ms": 31.934999999999977
+        },
+        "auto cc::TileManager::PrepareTiles(const GlobalStateThatImpactsTilePriority &)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 367,
+          "ms": 31.186000000000007
+        },
+        "TileManager::PrepareTiles": {
+          "count": 367,
+          "ms": 30.589999999999986
+        },
+        "TileManager::AssignGpuMemoryToTiles": {
+          "count": 367,
+          "ms": 12.69599999999999
+        },
+        "RasterSource::PerformSolidColorAnalysis": {
+          "count": 334,
+          "ms": 2.5649999999999973
+        },
+        "TileManager::ScheduleTasks": {
+          "count": 367,
+          "ms": 13.513000000000005
+        },
+        "auto cc::(anonymous namespace)::InsertNodeForTask(TaskGraph *, TileTask *, uint16_t, uint16_t, size_t, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 903,
+          "ms": 1.1489999999999898
+        },
+        "TileTaskManagerImpl::ScheduleTasks": {
+          "count": 367,
+          "ms": 5.623999999999994
+        },
+        "TaskSetFinishedTaskImpl::RunOnWorkerThread": {
+          "count": 689,
+          "ms": 6.583999999999972
+        },
+        "RasterizerTaskImpl::RunOnWorkerThread": {
+          "count": 330,
+          "ms": 66.622
+        },
+        "SoftwareImageDecodeTaskImpl::RunOnWorkerThread": {
+          "count": 17,
+          "ms": 0.4600000000000001
+        },
+        "ImageDecodeTask": {
+          "count": 17,
+          "ms": 0.339
+        },
+        "TileManager::DidFinishRunningTileTasksRequiredForDraw": {
+          "count": 366,
+          "ms": 1.5139999999999951
+        },
+        "RasterTask": {
+          "count": 330,
+          "ms": 63.455000000000005
+        },
+        "ZeroCopyRasterBuffer::Playback": {
+          "count": 330,
+          "ms": 61.88399999999995
+        },
+        "TileManager::CheckForCompletedTasksAndIssueSignals": {
+          "count": 683,
+          "ms": 29.520000000000046
+        },
+        "SoftwareImageDecodeCache::DecodeImageInTask": {
+          "count": 17,
+          "ms": 0.10200000000000002
+        },
+        "DisplayItemList::Raster": {
+          "count": 330,
+          "ms": 52.29300000000003
+        },
+        "DidFinishRunningAllTilesTask::RunOnWorkerThread": {
+          "count": 306,
+          "ms": 0.45200000000000035
+        },
+        "TileManager::DidFinishRunningTileTasksRequiredForActivation": {
+          "count": 367,
+          "ms": 2.1019999999999923
+        },
+        "TileManager::DidFinishRunningAllTileTasks": {
+          "count": 334,
+          "ms": 0.5010000000000003
+        },
+        "LayerTreeHostImpl::NotifyTileStateChanged": {
+          "count": 536,
+          "ms": 0.8450000000000006
+        },
+        "TileManager::IsReadyToActivate": {
+          "count": 367,
+          "ms": 1.8539999999999925
+        },
+        "LayerTreeHostImpl::ActivateSyncTree": {
+          "count": 367,
+          "ms": 18.191999999999993
+        },
+        "ProcessUIResourceRequestQueue": {
+          "count": 318,
+          "ms": 0.45200000000000035
+        },
+        "LayerTreeImpl::PushPropertyTreesTo": {
+          "count": 367,
+          "ms": 1.4709999999999948
+        },
+        "TreeSynchronizer::PushLayerPropertiesTo.Active": {
+          "count": 367,
+          "ms": 6.6529999999999845
+        },
+        "LayerTreeImpl::PushPropertiesTo": {
+          "count": 367,
+          "ms": 1.2509999999999961
+        },
+        "AnimationHost::ActivateAnimations": {
+          "count": 11,
+          "ms": 0.059000000000000004
+        },
+        "ImageAnimationController::WillActivate": {
+          "count": 228,
+          "ms": 0.2470000000000002
+        },
+        "InputHandler::ClearCurrentlyScrollingNode": {
+          "count": 367,
+          "ms": 1.1749999999999972
+        },
+        "auto cc::ResourcePool::OnResourceReleased(size_t, const gpu::SyncToken &, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 327,
+          "ms": 3.3809999999999865
+        },
+        "SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit": {
+          "count": 204,
+          "ms": 0.22900000000000018
+        },
+        "TimerFire": {
+          "count": 62,
+          "ms": 10.56
+        },
+        "SchedulerStateMachine::SetNeedsPrepareTiles": {
+          "count": 253,
+          "ms": 0.34000000000000025
+        },
+        "ProxyImpl::DidActivateSyncTreeOnImplThread": {
+          "count": 212,
+          "ms": 0.22000000000000017
+        },
+        "ProxyImpl::SetNeedsRedrawOnImplThread": {
+          "count": 2,
+          "ms": 0.002
+        },
+        "EventDispatch": {
+          "count": 190,
+          "ms": 8.428999999999995
+        },
+        "TreeSynchronizer::SynchronizeTrees": {
+          "count": 4,
+          "ms": 0.08399999999999999
+        },
+        "LayerTreeHost::~LayerTreeHost": {
+          "count": 1,
+          "ms": 0.178
+        },
+        "ProxyMain::Stop": {
+          "count": 1,
+          "ms": 0.17
+        },
+        "ProxyImpl::FinishGLOnImplThread": {
+          "count": 1,
+          "ms": 0.003
+        },
+        "ProxyImpl::~ProxyImpl": {
+          "count": 1,
+          "ms": 0.129
+        },
+        "LayerTreeHostImpl::ReleaseLayerTreeFrameSink": {
+          "count": 1,
+          "ms": 0.064
+        },
+        "TileTaskManagerImpl::Shutdown": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "auto cc::ResourcePool::InvalidateResources()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "LayerTreeHostImpl::~LayerTreeHostImpl()": {
+          "count": 1,
+          "ms": 0.022
+        },
+        "ProxyMain::~ProxyMain": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_HEAP_EXTERNAL_PROLOGUE": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "MinorGC": {
+          "count": 1,
+          "ms": 0.499
+        },
+        "V8.GC_HEAP_PROLOGUE": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_TIME_TO_SAFEPOINT": {
+          "count": 1,
+          "ms": 0.003
+        },
+        "V8.GC_SCAVENGER": {
+          "count": 1,
+          "ms": 0.445
+        },
+        "V8.GC_HEAP_PROLOGUE_SAFEPOINT": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_SCAVENGE": {
+          "count": 1,
+          "ms": 0.435
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_WEAK_GLOBAL_HANDLES_IDENTIFY": {
+          "count": 1,
+          "ms": 0.056
+        },
+        "ComputeWeaknessProcessor start": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_TRACED_HANDLES_COMPUTE_WEAKNESS_PARALLEL": {
+          "count": 1,
+          "ms": 0.037
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_COLLECT_OLD_TO_NEW_PAGES": {
+          "count": 1,
+          "ms": 0.006
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_PARALLEL_PHASE": {
+          "count": 1,
+          "ms": 0.234
+        },
+        "Parallel scavenge started": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_ROOTS": {
+          "count": 1,
+          "ms": 0.038
+        },
+        "V8.GC_SCAVENGER_BACKGROUND_SCAVENGE_PARALLEL": {
+          "count": 3,
+          "ms": 0.374
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_PARALLEL": {
+          "count": 1,
+          "ms": 0.178
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_WEAK_GLOBAL_HANDLES_PROCESS": {
+          "count": 1,
+          "ms": 0.026
+        },
+        "ClearWeaknessProcessor start": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_TRACED_HANDLES_RESET_PARALLEL": {
+          "count": 1,
+          "ms": 0.018
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_FINALIZE": {
+          "count": 1,
+          "ms": 0.067
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_RESTORE_AND_QUARANTINE_PINNED": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_FREE_REMEMBERED_SET": {
+          "count": 1,
+          "ms": 0.015
+        },
+        "V8.GC_SCAVENGER_RESIZE_NEW_SPACE": {
+          "count": 1,
+          "ms": 0.002
+        },
+        "V8.GC_HEAP_EPILOGUE_SAFEPOINT": {
+          "count": 1,
+          "ms": 0.003
+        },
+        "V8.GC_HEAP_EPILOGUE": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "V8.GC_HEAP_EXTERNAL_EPILOGUE": {
+          "count": 1,
+          "ms": 0.006
+        }
+      }
+    },
+    {
+      "count": 1,
+      "fps": 60.04257867062807,
+      "p95": 16.700000000000728,
+      "longTasks": 0,
+      "dpr": 1,
+      "memory": 10000000,
+      "callsBefore": {
+        "play": 1,
+        "pause": 0,
+        "observer": 5,
+        "mutations": 0
+      },
+      "callsAfter": {
+        "play": 1,
+        "pause": 0,
+        "observer": 5,
+        "mutations": 0
+      },
+      "mediaMutations": 0,
+      "stableVideoNodes": true,
+      "videos": [
+        {
+          "src": "/assets/portraits/idle/forest_god_lvbu.panel.mp4",
+          "decode": [
+            180,
+            320
+          ],
+          "css": [
+            166.390625,
+            212
+          ],
+          "effective": [
+            166.390625,
+            212
+          ],
+          "total": 147,
+          "dropped": 0
+        }
+      ],
+      "performanceDelta": {
+        "Timestamp": 7.363783999986481,
+        "AudioHandlers": 0,
+        "AudioWorkletProcessors": 0,
+        "Documents": 0,
+        "Frames": 0,
+        "JSEventListeners": 12,
+        "LayoutObjects": 0,
+        "MediaKeySessions": 0,
+        "MediaKeys": 0,
+        "Nodes": 0,
+        "Resources": 0,
+        "ContextLifecycleStateObservers": 2,
+        "V8PerContextDatas": 0,
+        "WorkerGlobalScopes": 0,
+        "UACSSResources": 0,
+        "RTCPeerConnections": 0,
+        "ResourceFetchers": 0,
+        "AdSubframes": 0,
+        "DetachedScriptStates": 0,
+        "ArrayBufferContents": 0,
+        "LayoutCount": 375,
+        "RecalcStyleCount": 444,
+        "LayoutDuration": 0.076176,
+        "RecalcStyleDuration": 0.040891000000000004,
+        "DevToolsCommandDuration": 0.002372000000000013,
+        "ScriptDuration": 0.22377899999999998,
+        "V8CompileDuration": 0,
+        "TaskDuration": 1.139671,
+        "TaskOtherDuration": 0.7964530000000001,
+        "ThreadTime": 1.141426,
+        "ProcessTime": 2.011752,
+        "JSHeapUsedSize": -824948,
+        "JSHeapTotalSize": -3145728,
+        "FirstMeaningfulPaint": 334208.17194,
+        "DomContentLoaded": 0,
+        "NavigationStart": 0
+      },
+      "network": [
+        {
+          "url": "http://127.0.0.1:5173/assets/portraits/idle/forest_god_lvbu.panel.mp4",
+          "transfer": 1020252,
+          "body": 1019952
+        }
+      ],
+      "mediaProperties": [
+        {
+          "playerId": "48CFE519B2CDEDB5122F945D66BF913B",
+          "properties": [
+            {
+              "name": "kBitrate",
+              "value": "815961"
+            },
+            {
+              "name": "kVideoDecoderName",
+              "value": "FFmpegVideoDecoder"
+            },
+            {
+              "name": "kIsStreaming",
+              "value": "false"
+            },
+            {
+              "name": "kVideoTracks",
+              "value": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"h264\",\"coded size\":\"180x320\",\"color space\":{\"matrix\":\"SMPTE170M\",\"primaries\":\"SMPTE170M\",\"range\":\"LIMITED\",\"transfer\":\"SMPTE170M\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"hdr metadata\":{},\"natural size\":\"180x320\",\"orientation\":\"0°\",\"profile\":\"h264 high\",\"visible rect\":\"0,0 180x320\"}]"
+            },
+            {
+              "name": "kIsPlatformVideoDecoder",
+              "value": "false"
+            },
+            {
+              "name": "kFrameUrl",
+              "value": "http://127.0.0.1:5173/e2e/fixtures/t15.html?real"
+            },
+            {
+              "name": "kIsRangeHeaderSupported",
+              "value": "true"
+            },
+            {
+              "name": "kIsVideoDecryptingDemuxerStream",
+              "value": "false"
+            },
+            {
+              "name": "kStartTime",
+              "value": "0.0"
+            },
+            {
+              "name": "kResolution",
+              "value": "180x320"
+            },
+            {
+              "name": "kRendererName",
+              "value": "RendererImpl"
+            },
+            {
+              "name": "kTotalBytes",
+              "value": "0xf9030"
+            },
+            {
+              "name": "kMaxDuration",
+              "value": "10.0"
+            },
+            {
+              "name": "kIsSingleOrigin",
+              "value": "true"
+            },
+            {
+              "name": "kFrameTitle",
+              "value": ""
+            }
+          ]
+        }
+      ],
+      "traceDurations": {
+        "RunTask": {
+          "count": 16728,
+          "ms": 5929.444000000216
+        },
+        "EvaluateScript": {
+          "count": 2,
+          "ms": 1.561
+        },
+        "VideoFrameSubmitter::OnBeginFrame": {
+          "count": 368,
+          "ms": 43.097999999999985
+        },
+        "Scheduler::BeginFrame": {
+          "count": 368,
+          "ms": 18.954
+        },
+        "Scheduler::BeginImplFrame": {
+          "count": 368,
+          "ms": 13.26699999999999
+        },
+        "VideoFrameCompositor::UpdateCurrentFrame": {
+          "count": 368,
+          "ms": 16.598999999999997
+        },
+        "VideoRendererImpl::Render": {
+          "count": 368,
+          "ms": 12.422999999999982
+        },
+        "AnimationHost::TickAnimations": {
+          "count": 1052,
+          "ms": 2.318999999999941
+        },
+        "ProxyImpl::SetNeedsOneBeginImplFrameOnImplThread": {
+          "count": 23,
+          "ms": 0.02600000000000001
+        },
+        "ProxyImpl::SetNeedsRedrawOnImplThread": {
+          "count": 14,
+          "ms": 0.014000000000000005
+        },
+        "Scheduler::ScheduleBeginImplFrameDeadline": {
+          "count": 736,
+          "ms": 5.257999999999969
+        },
+        "ProxyImpl::DidReceiveCompositorFrameAckOnImplThread": {
+          "count": 368,
+          "ms": 10.72900000000001
+        },
+        "ProxyImpl::ScheduledActionSendBeginMainFrame": {
+          "count": 368,
+          "ms": 6.165999999999984
+        },
+        "ScrollTree::CollectScrollDeltas": {
+          "count": 362,
+          "ms": 0.5980000000000004
+        },
+        "ProxyMain::BeginMainFrame": {
+          "count": 368,
+          "ms": 756.4990000000001
+        },
+        "LayerTreeHost::ApplyCompositorChanges": {
+          "count": 368,
+          "ms": 1.3449999999999953
+        },
+        "PrePaint": {
+          "count": 681,
+          "ms": 34.19700000000002
+        },
+        "HitTest": {
+          "count": 325,
+          "ms": 14.91699999999999
+        },
+        "FireAnimationFrame": {
+          "count": 729,
+          "ms": 48.57400000000011
+        },
+        "FunctionCall": {
+          "count": 1537,
+          "ms": 201.53299999999936
+        },
+        "LocalFrameView::ScheduleAnimation": {
+          "count": 1845,
+          "ms": 12.113999999999946
+        },
+        "ProxyImpl::SetNeedsCommitOnImplThread": {
+          "count": 368,
+          "ms": 2.2789999999999915
+        },
+        "auto cc::SchedulerStateMachine::SetNeedsBeginMainFrame(bool, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 368,
+          "ms": 0.8970000000000007
+        },
+        "AnimationHost::UpdateAnimationState": {
+          "count": 15,
+          "ms": 0.066
+        },
+        "UpdateLayoutTree": {
+          "count": 370,
+          "ms": 34.762000000000015
+        },
+        "Layout": {
+          "count": 312,
+          "ms": 61.72699999999995
+        },
+        "ScrollTree::SetScrollOffset": {
+          "count": 46,
+          "ms": 0.10400000000000005
+        },
+        "IntersectionObserverController::computeIntersections": {
+          "count": 736,
+          "ms": 13.656999999999984
+        },
+        "Paint": {
+          "count": 628,
+          "ms": 64.323
+        },
+        "PaintImage": {
+          "count": 302,
+          "ms": 3.380999999999995
+        },
+        "Layerize": {
+          "count": 368,
+          "ms": 21.01500000000001
+        },
+        "auto cc::LayerTreeHost::SetNeedsCommit(bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 23,
+          "ms": 0.03800000000000002
+        },
+        "Commit": {
+          "count": 368,
+          "ms": 380.17299999999983
+        },
+        "LayerTreeHost::DoUpdateLayers": {
+          "count": 368,
+          "ms": 334.1139999999999
+        },
+        "UpdateLayer": {
+          "count": 2380,
+          "ms": 6.839000000000107
+        },
+        "RecordingSource::FinishDisplayItemListUpdate": {
+          "count": 301,
+          "ms": 0.4880000000000004
+        },
+        "ProxyMain::BeginMainFrame::commit": {
+          "count": 368,
+          "ms": 4.63299999999999
+        },
+        "ProxyImpl::ReadyToCommit": {
+          "count": 368,
+          "ms": 118.58800000000006
+        },
+        "Scheduler::NotifyBeginMainFrameStarted": {
+          "count": 336,
+          "ms": 0.43200000000000033
+        },
+        "Scheduler::NotifyReadyToCommit": {
+          "count": 368,
+          "ms": 2.671999999999989
+        },
+        "ProxyImpl::Commit": {
+          "count": 368,
+          "ms": 37.260999999999996
+        },
+        "LayerTreeHostImpl::BeginCommit": {
+          "count": 368,
+          "ms": 5.012999999999989
+        },
+        "ProxyImpl::OnCanDrawStateChanged": {
+          "count": 667,
+          "ms": 1.1339999999999957
+        },
+        "LayerTreeHostImpl::FinishCommit": {
+          "count": 368,
+          "ms": 25.554999999999982
+        },
+        "LayerTreeImpl::PullProperties": {
+          "count": 368,
+          "ms": 24.195000000000004
+        },
+        "TreeSynchronizer::PushLayerPropertiesTo.Main": {
+          "count": 368,
+          "ms": 3.8799999999999835
+        },
+        "TextureLayer::PushPropertiesTo": {
+          "count": 368,
+          "ms": 0.7240000000000005
+        },
+        "DiscardableImageMap::Generate": {
+          "count": 317,
+          "ms": 8.800999999999995
+        },
+        "LayerTreeHost::AnimationHost::PushProperties": {
+          "count": 368,
+          "ms": 1.6769999999999898
+        },
+        "LayerTreeHostImpl::CommitComplete": {
+          "count": 368,
+          "ms": 72.46100000000004
+        },
+        "LayerTreeImpl::UpdateDrawProperties": {
+          "count": 376,
+          "ms": 24.63199999999999
+        },
+        "LayerTreeImpl::UpdateDrawProperties::CalculateDrawProperties": {
+          "count": 376,
+          "ms": 14.096999999999975
+        },
+        "draw_property_utils::FindLayersThatNeedUpdates": {
+          "count": 376,
+          "ms": 0.8810000000000007
+        },
+        "draw_property_utils::ComputeDrawPropertiesOfVisibleLayers": {
+          "count": 376,
+          "ms": 4.14299999999998
+        },
+        "CalculateRenderSurfaceLayerList": {
+          "count": 376,
+          "ms": 3.323999999999996
+        },
+        "LayerTreeHost::WaitForCommitCompletion": {
+          "count": 368,
+          "ms": 2.6969999999999867
+        },
+        "TimerFire": {
+          "count": 63,
+          "ms": 11.535
+        },
+        "LayerTreeImpl::UpdateDrawProperties::Occlusion": {
+          "count": 376,
+          "ms": 9.568999999999992
+        },
+        "LayerTreeImpl::UpdateTiles": {
+          "count": 376,
+          "ms": 5.844999999999982
+        },
+        "ImageAnimationController::AnimateImagesForSyncTree": {
+          "count": 362,
+          "ms": 0.5320000000000004
+        },
+        "LayerTreeImpl::InvalidateRegionForImages": {
+          "count": 367,
+          "ms": 1.081
+        },
+        "auto cc::LayerTreeHostImpl::PrepareTiles()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 368,
+          "ms": 40.65800000000003
+        },
+        "auto cc::TileManager::PrepareTiles(const GlobalStateThatImpactsTilePriority &)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 368,
+          "ms": 39.78299999999997
+        },
+        "TileManager::PrepareTiles": {
+          "count": 368,
+          "ms": 39.170000000000044
+        },
+        "TileManager::AssignGpuMemoryToTiles": {
+          "count": 368,
+          "ms": 16.668999999999976
+        },
+        "RasterSource::PerformSolidColorAnalysis": {
+          "count": 341,
+          "ms": 3.3499999999999917
+        },
+        "TileManager::ScheduleTasks": {
+          "count": 368,
+          "ms": 17.302999999999987
+        },
+        "auto cc::(anonymous namespace)::InsertNodeForTask(TaskGraph *, TileTask *, uint16_t, uint16_t, size_t, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 1049,
+          "ms": 1.321999999999978
+        },
+        "SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit": {
+          "count": 262,
+          "ms": 0.39900000000000024
+        },
+        "TileTaskManagerImpl::ScheduleTasks": {
+          "count": 368,
+          "ms": 7.110999999999989
+        },
+        "RasterizerTaskImpl::RunOnWorkerThread": {
+          "count": 335,
+          "ms": 78.82899999999994
+        },
+        "TaskSetFinishedTaskImpl::RunOnWorkerThread": {
+          "count": 707,
+          "ms": 8.762999999999982
+        },
+        "RasterTask": {
+          "count": 335,
+          "ms": 75.30399999999997
+        },
+        "ZeroCopyRasterBuffer::Playback": {
+          "count": 335,
+          "ms": 73.15599999999989
+        },
+        "TileManager::DidFinishRunningTileTasksRequiredForDraw": {
+          "count": 367,
+          "ms": 1.529999999999995
+        },
+        "DisplayItemList::Raster": {
+          "count": 335,
+          "ms": 61.358
+        },
+        "TileManager::CheckForCompletedTasksAndIssueSignals": {
+          "count": 685,
+          "ms": 40.853000000000044
+        },
+        "TileTaskManagerImpl::CheckForCompletedTasks": {
+          "count": 953,
+          "ms": 5.235999999999977
+        },
+        "TileManager::CheckPendingGpuWorkAndIssueSignals": {
+          "count": 993,
+          "ms": 34.7080000000001
+        },
+        "DidFinishRunningAllTilesTask::RunOnWorkerThread": {
+          "count": 337,
+          "ms": 0.5850000000000004
+        },
+        "TileManager::DidFinishRunningTileTasksRequiredForActivation": {
+          "count": 368,
+          "ms": 2.8109999999999897
+        },
+        "TileManager::DidFinishRunningAllTileTasks": {
+          "count": 348,
+          "ms": 0.5580000000000004
+        },
+        "LayerTreeHostImpl::NotifyTileStateChanged": {
+          "count": 671,
+          "ms": 1.0249999999999995
+        },
+        "TileManager::IsReadyToActivate": {
+          "count": 368,
+          "ms": 2.663999999999989
+        },
+        "LayerTreeHostImpl::ActivateSyncTree": {
+          "count": 368,
+          "ms": 22.829999999999995
+        },
+        "ProcessUIResourceRequestQueue": {
+          "count": 341,
+          "ms": 0.5220000000000004
+        },
+        "LayerTreeImpl::PushPropertyTreesTo": {
+          "count": 368,
+          "ms": 2.3289999999999877
+        },
+        "TreeSynchronizer::PushLayerPropertiesTo.Active": {
+          "count": 368,
+          "ms": 7.96199999999999
+        },
+        "LayerTreeImpl::PushPropertiesTo": {
+          "count": 368,
+          "ms": 1.410999999999994
+        },
+        "AnimationHost::ActivateAnimations": {
+          "count": 7,
+          "ms": 0.03
+        },
+        "ImageAnimationController::WillActivate": {
+          "count": 282,
+          "ms": 0.42800000000000027
+        },
+        "SchedulerStateMachine::SetNeedsPrepareTiles": {
+          "count": 287,
+          "ms": 0.34600000000000025
+        },
+        "ProxyImpl::DidActivateSyncTreeOnImplThread": {
+          "count": 223,
+          "ms": 0.2430000000000002
+        },
+        "InputHandler::ClearCurrentlyScrollingNode": {
+          "count": 368,
+          "ms": 1.4589999999999923
+        },
+        "Scheduler::OnBeginImplFrameDeadline": {
+          "count": 327,
+          "ms": 0.43600000000000033
+        },
+        "ProxyImpl::ScheduledActionDraw": {
+          "count": 368,
+          "ms": 105.34599999999993
+        },
+        "MainFrame.Draw": {
+          "count": 368,
+          "ms": 104.50699999999989
+        },
+        "LayerTreeHostImpl::PrepareToDraw": {
+          "count": 368,
+          "ms": 29.685999999999982
+        },
+        "ImageAnimationController::UpdateState": {
+          "count": 6,
+          "ms": 0.007
+        },
+        "TileManager::PrepareToDraw": {
+          "count": 368,
+          "ms": 4.071999999999992
+        },
+        "TileManager::IsReadyToDraw": {
+          "count": 364,
+          "ms": 1.0050000000000006
+        },
+        "LayerTreeHostImpl::CalculateRenderPasses": {
+          "count": 368,
+          "ms": 19.320000000000014
+        },
+        "DrawLayers.FrameViewerTracing": {
+          "count": 278,
+          "ms": 0.39500000000000024
+        },
+        "LayerTreeHostImpl::BuildHitTestData": {
+          "count": 368,
+          "ms": 1.5429999999999926
+        },
+        "auto cc::Scheduler::FinishImplFrame()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 368,
+          "ms": 0.7220000000000005
+        },
+        "auto cc::ResourcePool::OnResourceReleased(size_t, const gpu::SyncToken &, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 339,
+          "ms": 3.368999999999992
+        },
+        "DecodeStreamRead": {
+          "count": 147,
+          "ms": 2.146999999999998
+        },
+        "EventDispatch": {
+          "count": 216,
+          "ms": 13.28299999999999
+        },
+        "Responsiveness.Renderer.UserInteraction": {
+          "count": 1,
+          "ms": 0.007
+        },
+        "VideoFrameCompositor::SetCurrentFrame": {
+          "count": 141,
+          "ms": 0.21700000000000014
+        },
+        "VideoFrameSubmitter::SubmitFrame": {
+          "count": 147,
+          "ms": 19.875999999999994
+        },
+        "VideoFrameResourceProvider::AppendQuads": {
+          "count": 147,
+          "ms": 16.030999999999988
+        },
+        "VideoResourceUpdater::CreateForSoftwareFrame": {
+          "count": 147,
+          "ms": 14.819000000000004
+        },
+        "TreeSynchronizer::SynchronizeTrees": {
+          "count": 4,
+          "ms": 0.148
+        },
+        "SoftwareImageDecodeTaskImpl::RunOnWorkerThread": {
+          "count": 9,
+          "ms": 0.262
+        },
+        "ImageDecodeTask": {
+          "count": 9,
+          "ms": 0.184
+        },
+        "SoftwareImageDecodeCache::DecodeImageInTask": {
+          "count": 9,
+          "ms": 0.04699999999999999
+        },
+        "LayerTreeHost::~LayerTreeHost": {
+          "count": 1,
+          "ms": 1.763
+        },
+        "ProxyMain::Stop": {
+          "count": 1,
+          "ms": 1.749
+        },
+        "ProxyImpl::FinishGLOnImplThread": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "ProxyImpl::~ProxyImpl": {
+          "count": 1,
+          "ms": 1.491
+        },
+        "LayerTreeHostImpl::ReleaseLayerTreeFrameSink": {
+          "count": 1,
+          "ms": 1.306
+        },
+        "TileTaskManagerImpl::Shutdown": {
+          "count": 1,
+          "ms": 0.003
+        },
+        "auto cc::ResourcePool::InvalidateResources()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 1,
+          "ms": 0.002
+        },
+        "LayerTreeHostImpl::~LayerTreeHostImpl()": {
+          "count": 1,
+          "ms": 0.074
+        },
+        "ProxyMain::~ProxyMain": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "V8.GC_HEAP_EXTERNAL_PROLOGUE": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "MinorGC": {
+          "count": 1,
+          "ms": 0.841
+        },
+        "V8.GC_HEAP_PROLOGUE": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_TIME_TO_SAFEPOINT": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER": {
+          "count": 1,
+          "ms": 0.794
+        },
+        "V8.GC_HEAP_PROLOGUE_SAFEPOINT": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_SCAVENGE": {
+          "count": 1,
+          "ms": 0.783
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_WEAK_GLOBAL_HANDLES_IDENTIFY": {
+          "count": 1,
+          "ms": 0.05
+        },
+        "ComputeWeaknessProcessor start": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_TRACED_HANDLES_COMPUTE_WEAKNESS_PARALLEL": {
+          "count": 1,
+          "ms": 0.033
+        },
+        "V8.GC_SCAVENGER_BACKGROUND_TRACED_HANDLES_COMPUTE_WEAKNESS_PARALLEL": {
+          "count": 1,
+          "ms": 0.029
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_COLLECT_OLD_TO_NEW_PAGES": {
+          "count": 1,
+          "ms": 0.008
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_PARALLEL_PHASE": {
+          "count": 1,
+          "ms": 0.319
+        },
+        "Parallel scavenge started": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_ROOTS": {
+          "count": 1,
+          "ms": 0.208
+        },
+        "V8.GC_SCAVENGER_BACKGROUND_SCAVENGE_PARALLEL": {
+          "count": 8,
+          "ms": 0.8669999999999999
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_PARALLEL": {
+          "count": 2,
+          "ms": 0.075
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_WEAK_GLOBAL_HANDLES_PROCESS": {
+          "count": 1,
+          "ms": 0.033
+        },
+        "ClearWeaknessProcessor start": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_TRACED_HANDLES_RESET_PARALLEL": {
+          "count": 1,
+          "ms": 0.02
+        },
+        "V8.GC_SCAVENGER_BACKGROUND_TRACED_HANDLES_RESET_PARALLEL": {
+          "count": 1,
+          "ms": 0.015
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_FINALIZE": {
+          "count": 1,
+          "ms": 0.311
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_RESTORE_AND_QUARANTINE_PINNED": {
+          "count": 1,
+          "ms": 0.003
+        },
+        "V8.GC_SCAVENGER_FREE_REMEMBERED_SET": {
+          "count": 1,
+          "ms": 0.013
+        },
+        "V8.GC_SCAVENGER_RESIZE_NEW_SPACE": {
+          "count": 1,
+          "ms": 0.01
+        },
+        "V8.GC_HEAP_EPILOGUE_SAFEPOINT": {
+          "count": 1,
+          "ms": 0.002
+        },
+        "V8.GC_HEAP_EPILOGUE": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "V8.GC_HEAP_EXTERNAL_EPILOGUE": {
+          "count": 1,
+          "ms": 0.007
+        }
+      }
+    },
+    {
+      "count": 3,
+      "fps": 31.787770861827873,
+      "p95": 33.400000000000546,
+      "longTasks": 0,
+      "dpr": 1,
+      "memory": 10000000,
+      "callsBefore": {
+        "play": 3,
+        "pause": 0,
+        "observer": 5,
+        "mutations": 0
+      },
+      "callsAfter": {
+        "play": 3,
+        "pause": 0,
+        "observer": 5,
+        "mutations": 0
+      },
+      "mediaMutations": 0,
+      "stableVideoNodes": true,
+      "videos": [
+        {
+          "src": "/assets/portraits/idle/forest_god_lvbu.panel.mp4",
+          "decode": [
+            180,
+            320
+          ],
+          "css": [
+            166.390625,
+            212
+          ],
+          "effective": [
+            166.390625,
+            212
+          ],
+          "total": 147,
+          "dropped": 0
+        },
+        {
+          "src": "/assets/portraits/idle/wind_god_guanyu.panel.mp4",
+          "decode": [
+            180,
+            320
+          ],
+          "css": [
+            166.390625,
+            212
+          ],
+          "effective": [
+            166.390625,
+            212
+          ],
+          "total": 147,
+          "dropped": 0
+        },
+        {
+          "src": "/assets/portraits/idle/fire_god_zhouyu.panel.mp4",
+          "decode": [
+            180,
+            320
+          ],
+          "css": [
+            166.390625,
+            212
+          ],
+          "effective": [
+            166.390625,
+            212
+          ],
+          "total": 147,
+          "dropped": 0
+        }
+      ],
+      "performanceDelta": {
+        "Timestamp": 6.985641999985091,
+        "AudioHandlers": 0,
+        "AudioWorkletProcessors": 0,
+        "Documents": 0,
+        "Frames": 0,
+        "JSEventListeners": 12,
+        "LayoutObjects": 0,
+        "MediaKeySessions": 0,
+        "MediaKeys": 0,
+        "Nodes": 0,
+        "Resources": 0,
+        "ContextLifecycleStateObservers": 2,
+        "V8PerContextDatas": 0,
+        "WorkerGlobalScopes": 0,
+        "UACSSResources": 0,
+        "RTCPeerConnections": 0,
+        "ResourceFetchers": 0,
+        "AdSubframes": 0,
+        "DetachedScriptStates": 0,
+        "ArrayBufferContents": 0,
+        "LayoutCount": 159,
+        "RecalcStyleCount": 221,
+        "LayoutDuration": 0.031705000000000004,
+        "RecalcStyleDuration": 0.02364,
+        "DevToolsCommandDuration": 0.003018999999999994,
+        "ScriptDuration": 0.174553,
+        "V8CompileDuration": 0,
+        "TaskDuration": 0.641922,
+        "TaskOtherDuration": 0.40900499999999995,
+        "ThreadTime": 0.648026,
+        "ProcessTime": 1.4324660000000007,
+        "JSHeapUsedSize": 1207808,
+        "JSHeapTotalSize": 1048576,
+        "FirstMeaningfulPaint": 334216.007458,
+        "DomContentLoaded": 0,
+        "NavigationStart": 0
+      },
+      "network": [
+        {
+          "url": "http://127.0.0.1:5173/assets/portraits/idle/forest_god_lvbu.panel.mp4",
+          "transfer": 1020252,
+          "body": 1019952
+        },
+        {
+          "url": "http://127.0.0.1:5173/assets/portraits/idle/wind_god_guanyu.panel.mp4",
+          "transfer": 743626,
+          "body": 743326
+        },
+        {
+          "url": "http://127.0.0.1:5173/assets/portraits/idle/fire_god_zhouyu.panel.mp4",
+          "transfer": 813285,
+          "body": 812985
+        }
+      ],
+      "mediaProperties": [
+        {
+          "playerId": "A4B2D7AC935487ACB8D71EFA11AE0DDF",
+          "properties": [
+            {
+              "name": "kBitrate",
+              "value": "815961"
+            },
+            {
+              "name": "kVideoDecoderName",
+              "value": "FFmpegVideoDecoder"
+            },
+            {
+              "name": "kIsStreaming",
+              "value": "false"
+            },
+            {
+              "name": "kVideoTracks",
+              "value": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"h264\",\"coded size\":\"180x320\",\"color space\":{\"matrix\":\"SMPTE170M\",\"primaries\":\"SMPTE170M\",\"range\":\"LIMITED\",\"transfer\":\"SMPTE170M\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"hdr metadata\":{},\"natural size\":\"180x320\",\"orientation\":\"0°\",\"profile\":\"h264 high\",\"visible rect\":\"0,0 180x320\"}]"
+            },
+            {
+              "name": "kIsPlatformVideoDecoder",
+              "value": "false"
+            },
+            {
+              "name": "kFrameUrl",
+              "value": "http://127.0.0.1:5173/e2e/fixtures/t15.html?real"
+            },
+            {
+              "name": "kIsRangeHeaderSupported",
+              "value": "true"
+            },
+            {
+              "name": "kIsVideoDecryptingDemuxerStream",
+              "value": "false"
+            },
+            {
+              "name": "kStartTime",
+              "value": "0.0"
+            },
+            {
+              "name": "kResolution",
+              "value": "180x320"
+            },
+            {
+              "name": "kRendererName",
+              "value": "RendererImpl"
+            },
+            {
+              "name": "kTotalBytes",
+              "value": "0xf9030"
+            },
+            {
+              "name": "kMaxDuration",
+              "value": "10.0"
+            },
+            {
+              "name": "kIsSingleOrigin",
+              "value": "true"
+            },
+            {
+              "name": "kFrameTitle",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "playerId": "670E155FC49DE480218D7F6CE93AF2BA",
+          "properties": [
+            {
+              "name": "kBitrate",
+              "value": "594660"
+            },
+            {
+              "name": "kVideoDecoderName",
+              "value": "FFmpegVideoDecoder"
+            },
+            {
+              "name": "kIsStreaming",
+              "value": "false"
+            },
+            {
+              "name": "kVideoTracks",
+              "value": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"h264\",\"coded size\":\"180x320\",\"color space\":{\"matrix\":\"SMPTE170M\",\"primaries\":\"SMPTE170M\",\"range\":\"LIMITED\",\"transfer\":\"SMPTE170M\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"hdr metadata\":{},\"natural size\":\"180x320\",\"orientation\":\"0°\",\"profile\":\"h264 high\",\"visible rect\":\"0,0 180x320\"}]"
+            },
+            {
+              "name": "kIsPlatformVideoDecoder",
+              "value": "false"
+            },
+            {
+              "name": "kFrameUrl",
+              "value": "http://127.0.0.1:5173/e2e/fixtures/t15.html?real"
+            },
+            {
+              "name": "kIsRangeHeaderSupported",
+              "value": "true"
+            },
+            {
+              "name": "kIsVideoDecryptingDemuxerStream",
+              "value": "false"
+            },
+            {
+              "name": "kStartTime",
+              "value": "0.0"
+            },
+            {
+              "name": "kResolution",
+              "value": "180x320"
+            },
+            {
+              "name": "kRendererName",
+              "value": "RendererImpl"
+            },
+            {
+              "name": "kTotalBytes",
+              "value": "0xb579e"
+            },
+            {
+              "name": "kMaxDuration",
+              "value": "10.0"
+            },
+            {
+              "name": "kIsSingleOrigin",
+              "value": "true"
+            },
+            {
+              "name": "kFrameTitle",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "playerId": "01070EACA05ABA7DB7A33C5C7449F888",
+          "properties": [
+            {
+              "name": "kBitrate",
+              "value": "650388"
+            },
+            {
+              "name": "kVideoDecoderName",
+              "value": "FFmpegVideoDecoder"
+            },
+            {
+              "name": "kIsStreaming",
+              "value": "false"
+            },
+            {
+              "name": "kVideoTracks",
+              "value": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"h264\",\"coded size\":\"180x320\",\"color space\":{\"matrix\":\"SMPTE170M\",\"primaries\":\"SMPTE170M\",\"range\":\"LIMITED\",\"transfer\":\"SMPTE170M\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"hdr metadata\":{},\"natural size\":\"180x320\",\"orientation\":\"0°\",\"profile\":\"h264 high\",\"visible rect\":\"0,0 180x320\"}]"
+            },
+            {
+              "name": "kIsPlatformVideoDecoder",
+              "value": "false"
+            },
+            {
+              "name": "kFrameUrl",
+              "value": "http://127.0.0.1:5173/e2e/fixtures/t15.html?real"
+            },
+            {
+              "name": "kIsRangeHeaderSupported",
+              "value": "true"
+            },
+            {
+              "name": "kIsVideoDecryptingDemuxerStream",
+              "value": "false"
+            },
+            {
+              "name": "kStartTime",
+              "value": "0.0"
+            },
+            {
+              "name": "kResolution",
+              "value": "180x320"
+            },
+            {
+              "name": "kRendererName",
+              "value": "RendererImpl"
+            },
+            {
+              "name": "kTotalBytes",
+              "value": "0xc67b9"
+            },
+            {
+              "name": "kMaxDuration",
+              "value": "10.0"
+            },
+            {
+              "name": "kIsSingleOrigin",
+              "value": "true"
+            },
+            {
+              "name": "kFrameTitle",
+              "value": ""
+            }
+          ]
+        }
+      ],
+      "traceDurations": {
+        "RunTask": {
+          "count": 12625,
+          "ms": 3486.7540000000417
+        },
+        "Scheduler::BeginFrame": {
+          "count": 195,
+          "ms": 17.087
+        },
+        "Scheduler::BeginImplFrame": {
+          "count": 195,
+          "ms": 14.245000000000001
+        },
+        "VideoFrameSubmitter::OnBeginFrame": {
+          "count": 585,
+          "ms": 71.33299999999998
+        },
+        "VideoFrameCompositor::UpdateCurrentFrame": {
+          "count": 585,
+          "ms": 15.678999999999965
+        },
+        "VideoRendererImpl::Render": {
+          "count": 585,
+          "ms": 10.562999999999976
+        },
+        "AnimationHost::TickAnimations": {
+          "count": 534,
+          "ms": 1.2939999999999898
+        },
+        "VideoFrameCompositor::SetCurrentFrame": {
+          "count": 360,
+          "ms": 0.5850000000000004
+        },
+        "VideoFrameSubmitter::SubmitFrame": {
+          "count": 443,
+          "ms": 48.75699999999994
+        },
+        "ProxyImpl::SetNeedsOneBeginImplFrameOnImplThread": {
+          "count": 16,
+          "ms": 0.017000000000000008
+        },
+        "VideoFrameResourceProvider::AppendQuads": {
+          "count": 443,
+          "ms": 36.604999999999976
+        },
+        "VideoResourceUpdater::CreateForSoftwareFrame": {
+          "count": 443,
+          "ms": 34.19299999999999
+        },
+        "ProxyImpl::SetNeedsRedrawOnImplThread": {
+          "count": 36,
+          "ms": 0.04200000000000002
+        },
+        "Scheduler::ScheduleBeginImplFrameDeadline": {
+          "count": 218,
+          "ms": 1.2869999999999988
+        },
+        "DecodeStreamRead": {
+          "count": 442,
+          "ms": 3.608999999999983
+        },
+        "ProxyImpl::DidReceiveCompositorFrameAckOnImplThread": {
+          "count": 196,
+          "ms": 1.8429999999999942
+        },
+        "ProxyImpl::ScheduledActionSendBeginMainFrame": {
+          "count": 195,
+          "ms": 3.3399999999999963
+        },
+        "ScrollTree::CollectScrollDeltas": {
+          "count": 191,
+          "ms": 0.3090000000000002
+        },
+        "ProxyMain::BeginMainFrame": {
+          "count": 195,
+          "ms": 387.08799999999985
+        },
+        "LayerTreeHost::ApplyCompositorChanges": {
+          "count": 195,
+          "ms": 0.7120000000000005
+        },
+        "Scheduler::OnBeginImplFrameDeadline": {
+          "count": 181,
+          "ms": 0.23800000000000018
+        },
+        "ProxyImpl::ScheduledActionDraw": {
+          "count": 195,
+          "ms": 62.251000000000005
+        },
+        "MainFrame.Draw": {
+          "count": 195,
+          "ms": 61.76100000000002
+        },
+        "LayerTreeHostImpl::PrepareToDraw": {
+          "count": 195,
+          "ms": 21.988000000000014
+        },
+        "LayerTreeImpl::UpdateDrawProperties": {
+          "count": 203,
+          "ms": 14.496999999999993
+        },
+        "LayerTreeImpl::UpdateDrawProperties::CalculateDrawProperties": {
+          "count": 203,
+          "ms": 7.645999999999996
+        },
+        "draw_property_utils::FindLayersThatNeedUpdates": {
+          "count": 203,
+          "ms": 0.5210000000000004
+        },
+        "PrePaint": {
+          "count": 335,
+          "ms": 17.172999999999988
+        },
+        "HitTest": {
+          "count": 152,
+          "ms": 6.776999999999998
+        },
+        "draw_property_utils::ComputeDrawPropertiesOfVisibleLayers": {
+          "count": 203,
+          "ms": 3.087999999999998
+        },
+        "CalculateRenderSurfaceLayerList": {
+          "count": 203,
+          "ms": 1.9459999999999955
+        },
+        "LayerTreeImpl::UpdateDrawProperties::Occlusion": {
+          "count": 203,
+          "ms": 6.282000000000001
+        },
+        "LayerTreeImpl::UpdateTiles": {
+          "count": 203,
+          "ms": 4.255999999999995
+        },
+        "ImageAnimationController::UpdateState": {
+          "count": 6,
+          "ms": 0.006
+        },
+        "TileManager::PrepareToDraw": {
+          "count": 195,
+          "ms": 3.9459999999999953
+        },
+        "TileTaskManagerImpl::CheckForCompletedTasks": {
+          "count": 535,
+          "ms": 2.4789999999999743
+        },
+        "TileManager::CheckPendingGpuWorkAndIssueSignals": {
+          "count": 534,
+          "ms": 16.299000000000007
+        },
+        "TileManager::IsReadyToDraw": {
+          "count": 195,
+          "ms": 1.5119999999999982
+        },
+        "LayerTreeHostImpl::CalculateRenderPasses": {
+          "count": 195,
+          "ms": 12.966000000000003
+        },
+        "FireAnimationFrame": {
+          "count": 386,
+          "ms": 22.460999999999974
+        },
+        "FunctionCall": {
+          "count": 1273,
+          "ms": 160.99399999999977
+        },
+        "DrawLayers.FrameViewerTracing": {
+          "count": 138,
+          "ms": 0.1460000000000001
+        },
+        "LayerTreeHostImpl::BuildHitTestData": {
+          "count": 195,
+          "ms": 1.044
+        },
+        "LocalFrameView::ScheduleAnimation": {
+          "count": 1148,
+          "ms": 5.849999999999957
+        },
+        "AnimationHost::UpdateAnimationState": {
+          "count": 14,
+          "ms": 0.059000000000000004
+        },
+        "UpdateLayoutTree": {
+          "count": 196,
+          "ms": 21.210000000000008
+        },
+        "auto cc::Scheduler::FinishImplFrame()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 195,
+          "ms": 0.35500000000000026
+        },
+        "ProxyImpl::SetNeedsCommitOnImplThread": {
+          "count": 197,
+          "ms": 0.8060000000000006
+        },
+        "auto cc::SchedulerStateMachine::SetNeedsBeginMainFrame(bool, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 189,
+          "ms": 0.2880000000000002
+        },
+        "Layout": {
+          "count": 141,
+          "ms": 26.55399999999999
+        },
+        "ScrollTree::SetScrollOffset": {
+          "count": 49,
+          "ms": 0.10800000000000007
+        },
+        "IntersectionObserverController::computeIntersections": {
+          "count": 390,
+          "ms": 8.063999999999993
+        },
+        "Paint": {
+          "count": 292,
+          "ms": 27.880000000000006
+        },
+        "PaintImage": {
+          "count": 134,
+          "ms": 1.5219999999999994
+        },
+        "Layerize": {
+          "count": 195,
+          "ms": 10.995000000000001
+        },
+        "auto cc::LayerTreeHost::SetNeedsCommit(bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 26,
+          "ms": 0.03500000000000002
+        },
+        "Commit": {
+          "count": 195,
+          "ms": 201.329
+        },
+        "LayerTreeHost::DoUpdateLayers": {
+          "count": 195,
+          "ms": 171.85200000000006
+        },
+        "UpdateLayer": {
+          "count": 1914,
+          "ms": 8.72499999999979
+        },
+        "RecordingSource::FinishDisplayItemListUpdate": {
+          "count": 139,
+          "ms": 0.2700000000000002
+        },
+        "ProxyMain::BeginMainFrame::commit": {
+          "count": 195,
+          "ms": 2.698999999999995
+        },
+        "ProxyImpl::ReadyToCommit": {
+          "count": 195,
+          "ms": 68.37800000000004
+        },
+        "Scheduler::NotifyBeginMainFrameStarted": {
+          "count": 188,
+          "ms": 0.3120000000000002
+        },
+        "Scheduler::NotifyReadyToCommit": {
+          "count": 195,
+          "ms": 1.4089999999999978
+        },
+        "ProxyImpl::Commit": {
+          "count": 195,
+          "ms": 19.06000000000001
+        },
+        "LayerTreeHostImpl::BeginCommit": {
+          "count": 195,
+          "ms": 2.616999999999996
+        },
+        "ProxyImpl::OnCanDrawStateChanged": {
+          "count": 357,
+          "ms": 0.6820000000000005
+        },
+        "LayerTreeHostImpl::FinishCommit": {
+          "count": 195,
+          "ms": 12.762999999999996
+        },
+        "LayerTreeImpl::PullProperties": {
+          "count": 195,
+          "ms": 12.09
+        },
+        "TreeSynchronizer::PushLayerPropertiesTo.Main": {
+          "count": 195,
+          "ms": 2.2409999999999943
+        },
+        "TextureLayer::PushPropertiesTo": {
+          "count": 193,
+          "ms": 0.4060000000000003
+        },
+        "DiscardableImageMap::Generate": {
+          "count": 149,
+          "ms": 3.8619999999999988
+        },
+        "LayerTreeHost::AnimationHost::PushProperties": {
+          "count": 195,
+          "ms": 1.0120000000000005
+        },
+        "LayerTreeHostImpl::CommitComplete": {
+          "count": 195,
+          "ms": 44.58699999999999
+        },
+        "LayerTreeHost::WaitForCommitCompletion": {
+          "count": 195,
+          "ms": 1.3229999999999984
+        },
+        "ImageAnimationController::AnimateImagesForSyncTree": {
+          "count": 194,
+          "ms": 0.32800000000000024
+        },
+        "LayerTreeImpl::InvalidateRegionForImages": {
+          "count": 195,
+          "ms": 0.5200000000000004
+        },
+        "auto cc::LayerTreeHostImpl::PrepareTiles()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 195,
+          "ms": 26.71899999999999
+        },
+        "auto cc::TileManager::PrepareTiles(const GlobalStateThatImpactsTilePriority &)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 195,
+          "ms": 26.259999999999987
+        },
+        "TileManager::PrepareTiles": {
+          "count": 195,
+          "ms": 25.973000000000003
+        },
+        "TileManager::AssignGpuMemoryToTiles": {
+          "count": 195,
+          "ms": 9.494999999999992
+        },
+        "RasterSource::PerformSolidColorAnalysis": {
+          "count": 193,
+          "ms": 1.4519999999999986
+        },
+        "EvaluateScript": {
+          "count": 2,
+          "ms": 2.216
+        },
+        "TileManager::ScheduleTasks": {
+          "count": 195,
+          "ms": 13.901999999999996
+        },
+        "auto cc::(anonymous namespace)::InsertNodeForTask(TaskGraph *, TileTask *, uint16_t, uint16_t, size_t, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 559,
+          "ms": 0.8150000000000005
+        },
+        "SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit": {
+          "count": 139,
+          "ms": 0.1710000000000001
+        },
+        "TileTaskManagerImpl::ScheduleTasks": {
+          "count": 195,
+          "ms": 3.180999999999995
+        },
+        "TaskSetFinishedTaskImpl::RunOnWorkerThread": {
+          "count": 356,
+          "ms": 2.8719999999999857
+        },
+        "RasterizerTaskImpl::RunOnWorkerThread": {
+          "count": 171,
+          "ms": 49.51599999999999
+        },
+        "TileManager::DidFinishRunningTileTasksRequiredForDraw": {
+          "count": 194,
+          "ms": 0.7940000000000006
+        },
+        "RasterTask": {
+          "count": 171,
+          "ms": 47.66899999999998
+        },
+        "ZeroCopyRasterBuffer::Playback": {
+          "count": 171,
+          "ms": 46.859999999999985
+        },
+        "TileManager::CheckForCompletedTasksAndIssueSignals": {
+          "count": 340,
+          "ms": 18.735000000000007
+        },
+        "DisplayItemList::Raster": {
+          "count": 171,
+          "ms": 37.57100000000001
+        },
+        "DidFinishRunningAllTilesTask::RunOnWorkerThread": {
+          "count": 170,
+          "ms": 0.7000000000000002
+        },
+        "TileManager::DidFinishRunningTileTasksRequiredForActivation": {
+          "count": 195,
+          "ms": 1.1809999999999996
+        },
+        "TileManager::DidFinishRunningAllTileTasks": {
+          "count": 172,
+          "ms": 0.2710000000000002
+        },
+        "LayerTreeHostImpl::NotifyTileStateChanged": {
+          "count": 355,
+          "ms": 0.6960000000000005
+        },
+        "TileManager::IsReadyToActivate": {
+          "count": 195,
+          "ms": 1.3529999999999978
+        },
+        "LayerTreeHostImpl::ActivateSyncTree": {
+          "count": 195,
+          "ms": 11.926000000000005
+        },
+        "ProcessUIResourceRequestQueue": {
+          "count": 181,
+          "ms": 0.2640000000000002
+        },
+        "LayerTreeImpl::PushPropertyTreesTo": {
+          "count": 195,
+          "ms": 1.3469999999999982
+        },
+        "TreeSynchronizer::PushLayerPropertiesTo.Active": {
+          "count": 195,
+          "ms": 4.033999999999994
+        },
+        "LayerTreeImpl::PushPropertiesTo": {
+          "count": 195,
+          "ms": 0.8610000000000005
+        },
+        "AnimationHost::ActivateAnimations": {
+          "count": 6,
+          "ms": 0.022
+        },
+        "ImageAnimationController::WillActivate": {
+          "count": 143,
+          "ms": 0.17500000000000013
+        },
+        "SchedulerStateMachine::SetNeedsPrepareTiles": {
+          "count": 155,
+          "ms": 0.19500000000000015
+        },
+        "ProxyImpl::DidActivateSyncTreeOnImplThread": {
+          "count": 141,
+          "ms": 0.1520000000000001
+        },
+        "InputHandler::ClearCurrentlyScrollingNode": {
+          "count": 195,
+          "ms": 0.7120000000000005
+        },
+        "auto cc::ResourcePool::OnResourceReleased(size_t, const gpu::SyncToken &, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 172,
+          "ms": 1.923999999999997
+        },
+        "Responsiveness.Renderer.UserInteraction": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "EventDispatch": {
+          "count": 259,
+          "ms": 19.048
+        },
+        "TimerFire": {
+          "count": 62,
+          "ms": 11.870000000000005
+        },
+        "TreeSynchronizer::SynchronizeTrees": {
+          "count": 4,
+          "ms": 0.14
+        },
+        "SoftwareImageDecodeTaskImpl::RunOnWorkerThread": {
+          "count": 6,
+          "ms": 0.35800000000000004
+        },
+        "ImageDecodeTask": {
+          "count": 6,
+          "ms": 0.32200000000000006
+        },
+        "SoftwareImageDecodeCache::DecodeImageInTask": {
+          "count": 6,
+          "ms": 0.21600000000000003
+        },
+        "LayerTreeHost::~LayerTreeHost": {
+          "count": 1,
+          "ms": 1.96
+        },
+        "ProxyMain::Stop": {
+          "count": 1,
+          "ms": 1.942
+        },
+        "ProxyImpl::FinishGLOnImplThread": {
+          "count": 1,
+          "ms": 0.006
+        },
+        "ProxyImpl::~ProxyImpl": {
+          "count": 1,
+          "ms": 1.853
+        },
+        "LayerTreeHostImpl::ReleaseLayerTreeFrameSink": {
+          "count": 1,
+          "ms": 1.596
+        },
+        "TileTaskManagerImpl::Shutdown": {
+          "count": 1,
+          "ms": 0.007
+        },
+        "auto cc::ResourcePool::InvalidateResources()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 1,
+          "ms": 0.007
+        },
+        "LayerTreeHostImpl::~LayerTreeHostImpl()": {
+          "count": 1,
+          "ms": 0.19
+        },
+        "ProxyMain::~ProxyMain": {
+          "count": 1,
+          "ms": 0.003
+        },
+        "V8.GC_HEAP_EXTERNAL_PROLOGUE": {
+          "count": 1,
+          "ms": 0.003
+        },
+        "MinorGC": {
+          "count": 1,
+          "ms": 0.96
+        },
+        "V8.GC_HEAP_PROLOGUE": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_TIME_TO_SAFEPOINT": {
+          "count": 1,
+          "ms": 0.002
+        },
+        "V8.GC_SCAVENGER": {
+          "count": 1,
+          "ms": 0.906
+        },
+        "V8.GC_HEAP_PROLOGUE_SAFEPOINT": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_SCAVENGE": {
+          "count": 1,
+          "ms": 0.892
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_WEAK_GLOBAL_HANDLES_IDENTIFY": {
+          "count": 1,
+          "ms": 0.061
+        },
+        "ComputeWeaknessProcessor start": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_TRACED_HANDLES_COMPUTE_WEAKNESS_PARALLEL": {
+          "count": 1,
+          "ms": 0.042
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_COLLECT_OLD_TO_NEW_PAGES": {
+          "count": 1,
+          "ms": 0.012
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_PARALLEL_PHASE": {
+          "count": 1,
+          "ms": 0.657
+        },
+        "Parallel scavenge started": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_ROOTS": {
+          "count": 1,
+          "ms": 0.052
+        },
+        "V8.GC_SCAVENGER_BACKGROUND_SCAVENGE_PARALLEL": {
+          "count": 3,
+          "ms": 0.74
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_PARALLEL": {
+          "count": 1,
+          "ms": 0.161
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_WEAK_GLOBAL_HANDLES_PROCESS": {
+          "count": 1,
+          "ms": 0.04
+        },
+        "ClearWeaknessProcessor start": {
+          "count": 1,
+          "ms": 0.006
+        },
+        "V8.GC_SCAVENGER_TRACED_HANDLES_RESET_PARALLEL": {
+          "count": 1,
+          "ms": 0.024
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_FINALIZE": {
+          "count": 1,
+          "ms": 0.07
+        },
+        "V8.GC_SCAVENGER_SCAVENGE_RESTORE_AND_QUARANTINE_PINNED": {
+          "count": 1,
+          "ms": 0.002
+        },
+        "V8.GC_SCAVENGER_FREE_REMEMBERED_SET": {
+          "count": 1,
+          "ms": 0.024
+        },
+        "V8.GC_SCAVENGER_RESIZE_NEW_SPACE": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_HEAP_EPILOGUE_SAFEPOINT": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "V8.GC_HEAP_EPILOGUE": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "V8.GC_HEAP_EXTERNAL_EPILOGUE": {
+          "count": 1,
+          "ms": 0.01
+        }
+      }
+    },
+    {
+      "count": 5,
+      "fps": 31.91807693599112,
+      "p95": 33.400000000000546,
+      "longTasks": 0,
+      "dpr": 1,
+      "memory": 10000000,
+      "callsBefore": {
+        "play": 5,
+        "pause": 0,
+        "observer": 5,
+        "mutations": 0
+      },
+      "callsAfter": {
+        "play": 5,
+        "pause": 0,
+        "observer": 5,
+        "mutations": 0
+      },
+      "mediaMutations": 0,
+      "stableVideoNodes": true,
+      "videos": [
+        {
+          "src": "/assets/portraits/idle/forest_god_lvbu.panel.mp4",
+          "decode": [
+            180,
+            320
+          ],
+          "css": [
+            166.390625,
+            212
+          ],
+          "effective": [
+            166.390625,
+            212
+          ],
+          "total": 147,
+          "dropped": 0
+        },
+        {
+          "src": "/assets/portraits/idle/wind_god_guanyu.panel.mp4",
+          "decode": [
+            180,
+            320
+          ],
+          "css": [
+            166.390625,
+            212
+          ],
+          "effective": [
+            166.390625,
+            212
+          ],
+          "total": 147,
+          "dropped": 0
+        },
+        {
+          "src": "/assets/portraits/idle/fire_god_zhouyu.panel.mp4",
+          "decode": [
+            180,
+            320
+          ],
+          "css": [
+            166.390625,
+            212
+          ],
+          "effective": [
+            166.390625,
+            212
+          ],
+          "total": 147,
+          "dropped": 0
+        },
+        {
+          "src": "/assets/portraits/idle/mountain_god_zhaoyun.panel.mp4",
+          "decode": [
+            180,
+            320
+          ],
+          "css": [
+            166.390625,
+            212
+          ],
+          "effective": [
+            166.390625,
+            212
+          ],
+          "total": 147,
+          "dropped": 0
+        },
+        {
+          "src": "/assets/portraits/idle/wind_zhang_jiao.panel.mp4",
+          "decode": [
+            180,
+            320
+          ],
+          "css": [
+            171.359375,
+            238
+          ],
+          "effective": [
+            171.359375,
+            238
+          ],
+          "total": 147,
+          "dropped": 0
+        }
+      ],
+      "performanceDelta": {
+        "Timestamp": 6.982397000014316,
+        "AudioHandlers": 0,
+        "AudioWorkletProcessors": 0,
+        "Documents": -2,
+        "Frames": -2,
+        "JSEventListeners": -16,
+        "LayoutObjects": 0,
+        "MediaKeySessions": 0,
+        "MediaKeys": 0,
+        "Nodes": -1658,
+        "Resources": -12,
+        "ContextLifecycleStateObservers": -22,
+        "V8PerContextDatas": 0,
+        "WorkerGlobalScopes": 0,
+        "UACSSResources": 0,
+        "RTCPeerConnections": 0,
+        "ResourceFetchers": -2,
+        "AdSubframes": 0,
+        "DetachedScriptStates": 0,
+        "ArrayBufferContents": 0,
+        "LayoutCount": 157,
+        "RecalcStyleCount": 221,
+        "LayoutDuration": 0.033141,
+        "RecalcStyleDuration": 0.022736,
+        "DevToolsCommandDuration": 0.003384000000000026,
+        "ScriptDuration": 0.190188,
+        "V8CompileDuration": 0,
+        "TaskDuration": 0.686337,
+        "TaskOtherDuration": 0.43688799999999994,
+        "ThreadTime": 0.698863,
+        "ProcessTime": 1.8210640000000007,
+        "JSHeapUsedSize": -3378912,
+        "JSHeapTotalSize": -1048576,
+        "FirstMeaningfulPaint": 334223.501548,
+        "DomContentLoaded": 0,
+        "NavigationStart": 0
+      },
+      "network": [
+        {
+          "url": "http://127.0.0.1:5173/assets/portraits/idle/forest_god_lvbu.panel.mp4",
+          "transfer": 1020252,
+          "body": 1019952
+        },
+        {
+          "url": "http://127.0.0.1:5173/assets/portraits/idle/wind_god_guanyu.panel.mp4",
+          "transfer": 743626,
+          "body": 743326
+        },
+        {
+          "url": "http://127.0.0.1:5173/assets/portraits/idle/fire_god_zhouyu.panel.mp4",
+          "transfer": 813285,
+          "body": 812985
+        },
+        {
+          "url": "http://127.0.0.1:5173/assets/portraits/idle/mountain_god_zhaoyun.panel.mp4",
+          "transfer": 762489,
+          "body": 762189
+        },
+        {
+          "url": "http://127.0.0.1:5173/assets/portraits/idle/wind_zhang_jiao.panel.mp4",
+          "transfer": 933035,
+          "body": 932735
+        }
+      ],
+      "mediaProperties": [
+        {
+          "playerId": "8293F3E5AC57D93EDA30628D4AF4D908",
+          "properties": [
+            {
+              "name": "kBitrate",
+              "value": "815961"
+            },
+            {
+              "name": "kVideoDecoderName",
+              "value": "FFmpegVideoDecoder"
+            },
+            {
+              "name": "kIsStreaming",
+              "value": "false"
+            },
+            {
+              "name": "kVideoTracks",
+              "value": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"h264\",\"coded size\":\"180x320\",\"color space\":{\"matrix\":\"SMPTE170M\",\"primaries\":\"SMPTE170M\",\"range\":\"LIMITED\",\"transfer\":\"SMPTE170M\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"hdr metadata\":{},\"natural size\":\"180x320\",\"orientation\":\"0°\",\"profile\":\"h264 high\",\"visible rect\":\"0,0 180x320\"}]"
+            },
+            {
+              "name": "kIsPlatformVideoDecoder",
+              "value": "false"
+            },
+            {
+              "name": "kFrameUrl",
+              "value": "http://127.0.0.1:5173/e2e/fixtures/t15.html?real"
+            },
+            {
+              "name": "kIsRangeHeaderSupported",
+              "value": "true"
+            },
+            {
+              "name": "kIsVideoDecryptingDemuxerStream",
+              "value": "false"
+            },
+            {
+              "name": "kStartTime",
+              "value": "0.0"
+            },
+            {
+              "name": "kResolution",
+              "value": "180x320"
+            },
+            {
+              "name": "kRendererName",
+              "value": "RendererImpl"
+            },
+            {
+              "name": "kTotalBytes",
+              "value": "0xf9030"
+            },
+            {
+              "name": "kMaxDuration",
+              "value": "10.0"
+            },
+            {
+              "name": "kIsSingleOrigin",
+              "value": "true"
+            },
+            {
+              "name": "kFrameTitle",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "playerId": "E05C2E8AF2EA508B4E1110EA91C9F045",
+          "properties": [
+            {
+              "name": "kBitrate",
+              "value": "594660"
+            },
+            {
+              "name": "kVideoDecoderName",
+              "value": "FFmpegVideoDecoder"
+            },
+            {
+              "name": "kIsStreaming",
+              "value": "false"
+            },
+            {
+              "name": "kVideoTracks",
+              "value": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"h264\",\"coded size\":\"180x320\",\"color space\":{\"matrix\":\"SMPTE170M\",\"primaries\":\"SMPTE170M\",\"range\":\"LIMITED\",\"transfer\":\"SMPTE170M\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"hdr metadata\":{},\"natural size\":\"180x320\",\"orientation\":\"0°\",\"profile\":\"h264 high\",\"visible rect\":\"0,0 180x320\"}]"
+            },
+            {
+              "name": "kIsPlatformVideoDecoder",
+              "value": "false"
+            },
+            {
+              "name": "kFrameUrl",
+              "value": "http://127.0.0.1:5173/e2e/fixtures/t15.html?real"
+            },
+            {
+              "name": "kIsRangeHeaderSupported",
+              "value": "true"
+            },
+            {
+              "name": "kIsVideoDecryptingDemuxerStream",
+              "value": "false"
+            },
+            {
+              "name": "kStartTime",
+              "value": "0.0"
+            },
+            {
+              "name": "kResolution",
+              "value": "180x320"
+            },
+            {
+              "name": "kRendererName",
+              "value": "RendererImpl"
+            },
+            {
+              "name": "kTotalBytes",
+              "value": "0xb579e"
+            },
+            {
+              "name": "kMaxDuration",
+              "value": "10.0"
+            },
+            {
+              "name": "kIsSingleOrigin",
+              "value": "true"
+            },
+            {
+              "name": "kFrameTitle",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "playerId": "676DF296B6D7557B6D8B2D38C22F1940",
+          "properties": [
+            {
+              "name": "kBitrate",
+              "value": "650388"
+            },
+            {
+              "name": "kVideoDecoderName",
+              "value": "FFmpegVideoDecoder"
+            },
+            {
+              "name": "kIsStreaming",
+              "value": "false"
+            },
+            {
+              "name": "kVideoTracks",
+              "value": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"h264\",\"coded size\":\"180x320\",\"color space\":{\"matrix\":\"SMPTE170M\",\"primaries\":\"SMPTE170M\",\"range\":\"LIMITED\",\"transfer\":\"SMPTE170M\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"hdr metadata\":{},\"natural size\":\"180x320\",\"orientation\":\"0°\",\"profile\":\"h264 high\",\"visible rect\":\"0,0 180x320\"}]"
+            },
+            {
+              "name": "kIsPlatformVideoDecoder",
+              "value": "false"
+            },
+            {
+              "name": "kFrameUrl",
+              "value": "http://127.0.0.1:5173/e2e/fixtures/t15.html?real"
+            },
+            {
+              "name": "kIsRangeHeaderSupported",
+              "value": "true"
+            },
+            {
+              "name": "kIsVideoDecryptingDemuxerStream",
+              "value": "false"
+            },
+            {
+              "name": "kStartTime",
+              "value": "0.0"
+            },
+            {
+              "name": "kResolution",
+              "value": "180x320"
+            },
+            {
+              "name": "kRendererName",
+              "value": "RendererImpl"
+            },
+            {
+              "name": "kTotalBytes",
+              "value": "0xc67b9"
+            },
+            {
+              "name": "kMaxDuration",
+              "value": "10.0"
+            },
+            {
+              "name": "kIsSingleOrigin",
+              "value": "true"
+            },
+            {
+              "name": "kFrameTitle",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "playerId": "5C571D7F84851F1AABD6204DFFEC4D41",
+          "properties": [
+            {
+              "name": "kBitrate",
+              "value": "609751"
+            },
+            {
+              "name": "kVideoDecoderName",
+              "value": "FFmpegVideoDecoder"
+            },
+            {
+              "name": "kIsStreaming",
+              "value": "false"
+            },
+            {
+              "name": "kVideoTracks",
+              "value": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"h264\",\"coded size\":\"180x320\",\"color space\":{\"matrix\":\"SMPTE170M\",\"primaries\":\"SMPTE170M\",\"range\":\"LIMITED\",\"transfer\":\"SMPTE170M\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"hdr metadata\":{},\"natural size\":\"180x320\",\"orientation\":\"0°\",\"profile\":\"h264 high\",\"visible rect\":\"0,0 180x320\"}]"
+            },
+            {
+              "name": "kIsPlatformVideoDecoder",
+              "value": "false"
+            },
+            {
+              "name": "kFrameUrl",
+              "value": "http://127.0.0.1:5173/e2e/fixtures/t15.html?real"
+            },
+            {
+              "name": "kIsRangeHeaderSupported",
+              "value": "true"
+            },
+            {
+              "name": "kIsVideoDecryptingDemuxerStream",
+              "value": "false"
+            },
+            {
+              "name": "kStartTime",
+              "value": "0.0"
+            },
+            {
+              "name": "kResolution",
+              "value": "180x320"
+            },
+            {
+              "name": "kRendererName",
+              "value": "RendererImpl"
+            },
+            {
+              "name": "kTotalBytes",
+              "value": "0xba14d"
+            },
+            {
+              "name": "kMaxDuration",
+              "value": "10.0"
+            },
+            {
+              "name": "kIsSingleOrigin",
+              "value": "true"
+            },
+            {
+              "name": "kFrameTitle",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "playerId": "AF54285FE00D1588C6867F580346C774",
+          "properties": [
+            {
+              "name": "kBitrate",
+              "value": "746188"
+            },
+            {
+              "name": "kVideoDecoderName",
+              "value": "FFmpegVideoDecoder"
+            },
+            {
+              "name": "kIsStreaming",
+              "value": "false"
+            },
+            {
+              "name": "kVideoTracks",
+              "value": "[{\"alpha mode\":\"is_opaque\",\"codec\":\"h264\",\"coded size\":\"180x320\",\"color space\":{\"matrix\":\"SMPTE170M\",\"primaries\":\"SMPTE170M\",\"range\":\"LIMITED\",\"transfer\":\"SMPTE170M\"},\"encryption scheme\":\"Unencrypted\",\"has extra data\":true,\"hdr metadata\":{},\"natural size\":\"180x320\",\"orientation\":\"0°\",\"profile\":\"h264 high\",\"visible rect\":\"0,0 180x320\"}]"
+            },
+            {
+              "name": "kIsPlatformVideoDecoder",
+              "value": "false"
+            },
+            {
+              "name": "kFrameUrl",
+              "value": "http://127.0.0.1:5173/e2e/fixtures/t15.html?real"
+            },
+            {
+              "name": "kIsRangeHeaderSupported",
+              "value": "true"
+            },
+            {
+              "name": "kIsVideoDecryptingDemuxerStream",
+              "value": "false"
+            },
+            {
+              "name": "kStartTime",
+              "value": "0.0"
+            },
+            {
+              "name": "kResolution",
+              "value": "180x320"
+            },
+            {
+              "name": "kRendererName",
+              "value": "RendererImpl"
+            },
+            {
+              "name": "kTotalBytes",
+              "value": "0xe3b7f"
+            },
+            {
+              "name": "kMaxDuration",
+              "value": "10.0"
+            },
+            {
+              "name": "kIsSingleOrigin",
+              "value": "true"
+            },
+            {
+              "name": "kFrameTitle",
+              "value": ""
+            }
+          ]
+        }
+      ],
+      "traceDurations": {
+        "RunTask": {
+          "count": 14442,
+          "ms": 3906.8510000000715
+        },
+        "EvaluateScript": {
+          "count": 2,
+          "ms": 2.759
+        },
+        "VideoFrameSubmitter::OnBeginFrame": {
+          "count": 975,
+          "ms": 100.41100000000024
+        },
+        "VideoFrameCompositor::UpdateCurrentFrame": {
+          "count": 975,
+          "ms": 21.694000000000013
+        },
+        "VideoRendererImpl::Render": {
+          "count": 975,
+          "ms": 14.091999999999947
+        },
+        "Scheduler::BeginFrame": {
+          "count": 195,
+          "ms": 14.406999999999996
+        },
+        "Scheduler::BeginImplFrame": {
+          "count": 195,
+          "ms": 11.430999999999994
+        },
+        "VideoFrameCompositor::SetCurrentFrame": {
+          "count": 589,
+          "ms": 0.8810000000000007
+        },
+        "VideoFrameSubmitter::SubmitFrame": {
+          "count": 735,
+          "ms": 68.65599999999999
+        },
+        "AnimationHost::TickAnimations": {
+          "count": 557,
+          "ms": 1.328999999999985
+        },
+        "VideoFrameResourceProvider::AppendQuads": {
+          "count": 735,
+          "ms": 55.5769999999999
+        },
+        "VideoResourceUpdater::CreateForSoftwareFrame": {
+          "count": 735,
+          "ms": 51.998999999999995
+        },
+        "ProxyImpl::SetNeedsOneBeginImplFrameOnImplThread": {
+          "count": 19,
+          "ms": 0.02000000000000001
+        },
+        "ProxyImpl::SetNeedsRedrawOnImplThread": {
+          "count": 45,
+          "ms": 0.04500000000000003
+        },
+        "Scheduler::ScheduleBeginImplFrameDeadline": {
+          "count": 390,
+          "ms": 2.376999999999991
+        },
+        "DecodeStreamRead": {
+          "count": 737,
+          "ms": 5.350999999999975
+        },
+        "LocalFrameView::ScheduleAnimation": {
+          "count": 1142,
+          "ms": 8.75099999999997
+        },
+        "ProxyImpl::DidReceiveCompositorFrameAckOnImplThread": {
+          "count": 196,
+          "ms": 1.5739999999999965
+        },
+        "ProxyImpl::ScheduledActionSendBeginMainFrame": {
+          "count": 195,
+          "ms": 3.5629999999999966
+        },
+        "ScrollTree::CollectScrollDeltas": {
+          "count": 193,
+          "ms": 0.36100000000000027
+        },
+        "ProxyMain::BeginMainFrame": {
+          "count": 195,
+          "ms": 407.99100000000004
+        },
+        "LayerTreeHost::ApplyCompositorChanges": {
+          "count": 195,
+          "ms": 0.7750000000000006
+        },
+        "PrePaint": {
+          "count": 335,
+          "ms": 18.083999999999975
+        },
+        "HitTest": {
+          "count": 152,
+          "ms": 6.939999999999997
+        },
+        "EventDispatch": {
+          "count": 308,
+          "ms": 16.223999999999997
+        },
+        "FunctionCall": {
+          "count": 1374,
+          "ms": 179.6249999999992
+        },
+        "FireAnimationFrame": {
+          "count": 387,
+          "ms": 24.18900000000001
+        },
+        "ProxyImpl::SetNeedsCommitOnImplThread": {
+          "count": 195,
+          "ms": 1.435999999999998
+        },
+        "auto cc::SchedulerStateMachine::SetNeedsBeginMainFrame(bool, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 195,
+          "ms": 0.5170000000000003
+        },
+        "AnimationHost::UpdateAnimationState": {
+          "count": 15,
+          "ms": 0.057999999999999996
+        },
+        "UpdateLayoutTree": {
+          "count": 196,
+          "ms": 20.62900000000001
+        },
+        "ScrollTree::SetScrollOffset": {
+          "count": 51,
+          "ms": 0.10200000000000006
+        },
+        "IntersectionObserverController::computeIntersections": {
+          "count": 390,
+          "ms": 10.653999999999987
+        },
+        "Paint": {
+          "count": 291,
+          "ms": 29.428000000000008
+        },
+        "Layerize": {
+          "count": 195,
+          "ms": 11.773999999999996
+        },
+        "auto cc::LayerTreeHost::SetNeedsCommit(bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 19,
+          "ms": 0.02300000000000001
+        },
+        "Commit": {
+          "count": 195,
+          "ms": 209.43900000000005
+        },
+        "LayerTreeHost::DoUpdateLayers": {
+          "count": 195,
+          "ms": 179.6759999999999
+        },
+        "UpdateLayer": {
+          "count": 2793,
+          "ms": 5.948000000000089
+        },
+        "RecordingSource::FinishDisplayItemListUpdate": {
+          "count": 140,
+          "ms": 0.2790000000000002
+        },
+        "ProxyMain::BeginMainFrame::commit": {
+          "count": 195,
+          "ms": 2.475999999999995
+        },
+        "ProxyImpl::ReadyToCommit": {
+          "count": 195,
+          "ms": 67.78300000000002
+        },
+        "Scheduler::NotifyBeginMainFrameStarted": {
+          "count": 179,
+          "ms": 0.2640000000000002
+        },
+        "Scheduler::NotifyReadyToCommit": {
+          "count": 195,
+          "ms": 1.5009999999999977
+        },
+        "ProxyImpl::Commit": {
+          "count": 195,
+          "ms": 19.95300000000001
+        },
+        "LayerTreeHostImpl::BeginCommit": {
+          "count": 195,
+          "ms": 2.8279999999999963
+        },
+        "ProxyImpl::OnCanDrawStateChanged": {
+          "count": 348,
+          "ms": 0.5360000000000004
+        },
+        "LayerTreeHostImpl::FinishCommit": {
+          "count": 195,
+          "ms": 12.952000000000007
+        },
+        "LayerTreeImpl::PullProperties": {
+          "count": 195,
+          "ms": 12.17799999999999
+        },
+        "TreeSynchronizer::PushLayerPropertiesTo.Main": {
+          "count": 195,
+          "ms": 2.3299999999999947
+        },
+        "TextureLayer::PushPropertiesTo": {
+          "count": 195,
+          "ms": 0.4090000000000003
+        },
+        "DiscardableImageMap::Generate": {
+          "count": 148,
+          "ms": 3.4309999999999987
+        },
+        "LayerTreeHost::AnimationHost::PushProperties": {
+          "count": 195,
+          "ms": 1.0440000000000005
+        },
+        "LayerTreeHostImpl::CommitComplete": {
+          "count": 195,
+          "ms": 42.99
+        },
+        "LayerTreeHost::WaitForCommitCompletion": {
+          "count": 195,
+          "ms": 1.3049999999999984
+        },
+        "LayerTreeImpl::UpdateDrawProperties": {
+          "count": 203,
+          "ms": 17.571000000000012
+        },
+        "LayerTreeImpl::UpdateDrawProperties::CalculateDrawProperties": {
+          "count": 203,
+          "ms": 9.222999999999994
+        },
+        "draw_property_utils::FindLayersThatNeedUpdates": {
+          "count": 203,
+          "ms": 0.5790000000000004
+        },
+        "draw_property_utils::ComputeDrawPropertiesOfVisibleLayers": {
+          "count": 203,
+          "ms": 3.967999999999996
+        },
+        "CalculateRenderSurfaceLayerList": {
+          "count": 203,
+          "ms": 2.361999999999993
+        },
+        "LayerTreeImpl::UpdateDrawProperties::Occlusion": {
+          "count": 203,
+          "ms": 7.7759999999999945
+        },
+        "LayerTreeImpl::UpdateTiles": {
+          "count": 203,
+          "ms": 5.339999999999999
+        },
+        "ImageAnimationController::AnimateImagesForSyncTree": {
+          "count": 191,
+          "ms": 0.32100000000000023
+        },
+        "LayerTreeImpl::InvalidateRegionForImages": {
+          "count": 195,
+          "ms": 0.5520000000000004
+        },
+        "auto cc::LayerTreeHostImpl::PrepareTiles()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 195,
+          "ms": 21.53900000000001
+        },
+        "auto cc::TileManager::PrepareTiles(const GlobalStateThatImpactsTilePriority &)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 195,
+          "ms": 21.051000000000005
+        },
+        "TileManager::PrepareTiles": {
+          "count": 195,
+          "ms": 20.682000000000006
+        },
+        "TileManager::AssignGpuMemoryToTiles": {
+          "count": 195,
+          "ms": 8.575999999999995
+        },
+        "RasterSource::PerformSolidColorAnalysis": {
+          "count": 155,
+          "ms": 1.5439999999999987
+        },
+        "TileManager::ScheduleTasks": {
+          "count": 195,
+          "ms": 9.274999999999995
+        },
+        "auto cc::(anonymous namespace)::InsertNodeForTask(TaskGraph *, TileTask *, uint16_t, uint16_t, size_t, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 576,
+          "ms": 0.8270000000000006
+        },
+        "SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit": {
+          "count": 151,
+          "ms": 0.16900000000000012
+        },
+        "TileTaskManagerImpl::ScheduleTasks": {
+          "count": 195,
+          "ms": 3.712999999999998
+        },
+        "TaskSetFinishedTaskImpl::RunOnWorkerThread": {
+          "count": 371,
+          "ms": 2.585999999999985
+        },
+        "RasterizerTaskImpl::RunOnWorkerThread": {
+          "count": 155,
+          "ms": 35.72200000000001
+        },
+        "RasterTask": {
+          "count": 155,
+          "ms": 33.99700000000002
+        },
+        "ZeroCopyRasterBuffer::Playback": {
+          "count": 155,
+          "ms": 33.13699999999999
+        },
+        "TileManager::DidFinishRunningTileTasksRequiredForDraw": {
+          "count": 195,
+          "ms": 0.7760000000000006
+        },
+        "TileManager::CheckForCompletedTasksAndIssueSignals": {
+          "count": 337,
+          "ms": 20.859999999999978
+        },
+        "TileTaskManagerImpl::CheckForCompletedTasks": {
+          "count": 478,
+          "ms": 2.290999999999981
+        },
+        "TileManager::CheckPendingGpuWorkAndIssueSignals": {
+          "count": 491,
+          "ms": 18.15200000000003
+        },
+        "DisplayItemList::Raster": {
+          "count": 155,
+          "ms": 27.39299999999998
+        },
+        "TileManager::DidFinishRunningTileTasksRequiredForActivation": {
+          "count": 195,
+          "ms": 1.4119999999999968
+        },
+        "TileManager::DidFinishRunningAllTileTasks": {
+          "count": 180,
+          "ms": 0.2850000000000002
+        },
+        "LayerTreeHostImpl::NotifyTileStateChanged": {
+          "count": 337,
+          "ms": 0.5580000000000004
+        },
+        "TileManager::IsReadyToActivate": {
+          "count": 195,
+          "ms": 1.552999999999997
+        },
+        "LayerTreeHostImpl::ActivateSyncTree": {
+          "count": 195,
+          "ms": 12.199999999999992
+        },
+        "ProcessUIResourceRequestQueue": {
+          "count": 183,
+          "ms": 0.2690000000000002
+        },
+        "LayerTreeImpl::PushPropertyTreesTo": {
+          "count": 195,
+          "ms": 1.6969999999999952
+        },
+        "TreeSynchronizer::PushLayerPropertiesTo.Active": {
+          "count": 195,
+          "ms": 3.792999999999995
+        },
+        "LayerTreeImpl::PushPropertiesTo": {
+          "count": 195,
+          "ms": 0.9310000000000007
+        },
+        "AnimationHost::ActivateAnimations": {
+          "count": 7,
+          "ms": 0.020999999999999998
+        },
+        "SchedulerStateMachine::SetNeedsPrepareTiles": {
+          "count": 166,
+          "ms": 0.20400000000000015
+        },
+        "ProxyImpl::DidActivateSyncTreeOnImplThread": {
+          "count": 137,
+          "ms": 0.1580000000000001
+        },
+        "InputHandler::ClearCurrentlyScrollingNode": {
+          "count": 195,
+          "ms": 0.7650000000000006
+        },
+        "Scheduler::OnBeginImplFrameDeadline": {
+          "count": 181,
+          "ms": 0.25500000000000017
+        },
+        "ProxyImpl::ScheduledActionDraw": {
+          "count": 195,
+          "ms": 72.89500000000004
+        },
+        "MainFrame.Draw": {
+          "count": 195,
+          "ms": 72.39999999999998
+        },
+        "LayerTreeHostImpl::PrepareToDraw": {
+          "count": 195,
+          "ms": 23.609999999999996
+        },
+        "ImageAnimationController::UpdateState": {
+          "count": 6,
+          "ms": 0.006
+        },
+        "TileManager::PrepareToDraw": {
+          "count": 195,
+          "ms": 2.319999999999995
+        },
+        "TileManager::IsReadyToDraw": {
+          "count": 195,
+          "ms": 0.5780000000000004
+        },
+        "LayerTreeHostImpl::CalculateRenderPasses": {
+          "count": 195,
+          "ms": 16.087
+        },
+        "DrawLayers.FrameViewerTracing": {
+          "count": 162,
+          "ms": 0.18800000000000014
+        },
+        "LayerTreeHostImpl::BuildHitTestData": {
+          "count": 195,
+          "ms": 1.7309999999999968
+        },
+        "auto cc::Scheduler::FinishImplFrame()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 195,
+          "ms": 0.6460000000000004
+        },
+        "auto cc::ResourcePool::OnResourceReleased(size_t, const gpu::SyncToken &, bool)::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 163,
+          "ms": 1.8929999999999974
+        },
+        "Layout": {
+          "count": 139,
+          "ms": 28.483999999999998
+        },
+        "PaintImage": {
+          "count": 133,
+          "ms": 1.8709999999999984
+        },
+        "DidFinishRunningAllTilesTask::RunOnWorkerThread": {
+          "count": 176,
+          "ms": 0.2920000000000002
+        },
+        "Responsiveness.Renderer.UserInteraction": {
+          "count": 1,
+          "ms": 0.003
+        },
+        "ImageAnimationController::WillActivate": {
+          "count": 147,
+          "ms": 0.18100000000000013
+        },
+        "V8.GC_HEAP_ENSURE_SWEEPING_COMPLETED": {
+          "count": 1,
+          "ms": 0.129
+        },
+        "V8.GC_MC_COMPLETE_SWEEPING": {
+          "count": 1,
+          "ms": 0.012
+        },
+        "V8.GC_MC_SWEEP": {
+          "count": 4,
+          "ms": 0.017
+        },
+        "V8.GC_TIME_TO_SAFEPOINT": {
+          "count": 2,
+          "ms": 0.002
+        },
+        "V8.GC_MC_INCREMENTAL_START": {
+          "count": 1,
+          "ms": 0.152
+        },
+        "V8.GC_MC_INCREMENTAL_EXTERNAL_PROLOGUE": {
+          "count": 1,
+          "ms": 0.031
+        },
+        "V8.GC_MC_MARK_EMBEDDER_PROLOGUE": {
+          "count": 2,
+          "ms": 0.027000000000000003
+        },
+        "V8.GC_MC_MARK_ROOTS": {
+          "count": 3,
+          "ms": 0.038000000000000006
+        },
+        "Major concurrent marking started": {
+          "count": 2,
+          "ms": 0.003
+        },
+        "V8.GC_MC_BACKGROUND_MARKING": {
+          "count": 9,
+          "ms": 7.041000000000001
+        },
+        "V8.GC_MC_INCREMENTAL_EXTERNAL_EPILOGUE": {
+          "count": 1,
+          "ms": 0.009
+        },
+        "V8.GC_MC_INCREMENTAL": {
+          "count": 18,
+          "ms": 1.417
+        },
+        "V8.GC_MC_INCREMENTAL_EMBEDDER_TRACING": {
+          "count": 15,
+          "ms": 0.9650000000000001
+        },
+        "ConcurrentMarking::RunMajor Finished": {
+          "count": 9,
+          "ms": 0.327
+        },
+        "Major concurrent marking rescheduled": {
+          "count": 9,
+          "ms": 0.011000000000000003
+        },
+        "V8.GC_HEAP_EXTERNAL_PROLOGUE": {
+          "count": 1,
+          "ms": 0.017
+        },
+        "MajorGC": {
+          "count": 1,
+          "ms": 1.849
+        },
+        "V8.GC_HEAP_PROLOGUE": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_MARK_COMPACTOR": {
+          "count": 1,
+          "ms": 1.815
+        },
+        "V8.GC_HEAP_PROLOGUE_SAFEPOINT": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_MC_PROLOGUE": {
+          "count": 1,
+          "ms": 0.005
+        },
+        "V8.GC_MC_MARK": {
+          "count": 1,
+          "ms": 0.178
+        },
+        "V8.GC_MC_MARK_FINISH_INCREMENTAL": {
+          "count": 1,
+          "ms": 0.003
+        },
+        "V8.GC_MC_MARK_CLIENT_HEAPS": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_MC_MARK_RETAIN_MAPS": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "V8.GC_MC_MARK_FULL_CLOSURE_PARALLEL": {
+          "count": 1,
+          "ms": 0.135
+        },
+        "V8.GC_MC_MARK_WEAK_CLOSURE_EPHEMERON_MARKING": {
+          "count": 5,
+          "ms": 0.065
+        },
+        "V8.GC_MC_MARK_EMBEDDER_TRACING": {
+          "count": 5,
+          "ms": 0.04700000000000001
+        },
+        "V8.GC_MC_MARK_FULL_CLOSURE_SERIAL": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "V8.GC_MC_CLEAR": {
+          "count": 1,
+          "ms": 0.33
+        },
+        "ClearStringTableJob started": {
+          "count": 3,
+          "ms": 0.003
+        },
+        "ClearTrivialWeakRefJob started": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "ClearTrustedWeakRefJob started": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "ClearNonTrivialWeakRefs started": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_MC_CLEAR_JOIN_JOB": {
+          "count": 1,
+          "ms": 0.313
+        },
+        "V8.GC_MC_CLEAR_WEAK_COLLECTIONS": {
+          "count": 1,
+          "ms": 0.005
+        },
+        "V8.GC_MC_CLEAR_SWEEP_WASM_CODE_POINTER_TABLE": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_MC_CLEAR_MAPS": {
+          "count": 1,
+          "ms": 0.014
+        },
+        "V8.GC_MC_CLEAR_WEAK_LISTS": {
+          "count": 1,
+          "ms": 0.03
+        },
+        "V8.GC_MC_CLEAR_JS_WEAK_REFERENCES": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_MC_CLEAR_SWEEP_JS_DISPATCH_TABLE": {
+          "count": 1,
+          "ms": 0.035
+        },
+        "V8.GC_MC_CLEAR_WEAK_GLOBAL_HANDLES": {
+          "count": 1,
+          "ms": 0.027
+        },
+        "V8.GC_MC_CLEAR_EXTERNAL_STRING_TABLE": {
+          "count": 1,
+          "ms": 0.044
+        },
+        "V8.GC_MC_CLEAR_STRING_TABLE": {
+          "count": 8,
+          "ms": 0.14100000000000001
+        },
+        "V8.GC_MC_CLEAR_FLUSHABLE_BYTECODE": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_MC_CLEAR_SWEEP_TRUSTED_POINTER_TABLE": {
+          "count": 1,
+          "ms": 0.009
+        },
+        "V8.GC_MC_CLEAR_WEAK_REFERENCES_TRIVIAL": {
+          "count": 1,
+          "ms": 0.062
+        },
+        "V8.GC_MC_CLEAR_WEAK_REFERENCES_NON_TRIVIAL": {
+          "count": 1,
+          "ms": 0.009
+        },
+        "V8.GC_MC_CLEAR_SWEEP_EXTERNAL_POINTER_TABLE": {
+          "count": 1,
+          "ms": 0.163
+        },
+        "V8.GC_MC_CLEAR_WEAK_REFERENCES_TRUSTED": {
+          "count": 1,
+          "ms": 0.005
+        },
+        "V8.GC_MC_EVACUATE": {
+          "count": 2,
+          "ms": 0.728
+        },
+        "V8.GC_MC_EVACUATE_PROLOGUE": {
+          "count": 1,
+          "ms": 0.006
+        },
+        "V8.GC_MC_EVACUATE_COPY": {
+          "count": 1,
+          "ms": 0.218
+        },
+        "PageEvacuationJob started": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_MC_EVACUATE_COPY_PARALLEL": {
+          "count": 1,
+          "ms": 0.182
+        },
+        "V8.GC_MC_BACKGROUND_EVACUATE_COPY": {
+          "count": 3,
+          "ms": 0.385
+        },
+        "V8.GC_MC_BACKGROUND_SWEEPING": {
+          "count": 8,
+          "ms": 1.24
+        },
+        "V8.GC_MC_EVACUATE_UPDATE_POINTERS": {
+          "count": 1,
+          "ms": 0.453
+        },
+        "V8.GC_MC_EVACUATE_UPDATE_POINTERS_TO_NEW_ROOTS": {
+          "count": 1,
+          "ms": 0.203
+        },
+        "V8.GC_MC_EVACUATE_UPDATE_POINTERS_CLIENT_HEAPS": {
+          "count": 1,
+          "ms": 0.003
+        },
+        "V8.GC_MC_EVACUATE_UPDATE_POINTERS_SLOTS_MAIN": {
+          "count": 1,
+          "ms": 0.133
+        },
+        "V8.GC_MC_EVACUATE_UPDATE_POINTERS_PARALLEL": {
+          "count": 1,
+          "ms": 0.114
+        },
+        "V8.GC_MC_BACKGROUND_EVACUATE_UPDATE_POINTERS": {
+          "count": 3,
+          "ms": 0.208
+        },
+        "V8.GC_MC_EVACUATE_UPDATE_POINTERS_WEAK": {
+          "count": 1,
+          "ms": 0.002
+        },
+        "V8.GC_MC_EVACUATE_UPDATE_POINTERS_POINTER_TABLES": {
+          "count": 1,
+          "ms": 0.101
+        },
+        "V8.GC_MC_EVACUATE_CLEAN_UP": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_MC_EVACUATE_EPILOGUE": {
+          "count": 1,
+          "ms": 0.045
+        },
+        "V8.GC_MC_SWEEP_NEW_LO": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_MC_FINISH": {
+          "count": 1,
+          "ms": 0.013
+        },
+        "V8.GC_MC_SWEEP_START_JOBS": {
+          "count": 1,
+          "ms": 0.006
+        },
+        "V8.GC_MC_EPILOGUE": {
+          "count": 1,
+          "ms": 0.001
+        },
+        "V8.GC_HEAP_EXTERNAL_WEAK_GLOBAL_HANDLES": {
+          "count": 1,
+          "ms": 0.014
+        },
+        "V8.GC_HEAP_EMBEDDER_TRACING_EPILOGUE": {
+          "count": 1,
+          "ms": 0.374
+        },
+        "Sweeper::ConcurrentMajorSweeper Finished": {
+          "count": 11,
+          "ms": 0.017000000000000005
+        },
+        "V8.GC_HEAP_EPILOGUE_SAFEPOINT": {
+          "count": 1,
+          "ms": 0.005
+        },
+        "V8.GC_HEAP_EPILOGUE": {
+          "count": 1,
+          "ms": 0.003
+        },
+        "V8.GC_HEAP_EXTERNAL_EPILOGUE": {
+          "count": 1,
+          "ms": 0.009
+        },
+        "V8.GC_HEAP_EXTERNAL_SECOND_PASS_CALLBACKS": {
+          "count": 1,
+          "ms": 0.007
+        },
+        "TimerFire": {
+          "count": 62,
+          "ms": 12.461000000000004
+        },
+        "TreeSynchronizer::SynchronizeTrees": {
+          "count": 4,
+          "ms": 0.10500000000000001
+        },
+        "SoftwareImageDecodeTaskImpl::RunOnWorkerThread": {
+          "count": 3,
+          "ms": 0.084
+        },
+        "ImageDecodeTask": {
+          "count": 3,
+          "ms": 0.063
+        },
+        "SoftwareImageDecodeCache::DecodeImageInTask": {
+          "count": 3,
+          "ms": 0.017
+        },
+        "LayerTreeHost::~LayerTreeHost": {
+          "count": 1,
+          "ms": 2.502
+        },
+        "ProxyMain::Stop": {
+          "count": 1,
+          "ms": 2.489
+        },
+        "ProxyImpl::FinishGLOnImplThread": {
+          "count": 1,
+          "ms": 0.008
+        },
+        "ProxyImpl::~ProxyImpl": {
+          "count": 1,
+          "ms": 2.409
+        },
+        "LayerTreeHostImpl::ReleaseLayerTreeFrameSink": {
+          "count": 1,
+          "ms": 1.871
+        },
+        "TileTaskManagerImpl::Shutdown": {
+          "count": 1,
+          "ms": 0.006
+        },
+        "auto cc::ResourcePool::InvalidateResources()::(lambda)::operator()()::(lambda)::operator()(uint32_t) const": {
+          "count": 1,
+          "ms": 0.004
+        },
+        "LayerTreeHostImpl::~LayerTreeHostImpl()": {
+          "count": 1,
+          "ms": 0.385
+        },
+        "ProxyMain::~ProxyMain": {
+          "count": 1,
+          "ms": 0.004
+        }
+      }
+    }
+  ]
+}

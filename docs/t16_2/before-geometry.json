@@ -1,0 +1,113 @@
+[
+  {
+    "id": "p2",
+    "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 5%, rgb(0, 0, 0) 95%, rgba(0, 0, 0, 0)), linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 4%, rgb(0, 0, 0) 80%, rgba(0, 0, 0, 0))",
+    "img": {
+      "bounds": {
+        "x": 172.796875,
+        "y": 90,
+        "width": 187.1875,
+        "height": 290,
+        "top": 90,
+        "right": 359.984375,
+        "bottom": 380,
+        "left": 172.796875
+      },
+      "position": "50% 0%",
+      "fit": "cover",
+      "transform": "none",
+      "pointer": "none"
+    },
+    "video": {
+      "bounds": {
+        "x": 172.796875,
+        "y": 90,
+        "width": 187.1875,
+        "height": 290,
+        "top": 90,
+        "right": 359.984375,
+        "bottom": 380,
+        "left": 172.796875
+      },
+      "position": "50% 0%",
+      "fit": "cover",
+      "transform": "none",
+      "pointer": "none"
+    },
+    "loop": true
+  },
+  {
+    "id": "p3",
+    "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 5%, rgb(0, 0, 0) 95%, rgba(0, 0, 0, 0)), linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 4%, rgb(0, 0, 0) 80%, rgba(0, 0, 0, 0))",
+    "img": {
+      "bounds": {
+        "x": 626.390625,
+        "y": 68,
+        "width": 187.1875,
+        "height": 290,
+        "top": 68,
+        "right": 813.578125,
+        "bottom": 358,
+        "left": 626.390625
+      },
+      "position": "50% 0%",
+      "fit": "cover",
+      "transform": "none",
+      "pointer": "none"
+    },
+    "video": {
+      "bounds": {
+        "x": 626.390625,
+        "y": 68,
+        "width": 187.1875,
+        "height": 290,
+        "top": 68,
+        "right": 813.578125,
+        "bottom": 358,
+        "left": 626.390625
+      },
+      "position": "50% 0%",
+      "fit": "cover",
+      "transform": "none",
+      "pointer": "none"
+    },
+    "loop": true
+  },
+  {
+    "id": "p1",
+    "mask": "linear-gradient(90deg, rgba(0, 0, 0, 0), rgb(0, 0, 0) 5%, rgb(0, 0, 0) 95%, rgba(0, 0, 0, 0)), linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 4%, rgb(0, 0, 0) 80%, rgba(0, 0, 0, 0))",
+    "img": {
+      "bounds": {
+        "x": 51.1875,
+        "y": 690,
+        "width": 216,
+        "height": 300,
+        "top": 690,
+        "right": 267.1875,
+        "bottom": 990,
+        "left": 51.1875
+      },
+      "position": "50% 0%",
+      "fit": "cover",
+      "transform": "none",
+      "pointer": "none"
+    },
+    "video": {
+      "bounds": {
+        "x": 51.1875,
+        "y": 690,
+        "width": 216,
+        "height": 300,
+        "top": 690,
+        "right": 267.1875,
+        "bottom": 990,
+        "left": 51.1875
+      },
+      "position": "50% 0%",
+      "fit": "cover",
+      "transform": "none",
+      "pointer": "none"
+    },
+    "loop": true
+  }
+]
