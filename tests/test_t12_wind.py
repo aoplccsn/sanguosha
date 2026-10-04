@@ -256,6 +256,17 @@ def test_kuanggu_at_full_hp_does_not_overheal():
     assert session.state.players['p2'].hp == 2
 
 
+def test_kuanggu_amplified_damage_recovers_each_point_with_unique_actions():
+    session = wei_yan_game()
+    session.state.players['p2'].marks['wind:test'] = 1
+    session.engine.start_action(MilitaryDamageAction(
+        'kuanggu-amplified', 'p1', 'p2', 1, DamageNature.FIRE))
+    assert session.state.players['p2'].hp == 2
+    assert session.state.players['p1'].hp == 4
+    assert {'kuanggu-amplified:kuanggu:0', 'kuanggu-amplified:kuanggu:1'} <= session.engine._seen_action_ids
+    assert session.engine.stack.is_empty()
+
+
 def xiao_qiao_game():
     session = GameSession.new_game(military=True, five_generals=True)
     player = session.state.players['p1']

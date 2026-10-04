@@ -11,6 +11,10 @@ export function readGameSpeed(): GameSpeed {
 }
 export function eventDuration(event: PublicEvent | null, speed: GameSpeed) {
   const kind = String(event?.kind ?? '')
+  if (kind === 'AIThinkingEvent') {
+    const base = event?.complexity === 'simple' ? 1500 : event?.complexity === 'complex' ? 3600 : 2400
+    return Math.round(base * (speed === 'slow' ? 1.5 : speed === 'fast' ? .6 : 1))
+  }
   const config = presentationPacing[speed]
   if (/^(BeforeDamage|AfterDamage|Phase|CardResolved|TrickTargetsDeclared)/.test(kind)) return 0
   if (/DamageDealt|Recovered|Judgment|Skill|Dying|Died|Death/.test(kind)) return config.impact

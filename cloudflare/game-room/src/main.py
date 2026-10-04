@@ -132,6 +132,7 @@ class GameRoomDurableObject(DurableObject):
         self.room = restore_room(blob)
         # New requests use the current service policy; existing deadlines remain authoritative.
         self.room.timeout_seconds = HUMAN_DECISION_TIMEOUT_SECONDS
+        self.room.ai_presentation = True
         self._rebind_sockets()
         return True
 
@@ -175,6 +176,8 @@ class GameRoomDurableObject(DurableObject):
         deadlines = list(self.room.draft_deadlines.values())
         if getattr(self.room, "accepted_request_id", None):
             deadlines.append(now_ms / 1000 + 0.001)
+        if self.room.ai_deadline is not None:
+            deadlines.append(self.room.ai_deadline)
         if self.room.request_deadline is not None:
             deadlines.append(self.room.request_deadline)
         ttl_seconds = int(getattr(self.env, "ROOM_TTL_SECONDS", "7200"))
@@ -195,6 +198,7 @@ class GameRoomDurableObject(DurableObject):
                 return Response.json({"room_code": existing}, status=200)
             self.room_code = code
             self.room = MultiplayerRoom()
+            self.room.ai_presentation = True
             await self.ctx.storage.put(ROOM_CODE_KEY, code)
             await self._persist()
             return Response.json({"room_code": code}, status=201)

@@ -1,0 +1,128 @@
+{
+  "single": {
+    "frameCadenceFps": 60.07682501056417,
+    "p95FrameMs": 16.799999999999272,
+    "longTasks": 0,
+    "playback": [
+      {
+        "src": "/assets/portraits/idle/forest_god_lvbu.panel.mp4",
+        "total": 289,
+        "dropped": 0,
+        "currentTime": 2.024434,
+        "loop": true,
+        "duration": 10,
+        "width": 360,
+        "height": 640,
+        "paused": false
+      }
+    ],
+    "interactiveBeamActive": false,
+    "staticBaseline": {
+      "fps": 60.02122297410649,
+      "p95Ms": 16.799999999999272
+    },
+    "network": [
+      {
+        "url": "http://127.0.0.1:5173/assets/portraits/idle/forest_god_lvbu.panel.mp4",
+        "transferSize": 2489159,
+        "encodedBodySize": 2488859
+      }
+    ],
+    "uniqueRuntimeBytes": 2488859
+  },
+  "five": {
+    "frameCadenceFps": 31.310111667118015,
+    "p95FrameMs": 33.400000000001455,
+    "longTasks": 0,
+    "playback": [
+      {
+        "src": "/assets/portraits/idle/forest_god_lvbu.panel.mp4",
+        "total": 289,
+        "dropped": 2,
+        "currentTime": 2.313231,
+        "loop": true,
+        "duration": 10,
+        "width": 360,
+        "height": 640,
+        "paused": false
+      },
+      {
+        "src": "/assets/portraits/idle/wind_god_guanyu.panel.mp4",
+        "total": 289,
+        "dropped": 1,
+        "currentTime": 2.309625,
+        "loop": true,
+        "duration": 10,
+        "width": 360,
+        "height": 640,
+        "paused": false
+      },
+      {
+        "src": "/assets/portraits/idle/fire_god_zhouyu.panel.mp4",
+        "total": 289,
+        "dropped": 1,
+        "currentTime": 2.307457,
+        "loop": true,
+        "duration": 10,
+        "width": 360,
+        "height": 640,
+        "paused": false
+      },
+      {
+        "src": "/assets/portraits/idle/mountain_god_zhaoyun.panel.mp4",
+        "total": 289,
+        "dropped": 1,
+        "currentTime": 2.306682,
+        "loop": true,
+        "duration": 10,
+        "width": 360,
+        "height": 640,
+        "paused": false
+      },
+      {
+        "src": "/assets/portraits/idle/wind_zhang_jiao.panel.mp4",
+        "total": 289,
+        "dropped": 1,
+        "currentTime": 2.305344,
+        "loop": true,
+        "duration": 10,
+        "width": 360,
+        "height": 640,
+        "paused": false
+      }
+    ],
+    "interactiveBeamActive": true,
+    "staticBaseline": {
+      "fps": 59.39148611339724,
+      "p95Ms": 16.700000000000728
+    },
+    "network": [
+      {
+        "url": "http://127.0.0.1:5173/assets/portraits/idle/forest_god_lvbu.panel.mp4",
+        "transferSize": 2489159,
+        "encodedBodySize": 2488859
+      },
+      {
+        "url": "http://127.0.0.1:5173/assets/portraits/idle/wind_god_guanyu.panel.mp4",
+        "transferSize": 2059602,
+        "encodedBodySize": 2059302
+      },
+      {
+        "url": "http://127.0.0.1:5173/assets/portraits/idle/fire_god_zhouyu.panel.mp4",
+        "transferSize": 2000588,
+        "encodedBodySize": 2000288
+      },
+      {
+        "url": "http://127.0.0.1:5173/assets/portraits/idle/mountain_god_zhaoyun.panel.mp4",
+        "transferSize": 1868590,
+        "encodedBodySize": 1868290
+      },
+      {
+        "url": "http://127.0.0.1:5173/assets/portraits/idle/wind_zhang_jiao.panel.mp4",
+        "transferSize": 2526877,
+        "encodedBodySize": 2526577
+      }
+    ],
+    "uniqueRuntimeBytes": 10943316
+  }
+}

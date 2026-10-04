@@ -255,7 +255,8 @@ function EventStage({ event, players }: { event?: PublicEvent; players: PlayerVi
   const name = (id: unknown) => players.find((player) => player.player_id === id)?.character_name ?? String(id ?? '')
   const kind = String(event.kind ?? '')
   let text = '牌局结算'
-  if (kind.includes('CardUsed') || kind.includes('TrickTargets')) {
+  if (kind === 'AIThinkingEvent') text = name(event.source_id) + ' 正在思考……'
+  else if (kind.includes('CardUsed') || kind.includes('TrickTargets')) {
     const targets = Array.isArray(event.target_ids) ? event.target_ids.map(name).join('、') : ''
     text = name(event.source_id) + (targets ? ' 对 ' + targets : '') + ' 使用【' + String(event.card_name ?? '卡牌') + '】'
   }
@@ -317,7 +318,9 @@ export function GamePage() {
   const [detailPlayer, setDetailPlayer] = useState<PlayerView | null>(null)
   const [vfxQuality, setVfxQuality] = useState<VfxQuality>(readVfxQuality)
   const [gameSpeed, setGameSpeed] = useState<GameSpeed>(readGameSpeed)
-  const presentedEvent = usePresentation(state.publicEvents, gameSpeed, request?.player_id === state.seatId ? request.request_id : undefined)
+  const presentedEvent = usePresentation(state.publicEvents, gameSpeed,
+    state.connection !== 'connected' ? 'connection-reset'
+      : request?.player_id === state.seatId ? request.request_id : undefined)
   const visibleEvents = presentedEvent ? [presentedEvent] : []
   const [godCues, setGodCues] = useState<Record<string, { mode: GodPortraitMode; id: number }>>({})
   const seenGodEvents = useRef(new Set<string>())
@@ -439,7 +442,8 @@ export function GamePage() {
   const eventActorId = String(latestEvent?.source_id ?? latestEvent?.player_id ?? '')
   const eventTargetIds = [String(latestEvent?.target_id ?? ''), ...(Array.isArray(latestEvent?.target_ids) ? latestEvent.target_ids.map(String) : [])]
   const eventKind = String(latestEvent?.kind ?? '')
-  const thinkingId = !request && !latestEvent ? (projection.players.find((player) => player.active)?.player_id ?? '') : ''
+  const thinkingId = state.connection === 'connected' && !request && eventKind === 'AIThinkingEvent'
+    ? eventActorId : ''
 
   return <main className="game-page table-background">
     <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><label>对局速度 <select aria-label="对局速度" value={gameSpeed} onChange={(event) => { const value = event.target.value as GameSpeed; setGameSpeed(value); localStorage.setItem('sanguosha.web.speed', value) }}><option value="slow">慢</option><option value="normal">正常</option><option value="fast">快</option></select></label><label className="vfx-quality-control">画质 <select aria-label="战斗特效画质" value={vfxQuality} onChange={(event) => { const value = event.target.value as VfxQuality; setVfxQuality(value); saveVfxQuality(value) }}><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></label><button onClick={actions.returnHome}>离开牌局</button></div></header>

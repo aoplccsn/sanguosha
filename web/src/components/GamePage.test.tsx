@@ -35,6 +35,18 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
+  it('highlights only the real decision actor while thinking and clears for a human request', () => {
+    request = null
+    publicEvents = [{ event_id: 'thinking', kind: 'AIThinkingEvent', source_id: 'p2', complexity: 'ordinary' }]
+    const { container, rerender } = render(<GamePage />)
+    expect(screen.getByText('刘备 正在思考……')).toBeInTheDocument()
+    expect(container.querySelectorAll('.player-panel.thinking')).toHaveLength(1)
+    expect(container.querySelector('[data-player-id="p2"]')).toHaveClass('thinking')
+    request = { request_id: 'human', player_id: 'p1', request_type: 'yes_no', prompt: '真人响应', choices: [], eligible_card_ids: [], allowed_player_ids: [], min_count: 0, max_count: 0, remaining_ms: 60000 }
+    rerender(<GamePage />)
+    expect(screen.getByText('真人响应')).toBeInTheDocument()
+    expect(container.querySelectorAll('.player-panel.thinking')).toHaveLength(0)
+  })
   beforeEach(() => { submitDecision.mockClear(); request = null; generals = {}; publicEvents = []; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
 
   it.each([

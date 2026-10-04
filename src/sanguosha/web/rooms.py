@@ -32,7 +32,8 @@ class ManagedRoom:
 class RoomManager:
     def __init__(self, *, max_rooms: int = 1000, room_ttl: float = 7200.0,
                  reconnect_grace: float = 300.0,
-                 timeout_seconds: float = HUMAN_DECISION_TIMEOUT_SECONDS):
+                 timeout_seconds: float = HUMAN_DECISION_TIMEOUT_SECONDS, ai_presentation: bool = False):
+        self.ai_presentation = ai_presentation
         self.max_rooms = max_rooms
         self.room_ttl = room_ttl
         self.reconnect_grace = reconnect_grace
@@ -49,6 +50,7 @@ class RoomManager:
                 managed = ManagedRoom(code, MultiplayerRoom(seed=seed,
                     timeout_seconds=self.timeout_seconds, review_god_lvbu=review_god_lvbu,
                     mode_id=mode_id, allow_gods=allow_gods))
+                managed.game.ai_presentation = self.ai_presentation
                 self.rooms[code] = managed
                 LOG.info("room created code=%s", code)
                 return managed

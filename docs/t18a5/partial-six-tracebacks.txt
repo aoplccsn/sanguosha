@@ -1,0 +1,1312 @@
+.FFF.F                                                                   [100%]
+================================== FAILURES ===================================
+_______________________ test_relay_full_game_smoke[2-4] _______________________
+
+humans = 4, seed = 2
+
+    @pytest.mark.parametrize("humans", range(1, 6))
+    @pytest.mark.parametrize("seed", [4, 1, 2, 3])
+    def test_relay_full_game_smoke(humans, seed):
+        async def scenario():
+            relay = RelayServer(RelayConfig(host="127.0.0.1", port=0, room_ttl=120))
+            await relay.start()
+            url = f"ws://127.0.0.1:{relay.config.port}"
+            server = GameServer(host="127.0.0.1", port=0, seed=seed, timeout_seconds=30)
+            await server.start()
+            host = HostRelayTransport(url, "127.0.0.1", server.port)
+            await host.start()
+            clients = [RelayGameClient(url, host.room_code) for _ in range(humans)]
+            try:
+                for index, client in enumerate(clients):
+                    await client.connect(f"relay-human-{index}")
+    
+                async def play(client, index):
+                    seat_id = None
+                    seen_requests = set()
+                    while True:
+                        msg = await asyncio.wait_for(client.receive(), 20)
+                        kind = msg["type"]
+                        if kind == "WELCOME" and msg.get("seat_id"):
+                            seat_id = msg["seat_id"]
+                            if index:
+                                await client.send("READY", ready=True)
+                        elif kind == "DRAFT_REQUEST":
+                            request = msg["request"]
+                            await client.send(
+                                "SUBMIT_DECISION",
+                                decision={
+                                    "request_id": request["request_id"],
+                                    "value": request["choices"][0],
+                                },
+                            )
+                        elif kind == "PENDING_REQUEST":
+                            request = msg["request"]
+                            assert request["player_id"] == seat_id
+                            assert request["request_id"] not in seen_requests
+                            seen_requests.add(request["request_id"])
+                            await client.send(
+                                "SUBMIT_DECISION",
+                                decision=decision_to_wire(
+                                    Decision(
+                                        request["request_id"],
+                                        PlayerId(seat_id),
+                                        choose(request),
+                                    )
+                                ),
+                            )
+                        elif kind == "GAME_OVER":
+                            assert seat_id is not None
+                            assert seen_requests
+                            return
+                        elif kind == "ERROR":
+                            if msg["message"] != "general already taken; new candidates sent":
+                                raise AssertionError(msg["message"])
+    
+                tasks = [asyncio.create_task(play(client, i)) for i, client in enumerate(clients)]
+                while any(
+                    server.room.seats[PlayerId(f"p{i + 1}")].ready is False
+                    for i in range(1, humans)
+                ):
+                    await asyncio.sleep(0.005)
+                await clients[0].send("START_GAME")
+                await asyncio.wait_for(asyncio.gather(*tasks), 45)
+                assert server.room.phase is RoomPhase.FINISHED
+                assert server.room.session.engine.pending_request is None
+                assert server.room.session.engine.stack.is_empty()
+                assert server.room.session.state.victory is not None
+                server.room.session.state.__post_init__()
+                assert not server.room.session.state.cards_in(ZoneRef(ZoneType.PROCESSING))
+            finally:
+                for client in clients:
+                    await client.close()
+                await host.close()
+                await server.close()
+                await relay.close()
+    
+>       asyncio.run(scenario())
+
+tests\test_t85_relay.py:183: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+main = <coroutine object test_relay_full_game_smoke.<locals>.scenario at 0x000001BCC4B370B0>
+debug = None, loop_factory = None
+
+    def run(main, *, debug=None, loop_factory=None):
+        """Execute the coroutine and return the result.
+    
+        This function runs the passed coroutine, taking care of
+        managing the asyncio event loop, finalizing asynchronous
+        generators and closing the default executor.
+    
+        This function cannot be called when another asyncio event loop is
+        running in the same thread.
+    
+        If debug is True, the event loop will be run in debug mode.
+        If loop_factory is passed, it is used for new event loop creation.
+    
+        This function always creates a new event loop and closes it at the end.
+        It should be used as a main entry point for asyncio programs, and should
+        ideally only be called once.
+    
+        The executor is given a timeout duration of 5 minutes to shutdown.
+        If the executor hasn't finished within that duration, a warning is
+        emitted and the executor is closed.
+    
+        Example:
+    
+            async def main():
+                await asyncio.sleep(1)
+                print('hello')
+    
+            asyncio.run(main())
+        """
+        if events._get_running_loop() is not None:
+            # fail fast with short traceback
+            raise RuntimeError(
+                "asyncio.run() cannot be called from a running event loop")
+    
+        with Runner(debug=debug, loop_factory=loop_factory) as runner:
+>           return runner.run(main)
+                   ^^^^^^^^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py:196: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <asyncio.runners.Runner object at 0x000001BCC4E8BE00>
+coro = <coroutine object test_relay_full_game_smoke.<locals>.scenario at 0x000001BCC4B370B0>
+context = <_contextvars.Context object at 0x000001BCC4F19240>
+
+    def run(self, coro, *, context=None):
+        """Run a coroutine inside the embedded event loop."""
+        if not coroutines.iscoroutine(coro):
+            raise ValueError("a coroutine was expected, got {!r}".format(coro))
+    
+        if events._get_running_loop() is not None:
+            # fail fast with short traceback
+            raise RuntimeError(
+                "Runner.run() cannot be called from a running event loop")
+    
+        self._lazy_init()
+    
+        if context is None:
+            context = self._context
+        task = self._loop.create_task(coro, context=context)
+    
+        if (threading.current_thread() is threading.main_thread()
+            and signal.getsignal(signal.SIGINT) is signal.default_int_handler
+        ):
+            sigint_handler = functools.partial(self._on_sigint, main_task=task)
+            try:
+                signal.signal(signal.SIGINT, sigint_handler)
+            except ValueError:
+                # `signal.signal` may throw if `threading.main_thread` does
+                # not support signals (e.g. embedded interpreter with signals
+                # not registered - see gh-91880)
+                sigint_handler = None
+        else:
+            sigint_handler = None
+    
+        self._interrupt_count = 0
+        try:
+>           return self._loop.run_until_complete(task)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ProactorEventLoop running=False closed=True debug=False>
+future = <Task finished name='Task-1' coro=<test_relay_full_game_smoke.<locals>.scenario() done, defined at C:\Sanguosha-d951\tests\test_t85_relay.py:107> exception=AssertionError('server error')>
+
+    def run_until_complete(self, future):
+        """Run until the Future is done.
+    
+        If the argument is a coroutine, it is wrapped in a Task.
+    
+        WARNING: It would be disastrous to call run_until_complete()
+        with the same coroutine twice -- it would wrap it in two
+        different Tasks and that can't be good.
+    
+        Return the Future's result, or raise its exception.
+        """
+        self._check_closed()
+        self._check_running()
+    
+        new_task = not futures.isfuture(future)
+        future = tasks.ensure_future(future, loop=self)
+        if new_task:
+            # An exception is raised if the future didn't complete, so there
+            # is no need to log the "destroy pending task" message
+            future._log_destroy_pending = False
+    
+        future.add_done_callback(_run_until_complete_cb)
+        try:
+            self.run_forever()
+        except:
+            if new_task and future.done() and not future.cancelled():
+                # The coroutine raised a BaseException. Consume the exception
+                # to not log a warning, the caller doesn't have access to the
+                # local task.
+                future.exception()
+            raise
+        finally:
+            future.remove_done_callback(_run_until_complete_cb)
+        if not future.done():
+            raise RuntimeError('Event loop stopped before Future completed.')
+    
+>       return future.result()
+               ^^^^^^^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\base_events.py:725: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    async def scenario():
+        relay = RelayServer(RelayConfig(host="127.0.0.1", port=0, room_ttl=120))
+        await relay.start()
+        url = f"ws://127.0.0.1:{relay.config.port}"
+        server = GameServer(host="127.0.0.1", port=0, seed=seed, timeout_seconds=30)
+        await server.start()
+        host = HostRelayTransport(url, "127.0.0.1", server.port)
+        await host.start()
+        clients = [RelayGameClient(url, host.room_code) for _ in range(humans)]
+        try:
+            for index, client in enumerate(clients):
+                await client.connect(f"relay-human-{index}")
+    
+            async def play(client, index):
+                seat_id = None
+                seen_requests = set()
+                while True:
+                    msg = await asyncio.wait_for(client.receive(), 20)
+                    kind = msg["type"]
+                    if kind == "WELCOME" and msg.get("seat_id"):
+                        seat_id = msg["seat_id"]
+                        if index:
+                            await client.send("READY", ready=True)
+                    elif kind == "DRAFT_REQUEST":
+                        request = msg["request"]
+                        await client.send(
+                            "SUBMIT_DECISION",
+                            decision={
+                                "request_id": request["request_id"],
+                                "value": request["choices"][0],
+                            },
+                        )
+                    elif kind == "PENDING_REQUEST":
+                        request = msg["request"]
+                        assert request["player_id"] == seat_id
+                        assert request["request_id"] not in seen_requests
+                        seen_requests.add(request["request_id"])
+                        await client.send(
+                            "SUBMIT_DECISION",
+                            decision=decision_to_wire(
+                                Decision(
+                                    request["request_id"],
+                                    PlayerId(seat_id),
+                                    choose(request),
+                                )
+                            ),
+                        )
+                    elif kind == "GAME_OVER":
+                        assert seat_id is not None
+                        assert seen_requests
+                        return
+                    elif kind == "ERROR":
+                        if msg["message"] != "general already taken; new candidates sent":
+                            raise AssertionError(msg["message"])
+    
+            tasks = [asyncio.create_task(play(client, i)) for i, client in enumerate(clients)]
+            while any(
+                server.room.seats[PlayerId(f"p{i + 1}")].ready is False
+                for i in range(1, humans)
+            ):
+                await asyncio.sleep(0.005)
+            await clients[0].send("START_GAME")
+>           await asyncio.wait_for(asyncio.gather(*tasks), 45)
+
+tests\test_t85_relay.py:169: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+fut = <_GatheringFuture finished exception=AssertionError('server error')>
+timeout = 45
+
+    async def wait_for(fut, timeout):
+        """Wait for the single Future or coroutine to complete, with timeout.
+    
+        Coroutine will be wrapped in Task.
+    
+        Returns result of the Future or coroutine.  When a timeout occurs,
+        it cancels the task and raises TimeoutError.  To avoid the task
+        cancellation, wrap it in shield().
+    
+        If the wait is cancelled, the task is also cancelled.
+    
+        If the task suppresses the cancellation and returns a value instead,
+        that value is returned.
+    
+        This function is a coroutine.
+        """
+        # The special case for timeout <= 0 is for the following case:
+        #
+        # async def test_waitfor():
+        #     func_started = False
+        #
+        #     async def func():
+        #         nonlocal func_started
+        #         func_started = True
+        #
+        #     try:
+        #         await asyncio.wait_for(func(), 0)
+        #     except asyncio.TimeoutError:
+        #         assert not func_started
+        #     else:
+        #         assert False
+        #
+        # asyncio.run(test_waitfor())
+    
+    
+        if timeout is not None and timeout <= 0:
+            fut = ensure_future(fut)
+    
+            if fut.done():
+                return fut.result()
+    
+            await _cancel_and_wait(fut)
+            try:
+                return fut.result()
+            except exceptions.CancelledError as exc:
+                raise TimeoutError from exc
+    
+        async with timeouts.timeout(timeout):
+>           return await fut
+                   ^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\tasks.py:507: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <sanguosha.relay.transport.RelayGameClient object at 0x000001BCC4EE23F0>
+index = 3
+
+    async def play(client, index):
+        seat_id = None
+        seen_requests = set()
+        while True:
+            msg = await asyncio.wait_for(client.receive(), 20)
+            kind = msg["type"]
+            if kind == "WELCOME" and msg.get("seat_id"):
+                seat_id = msg["seat_id"]
+                if index:
+                    await client.send("READY", ready=True)
+            elif kind == "DRAFT_REQUEST":
+                request = msg["request"]
+                await client.send(
+                    "SUBMIT_DECISION",
+                    decision={
+                        "request_id": request["request_id"],
+                        "value": request["choices"][0],
+                    },
+                )
+            elif kind == "PENDING_REQUEST":
+                request = msg["request"]
+                assert request["player_id"] == seat_id
+                assert request["request_id"] not in seen_requests
+                seen_requests.add(request["request_id"])
+                await client.send(
+                    "SUBMIT_DECISION",
+                    decision=decision_to_wire(
+                        Decision(
+                            request["request_id"],
+                            PlayerId(seat_id),
+                            choose(request),
+                        )
+                    ),
+                )
+            elif kind == "GAME_OVER":
+                assert seat_id is not None
+                assert seen_requests
+                return
+            elif kind == "ERROR":
+                if msg["message"] != "general already taken; new candidates sent":
+>                   raise AssertionError(msg["message"])
+E                   AssertionError: server error
+
+tests\test_t85_relay.py:160: AssertionError
+------------------------------ Captured log call ------------------------------
+ERROR    sanguosha.multiplayer.transport:transport.py:102 unexpected client error
+Traceback (most recent call last):
+  File "C:\Sanguosha-d951\src\sanguosha\multiplayer\transport.py", line 83, in _handle
+    self.room.submit(pid, decision_from_wire(message.get("decision"), pid))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Sanguosha-d951\src\sanguosha\multiplayer\room.py", line 301, in submit
+    self.session.engine.submit_decision(decision, defer_resolution=defer_resolution)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Sanguosha-d951\src\sanguosha\engine\engine.py", line 76, in submit_decision
+    return self.run_until_blocked()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Sanguosha-d951\src\sanguosha\engine\engine.py", line 121, in run_until_blocked
+    child = self._new_frame(outcome.child, frame.frame_id)
+  File "C:\Sanguosha-d951\src\sanguosha\engine\engine.py", line 38, in _new_frame
+    raise ResolutionError(f"duplicate or empty action id: {action.action_id!r}")
+sanguosha.engine.errors.ResolutionError: duplicate or empty action id: 'frame-867-play-0:use:effect:target:1:damage:kuanggu:0'
+________________________ test_20_full_game_smoke[2-4] _________________________
+
+humans = 4, seed = 2
+
+    @pytest.mark.parametrize("humans", range(1, 6))
+    @pytest.mark.parametrize("seed", [4, 1, 2, 3])
+    def test_20_full_game_smoke(humans, seed):
+        room = MultiplayerRoom(seed=seed, timeout_seconds=30)
+        ids = [room.join(f"h{i}", lambda _: None)[0] for i in range(humans)]
+        for pid in ids[1:]:
+            room.ready(pid, True)
+        room.start(ids[0])
+        for pid in ids:
+            req = room.draft_requests[pid]
+            room.submit(pid, Decision(req.request_id, pid, next(c for c in req.choices if c not in room.pregame.generals.values())))
+        for _ in range(2000):
+            if room.phase is RoomPhase.FINISHED:
+                break
+            request = room.session.engine.pending_request
+            assert request is not None
+            value = choose(serialize_request(request, 30_000))
+>           room.submit(request.player_id, Decision(request.request_id, request.player_id, value))
+
+tests\test_t8_multiplayer.py:169: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sanguosha.multiplayer.room.MultiplayerRoom object at 0x000001BCC4F59590>
+pid = 'p4'
+decision = Decision(request_id='frame-867-play-0:use:effect:target:1:response:request', player_id='p4', value=<ResponsePass.PASS: 'pass'>)
+defer_resolution = False, send_ack = True
+
+    def submit(self, pid: PlayerId, decision: Decision, *, defer_resolution: bool = False,
+               send_ack: bool = True) -> None:
+        if self.seats[pid].controller is not Controller.HUMAN or not self.seats[pid].connected:
+            raise RoomError("player is not connected")
+        if decision.player_id != pid:
+            raise RoomError("decision owner mismatch")
+        if self.phase is RoomPhase.DRAFT:
+            request = self.draft_requests.get(pid)
+            if request is None or request.request_id != decision.request_id:
+                if request is not None:
+                    self._send_draft(pid)
+                raise RoomError("stale or duplicate draft decision")
+            request.validate(decision.value)
+            if time.time() >= self.draft_deadlines[pid]:
+                self.poll()
+                raise RoomError('draft request timed out')
+            assert self.pregame is not None
+            if decision.value in self.pregame.generals.values():
+                self._new_draft_request(pid)
+                raise RoomError("general already taken; new candidates sent")
+            self.pregame.generals[pid] = CharacterId(decision.value)
+            del self.draft_requests[pid]
+            del self.draft_deadlines[pid]
+            if defer_resolution:
+                self.accepted_request_id = decision.request_id
+            if send_ack:
+                self._send(pid, envelope("DECISION_RESULT", request_id=decision.request_id, accepted=True))
+            if not defer_resolution:
+                self._complete_draft_if_ready()
+            return
+        if self.phase is not RoomPhase.IN_GAME or self.session is None:
+            raise RoomError("no active game request")
+        request = self.session.engine.pending_request
+        if request is None or request.request_id != decision.request_id:
+            self._send_current(pid)
+            raise RoomError("stale request; current response refreshed")
+        if request is not None and request.request_id == decision.request_id:
+            decision = self._resolve_hidden_choice(request, decision)
+        self.network_decisions.validate(pid, decision)
+        if isinstance(decision.value, dict):
+            from dataclasses import replace
+            from sanguosha.engine.card_use import UseCardAction
+            frame = self.session.engine.stack.top()
+            phase_handler = self.session.engine.registry.handler_for(frame.action)
+            body = phase_handler.bodies.body_for(frame.action.phase)
+            built = body.provider.build_action(self.session.state, pid, decision.value['option'],
+                                               f'{frame.frame_id}-play-{frame.cursor-1}')
+            if not isinstance(built, UseCardAction):
+                raise RoomError('combined decision requires a physical card')
+            built = replace(built, target_ids=decision.value['targets'], targets_confirmed=True)
+            self.session.engine.registry.handler_for(built).validate_start(self.session.state, built)
+>       self.session.engine.submit_decision(decision, defer_resolution=defer_resolution)
+
+src\sanguosha\multiplayer\room.py:301: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sanguosha.engine.engine.GameEngine object at 0x000001BCC5486210>
+decision = Decision(request_id='frame-867-play-0:use:effect:target:1:response:request', player_id='p4', value=<ResponsePass.PASS: 'pass'>)
+defer_resolution = False
+
+    def submit_decision(self, decision: Decision, *, defer_resolution: bool = False) -> EngineStatus:
+        request = self.pending_request
+        if request is None or self.status is not EngineStatus.WAITING_FOR_DECISION:
+            raise UnknownRequest("no pending request")
+        if decision.request_id != request.request_id:
+            raise UnknownRequest(f"request {decision.request_id!r} is not pending")
+        if decision.player_id != request.player_id:
+            raise InvalidDecision("wrong player for pending request")
+        request.validate(decision.value)
+        frame = self.stack.top()
+        if frame.frame_id != request.originating_frame_id or frame.status is not FrameStatus.WAITING_DECISION:
+            raise ResolutionError("pending request does not match top frame")
+        frame.decision = decision.value
+        frame.status = FrameStatus.READY
+        self.pending_request = None
+        self.status = EngineStatus.RUNNING
+        if defer_resolution:
+            return self.status
+>       return self.run_until_blocked()
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+src\sanguosha\engine\engine.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sanguosha.engine.engine.GameEngine object at 0x000001BCC5486210>
+
+    def run_until_blocked(self) -> EngineStatus:
+        if self.pending_request is not None:
+            self.status = EngineStatus.WAITING_FOR_DECISION
+            return self.status
+        self.status = EngineStatus.RUNNING
+        steps = 0
+        try:
+            while not self.stack.is_empty():
+                steps += 1
+                if steps > self.max_steps:
+                    raise ResolutionError("resolution step limit exceeded")
+                frame = self.stack.top()
+                if frame.status is not FrameStatus.READY:
+                    raise ResolutionError(f"cannot step frame in {frame.status} state")
+                if frame.deferred_step is not None:
+                    outcome = frame.deferred_step
+                    frame.deferred_step = None
+                    frame.child_result = frame.reaction_child_result
+                else:
+                    outcome = self.registry.handler_for(frame.action).step(self.state, frame)
+                reaction = self.reaction_provider(self.state) if self.reaction_provider else None
+                if reaction is not None:
+                    frame.deferred_step = outcome
+                    frame.reaction_child_result = frame.child_result
+                    frame.status = FrameStatus.WAITING_CHILD
+                    self.stack.push(self._new_frame(reaction, frame.frame_id))
+                    continue
+                if outcome.kind is StepKind.CONTINUE:
+                    continue
+                if outcome.kind is StepKind.REQUEST_DECISION:
+                    request = outcome.request
+                    if request is None or not request.request_id or request.request_id in self._seen_request_ids:
+                        raise ResolutionError("missing or duplicate request id")
+                    if request.originating_action_id != frame.action.action_id or request.originating_frame_id != frame.frame_id:
+                        raise ResolutionError("request origin does not match frame")
+                    self._seen_request_ids.add(request.request_id)
+                    frame.status = FrameStatus.WAITING_DECISION
+                    self.pending_request = request
+                    self.status = EngineStatus.WAITING_FOR_DECISION
+                    return self.status
+                if outcome.kind is StepKind.PUSH_CHILD:
+                    if outcome.child is None:
+                        raise ResolutionError("push outcome has no child")
+>                   child = self._new_frame(outcome.child, frame.frame_id)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+src\sanguosha\engine\engine.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sanguosha.engine.engine.GameEngine object at 0x000001BCC5486210>
+action = RecoverAction(action_id='frame-867-play-0:use:effect:target:1:damage:kuanggu:0', source_id='p5', target_id='p5', amount=1, related_card_id=None)
+parent_id = 'frame-872'
+
+    def _new_frame(self, action: Action, parent_id: str | None = None) -> ResolutionFrame:
+        if not action.action_id or action.action_id in self._seen_action_ids:
+>           raise ResolutionError(f"duplicate or empty action id: {action.action_id!r}")
+E           sanguosha.engine.errors.ResolutionError: duplicate or empty action id: 'frame-867-play-0:use:effect:target:1:damage:kuanggu:0'
+
+src\sanguosha\engine\engine.py:38: ResolutionError
+________________________ test_tcp_full_game_smoke[2-4] ________________________
+
+humans = 4, seed = 2
+
+    @pytest.mark.parametrize("humans", range(1, 6))
+    @pytest.mark.parametrize("seed", [4, 1, 2, 3])
+    def test_tcp_full_game_smoke(humans, seed):
+        async def scenario():
+            server = GameServer(host="127.0.0.1", port=0, seed=seed, timeout_seconds=30)
+            await server.start()
+            clients = [GameClient("127.0.0.1", server.port) for _ in range(humans)]
+            try:
+                for index, client in enumerate(clients):
+                    await client.connect(f"human{index}")
+                async def play(client, index):
+                    seat_id = None
+                    seen_requests = set()
+                    while True:
+                        msg = await asyncio.wait_for(client.receive(), 15)
+                        kind = msg["type"]
+                        if kind == "WELCOME" and msg.get("seat_id"):
+                            seat_id = msg["seat_id"]
+                            if index:
+                                await client.send("READY", ready=True)
+                        elif kind == "DRAFT_REQUEST":
+                            request = msg["request"]
+                            assert request["player_id"] == seat_id
+                            await client.send("SUBMIT_DECISION", decision={
+                                "request_id": request["request_id"], "value": request["choices"][0]})
+                        elif kind == "PENDING_REQUEST":
+                            request = msg["request"]
+                            assert request["player_id"] == seat_id
+                            assert request["request_id"] not in seen_requests
+                            seen_requests.add(request["request_id"])
+                            await client.send("SUBMIT_DECISION", decision=decision_to_wire(
+                                Decision(request["request_id"], PlayerId(seat_id), choose(request))))
+                        elif kind == "GAME_OVER":
+                            assert seat_id is not None
+                            assert seen_requests
+                            return
+                        elif kind == "ERROR":
+                            if msg["message"] != "general already taken; new candidates sent":
+                                raise AssertionError(msg["message"])
+                tasks = [asyncio.create_task(play(client, i)) for i, client in enumerate(clients)]
+                while any(server.room.seats[PlayerId(f"p{i+1}")].ready is False for i in range(1, humans)):
+                    await asyncio.sleep(0.005)
+                await clients[0].send("START_GAME")
+                await asyncio.wait_for(asyncio.gather(*tasks), 30)
+                assert server.room.phase is RoomPhase.FINISHED
+                assert server.room.session.engine.pending_request is None
+                assert server.room.session.engine.stack.is_empty()
+                assert server.room.session.state.victory is not None
+                server.room.session.state.__post_init__()
+                assert not server.room.session.state.cards_in(ZoneRef(ZoneType.PROCESSING))
+            finally:
+                for client in clients:
+                    await client.close()
+                await server.close()
+>       asyncio.run(scenario())
+
+tests\test_t8_multiplayer.py:302: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+main = <coroutine object test_tcp_full_game_smoke.<locals>.scenario at 0x000001BCC4C5B4C0>
+debug = None, loop_factory = None
+
+    def run(main, *, debug=None, loop_factory=None):
+        """Execute the coroutine and return the result.
+    
+        This function runs the passed coroutine, taking care of
+        managing the asyncio event loop, finalizing asynchronous
+        generators and closing the default executor.
+    
+        This function cannot be called when another asyncio event loop is
+        running in the same thread.
+    
+        If debug is True, the event loop will be run in debug mode.
+        If loop_factory is passed, it is used for new event loop creation.
+    
+        This function always creates a new event loop and closes it at the end.
+        It should be used as a main entry point for asyncio programs, and should
+        ideally only be called once.
+    
+        The executor is given a timeout duration of 5 minutes to shutdown.
+        If the executor hasn't finished within that duration, a warning is
+        emitted and the executor is closed.
+    
+        Example:
+    
+            async def main():
+                await asyncio.sleep(1)
+                print('hello')
+    
+            asyncio.run(main())
+        """
+        if events._get_running_loop() is not None:
+            # fail fast with short traceback
+            raise RuntimeError(
+                "asyncio.run() cannot be called from a running event loop")
+    
+        with Runner(debug=debug, loop_factory=loop_factory) as runner:
+>           return runner.run(main)
+                   ^^^^^^^^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py:196: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <asyncio.runners.Runner object at 0x000001BCC54865D0>
+coro = <coroutine object test_tcp_full_game_smoke.<locals>.scenario at 0x000001BCC4C5B4C0>
+context = <_contextvars.Context object at 0x000001BCC4F55280>
+
+    def run(self, coro, *, context=None):
+        """Run a coroutine inside the embedded event loop."""
+        if not coroutines.iscoroutine(coro):
+            raise ValueError("a coroutine was expected, got {!r}".format(coro))
+    
+        if events._get_running_loop() is not None:
+            # fail fast with short traceback
+            raise RuntimeError(
+                "Runner.run() cannot be called from a running event loop")
+    
+        self._lazy_init()
+    
+        if context is None:
+            context = self._context
+        task = self._loop.create_task(coro, context=context)
+    
+        if (threading.current_thread() is threading.main_thread()
+            and signal.getsignal(signal.SIGINT) is signal.default_int_handler
+        ):
+            sigint_handler = functools.partial(self._on_sigint, main_task=task)
+            try:
+                signal.signal(signal.SIGINT, sigint_handler)
+            except ValueError:
+                # `signal.signal` may throw if `threading.main_thread` does
+                # not support signals (e.g. embedded interpreter with signals
+                # not registered - see gh-91880)
+                sigint_handler = None
+        else:
+            sigint_handler = None
+    
+        self._interrupt_count = 0
+        try:
+>           return self._loop.run_until_complete(task)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ProactorEventLoop running=False closed=True debug=False>
+future = <Task finished name='Task-50' coro=<test_tcp_full_game_smoke.<locals>.scenario() done, defined at C:\Sanguosha-d951\tests\test_t8_multiplayer.py:251> exception=AssertionError('server error')>
+
+    def run_until_complete(self, future):
+        """Run until the Future is done.
+    
+        If the argument is a coroutine, it is wrapped in a Task.
+    
+        WARNING: It would be disastrous to call run_until_complete()
+        with the same coroutine twice -- it would wrap it in two
+        different Tasks and that can't be good.
+    
+        Return the Future's result, or raise its exception.
+        """
+        self._check_closed()
+        self._check_running()
+    
+        new_task = not futures.isfuture(future)
+        future = tasks.ensure_future(future, loop=self)
+        if new_task:
+            # An exception is raised if the future didn't complete, so there
+            # is no need to log the "destroy pending task" message
+            future._log_destroy_pending = False
+    
+        future.add_done_callback(_run_until_complete_cb)
+        try:
+            self.run_forever()
+        except:
+            if new_task and future.done() and not future.cancelled():
+                # The coroutine raised a BaseException. Consume the exception
+                # to not log a warning, the caller doesn't have access to the
+                # local task.
+                future.exception()
+            raise
+        finally:
+            future.remove_done_callback(_run_until_complete_cb)
+        if not future.done():
+            raise RuntimeError('Event loop stopped before Future completed.')
+    
+>       return future.result()
+               ^^^^^^^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\base_events.py:725: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    async def scenario():
+        server = GameServer(host="127.0.0.1", port=0, seed=seed, timeout_seconds=30)
+        await server.start()
+        clients = [GameClient("127.0.0.1", server.port) for _ in range(humans)]
+        try:
+            for index, client in enumerate(clients):
+                await client.connect(f"human{index}")
+            async def play(client, index):
+                seat_id = None
+                seen_requests = set()
+                while True:
+                    msg = await asyncio.wait_for(client.receive(), 15)
+                    kind = msg["type"]
+                    if kind == "WELCOME" and msg.get("seat_id"):
+                        seat_id = msg["seat_id"]
+                        if index:
+                            await client.send("READY", ready=True)
+                    elif kind == "DRAFT_REQUEST":
+                        request = msg["request"]
+                        assert request["player_id"] == seat_id
+                        await client.send("SUBMIT_DECISION", decision={
+                            "request_id": request["request_id"], "value": request["choices"][0]})
+                    elif kind == "PENDING_REQUEST":
+                        request = msg["request"]
+                        assert request["player_id"] == seat_id
+                        assert request["request_id"] not in seen_requests
+                        seen_requests.add(request["request_id"])
+                        await client.send("SUBMIT_DECISION", decision=decision_to_wire(
+                            Decision(request["request_id"], PlayerId(seat_id), choose(request))))
+                    elif kind == "GAME_OVER":
+                        assert seat_id is not None
+                        assert seen_requests
+                        return
+                    elif kind == "ERROR":
+                        if msg["message"] != "general already taken; new candidates sent":
+                            raise AssertionError(msg["message"])
+            tasks = [asyncio.create_task(play(client, i)) for i, client in enumerate(clients)]
+            while any(server.room.seats[PlayerId(f"p{i+1}")].ready is False for i in range(1, humans)):
+                await asyncio.sleep(0.005)
+            await clients[0].send("START_GAME")
+>           await asyncio.wait_for(asyncio.gather(*tasks), 30)
+
+tests\test_t8_multiplayer.py:291: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+fut = <_GatheringFuture finished exception=AssertionError('server error')>
+timeout = 30
+
+    async def wait_for(fut, timeout):
+        """Wait for the single Future or coroutine to complete, with timeout.
+    
+        Coroutine will be wrapped in Task.
+    
+        Returns result of the Future or coroutine.  When a timeout occurs,
+        it cancels the task and raises TimeoutError.  To avoid the task
+        cancellation, wrap it in shield().
+    
+        If the wait is cancelled, the task is also cancelled.
+    
+        If the task suppresses the cancellation and returns a value instead,
+        that value is returned.
+    
+        This function is a coroutine.
+        """
+        # The special case for timeout <= 0 is for the following case:
+        #
+        # async def test_waitfor():
+        #     func_started = False
+        #
+        #     async def func():
+        #         nonlocal func_started
+        #         func_started = True
+        #
+        #     try:
+        #         await asyncio.wait_for(func(), 0)
+        #     except asyncio.TimeoutError:
+        #         assert not func_started
+        #     else:
+        #         assert False
+        #
+        # asyncio.run(test_waitfor())
+    
+    
+        if timeout is not None and timeout <= 0:
+            fut = ensure_future(fut)
+    
+            if fut.done():
+                return fut.result()
+    
+            await _cancel_and_wait(fut)
+            try:
+                return fut.result()
+            except exceptions.CancelledError as exc:
+                raise TimeoutError from exc
+    
+        async with timeouts.timeout(timeout):
+>           return await fut
+                   ^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\tasks.py:507: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+client = <sanguosha.multiplayer.transport.GameClient object at 0x000001BCC5460FC0>
+index = 3
+
+    async def play(client, index):
+        seat_id = None
+        seen_requests = set()
+        while True:
+            msg = await asyncio.wait_for(client.receive(), 15)
+            kind = msg["type"]
+            if kind == "WELCOME" and msg.get("seat_id"):
+                seat_id = msg["seat_id"]
+                if index:
+                    await client.send("READY", ready=True)
+            elif kind == "DRAFT_REQUEST":
+                request = msg["request"]
+                assert request["player_id"] == seat_id
+                await client.send("SUBMIT_DECISION", decision={
+                    "request_id": request["request_id"], "value": request["choices"][0]})
+            elif kind == "PENDING_REQUEST":
+                request = msg["request"]
+                assert request["player_id"] == seat_id
+                assert request["request_id"] not in seen_requests
+                seen_requests.add(request["request_id"])
+                await client.send("SUBMIT_DECISION", decision=decision_to_wire(
+                    Decision(request["request_id"], PlayerId(seat_id), choose(request))))
+            elif kind == "GAME_OVER":
+                assert seat_id is not None
+                assert seen_requests
+                return
+            elif kind == "ERROR":
+                if msg["message"] != "general already taken; new candidates sent":
+>                   raise AssertionError(msg["message"])
+E                   AssertionError: server error
+
+tests\test_t8_multiplayer.py:286: AssertionError
+------------------------------ Captured log call ------------------------------
+ERROR    sanguosha.multiplayer.transport:transport.py:102 unexpected client error
+Traceback (most recent call last):
+  File "C:\Sanguosha-d951\src\sanguosha\multiplayer\transport.py", line 83, in _handle
+    self.room.submit(pid, decision_from_wire(message.get("decision"), pid))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Sanguosha-d951\src\sanguosha\multiplayer\room.py", line 301, in submit
+    self.session.engine.submit_decision(decision, defer_resolution=defer_resolution)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Sanguosha-d951\src\sanguosha\engine\engine.py", line 76, in submit_decision
+    return self.run_until_blocked()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Sanguosha-d951\src\sanguosha\engine\engine.py", line 121, in run_until_blocked
+    child = self._new_frame(outcome.child, frame.frame_id)
+  File "C:\Sanguosha-d951\src\sanguosha\engine\engine.py", line 38, in _new_frame
+    raise ResolutionError(f"duplicate or empty action id: {action.action_id!r}")
+sanguosha.engine.errors.ResolutionError: duplicate or empty action id: 'frame-867-play-0:use:effect:target:1:damage:kuanggu:0'
+_________________ test_fastapi_websocket_full_game_smoke[2-4] _________________
+
+humans = 4, seed = 2
+
+    @pytest.mark.parametrize("humans", range(1, 6))
+    @pytest.mark.parametrize("seed", [4, 1, 2, 3])
+    def test_fastapi_websocket_full_game_smoke(humans, seed):
+        async def scenario():
+            app, server, task, url = await start_server()
+            try:
+                audit_seen = set() if (humans, seed) == (2, 4) else None
+                room_code, seen = await play_web_match(
+                    url, humans, seed, app if audit_seen is not None else None, audit_seen,
+                )
+                if audit_seen is not None:
+                    assert {"LOBBY_STATE", "PROJECTION_UPDATE", "PUBLIC_EVENT", "PENDING_REQUEST", "GAME_OVER"} <= audit_seen
+                room = app.state.room_manager.rooms[room_code].game
+                assert room.phase.value == "FINISHED"
+                assert room.session is not None
+                assert room.session.state.victory is not None
+                assert room.session.engine.pending_request is None
+                assert room.session.engine.stack.is_empty()
+                assert not room.session.state.cards_in(ZoneRef(ZoneType.PROCESSING))
+                assert all(seen)
+                assert len(room.session.state.cards) == len(set(room.session.state.cards))
+                room.session.state.__post_init__()
+            finally:
+                server.should_exit = True
+                await task
+    
+>       asyncio.run(scenario())
+
+tests\test_t9_web_validation.py:160: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+main = <coroutine object test_fastapi_websocket_full_game_smoke.<locals>.scenario at 0x000001BCC29A0270>
+debug = None, loop_factory = None
+
+    def run(main, *, debug=None, loop_factory=None):
+        """Execute the coroutine and return the result.
+    
+        This function runs the passed coroutine, taking care of
+        managing the asyncio event loop, finalizing asynchronous
+        generators and closing the default executor.
+    
+        This function cannot be called when another asyncio event loop is
+        running in the same thread.
+    
+        If debug is True, the event loop will be run in debug mode.
+        If loop_factory is passed, it is used for new event loop creation.
+    
+        This function always creates a new event loop and closes it at the end.
+        It should be used as a main entry point for asyncio programs, and should
+        ideally only be called once.
+    
+        The executor is given a timeout duration of 5 minutes to shutdown.
+        If the executor hasn't finished within that duration, a warning is
+        emitted and the executor is closed.
+    
+        Example:
+    
+            async def main():
+                await asyncio.sleep(1)
+                print('hello')
+    
+            asyncio.run(main())
+        """
+        if events._get_running_loop() is not None:
+            # fail fast with short traceback
+            raise RuntimeError(
+                "asyncio.run() cannot be called from a running event loop")
+    
+        with Runner(debug=debug, loop_factory=loop_factory) as runner:
+>           return runner.run(main)
+                   ^^^^^^^^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py:196: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <asyncio.runners.Runner object at 0x000001BCC52456D0>
+coro = <coroutine object test_fastapi_websocket_full_game_smoke.<locals>.scenario at 0x000001BCC29A0270>
+context = <_contextvars.Context object at 0x000001BCC4F66E40>
+
+    def run(self, coro, *, context=None):
+        """Run a coroutine inside the embedded event loop."""
+        if not coroutines.iscoroutine(coro):
+            raise ValueError("a coroutine was expected, got {!r}".format(coro))
+    
+        if events._get_running_loop() is not None:
+            # fail fast with short traceback
+            raise RuntimeError(
+                "Runner.run() cannot be called from a running event loop")
+    
+        self._lazy_init()
+    
+        if context is None:
+            context = self._context
+        task = self._loop.create_task(coro, context=context)
+    
+        if (threading.current_thread() is threading.main_thread()
+            and signal.getsignal(signal.SIGINT) is signal.default_int_handler
+        ):
+            sigint_handler = functools.partial(self._on_sigint, main_task=task)
+            try:
+                signal.signal(signal.SIGINT, sigint_handler)
+            except ValueError:
+                # `signal.signal` may throw if `threading.main_thread` does
+                # not support signals (e.g. embedded interpreter with signals
+                # not registered - see gh-91880)
+                sigint_handler = None
+        else:
+            sigint_handler = None
+    
+        self._interrupt_count = 0
+        try:
+>           return self._loop.run_until_complete(task)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <ProactorEventLoop running=False closed=True debug=False>
+future = <Task finished name='Task-68' coro=<test_fastapi_websocket_full_game_smoke.<locals>.scenario() done, defined at C:\San...ts\test_t9_web_validation.py:137> exception=AssertionError({'type': 'ERROR', 'version': 2, 'message': 'server error'})>
+
+    def run_until_complete(self, future):
+        """Run until the Future is done.
+    
+        If the argument is a coroutine, it is wrapped in a Task.
+    
+        WARNING: It would be disastrous to call run_until_complete()
+        with the same coroutine twice -- it would wrap it in two
+        different Tasks and that can't be good.
+    
+        Return the Future's result, or raise its exception.
+        """
+        self._check_closed()
+        self._check_running()
+    
+        new_task = not futures.isfuture(future)
+        future = tasks.ensure_future(future, loop=self)
+        if new_task:
+            # An exception is raised if the future didn't complete, so there
+            # is no need to log the "destroy pending task" message
+            future._log_destroy_pending = False
+    
+        future.add_done_callback(_run_until_complete_cb)
+        try:
+            self.run_forever()
+        except:
+            if new_task and future.done() and not future.cancelled():
+                # The coroutine raised a BaseException. Consume the exception
+                # to not log a warning, the caller doesn't have access to the
+                # local task.
+                future.exception()
+            raise
+        finally:
+            future.remove_done_callback(_run_until_complete_cb)
+        if not future.done():
+            raise RuntimeError('Event loop stopped before Future completed.')
+    
+>       return future.result()
+               ^^^^^^^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\base_events.py:725: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    async def scenario():
+        app, server, task, url = await start_server()
+        try:
+            audit_seen = set() if (humans, seed) == (2, 4) else None
+>           room_code, seen = await play_web_match(
+                url, humans, seed, app if audit_seen is not None else None, audit_seen,
+            )
+
+tests\test_t9_web_validation.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+url = 'ws://127.0.0.1:56760/ws', humans = 4, seed = 2, audit_app = None
+audit_seen = None, mode_id = 'military-five'
+
+    async def play_web_match(url: str, humans: int, seed: int, audit_app=None, audit_seen=None,
+                             mode_id: str = "military-five"):
+        clients = [await websockets.connect(url) for _ in range(humans)]
+        seats: list[str] = []
+        try:
+            for ws in clients:
+                await ws.send(json.dumps(wire("HELLO")))
+                await recv_until(ws, "WELCOME")
+            await clients[0].send(json.dumps(wire("CREATE_ROOM", name="web-human-0", seed=seed,
+                                                  mode_id=mode_id)))
+            room_code = (await recv_until(clients[0], "ROOM_CREATED"))["room_code"]
+            host_welcome = await recv_until(clients[0], "WELCOME")
+            seats.append(host_welcome["seat_id"])
+            for index, ws in enumerate(clients[1:], 1):
+                await ws.send(json.dumps(wire("JOIN_ROOM", room_code=room_code, name=f"web-human-{index}")))
+                welcome = await recv_until(ws, "WELCOME")
+                seats.append(welcome["seat_id"])
+                await ws.send(json.dumps(wire("READY", ready=True)))
+            await clients[0].send(json.dumps(wire("START_GAME")))
+    
+            seen: list[set[str]] = [set() for _ in clients]
+    
+            async def drive(index: int, ws):
+                while True:
+                    message = json.loads(await asyncio.wait_for(ws.recv(), 60))
+                    kind = message["type"]
+                    if audit_app is not None:
+                        audit_seen.add(kind)
+                        room = audit_app.state.room_manager.rooms[room_code].game
+                        if room.session is not None:
+                            raw = json.dumps(message, ensure_ascii=False)
+                            for opponent_id in seats:
+                                if opponent_id != seats[index]:
+                                    private_ids = room.session.state.cards_in(ZoneRef(ZoneType.HAND, opponent_id))
+                                    assert all(str(card_id) not in raw for card_id in private_ids), (
+                                        kind, seats[index], opponent_id, tuple(map(str, private_ids)), message)
+                            assert "deck_order" not in raw and "draw_pile" not in raw
+                            if kind == "PROJECTION_UPDATE":
+                                for player in message["projection"]["players"]:
+                                    if player["player_id"] != seats[index]:
+                                        assert "hand" not in player
+                                        actual = room.session.state.players[player["player_id"]]
+                                        if actual.is_alive and actual.identity.value != "lord":
+                                            assert player["identity_label"] == "δ֪"
+                        if kind in {"DRAFT_REQUEST", "PENDING_REQUEST"}:
+                            assert message["request"]["player_id"] == seats[index]
+                    if kind == "DRAFT_REQUEST":
+                        request = message["request"]
+                        await ws.send(json.dumps(wire("SUBMIT_DECISION", decision={
+                            "request_id": request["request_id"], "value": request["choices"][0],
+                        })))
+                    elif kind == "PENDING_REQUEST":
+                        request = message["request"]
+                        assert request["player_id"] == seats[index]
+                        assert request["request_id"] not in seen[index]
+                        seen[index].add(request["request_id"])
+                        await ws.send(json.dumps(wire("SUBMIT_DECISION", decision={
+                            "request_id": request["request_id"], "value": choose(request),
+                        })))
+                    elif kind == "GAME_OVER":
+                        return message
+                    elif kind == "ERROR":
+                        if "general already taken" not in message.get("message", ""):
+                            raise AssertionError(message)
+    
+>           results = await asyncio.wait_for(asyncio.gather(*(drive(i, ws) for i, ws in enumerate(clients))), 180)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_t9_web_validation.py:127: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+fut = <_GatheringFuture finished exception=AssertionError({'type': 'ERROR', 'version': 2, 'message': 'server error'})>
+timeout = 180
+
+    async def wait_for(fut, timeout):
+        """Wait for the single Future or coroutine to complete, with timeout.
+    
+        Coroutine will be wrapped in Task.
+    
+        Returns result of the Future or coroutine.  When a timeout occurs,
+        it cancels the task and raises TimeoutError.  To avoid the task
+        cancellation, wrap it in shield().
+    
+        If the wait is cancelled, the task is also cancelled.
+    
+        If the task suppresses the cancellation and returns a value instead,
+        that value is returned.
+    
+        This function is a coroutine.
+        """
+        # The special case for timeout <= 0 is for the following case:
+        #
+        # async def test_waitfor():
+        #     func_started = False
+        #
+        #     async def func():
+        #         nonlocal func_started
+        #         func_started = True
+        #
+        #     try:
+        #         await asyncio.wait_for(func(), 0)
+        #     except asyncio.TimeoutError:
+        #         assert not func_started
+        #     else:
+        #         assert False
+        #
+        # asyncio.run(test_waitfor())
+    
+    
+        if timeout is not None and timeout <= 0:
+            fut = ensure_future(fut)
+    
+            if fut.done():
+                return fut.result()
+    
+            await _cancel_and_wait(fut)
+            try:
+                return fut.result()
+            except exceptions.CancelledError as exc:
+                raise TimeoutError from exc
+    
+        async with timeouts.timeout(timeout):
+>           return await fut
+                   ^^^^^^^^^
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\asyncio\tasks.py:507: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+index = 3
+ws = <websockets.asyncio.client.ClientConnection object at 0x000001BCC52567B0>
+
+    async def drive(index: int, ws):
+        while True:
+            message = json.loads(await asyncio.wait_for(ws.recv(), 60))
+            kind = message["type"]
+            if audit_app is not None:
+                audit_seen.add(kind)
+                room = audit_app.state.room_manager.rooms[room_code].game
+                if room.session is not None:
+                    raw = json.dumps(message, ensure_ascii=False)
+                    for opponent_id in seats:
+                        if opponent_id != seats[index]:
+                            private_ids = room.session.state.cards_in(ZoneRef(ZoneType.HAND, opponent_id))
+                            assert all(str(card_id) not in raw for card_id in private_ids), (
+                                kind, seats[index], opponent_id, tuple(map(str, private_ids)), message)
+                    assert "deck_order" not in raw and "draw_pile" not in raw
+                    if kind == "PROJECTION_UPDATE":
+                        for player in message["projection"]["players"]:
+                            if player["player_id"] != seats[index]:
+                                assert "hand" not in player
+                                actual = room.session.state.players[player["player_id"]]
+                                if actual.is_alive and actual.identity.value != "lord":
+                                    assert player["identity_label"] == "δ֪"
+                if kind in {"DRAFT_REQUEST", "PENDING_REQUEST"}:
+                    assert message["request"]["player_id"] == seats[index]
+            if kind == "DRAFT_REQUEST":
+                request = message["request"]
+                await ws.send(json.dumps(wire("SUBMIT_DECISION", decision={
+                    "request_id": request["request_id"], "value": request["choices"][0],
+                })))
+            elif kind == "PENDING_REQUEST":
+                request = message["request"]
+                assert request["player_id"] == seats[index]
+                assert request["request_id"] not in seen[index]
+                seen[index].add(request["request_id"])
+                await ws.send(json.dumps(wire("SUBMIT_DECISION", decision={
+                    "request_id": request["request_id"], "value": choose(request),
+                })))
+            elif kind == "GAME_OVER":
+                return message
+            elif kind == "ERROR":
+                if "general already taken" not in message.get("message", ""):
+>                   raise AssertionError(message)
+E                   AssertionError: {'type': 'ERROR', 'version': 2, 'message': 'server error'}
+
+tests\test_t9_web_validation.py:125: AssertionError
+------------------------------ Captured log call ------------------------------
+ERROR    sanguosha.web.app:app.py:289 unexpected browser client error
+Traceback (most recent call last):
+  File "C:\Sanguosha-d951\src\sanguosha\web\app.py", line 272, in websocket_endpoint
+    connection.managed.game.submit(connection.player_id, decision)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Sanguosha-d951\src\sanguosha\multiplayer\room.py", line 301, in submit
+    self.session.engine.submit_decision(decision, defer_resolution=defer_resolution)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Sanguosha-d951\src\sanguosha\engine\engine.py", line 76, in submit_decision
+    return self.run_until_blocked()
+           ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Sanguosha-d951\src\sanguosha\engine\engine.py", line 121, in run_until_blocked
+    child = self._new_frame(outcome.child, frame.frame_id)
+  File "C:\Sanguosha-d951\src\sanguosha\engine\engine.py", line 38, in _new_frame
+    raise ResolutionError(f"duplicate or empty action id: {action.action_id!r}")
+sanguosha.engine.errors.ResolutionError: duplicate or empty action id: 'frame-867-play-0:use:effect:target:1:damage:kuanggu:0'
+=========================== short test summary info ===========================
+FAILED tests/test_t85_relay.py::test_relay_full_game_smoke[2-4] - AssertionEr...
+FAILED tests/test_t8_multiplayer.py::test_20_full_game_smoke[2-4] - sanguosha...
+FAILED tests/test_t8_multiplayer.py::test_tcp_full_game_smoke[2-4] - Assertio...
+FAILED tests/test_t9_web_validation.py::test_fastapi_websocket_full_game_smoke[2-4]
+4 failed, 2 passed in 3.87s

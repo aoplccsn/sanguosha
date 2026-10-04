@@ -48,6 +48,9 @@ def snapshot_room(room: MultiplayerRoom) -> bytes:
         "draft_deadlines": _encode(room.draft_deadlines),
         "session": json.loads(snapshot_session(room.session)) if room.session else None,
         "request_deadline": room.request_deadline,
+        "ai_presentation": room.ai_presentation,
+        "ai_deadline": room.ai_deadline,
+        "ai_wait_request": room._ai_wait_request,
         "last_request_id": room._last_request_id,
         "seen_events": room._seen_events,
         "revision": room._revision,
@@ -91,6 +94,9 @@ def restore_room(blob: bytes) -> MultiplayerRoom:
                                           separators=(",", ":")).encode("utf-8"))
         if room.pregame is not None:
             room.pregame.rng = room.session.rng
+    room.ai_presentation = data.get("ai_presentation", False)
+    room.ai_deadline = data.get("ai_deadline")
+    room._ai_wait_request = data.get("ai_wait_request")
     room.request_deadline = data["request_deadline"]
     room._last_request_id = data["last_request_id"]
     room._seen_events = data["seen_events"]

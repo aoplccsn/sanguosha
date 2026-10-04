@@ -19,6 +19,14 @@ it('holds key actions for the requested three speeds', () => {
   expect(eventDuration(card, 'normal')).toBe(2000)
   expect(eventDuration(card, 'fast')).toBe(900)
 })
+it('paces actual AI decisions by complexity independently of action dwell', () => {
+  for (const [complexity, duration] of [['simple', 1500], ['ordinary', 2400], ['complex', 3600]] as const) {
+    const event = { kind: 'AIThinkingEvent', complexity }
+    expect(eventDuration(event, 'normal')).toBe(duration)
+    expect(eventDuration(event, 'slow')).toBe(duration * 1.5)
+    expect(eventDuration(event, 'fast')).toBe(duration * .6)
+  }
+})
 it('keeps event spacing when new events arrive, then immediately flushes for a human', () => {
   vi.useFakeTimers()
   const {result, rerender} = renderHook(({items,human}:{items:PublicEvent[],human?:string}) => usePresentation(items,'normal',human),{initialProps:{items:events.slice(0,2),human:undefined as string|undefined}})

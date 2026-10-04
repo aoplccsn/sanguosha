@@ -30,7 +30,13 @@ export function usePresentation(events: PublicEvent[], speed: GameSpeed, humanRe
       timer.current = undefined
       queue.current = []
       currentRef.current = null
-      setCurrent(null)
+      // The prompt is immediate; a newly received action can remain visible
+      // alongside it. Thinking and queued history are always cleared.
+      const action = humanRequest === 'connection-reset' ? undefined
+        : [...fresh].reverse().find(event => /CardUsed|Responded|VirtualResponse/.test(String(event.kind)))
+      currentRef.current = action ?? null
+      setCurrent(action ?? null)
+      if (action) timer.current = window.setTimeout(() => advance.current(), eventDuration(action, speedRef.current))
       return
     }
     queue.current.push(...fresh.filter(event => eventDuration(event, speedRef.current) > 0))

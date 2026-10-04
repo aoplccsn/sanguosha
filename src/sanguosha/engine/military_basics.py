@@ -211,7 +211,7 @@ class MilitaryDamageHandler(DamageActionHandler):
             source = action.source_id
             if remaining and source is not None and state.players[source].is_alive:
                 return StepResult.push(RecoverAction(
-                    f'{action.action_id}:kuanggu:{action.amount - remaining}', source, source, 1))
+                    f'{action.action_id}:kuanggu:{int(frame.local["amount"]) - remaining}', source, source, 1))
             frame.step_index = 1
             if target.hp <= 0:
                 self.recorder.record(DyingRequiredEvent(action.action_id + ':dying', action.target_id, target.hp))
@@ -250,8 +250,10 @@ class MilitaryDamageHandler(DamageActionHandler):
             from .military_equipment import discardable
             if source is not None and cid in discardable(state, source):
                 ref = next(ref for ref, zone in state.zones.items() if cid in zone.card_ids)
-                self.moves.move(state,CardMove(action.action_id+':fankui-gain',(cid,),ref,
-                    ZoneRef(ZoneType.HAND,action.target_id),CardMoveReason.SYSTEM,action.target_id))
+                destination = ZoneRef(ZoneType.HAND, action.target_id)
+                if ref != destination:
+                    self.moves.move(state,CardMove(action.action_id+':fankui-gain',(cid,),ref,
+                        destination,CardMoveReason.SYSTEM,action.target_id))
             frame.step_index = 1
         if frame.step_index == 1 and not frame.local.get('jianxiong_offered') and self.skills is not None and self.skills.has(state,action.target_id,'jianxiong') and target.is_alive:
             materials = getattr(action,'material_card_ids',()) or ((action.card_id,) if action.card_id else ())

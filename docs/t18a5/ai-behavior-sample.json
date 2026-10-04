@@ -1,0 +1,4683 @@
+[
+  {
+    "mode": "military-five",
+    "seed": 0,
+    "result": "VictoryResult(label='反贼胜利', winner_ids=('p1', 'p5'), reason='主公死亡')",
+    "observations": [
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "wind_god_guanyu",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p3",
+            "hp": 4,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "wind_god_guanyu",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p3",
+            "hp": 4,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 20,
+            "score": 86
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "wind_god_guanyu",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p3",
+            "hp": 4,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 20,
+            "score": 85
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p4",
+            "hp": 4,
+            "relation": -20,
+            "score": -77
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": 20,
+            "score": 81
+          },
+          {
+            "id": "p3",
+            "hp": 4,
+            "relation": -100,
+            "score": -396
+          },
+          {
+            "id": "p4",
+            "hp": 4,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": 20,
+            "score": 130
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "wind_god_guanyu",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": 20,
+            "score": 81
+          },
+          {
+            "id": "p3",
+            "hp": 4,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": 20,
+            "score": 130
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": -20,
+            "score": -79
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -80
+          },
+          {
+            "id": "p3",
+            "hp": 4,
+            "relation": 100,
+            "score": 404
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -72
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "wind_god_guanyu",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p3",
+            "hp": 4,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 20,
+            "score": 84
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "wind_god_guanyu",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p3",
+            "hp": 4,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 20,
+            "score": 84
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p4",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p4",
+            "hp": 4,
+            "relation": -20,
+            "score": -77
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "forest_sunjian",
+        "prompt": "英魂：选择另一名角色",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p3",
+            "hp": 4,
+            "relation": 100,
+            "score": 400
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": -20,
+            "score": -71
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -76
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "forest_sunjian",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p3",
+            "hp": 4,
+            "relation": 100,
+            "score": 400
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": -20,
+            "score": -71
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -76
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": 40,
+            "score": 161
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -100,
+            "score": -396
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": 20,
+            "score": 89
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "military-five",
+    "seed": 19,
+    "result": "VictoryResult(label='反贼胜利', winner_ids=('p2', 'p3'), reason='主公死亡')",
+    "observations": [
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 5,
+        "prompt": "是否发动【神速】A？",
+        "selected": true
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "神速：选择一名【杀】的目标（无距离限制）",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 5,
+        "prompt": "是否发动【神速】B？",
+        "selected": false
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p5",
+            "hp": 5,
+            "relation": -100,
+            "score": -10000
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "yj2011_yu_jin",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "yj2011_yu_jin",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p3",
+            "hp": 2,
+            "relation": -20,
+            "score": -73
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 5,
+            "relation": 100,
+            "score": 401
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": 100,
+            "score": 404
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": 100,
+            "score": 403
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": 100,
+            "score": 403
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": 100,
+            "score": 403
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": 100,
+            "score": 403
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 30,
+            "score": 128
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 50,
+            "score": 201
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -74
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 30,
+            "score": 128
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 50,
+            "score": 200
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -74
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 3,
+        "prompt": "是否发动【神速】A？",
+        "selected": false
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 3,
+        "prompt": "是否发动【神速】B？",
+        "selected": true
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "神速：选择一名【杀】的目标（无距离限制）",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 168
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 80,
+            "score": 320
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 60,
+            "score": 242
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "simayi",
+        "prompt": "Choose a target",
+        "selected": "p4",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 168
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 60,
+            "score": 242
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -100,
+            "score": -393
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 3,
+        "prompt": "是否发动【神速】A？",
+        "selected": false
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 3,
+        "prompt": "是否发动【神速】B？",
+        "selected": false
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 2,
+            "relation": 20,
+            "score": 87
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 167
+          },
+          {
+            "id": "p3",
+            "hp": 2,
+            "relation": 80,
+            "score": 325
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 60,
+            "score": 243
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "simayi",
+        "prompt": "Choose a target",
+        "selected": "p4",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 167
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 60,
+            "score": 243
+          },
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": -100,
+            "score": -397
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": -20,
+            "score": -29
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": 100,
+            "score": 403
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": -20,
+            "score": -30
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -73
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": -20,
+            "score": -75
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 100,
+            "score": 409
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 2,
+        "prompt": "是否发动【神速】A？",
+        "selected": true
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "神速：选择一名【杀】的目标（无距离限制）",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": 20,
+            "score": 130
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 167
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 80,
+            "score": 321
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 60,
+            "score": 243
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "simayi",
+        "prompt": "Choose a target",
+        "selected": "p4",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 167
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 60,
+            "score": 243
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -100,
+            "score": -391
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "simayi",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 167
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 80,
+            "score": 320
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 60,
+            "score": 242
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -100,
+            "score": -391
+          }
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "Discard 1 card(s)",
+        "eligible": [
+          "basic.thunder_slash",
+          "basic.dodge"
+        ],
+        "selected": [
+          "basic.thunder_slash"
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 2,
+        "prompt": "是否发动【神速】A？",
+        "selected": true
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "神速：选择一名【杀】的目标（无距离限制）",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": 20,
+            "score": 129
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 169
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 80,
+            "score": 323
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 60,
+            "score": 243
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 2,
+        "prompt": "是否发动【神速】B？",
+        "selected": true
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "神速：选择一名【杀】的目标（无距离限制）",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": 20,
+            "score": 129
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 169
+          },
+          {
+            "id": "p3",
+            "hp": 2,
+            "relation": 80,
+            "score": 326
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 60,
+            "score": 243
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "simayi",
+        "prompt": "Choose a target",
+        "selected": "p4",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 169
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 60,
+            "score": 243
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -100,
+            "score": -391
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "simayi",
+        "prompt": "借刀杀人：选择被杀目标",
+        "selected": "p4",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": 20,
+            "score": -10000
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 169
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 60,
+            "score": 242
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -100,
+            "score": -391
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "yj2011_yu_jin",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": -20,
+            "score": -31
+          },
+          {
+            "id": "p3",
+            "hp": 1,
+            "relation": -20,
+            "score": -30
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -79
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 100,
+            "score": 409
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": -20,
+            "score": -31
+          },
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -79
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": 100,
+            "score": 454
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "military-eight",
+    "seed": 0,
+    "result": "VictoryResult(label='主公与忠臣胜利', winner_ids=('p2', 'p4', 'p5'), reason='反贼与内奸全部死亡')",
+    "observations": [
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p4",
+        "candidates": [
+          {
+            "id": "p4",
+            "hp": 5,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p4",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p4",
+            "hp": 4,
+            "relation": 20,
+            "score": 87
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "mountain_cai_wenji",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": 100,
+            "score": 401
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "mountain_cai_wenji",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 4,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -71
+          },
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": 100,
+            "score": 400
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "wind_god_guanyu",
+        "prompt": "乱武：选择最近的合法杀目标",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -100,
+            "score": -396
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p6",
+        "candidates": [
+          {
+            "id": "p6",
+            "hp": 2,
+            "relation": 40,
+            "score": 163
+          },
+          {
+            "id": "p8",
+            "hp": 2,
+            "relation": 20,
+            "score": 85
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "fire_wolong",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "forest_sunjian",
+        "prompt": "英魂：选择另一名角色",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 1,
+            "relation": -20,
+            "score": -27
+          },
+          {
+            "id": "p3",
+            "hp": 1,
+            "relation": -20,
+            "score": -31
+          },
+          {
+            "id": "p4",
+            "hp": 1,
+            "relation": -20,
+            "score": -29
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": 100,
+            "score": 454
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 2,
+            "relation": -20,
+            "score": -75
+          }
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "请选择弃置的 3 张牌",
+        "eligible": [
+          "trick.snatch",
+          "basic.dodge",
+          "equipment.weapon.qinggang_sword",
+          "basic.dodge"
+        ],
+        "selected": [
+          "trick.snatch",
+          "equipment.weapon.qinggang_sword",
+          "basic.dodge"
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "forest_sunjian",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 1,
+            "relation": -20,
+            "score": -27
+          },
+          {
+            "id": "p3",
+            "hp": 1,
+            "relation": -20,
+            "score": -31
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 2,
+            "relation": -20,
+            "score": -75
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "forest_sunjian",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 1,
+            "relation": -20,
+            "score": -28
+          },
+          {
+            "id": "p3",
+            "hp": 1,
+            "relation": -20,
+            "score": -31
+          },
+          {
+            "id": "p4",
+            "hp": 1,
+            "relation": -20,
+            "score": -29
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": 100,
+            "score": 454
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 2,
+            "relation": -20,
+            "score": -75
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "借刀杀人：选择被杀目标",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 20,
+            "score": 91
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": 20,
+            "score": 90
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "fire_wolong",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "forest_sunjian",
+        "prompt": "英魂：选择另一名角色",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -69
+          },
+          {
+            "id": "p3",
+            "hp": 2,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": -20,
+            "score": -70
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 100,
+            "score": 408
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "forest_sunjian",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -69
+          },
+          {
+            "id": "p3",
+            "hp": 2,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p4",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 2,
+            "relation": 20,
+            "score": 86
+          },
+          {
+            "id": "p3",
+            "hp": 2,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": 20,
+            "score": 91
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -100,
+            "score": -391
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 2,
+            "relation": 20,
+            "score": 86
+          },
+          {
+            "id": "p3",
+            "hp": 2,
+            "relation": 20,
+            "score": 83
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": 20,
+            "score": 131
+          },
+          {
+            "id": "p3",
+            "hp": 2,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -100,
+            "score": -392
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p3",
+            "hp": 2,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -100,
+            "score": -392
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p3",
+            "hp": 2,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "wind_god_guanyu",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": 20,
+            "score": 131
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": 20,
+            "score": 79
+          },
+          {
+            "id": "p3",
+            "hp": 2,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -100,
+            "score": -392
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p4",
+        "candidates": [
+          {
+            "id": "p4",
+            "hp": 1,
+            "relation": 20,
+            "score": 134
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "forest_sunjian",
+        "prompt": "英魂：选择另一名角色",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -81
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 100,
+            "score": 408
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": -20,
+            "score": -79
+          }
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "Discard 1 card(s)",
+        "eligible": [
+          "equipment.weapon.green_dragon_blade",
+          "trick.dismantlement"
+        ],
+        "selected": [
+          "trick.dismantlement"
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "fire_wolong",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": -20,
+            "score": -28
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -100,
+            "score": -396
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -100,
+            "score": -395
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -74
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -74
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "fire_wolong",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": 100,
+            "score": 406
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "fire_wolong",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 100,
+            "score": 409
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 40,
+            "score": 161
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -71
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": -10000
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 40,
+            "score": 162
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "fire_wolong",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 100,
+            "score": 409
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 2,
+            "relation": -20,
+            "score": -10000
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "fire_wolong",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": 100,
+            "score": 454
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 2,
+            "relation": -20,
+            "score": -10000
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": -100,
+            "score": -346
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p8",
+            "hp": 2,
+            "relation": 60,
+            "score": 243
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": -100,
+            "score": -346
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p8",
+            "hp": 2,
+            "relation": 60,
+            "score": 243
+          }
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "Discard 4 card(s)",
+        "eligible": [
+          "basic.slash",
+          "basic.slash",
+          "basic.slash",
+          "basic.slash",
+          "basic.thunder_slash"
+        ],
+        "selected": [
+          "basic.thunder_slash",
+          "basic.slash",
+          "basic.slash",
+          "basic.slash"
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": -20,
+            "score": -26
+          },
+          {
+            "id": "p8",
+            "hp": 2,
+            "relation": 40,
+            "score": 163
+          }
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "Discard 3 card(s)",
+        "eligible": [
+          "basic.slash",
+          "basic.slash",
+          "trick.snatch",
+          "basic.fire_slash"
+        ],
+        "selected": [
+          "trick.snatch",
+          "basic.fire_slash",
+          "basic.slash"
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": -20,
+            "score": -26
+          },
+          {
+            "id": "p8",
+            "hp": 1,
+            "relation": 40,
+            "score": 208
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": -20,
+            "score": -26
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": -20,
+            "score": -26
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": -20,
+            "score": -26
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": -10000
+          }
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "寒冰剑：弃置目标两张牌",
+        "eligible": [
+          "basic.slash",
+          "equipment.armor.silver_lion",
+          "equipment.horse.zhaohuangfeidian"
+        ],
+        "selected": [
+          "equipment.armor.silver_lion",
+          "equipment.horse.zhaohuangfeidian"
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "Discard 2 card(s)",
+        "eligible": [
+          "basic.fire_slash",
+          "basic.dodge",
+          "basic.slash"
+        ],
+        "selected": [
+          "basic.fire_slash",
+          "basic.slash"
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 20,
+            "score": 85
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 60,
+            "score": 242
+          }
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "Discard 3 card(s)",
+        "eligible": [
+          "basic.slash",
+          "basic.slash",
+          "basic.dodge",
+          "trick.nullification"
+        ],
+        "selected": [
+          "basic.slash",
+          "basic.slash",
+          "trick.nullification"
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 20,
+            "score": 85
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": -20,
+            "score": -26
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": -100,
+            "score": -346
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 80,
+            "score": 321
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 165
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 80,
+            "score": 320
+          }
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "Discard 2 card(s)",
+        "eligible": [
+          "basic.dodge",
+          "basic.slash",
+          "basic.dodge"
+        ],
+        "selected": [
+          "basic.slash",
+          "basic.dodge"
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 30,
+            "score": 126
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": -20,
+            "score": -26
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 165
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 80,
+            "score": 320
+          }
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "麒麟弓：弃置目标一张马",
+        "eligible": [
+          "equipment.horse.hualiu"
+        ],
+        "selected": [
+          "equipment.horse.hualiu"
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "Discard 2 card(s)",
+        "eligible": [
+          "basic.dodge",
+          "basic.slash",
+          "basic.thunder_slash"
+        ],
+        "selected": [
+          "basic.thunder_slash",
+          "basic.slash"
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": -100,
+            "score": -346
+          },
+          {
+            "id": "p7",
+            "hp": 2,
+            "relation": 80,
+            "score": 324
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 40,
+            "score": 165
+          },
+          {
+            "id": "p7",
+            "hp": 2,
+            "relation": 80,
+            "score": 323
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "forest_jia_xu",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": 30,
+            "score": 125
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "forest_god_caocao",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -100,
+            "score": -392
+          },
+          {
+            "id": "p7",
+            "hp": 2,
+            "relation": 80,
+            "score": 323
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "military-eight",
+    "seed": 19,
+    "result": "VictoryResult(label='主公与忠臣胜利', winner_ids=('p2', 'p4', 'p8'), reason='反贼与内奸全部死亡')",
+    "observations": [
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "yj2011_cao_zhi",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "yj2011_cao_zhi",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "simayi",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 399
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "yj2011_yu_jin",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 3,
+            "relation": 40,
+            "score": 160
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "yj2011_yu_jin",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 2,
+            "relation": 40,
+            "score": 164
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -100,
+            "score": -402
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p4",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": -20,
+            "score": -79
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 2,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": -20,
+            "score": -79
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 398
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 2,
+            "relation": 40,
+            "score": 163
+          },
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 20,
+            "score": 81
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 40,
+            "score": 162
+          },
+          {
+            "id": "p5",
+            "hp": 4,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -100,
+            "score": -403
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 2,
+        "prompt": "是否发动【神速】A？",
+        "selected": false
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 20,
+            "score": 81
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 30,
+            "score": 122
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": 20,
+            "score": -10000
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -20,
+            "score": -83
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 2,
+            "relation": 30,
+            "score": 123
+          },
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 20,
+            "score": 81
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 30,
+            "score": 122
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p7",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -20,
+            "score": -83
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "好施：选择手牌最少的另一名角色",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 396
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -74
+          },
+          {
+            "id": "p7",
+            "hp": 2,
+            "relation": -20,
+            "score": -73
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "fire_god_zhugeliang",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 396
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "fire_god_zhugeliang",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -79
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": -20,
+            "score": -75
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -74
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 100,
+            "score": 403
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "fire_god_zhugeliang",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 100,
+            "score": 403
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p7",
+        "general": "fire_god_zhugeliang",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -79
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": -20,
+            "score": -75
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -74
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 100,
+            "score": 403
+          }
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "弃置与目标数量相同的星牌",
+        "eligible": [
+          "trick.iron_chain",
+          "basic.slash",
+          "basic.fire_slash",
+          "basic.dodge",
+          "trick.dismantlement",
+          "equipment.weapon.qinggang_sword",
+          "basic.slash"
+        ],
+        "selected": [
+          "trick.iron_chain"
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "弃置与目标数量相同的星牌",
+        "eligible": [
+          "basic.slash",
+          "basic.fire_slash",
+          "basic.dodge",
+          "trick.dismantlement",
+          "equipment.weapon.qinggang_sword",
+          "basic.slash"
+        ],
+        "selected": [
+          "trick.dismantlement"
+        ]
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "Discard 2 card(s)",
+        "eligible": [
+          "trick.snatch",
+          "equipment.weapon.rock_cleaving_axe",
+          "trick.amazing_grace"
+        ],
+        "selected": [
+          "trick.amazing_grace",
+          "trick.snatch"
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": -20,
+            "score": -31
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -75
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": -20,
+            "score": -75
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -74
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 3,
+        "prompt": "是否发动【神速】A？",
+        "selected": true
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "神速：选择一名【杀】的目标（无距离限制）",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": 30,
+            "score": 170
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": 20,
+            "score": 85
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 30,
+            "score": 120
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": 20,
+            "score": 82
+          },
+          {
+            "id": "p7",
+            "hp": 1,
+            "relation": 40,
+            "score": 208
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": -20,
+            "score": -74
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": 30,
+            "score": 170
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": 20,
+            "score": 85
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 30,
+            "score": 120
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p6",
+            "hp": 2,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p7",
+            "hp": 1,
+            "relation": 40,
+            "score": 208
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": -20,
+            "score": -74
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "缔盟：选择第一名其他角色",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": -20,
+            "score": -30
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -75
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -80
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p7",
+            "hp": 1,
+            "relation": -20,
+            "score": -32
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 100,
+            "score": 406
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "缔盟：选择第二名其他角色",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": -20,
+            "score": -30
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -75
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p7",
+            "hp": 1,
+            "relation": -20,
+            "score": -32
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 100,
+            "score": 406
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "Choose a target",
+        "selected": "p7",
+        "candidates": [
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p7",
+            "hp": 1,
+            "relation": -20,
+            "score": -32
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": -20,
+            "score": -30
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -75
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -75
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p8",
+            "hp": 3,
+            "relation": 100,
+            "score": 403
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p1",
+        "general": "simayi",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": -20,
+            "score": -74
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -73
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": -20,
+            "score": -31
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": -20,
+            "score": -32
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "借刀杀人：选择被杀目标",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -10000
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": -20,
+            "score": -80
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 400
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 3,
+        "prompt": "是否发动【神速】A？",
+        "selected": true
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "神速：选择一名【杀】的目标（无距离限制）",
+        "selected": "p1",
+        "candidates": [
+          {
+            "id": "p1",
+            "hp": 1,
+            "relation": 30,
+            "score": 168
+          },
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 30,
+            "score": 123
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p6",
+            "hp": 3,
+            "relation": 30,
+            "score": 120
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -20,
+            "score": -79
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 3,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 401
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "yj2011_cao_zhi",
+        "prompt": "Choose a target",
+        "selected": "p6",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p6",
+            "hp": 2,
+            "relation": 60,
+            "score": 244
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p6",
+            "hp": 2,
+            "relation": -20,
+            "score": -76
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 398
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 2,
+        "prompt": "是否发动【神速】A？",
+        "selected": false
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "缔盟：选择第一名其他角色",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 400
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "缔盟：选择第二名其他角色",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 400
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "yj2011_yu_jin",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 60,
+            "score": 243
+          },
+          {
+            "id": "p6",
+            "hp": 2,
+            "relation": 60,
+            "score": 243
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -100,
+            "score": -400
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p3",
+        "general": "huangyueying",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": -20,
+            "score": -79
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p6",
+            "hp": 2,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 402
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 2,
+        "prompt": "是否发动【神速】A？",
+        "selected": false
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": -20,
+            "score": -79
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "借刀杀人：选择被杀目标",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": -20,
+            "score": -79
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p6",
+            "hp": 1,
+            "relation": -20,
+            "score": -10000
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 402
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p6",
+        "general": "forest_lusu",
+        "prompt": "Choose a target",
+        "selected": "p8",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": -20,
+            "score": -79
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": -20,
+            "score": -78
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": -20,
+            "score": -77
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": -20,
+            "score": -72
+          },
+          {
+            "id": "p6",
+            "hp": 1,
+            "relation": -20,
+            "score": -10000
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": 100,
+            "score": 402
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "yj2011_cao_zhi",
+        "prompt": "Choose a target",
+        "selected": "p6",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 40,
+            "score": 161
+          },
+          {
+            "id": "p6",
+            "hp": 1,
+            "relation": 60,
+            "score": 289
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "yj2011_cao_zhi",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 40,
+            "score": 161
+          },
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 80,
+            "score": 322
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 20,
+            "score": 88
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -100,
+            "score": -10000
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "yj2011_yu_jin",
+        "prompt": "Choose a target",
+        "selected": "p3",
+        "candidates": [
+          {
+            "id": "p3",
+            "hp": 3,
+            "relation": 80,
+            "score": 322
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 83
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 20,
+            "score": 88
+          },
+          {
+            "id": "p6",
+            "hp": 1,
+            "relation": 60,
+            "score": 288
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -100,
+            "score": -403
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 40,
+            "score": 161
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 20,
+            "score": 88
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -100,
+            "score": -403
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 2,
+        "prompt": "是否发动【神速】A？",
+        "selected": false
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 2,
+        "prompt": "是否发动【神速】B？",
+        "selected": false
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "yj2011_yu_jin",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 60,
+            "score": 247
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -100,
+            "score": -399
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 40,
+            "score": 160
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 60,
+            "score": 246
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -100,
+            "score": -399
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 2,
+        "prompt": "是否发动【神速】A？",
+        "selected": false
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 2,
+        "prompt": "是否发动【神速】B？",
+        "selected": true
+      },
+      {
+        "type": "target",
+        "actor": "p5",
+        "general": "wind_xiahou_yuan",
+        "prompt": "神速：选择一名【杀】的目标（无距离限制）",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 30,
+            "score": 120
+          },
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -20,
+            "score": -79
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "yj2011_yu_jin",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p4",
+            "hp": 2,
+            "relation": 20,
+            "score": 84
+          },
+          {
+            "id": "p5",
+            "hp": 2,
+            "relation": 60,
+            "score": 248
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -100,
+            "score": -399
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p4",
+        "general": "yj2011_zhang_chunhua",
+        "prompt": "丈八蛇矛：选择杀目标",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 40,
+            "score": 160
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": 60,
+            "score": 293
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -100,
+            "score": -399
+          }
+        ]
+      },
+      {
+        "type": "skill",
+        "actor": "p5",
+        "hp": 1,
+        "prompt": "是否发动【神速】A？",
+        "selected": false
+      },
+      {
+        "type": "low_hp_discard",
+        "prompt": "Discard 2 card(s)",
+        "eligible": [
+          "trick.iron_chain",
+          "basic.slash",
+          "basic.dodge"
+        ],
+        "selected": [
+          "trick.iron_chain",
+          "basic.slash"
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "yj2011_cao_zhi",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 40,
+            "score": 160
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": 60,
+            "score": 292
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p8",
+        "general": "yj2011_cao_zhi",
+        "prompt": "Choose a target",
+        "selected": "p2",
+        "candidates": [
+          {
+            "id": "p2",
+            "hp": 4,
+            "relation": 40,
+            "score": 160
+          },
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          }
+        ]
+      },
+      {
+        "type": "target",
+        "actor": "p2",
+        "general": "yj2011_yu_jin",
+        "prompt": "Choose a target",
+        "selected": "p5",
+        "candidates": [
+          {
+            "id": "p4",
+            "hp": 3,
+            "relation": 20,
+            "score": 81
+          },
+          {
+            "id": "p5",
+            "hp": 1,
+            "relation": 60,
+            "score": 292
+          },
+          {
+            "id": "p8",
+            "hp": 4,
+            "relation": -100,
+            "score": -402
+          }
+        ]
+      }
+    ]
+  }
+]

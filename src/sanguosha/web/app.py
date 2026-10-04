@@ -83,7 +83,7 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
             handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
             package_logger.addHandler(handler)
     manager = RoomManager(max_rooms=config.max_rooms, room_ttl=config.room_ttl,
-                          reconnect_grace=config.reconnect_grace)
+                          reconnect_grace=config.reconnect_grace, ai_presentation=config.ai_presentation)
     active_connections: set[BrowserConnection] = set()
     creations: dict[str, deque[float]] = defaultdict(deque)
     shutting_down = False

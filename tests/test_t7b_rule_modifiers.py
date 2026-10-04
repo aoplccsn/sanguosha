@@ -756,3 +756,23 @@ def test_qingnang_discards_real_card_recovers_and_is_once_per_phase():
     assert session.state.play_usage.count('skill.qingnang') == 1
     with pytest.raises(InvalidCardUse):
         session.engine.start_action(QingnangAction('qingnang-again', 'p1'))
+
+@pytest.mark.parametrize('equipment', [False, True])
+def test_fankui_self_damage_preserves_hand_and_can_gain_own_equipment(equipment):
+    session = GameSession.new_game(military=True, five_generals=True)
+    session.state.players['p1'].character_id = 'simayi'
+    hand = ZoneRef(ZoneType.HAND, 'p1')
+    card = (put(session, 'equipment.weapon.serpent_spear', 'p1',
+                ZoneType.EQUIPMENT, EquipmentSlot.WEAPON) if equipment
+            else session.state.cards_in(hand)[0])
+    before = session.state.cards_in(hand)
+    session.engine.start_action(MilitaryDamageAction('fankui-self', 'p1', 'p1', 1))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
+    request = session.engine.pending_request
+    session.engine.submit_decision(Decision(request.request_id, 'p1', card))
+    assert card in session.state.cards_in(hand)
+    assert len(session.state.cards_in(hand)) == len(before) + int(equipment)
+    assert session.engine.pending_request is None
+    assert session.engine.stack.is_empty()
+    session.state.__post_init__()

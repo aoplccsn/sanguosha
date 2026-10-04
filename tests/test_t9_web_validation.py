@@ -49,7 +49,7 @@ async def start_server():
     port_socket.bind(("127.0.0.1", 0))
     port = port_socket.getsockname()[1]
     port_socket.close()
-    app = create_app(WebConfig())
+    app = create_app(WebConfig(ai_presentation=False))
     server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="error"))
     task = asyncio.create_task(server.serve())
     for _ in range(100):

@@ -1,0 +1,16 @@
+
+Running 10 tests using 1 worker
+
+
+
+[1/10] [installed-edge] › e2e\t15-final-idle.spec.ts:18:1 › God Lu Bu final MP4 vertical slice: playback, first click, quality, detail and fallback
+[2/10] [installed-edge] › e2e\t15-final-idle.spec.ts:49:1 › all nine real MP4s and matched statics in both five-player lineups
+[3/10] [installed-edge] › e2e\t15-final-idle.spec.ts:72:1 › five real videos pause offscreen/hidden, resume and coexist with beam Slash and Dodge
+[4/10] [installed-edge] › e2e\t15-final-idle.spec.ts:114:1 › real missing MP4 and autoplay rejection preserve matching static
+[5/10] [installed-edge] › e2e\t15-final-idle.spec.ts:125:1 › real single and five MP4 download size, native loop and decoder performance
+[6/10] [installed-edge] › e2e\t18a3-gameplay.spec.ts:3:1 › god generals enter the default draft without a switch
+[7/10] [installed-edge] › e2e\t18a3-gameplay.spec.ts:13:1 › local browsers show actor target Slash and Dodge
+[8/10] [installed-edge] › e2e\t18a5-acceptance.spec.ts:9:1 › normal thinking is singular, timed, followed by named action and immediate human response
+[9/10] [installed-edge] › e2e\t18a5-acceptance.spec.ts:37:1 › nine native 360x640 PlayerPanel portraits and static fallback audit captures
+[10/10] [installed-edge] › e2e\t18a5-acceptance.spec.ts:58:1 › real single-player AI emits visible thinking after ending human turn
+  10 passed (1.2m)

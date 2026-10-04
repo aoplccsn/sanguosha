@@ -23,6 +23,7 @@ class WebConfig:
     room_creations_per_minute: int = 10
     message_size_limit: int = 256_000
     heartbeat_seconds: float = 20.0
+    ai_presentation: bool = True
 
     @classmethod
     def from_env(cls) -> "WebConfig":

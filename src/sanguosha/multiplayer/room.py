@@ -118,6 +118,9 @@ class MultiplayerRoom:
         self._revision = 0
         self.auto_step_budget = 20_000
         self.suspend_on_budget = False
+        self.ai_presentation = False
+        self.ai_deadline: float | None = None
+        self._ai_wait_request: str | None = None
 
     def join(self, name: str, send: Send, *, token: str | None = None) -> tuple[PlayerId, str]:
         if token:
@@ -379,6 +382,25 @@ class MultiplayerRoom:
                 self.network_decisions.dispatch(request)
                 return
             if request is not None:
+                if request.request_type in (RequestType.CHOOSE_OPTION, RequestType.RESPOND_WITH_CARD,
+                                             RequestType.YES_NO):
+                    if self._ai_wait_request != request.request_id:
+                        from hashlib import sha256
+                        candidates = len(request.choices) + len(request.eligible_card_ids)
+                        complexity = ('simple' if request.request_type is RequestType.RESPOND_WITH_CARD
+                                      else 'complex' if candidates > 8 else 'ordinary')
+                        self.session.events.record(Event(
+                            'thinking:' + sha256(request.request_id.encode()).hexdigest()[:24],
+                            'ai_thinking', request.player_id, metadata={'complexity': complexity}))
+                        if self.ai_presentation:
+                            self._ai_wait_request = request.request_id
+                            self.ai_deadline = time.time() + {'simple': 1.5, 'ordinary': 2.4, 'complex': 3.6}[complexity]
+                            self._sync()
+                            return
+                    if self.ai_deadline is not None and time.time() < self.ai_deadline:
+                        return
+                self._ai_wait_request = None
+                self.ai_deadline = None
                 self.session.engine.submit_decision(self._ai.decide(self.session.state, request))
             else:
                 self.session.step_auto()
@@ -389,6 +411,8 @@ class MultiplayerRoom:
 
     def poll(self) -> None:
         now = time.time()
+        if self.ai_deadline is not None and now >= self.ai_deadline:
+            self.pump()
         if self.phase is RoomPhase.DRAFT:
             for pid, deadline in tuple(self.draft_deadlines.items()):
                 if now >= deadline:
@@ -503,7 +527,10 @@ class MultiplayerRoom:
     def _public_event(self, event) -> dict | None:
         """Allowlist semantic facts; card instance IDs and hidden moves are excluded."""
         result = {"kind": type(event).__name__, "event_id": event.event_id}
-        if isinstance(event, Event) and event.event_type in ('skill_wuwei', 'skill_shenfen'):
+        if isinstance(event, Event) and event.event_type == 'ai_thinking':
+            result.update(kind='AIThinkingEvent', source_id=str(event.source_id),
+                          complexity=event.metadata['complexity'])
+        elif isinstance(event, Event) and event.event_type in ('skill_wuwei', 'skill_shenfen'):
             result.update(kind='GodSkillEvent', source_id=str(event.source_id),
                           target_ids=list(map(str, event.target_ids)),
                           skill_id=str(event.metadata['skill_id']), level=int(event.metadata['level']))
