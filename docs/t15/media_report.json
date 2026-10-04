@@ -13,10 +13,10 @@
     ],
     "fps": "24/1",
     "duration": "10.000000",
-    "bytes": 7771456,
+    "bytes": 5584933,
     "audio": false,
     "faststart": true,
-    "stream_copy": true,
+    "stream_copy": false,
     "source_probe": {
       "streams": [
         {
@@ -180,7 +180,7 @@
           "start_time": "0.000000",
           "duration_ts": 122880,
           "duration": "10.000000",
-          "bit_rate": "6214104",
+          "bit_rate": "4464901",
           "bits_per_raw_sample": "8",
           "nb_frames": "240",
           "extradata_size": 46,
@@ -207,12 +207,13 @@
           },
           "tags": {
             "language": "und",
-            "handler_name": "VideoHandler"
+            "handler_name": "VideoHandler",
+            "encoder": "Lavc63.1.102 libx264"
           }
         }
       ],
       "format": {
-        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\forest_god_lvbu.pending.mp4",
+        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\forest_god_lvbu.mp4",
         "nb_streams": 1,
         "nb_programs": 0,
         "nb_stream_groups": 0,
@@ -220,8 +221,8 @@
         "format_long_name": "QuickTime / MOV",
         "start_time": "0.000000",
         "duration": "10.000000",
-        "size": "7771456",
-        "bit_rate": "6217164",
+        "size": "5584933",
+        "bit_rate": "4467946",
         "probe_score": 100,
         "tags": {
           "major_brand": "isom",
@@ -234,13 +235,16 @@
     "static_sha256": "ac89a4c8b4bd906d3a2b04e322aeb8f2804a4e98ce67a9632de448493af10a87",
     "static_master_sha256": "381031130ef976774c77bf028ffeecf0afb0ef1099f511bf6717ae88a0c4306f",
     "static_master_updated": true,
-    "runtime_sha256": "41223dafaf3d153b4e501eff8bae294bab9009a57fad019dc2e997aa0eccb882",
+    "runtime_sha256": "4efd3fe713ca386b508b76e06a38c395282ca0fa1f24325a32992ca28352bf17",
     "encoded_video_sha256": "SHA256=25dd123b91d2623b9354b20586a73cd58ec0357d57d72f08913ef12eaa492565",
-    "video_payload_identical": true,
+    "video_payload_identical": false,
     "static_pixel_sha256": "812cb75d38d6df1727b8c9f57a036f2811433ca0966be8d0e9768026ba70740b",
     "static_from_final_frame": true,
     "source_unchanged": true,
-    "static_frame_timestamp": 0
+    "static_frame_timestamp": 0,
+    "web_optimized": true,
+    "bitrate": 4464901,
+    "t15_stream_copy_encoded_video_sha256": "SHA256=25dd123b91d2623b9354b20586a73cd58ec0357d57d72f08913ef12eaa492565"
   },
   {
     "id": "mountain_god_zhaoyun",
@@ -256,10 +260,10 @@
     ],
     "fps": "24/1",
     "duration": "10.000000",
-    "bytes": 4946785,
+    "bytes": 3569026,
     "audio": false,
     "faststart": true,
-    "stream_copy": true,
+    "stream_copy": false,
     "source_probe": {
       "streams": [
         {
@@ -423,7 +427,7 @@
           "start_time": "0.000000",
           "duration_ts": 122880,
           "duration": "10.000000",
-          "bit_rate": "3954392",
+          "bit_rate": "2852192",
           "bits_per_raw_sample": "8",
           "nb_frames": "240",
           "extradata_size": 46,
@@ -450,12 +454,13 @@
           },
           "tags": {
             "language": "und",
-            "handler_name": "VideoHandler"
+            "handler_name": "VideoHandler",
+            "encoder": "Lavc63.1.102 libx264"
           }
         }
       ],
       "format": {
-        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\mountain_god_zhaoyun.pending.mp4",
+        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\mountain_god_zhaoyun.mp4",
         "nb_streams": 1,
         "nb_programs": 0,
         "nb_stream_groups": 0,
@@ -463,8 +468,8 @@
         "format_long_name": "QuickTime / MOV",
         "start_time": "0.000000",
         "duration": "10.000000",
-        "size": "4946785",
-        "bit_rate": "3957428",
+        "size": "3569026",
+        "bit_rate": "2855220",
         "probe_score": 100,
         "tags": {
           "major_brand": "isom",
@@ -477,13 +482,16 @@
     "static_sha256": "1a5e309461d3dcc49531405fa33de41a83ebbce926517bc699a667bcf5bb602b",
     "static_master_sha256": "0e782d246370264b63b507fb03b389a1c27dab8d1a5d3f31e9fbc93b4020a801",
     "static_master_updated": true,
-    "runtime_sha256": "132388542fa9971972f370ec80bc78a23dad7bb58c7854bf7445514d215989f8",
+    "runtime_sha256": "9613c5ae4a58e13978c6664f01cbe9f4431577c8f3648ac43049a40bec85edec",
     "encoded_video_sha256": "SHA256=7bd41e2935db6659e230d73c60075ebb7e975e8a36208ded2828f59837a3bcca",
-    "video_payload_identical": true,
+    "video_payload_identical": false,
     "static_pixel_sha256": "d1c4cd8048bb5807ac6e2a06e44e08d7676aa551e5051a17055a407a510d9999",
     "static_from_final_frame": true,
     "source_unchanged": true,
-    "static_frame_timestamp": 0
+    "static_frame_timestamp": 0,
+    "web_optimized": true,
+    "bitrate": 2852192,
+    "t15_stream_copy_encoded_video_sha256": "SHA256=7bd41e2935db6659e230d73c60075ebb7e975e8a36208ded2828f59837a3bcca"
   },
   {
     "id": "fire_god_zhouyu",
@@ -499,10 +507,10 @@
     ],
     "fps": "24/1",
     "duration": "10.000000",
-    "bytes": 5309640,
+    "bytes": 3883108,
     "audio": false,
     "faststart": true,
-    "stream_copy": true,
+    "stream_copy": false,
     "source_probe": {
       "streams": [
         {
@@ -661,12 +669,12 @@
           "id": "0x1",
           "r_frame_rate": "24/1",
           "avg_frame_rate": "24/1",
-          "time_base": "1/90000",
+          "time_base": "1/12288",
           "start_pts": 0,
           "start_time": "0.000000",
-          "duration_ts": 900000,
+          "duration_ts": 122880,
           "duration": "10.000000",
-          "bit_rate": "4244683",
+          "bit_rate": "3103457",
           "bits_per_raw_sample": "8",
           "nb_frames": "240",
           "extradata_size": 46,
@@ -693,12 +701,13 @@
           },
           "tags": {
             "language": "und",
-            "handler_name": "VideoHandler"
+            "handler_name": "VideoHandler",
+            "encoder": "Lavc63.1.102 libx264"
           }
         }
       ],
       "format": {
-        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\fire_god_zhouyu.pending.mp4",
+        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\fire_god_zhouyu.mp4",
         "nb_streams": 1,
         "nb_programs": 0,
         "nb_stream_groups": 0,
@@ -706,8 +715,8 @@
         "format_long_name": "QuickTime / MOV",
         "start_time": "0.000000",
         "duration": "10.000000",
-        "size": "5309640",
-        "bit_rate": "4247712",
+        "size": "3883108",
+        "bit_rate": "3106486",
         "probe_score": 100,
         "tags": {
           "major_brand": "isom",
@@ -720,13 +729,16 @@
     "static_sha256": "b8bea63277abeab6c7a608924dbd01961ed487e72c187fd56ec9c3627070cb78",
     "static_master_sha256": "7d285b42b1fc1baa33f6f87a8d8ae012adcf74df728f6718a40886412dd7e054",
     "static_master_updated": true,
-    "runtime_sha256": "527b56ecba76ad6ae45451feda1f921f559f47072a9434ecc094368e08d3b908",
+    "runtime_sha256": "64b44a782ae34218ad15ae949c53c74685b5cac5e21b8e73980e35533e87e1cf",
     "encoded_video_sha256": "SHA256=a80c67f6ac48ebeea43ce56af319d66a44805c07eb1a96ea74cafc72ca2f83d1",
-    "video_payload_identical": true,
+    "video_payload_identical": false,
     "static_pixel_sha256": "6c1ebd41e1d51ed632bfaa1d6402e5afbafba13d451da6d670109c3236ed81e4",
     "static_from_final_frame": true,
     "source_unchanged": true,
-    "static_frame_timestamp": 0
+    "static_frame_timestamp": 0,
+    "web_optimized": true,
+    "bitrate": 3103457,
+    "t15_stream_copy_encoded_video_sha256": "SHA256=a80c67f6ac48ebeea43ce56af319d66a44805c07eb1a96ea74cafc72ca2f83d1"
   },
   {
     "id": "fire_god_zhugeliang",
@@ -742,10 +754,10 @@
     ],
     "fps": "24/1",
     "duration": "10.000000",
-    "bytes": 5541704,
+    "bytes": 3997995,
     "audio": false,
     "faststart": true,
-    "stream_copy": true,
+    "stream_copy": false,
     "source_probe": {
       "streams": [
         {
@@ -904,12 +916,12 @@
           "id": "0x1",
           "r_frame_rate": "24/1",
           "avg_frame_rate": "24/1",
-          "time_base": "1/90000",
+          "time_base": "1/12288",
           "start_pts": 0,
           "start_time": "0.000000",
-          "duration_ts": 900000,
+          "duration_ts": 122880,
           "duration": "10.000000",
-          "bit_rate": "4430344",
+          "bit_rate": "3195383",
           "bits_per_raw_sample": "8",
           "nb_frames": "240",
           "extradata_size": 46,
@@ -936,12 +948,13 @@
           },
           "tags": {
             "language": "und",
-            "handler_name": "VideoHandler"
+            "handler_name": "VideoHandler",
+            "encoder": "Lavc63.1.102 libx264"
           }
         }
       ],
       "format": {
-        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\fire_god_zhugeliang.pending.mp4",
+        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\fire_god_zhugeliang.mp4",
         "nb_streams": 1,
         "nb_programs": 0,
         "nb_stream_groups": 0,
@@ -949,8 +962,8 @@
         "format_long_name": "QuickTime / MOV",
         "start_time": "0.000000",
         "duration": "10.000000",
-        "size": "5541704",
-        "bit_rate": "4433363",
+        "size": "3997995",
+        "bit_rate": "3198396",
         "probe_score": 100,
         "tags": {
           "major_brand": "isom",
@@ -963,13 +976,16 @@
     "static_sha256": "743c7f191149d50cbd6c9f779fc1d452ac51b729d2123d8890970c587bfe5b9e",
     "static_master_sha256": "9731566c7bb6e857a35cfc7730dab460964ec5a2446128796a0861c876550ff0",
     "static_master_updated": true,
-    "runtime_sha256": "e90e53511060951e73513be3b309ffdc6392cd29fc8aea3c6726cc7ad012a3ff",
+    "runtime_sha256": "1bd76860618c3f63166f9d51f16727c09bff0b4485e747e80a967b483cfc4c11",
     "encoded_video_sha256": "SHA256=698c48930e5355420d8e1952b5f0406edbc5ebd1165d5404b96fca9b618ce8da",
-    "video_payload_identical": true,
+    "video_payload_identical": false,
     "static_pixel_sha256": "efb57b28df47f8fdb069adb54bc696b9002a5a1fb90a3cec2f15a23096fe65d0",
     "static_from_final_frame": true,
     "source_unchanged": true,
-    "static_frame_timestamp": 0
+    "static_frame_timestamp": 0,
+    "web_optimized": true,
+    "bitrate": 3195383,
+    "t15_stream_copy_encoded_video_sha256": "SHA256=698c48930e5355420d8e1952b5f0406edbc5ebd1165d5404b96fca9b618ce8da"
   },
   {
     "id": "forest_god_caocao",
@@ -985,10 +1001,10 @@
     ],
     "fps": "24/1",
     "duration": "10.000000",
-    "bytes": 5445257,
+    "bytes": 3894198,
     "audio": false,
     "faststart": true,
-    "stream_copy": true,
+    "stream_copy": false,
     "source_probe": {
       "streams": [
         {
@@ -1147,12 +1163,12 @@
           "id": "0x1",
           "r_frame_rate": "24/1",
           "avg_frame_rate": "24/1",
-          "time_base": "1/90000",
+          "time_base": "1/12288",
           "start_pts": 0,
           "start_time": "0.000000",
-          "duration_ts": 900000,
+          "duration_ts": 122880,
           "duration": "10.000000",
-          "bit_rate": "4353170",
+          "bit_rate": "3112358",
           "bits_per_raw_sample": "8",
           "nb_frames": "240",
           "extradata_size": 46,
@@ -1179,12 +1195,13 @@
           },
           "tags": {
             "language": "und",
-            "handler_name": "VideoHandler"
+            "handler_name": "VideoHandler",
+            "encoder": "Lavc63.1.102 libx264"
           }
         }
       ],
       "format": {
-        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\forest_god_caocao.pending.mp4",
+        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\forest_god_caocao.mp4",
         "nb_streams": 1,
         "nb_programs": 0,
         "nb_stream_groups": 0,
@@ -1192,8 +1209,8 @@
         "format_long_name": "QuickTime / MOV",
         "start_time": "0.000000",
         "duration": "10.000000",
-        "size": "5445257",
-        "bit_rate": "4356205",
+        "size": "3894198",
+        "bit_rate": "3115358",
         "probe_score": 100,
         "tags": {
           "major_brand": "isom",
@@ -1206,13 +1223,16 @@
     "static_sha256": "cca21f5e79a03c15f506562b65ebfb2532bebfe262f71ac1e058a1e047f2cb01",
     "static_master_sha256": "8ba0ab5e167d8d861540ab91535117a04ea96b3323bb5e68ff6142d5a245c134",
     "static_master_updated": true,
-    "runtime_sha256": "e85808df0f85f60a859bedb185a12349763c666cca7578fb5dd023606d5e9dbe",
+    "runtime_sha256": "de1daea95e654b21010269577d6b5b4339a8f4326ce6b681f3c59b9bef75f22d",
     "encoded_video_sha256": "SHA256=233e78a71dfa4dae42870a4987536e5603a98721d04feb189b2f07c7c6bee073",
-    "video_payload_identical": true,
+    "video_payload_identical": false,
     "static_pixel_sha256": "c0e615011d52b84a00be07dcac7a203eccd5490265c125180e01fbc5f174fd22",
     "static_from_final_frame": true,
     "source_unchanged": true,
-    "static_frame_timestamp": 0
+    "static_frame_timestamp": 0,
+    "web_optimized": true,
+    "bitrate": 3112358,
+    "t15_stream_copy_encoded_video_sha256": "SHA256=233e78a71dfa4dae42870a4987536e5603a98721d04feb189b2f07c7c6bee073"
   },
   {
     "id": "mountain_god_simayi",
@@ -1228,10 +1248,10 @@
     ],
     "fps": "24/1",
     "duration": "10.000000",
-    "bytes": 4823576,
+    "bytes": 3416892,
     "audio": false,
     "faststart": true,
-    "stream_copy": true,
+    "stream_copy": false,
     "source_probe": {
       "streams": [
         {
@@ -1390,12 +1410,12 @@
           "id": "0x1",
           "r_frame_rate": "24/1",
           "avg_frame_rate": "24/1",
-          "time_base": "1/90000",
+          "time_base": "1/12288",
           "start_pts": 0,
           "start_time": "0.000000",
-          "duration_ts": 900000,
+          "duration_ts": 122880,
           "duration": "10.000000",
-          "bit_rate": "3855825",
+          "bit_rate": "2730484",
           "bits_per_raw_sample": "8",
           "nb_frames": "240",
           "extradata_size": 46,
@@ -1422,12 +1442,13 @@
           },
           "tags": {
             "language": "und",
-            "handler_name": "VideoHandler"
+            "handler_name": "VideoHandler",
+            "encoder": "Lavc63.1.102 libx264"
           }
         }
       ],
       "format": {
-        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\mountain_god_simayi.pending.mp4",
+        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\mountain_god_simayi.mp4",
         "nb_streams": 1,
         "nb_programs": 0,
         "nb_stream_groups": 0,
@@ -1435,8 +1456,8 @@
         "format_long_name": "QuickTime / MOV",
         "start_time": "0.000000",
         "duration": "10.000000",
-        "size": "4823576",
-        "bit_rate": "3858860",
+        "size": "3416892",
+        "bit_rate": "2733513",
         "probe_score": 100,
         "tags": {
           "major_brand": "isom",
@@ -1449,13 +1470,16 @@
     "static_sha256": "d274e93f2e9aca3fb1f7d334a31a4fa007d5c666a4f873867192c9c478e85cc9",
     "static_master_sha256": "7ff6aa022ad87ed3a087f959db00c9ab3fa13e437c1bdfa484d7f127b785a250",
     "static_master_updated": true,
-    "runtime_sha256": "82d7d9799495fb45d84a82744bd9bae2a79b268570ac90b4180dbd5c3d0d1449",
+    "runtime_sha256": "9f7e05e7cc4faf2514cdb43c553c417232447b5d5a2be0666d567d1e3973e6af",
     "encoded_video_sha256": "SHA256=c75fa59b987a4fcb56bde77b5f22291c370a5e44c125a9bfb68234e87c1b0045",
-    "video_payload_identical": true,
+    "video_payload_identical": false,
     "static_pixel_sha256": "525f91ebe9b6deb67ca285bd87e2075c71f0605f5ecfe1f08bf024c09e45fb92",
     "static_from_final_frame": true,
     "source_unchanged": true,
-    "static_frame_timestamp": 0
+    "static_frame_timestamp": 0,
+    "web_optimized": true,
+    "bitrate": 2730484,
+    "t15_stream_copy_encoded_video_sha256": "SHA256=c75fa59b987a4fcb56bde77b5f22291c370a5e44c125a9bfb68234e87c1b0045"
   },
   {
     "id": "wind_god_guanyu",
@@ -1471,10 +1495,10 @@
     ],
     "fps": "24/1",
     "duration": "10.000000",
-    "bytes": 6630502,
+    "bytes": 4814604,
     "audio": false,
     "faststart": true,
-    "stream_copy": true,
+    "stream_copy": false,
     "source_probe": {
       "streams": [
         {
@@ -1633,12 +1657,12 @@
           "id": "0x1",
           "r_frame_rate": "24/1",
           "avg_frame_rate": "24/1",
-          "time_base": "1/90000",
+          "time_base": "1/12288",
           "start_pts": 0,
           "start_time": "0.000000",
-          "duration_ts": 900000,
+          "duration_ts": 122880,
           "duration": "10.000000",
-          "bit_rate": "5301350",
+          "bit_rate": "3848648",
           "bits_per_raw_sample": "8",
           "nb_frames": "240",
           "extradata_size": 46,
@@ -1665,12 +1689,13 @@
           },
           "tags": {
             "language": "und",
-            "handler_name": "VideoHandler"
+            "handler_name": "VideoHandler",
+            "encoder": "Lavc63.1.102 libx264"
           }
         }
       ],
       "format": {
-        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\wind_god_guanyu.pending.mp4",
+        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\wind_god_guanyu.mp4",
         "nb_streams": 1,
         "nb_programs": 0,
         "nb_stream_groups": 0,
@@ -1678,8 +1703,8 @@
         "format_long_name": "QuickTime / MOV",
         "start_time": "0.000000",
         "duration": "10.000000",
-        "size": "6630502",
-        "bit_rate": "5304401",
+        "size": "4814604",
+        "bit_rate": "3851683",
         "probe_score": 100,
         "tags": {
           "major_brand": "isom",
@@ -1692,13 +1717,16 @@
     "static_sha256": "ddd537ce3be095ce14e505e11b7a656586985e40788dce107e34fe77007df117",
     "static_master_sha256": "f0279ef8ce40fd4e2d42e64dc3c7bd981bf957c0645955681975b4805c11cd49",
     "static_master_updated": true,
-    "runtime_sha256": "448c8546470dbdae50de146e0964c3ce154247cfa86ddf316561ab019705afae",
+    "runtime_sha256": "78119bb448a88be86ff46d93bdffd403c62f177b2e952e9a23d9b1d1142bd5e5",
     "encoded_video_sha256": "SHA256=ac74db67b1b263e8a22e3f246b978f9ab3a28d10bec45ec11982602b3e463483",
-    "video_payload_identical": true,
+    "video_payload_identical": false,
     "static_pixel_sha256": "9e0258bb57de4eab7f4b91567684728c7e9538ffa21737c9683d5a262997e21b",
     "static_from_final_frame": true,
     "source_unchanged": true,
-    "static_frame_timestamp": 0
+    "static_frame_timestamp": 0,
+    "web_optimized": true,
+    "bitrate": 3848648,
+    "t15_stream_copy_encoded_video_sha256": "SHA256=ac74db67b1b263e8a22e3f246b978f9ab3a28d10bec45ec11982602b3e463483"
   },
   {
     "id": "wind_god_lvmeng",
@@ -1714,10 +1742,10 @@
     ],
     "fps": "24/1",
     "duration": "10.000000",
-    "bytes": 5546714,
+    "bytes": 3953553,
     "audio": false,
     "faststart": true,
-    "stream_copy": true,
+    "stream_copy": false,
     "source_probe": {
       "streams": [
         {
@@ -1876,12 +1904,12 @@
           "id": "0x1",
           "r_frame_rate": "24/1",
           "avg_frame_rate": "24/1",
-          "time_base": "1/90000",
+          "time_base": "1/12288",
           "start_pts": 0,
           "start_time": "0.000000",
-          "duration_ts": 900000,
+          "duration_ts": 122880,
           "duration": "10.000000",
-          "bit_rate": "4434323",
+          "bit_rate": "3159820",
           "bits_per_raw_sample": "8",
           "nb_frames": "240",
           "extradata_size": 46,
@@ -1908,12 +1936,13 @@
           },
           "tags": {
             "language": "und",
-            "handler_name": "VideoHandler"
+            "handler_name": "VideoHandler",
+            "encoder": "Lavc63.1.102 libx264"
           }
         }
       ],
       "format": {
-        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\wind_god_lvmeng.pending.mp4",
+        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\wind_god_lvmeng.mp4",
         "nb_streams": 1,
         "nb_programs": 0,
         "nb_stream_groups": 0,
@@ -1921,8 +1950,8 @@
         "format_long_name": "QuickTime / MOV",
         "start_time": "0.000000",
         "duration": "10.000000",
-        "size": "5546714",
-        "bit_rate": "4437371",
+        "size": "3953553",
+        "bit_rate": "3162842",
         "probe_score": 100,
         "tags": {
           "major_brand": "isom",
@@ -1935,13 +1964,16 @@
     "static_sha256": "8a0a6ad5b3b3c8fcdec9e0370eafaeda920b2f5347df023d69d17efafea0ef1b",
     "static_master_sha256": "279441a3a77a31cc579a7519638e7ecbbfdc1e8f539a15840ad6e547949c18d6",
     "static_master_updated": true,
-    "runtime_sha256": "25215e8a205074d5a893ee974d0feaca34596eee429f7a2d07929deb005bd32b",
+    "runtime_sha256": "787d9cca6654f8fcbdb5faac798ec469ce900d429087b21c36edde369b41d59d",
     "encoded_video_sha256": "SHA256=d546704b0f0ccae5930bc2c169c715d2e25504cc53dfae957aea77191b37b503",
-    "video_payload_identical": true,
+    "video_payload_identical": false,
     "static_pixel_sha256": "81d5d7240be834af3499cf8d7595d23fe33b1da3e1bb02ca14d62083734d0f6f",
     "static_from_final_frame": true,
     "source_unchanged": true,
-    "static_frame_timestamp": 0
+    "static_frame_timestamp": 0,
+    "web_optimized": true,
+    "bitrate": 3159820,
+    "t15_stream_copy_encoded_video_sha256": "SHA256=d546704b0f0ccae5930bc2c169c715d2e25504cc53dfae957aea77191b37b503"
   },
   {
     "id": "wind_zhang_jiao",
@@ -1957,10 +1989,10 @@
     ],
     "fps": "24/1",
     "duration": "10.000000",
-    "bytes": 7254438,
+    "bytes": 5168867,
     "audio": false,
     "faststart": true,
-    "stream_copy": true,
+    "stream_copy": false,
     "source_probe": {
       "streams": [
         {
@@ -2124,7 +2156,7 @@
           "start_time": "0.000000",
           "duration_ts": 122880,
           "duration": "10.000000",
-          "bit_rate": "5800486",
+          "bit_rate": "4132055",
           "bits_per_raw_sample": "8",
           "nb_frames": "240",
           "extradata_size": 46,
@@ -2151,12 +2183,13 @@
           },
           "tags": {
             "language": "und",
-            "handler_name": "VideoHandler"
+            "handler_name": "VideoHandler",
+            "encoder": "Lavc63.1.102 libx264"
           }
         }
       ],
       "format": {
-        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\wind_zhang_jiao.pending.mp4",
+        "filename": "C:\\Sanguosha\\assets\\portraits\\idle\\wind_zhang_jiao.mp4",
         "nb_streams": 1,
         "nb_programs": 0,
         "nb_stream_groups": 0,
@@ -2164,8 +2197,8 @@
         "format_long_name": "QuickTime / MOV",
         "start_time": "0.000000",
         "duration": "10.000000",
-        "size": "7254438",
-        "bit_rate": "5803550",
+        "size": "5168867",
+        "bit_rate": "4135093",
         "probe_score": 100,
         "tags": {
           "major_brand": "isom",
@@ -2178,12 +2211,15 @@
     "static_sha256": "8ef77088bb09ef8190a4b6cdb71deb9cc94c060e63d8d9cf3da474886b41850d",
     "static_master_sha256": "52d7b0c8b1dd80a00c38747bafd243408cf46e227ded7535d3184635cd45d417",
     "static_master_updated": true,
-    "runtime_sha256": "dc34a14cda51045fa5f895c606676c0eec3d7978a5b9102744674198c32f6cc8",
+    "runtime_sha256": "7960b3cc7f032b17f207c5128c58346a271e533f8322a9e6d59d608be495c6ca",
     "encoded_video_sha256": "SHA256=721e9b4f5088319a6a14c85f0dda65f09a8137bfb273c5c480207aff1a24579a",
-    "video_payload_identical": true,
+    "video_payload_identical": false,
     "static_pixel_sha256": "ac6fb38aec2cdbb527c48c9015c7f509eea0ca98b695e1e7cb1d3b655d995194",
     "static_from_final_frame": true,
     "source_unchanged": true,
-    "static_frame_timestamp": 0
+    "static_frame_timestamp": 0,
+    "web_optimized": true,
+    "bitrate": 4132055,
+    "t15_stream_copy_encoded_video_sha256": "SHA256=721e9b4f5088319a6a14c85f0dda65f09a8137bfb273c5c480207aff1a24579a"
   }
 ]

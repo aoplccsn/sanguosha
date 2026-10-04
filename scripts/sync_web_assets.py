@@ -15,13 +15,16 @@ PRODUCTION = '--production' in sys.argv
 idle_manifest = json.loads((SOURCE / 'idle_portraits.json').read_text(encoding='utf-8'))
 runtime_videos = set()
 for entry in idle_manifest.values():
-    url = entry['video']
-    if not url.startswith('/assets/portraits/idle/') or not url.endswith('.mp4'):
-        raise ValueError(f'Invalid idle runtime URL: {url}')
-    path = (SOURCE / url.removeprefix('/assets/')).resolve()
-    if not path.is_relative_to((SOURCE / 'portraits' / 'idle').resolve()) or not path.is_file():
-        raise ValueError(f'Missing or unsafe idle runtime video: {url}')
-    runtime_videos.add(path)
+    for field in ('video', 'panelVideo'):
+        if field not in entry:
+            continue
+        url = entry[field]
+        if not url.startswith('/assets/portraits/idle/') or not url.endswith('.mp4'):
+            raise ValueError(f'Invalid idle runtime URL: {url}')
+        path = (SOURCE / url.removeprefix('/assets/')).resolve()
+        if not path.is_relative_to((SOURCE / 'portraits' / 'idle').resolve()) or not path.is_file():
+            raise ValueError(f'Missing or unsafe idle runtime video: {url}')
+        runtime_videos.add(path)
 
 def development_ignore(directory, names):
     ignored = set(shutil.ignore_patterns('source_art', '*.py', '*.qss')(directory, names))

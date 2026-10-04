@@ -28,14 +28,16 @@ def test_source_masters_never_enter_development_or_production(tmp_path):
         assert (assets/'master.mp4').read_bytes()==b'SOURCE MASTER MUST STAY PRIVATE'
 
 def test_registered_runtime_only_is_copied(tmp_path):
-    script,assets,target=pipeline(tmp_path,{'forest_god_lvbu':{'video':'/assets/portraits/idle/forest_god_lvbu.mp4'}})
+    script,assets,target=pipeline(tmp_path,{'forest_god_lvbu':{'video':'/assets/portraits/idle/forest_god_lvbu.mp4','panelVideo':'/assets/portraits/idle/forest_god_lvbu.panel.mp4'}})
     runtime=assets/'portraits/idle'
     runtime.mkdir(parents=True)
     (runtime/'forest_god_lvbu.mp4').write_bytes(b'cleaned-test-fixture')
     (runtime/'source.mp4').write_bytes(b'original')
+    (runtime/'forest_god_lvbu.panel.mp4').write_bytes(b'panel-fixture')
     subprocess.run([sys.executable,str(script),'--production'],check=True)
     assert (target/'portraits/idle/forest_god_lvbu.mp4').read_bytes()==b'cleaned-test-fixture'
     assert not (target/'portraits/idle/source.mp4').exists()
+    assert (target/'portraits/idle/forest_god_lvbu.panel.mp4').read_bytes()==b'panel-fixture'
 
 def test_missing_runtime_fails_build_registration(tmp_path):
     script,_,_=pipeline(tmp_path,{'forest_god_lvbu':{'video':'/assets/portraits/idle/missing.mp4'}})
@@ -63,7 +65,8 @@ def test_all_final_portraits_have_verified_audio_free_runtime_and_matched_static
         assert hashlib.sha256(runtime.read_bytes()).hexdigest()==report['runtime_sha256']
         assert runtime.stat().st_size==report['bytes']
         assert manifest[report['id']]['video']=='/'+report['runtime']
-        assert report['faststart'] and not report['audio'] and report['video_payload_identical']
+        assert report['faststart'] and not report['audio']
+        assert report.get('web_optimized') or report['video_payload_identical']
         streams=report['runtime_probe']['streams']
         assert len(streams)==1 and streams[0]['codec_type']=='video'
         assert streams[0]['codec_name']=='h264' and streams[0]['pix_fmt']=='yuv420p'
@@ -71,3 +74,23 @@ def test_all_final_portraits_have_verified_audio_free_runtime_and_matched_static
         with Image.open(ROOT/report['static']) as image:
             assert image.size==(720,1280)
             assert hashlib.sha256(image.convert('RGB').tobytes()).hexdigest()==report['static_pixel_sha256']
+
+
+def test_optimized_panel_integrity():
+    import hashlib
+    reports=json.loads((ROOT/'docs/t15_1/media_report.json').read_text())
+    manifest=json.loads((ROOT/'assets/idle_portraits.json').read_text())
+    sys.path.insert(0,str(ROOT/'scripts'))
+    from prepare_idle_portraits import faststart
+    for report in reports:
+        panel=next(v for v in report['variants'] if v['kind']=='panel')
+        path=ROOT/panel['path']
+        assert manifest[report['id']]['panelVideo']=='/'+panel['path']
+        assert hashlib.sha256(path.read_bytes()).hexdigest()==panel['sha256']
+        assert faststart(path)
+        streams=panel['probe']['streams']
+        assert len(streams)==1
+        v=streams[0]
+        assert (v['width'],v['height'])==(180,320)
+        assert v['codec_name']=='h264' and v['pix_fmt']=='yuv420p'
+        assert v['avg_frame_rate']=='24/1'

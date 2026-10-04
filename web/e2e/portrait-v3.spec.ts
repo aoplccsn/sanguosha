@@ -16,6 +16,8 @@ test('V3 portraits render in multiplayer draft, player panel and detail', async 
   const guestContext = await browser.newContext({ viewport: { width: 1600, height: 900 } })
   const host = await hostContext.newPage()
   const guest = await guestContext.newPage()
+  const videoRequests:string[]=[]
+  host.on('request',r=>{if(/\.(mp4|webm)(?:\?|$)/.test(r.url()))videoRequests.push(r.url())})
   try {
     await host.goto('/?seed=5')
     await host.getByLabel('玩家昵称').fill('房主')
@@ -35,6 +37,7 @@ test('V3 portraits render in multiplayer draft, player panel and detail', async 
     await hostChoice.click()
     await imageLoaded(host.locator('.general-detail > img'))
     await expect(host.locator('video')).toHaveCount(0)
+    expect(videoRequests).toEqual([])
     await host.getByRole('button', { name: '确认武将' }).click()
     await guest.locator('.general-card').first().click()
     await guest.getByRole('button', { name: '确认武将' }).click()

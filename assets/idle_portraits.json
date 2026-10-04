@@ -1,38 +1,47 @@
 {
   "forest_god_lvbu": {
     "video": "/assets/portraits/idle/forest_god_lvbu.mp4",
-    "objectPosition": "center top"
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/forest_god_lvbu.panel.mp4"
   },
   "mountain_god_zhaoyun": {
     "video": "/assets/portraits/idle/mountain_god_zhaoyun.mp4",
-    "objectPosition": "center top"
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/mountain_god_zhaoyun.panel.mp4"
   },
   "fire_god_zhouyu": {
     "video": "/assets/portraits/idle/fire_god_zhouyu.mp4",
-    "objectPosition": "center top"
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/fire_god_zhouyu.panel.mp4"
   },
   "fire_god_zhugeliang": {
     "video": "/assets/portraits/idle/fire_god_zhugeliang.mp4",
-    "objectPosition": "center top"
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/fire_god_zhugeliang.panel.mp4"
   },
   "forest_god_caocao": {
     "video": "/assets/portraits/idle/forest_god_caocao.mp4",
-    "objectPosition": "center top"
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/forest_god_caocao.panel.mp4"
   },
   "mountain_god_simayi": {
     "video": "/assets/portraits/idle/mountain_god_simayi.mp4",
-    "objectPosition": "center top"
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/mountain_god_simayi.panel.mp4"
   },
   "wind_god_guanyu": {
     "video": "/assets/portraits/idle/wind_god_guanyu.mp4",
-    "objectPosition": "center top"
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/wind_god_guanyu.panel.mp4"
   },
   "wind_god_lvmeng": {
     "video": "/assets/portraits/idle/wind_god_lvmeng.mp4",
-    "objectPosition": "center top"
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/wind_god_lvmeng.panel.mp4"
   },
   "wind_zhang_jiao": {
     "video": "/assets/portraits/idle/wind_zhang_jiao.mp4",
-    "objectPosition": "center top"
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/wind_zhang_jiao.panel.mp4"
   }
 }

@@ -1,0 +1,302 @@
+[
+  {
+    "viewport": 1440,
+    "dpr": 1,
+    "panels": [
+      {
+        "width": 68,
+        "height": 90
+      },
+      {
+        "width": 68,
+        "height": 90
+      },
+      {
+        "width": 68,
+        "height": 90
+      },
+      {
+        "width": 68,
+        "height": 90
+      },
+      {
+        "width": 68,
+        "height": 90
+      }
+    ],
+    "detail": {
+      "width": 240,
+      "height": 360
+    }
+  },
+  {
+    "viewport": 1000,
+    "dpr": 1,
+    "panels": [
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      }
+    ],
+    "detail": {
+      "width": 180,
+      "height": 360
+    }
+  },
+  {
+    "viewport": 720,
+    "dpr": 1,
+    "panels": [
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      }
+    ],
+    "detail": {
+      "width": 637.1875,
+      "height": 240
+    }
+  },
+  {
+    "viewport": 700,
+    "dpr": 1,
+    "panels": [
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      }
+    ],
+    "detail": {
+      "width": 618,
+      "height": 240
+    }
+  },
+  {
+    "viewport": 390,
+    "dpr": 1,
+    "panels": [
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      }
+    ],
+    "detail": {
+      "width": 320.390625,
+      "height": 240
+    }
+  },
+  {
+    "viewport": 1440,
+    "dpr": 2,
+    "panels": [
+      {
+        "width": 68,
+        "height": 90
+      },
+      {
+        "width": 68,
+        "height": 90
+      },
+      {
+        "width": 68,
+        "height": 90
+      },
+      {
+        "width": 68,
+        "height": 90
+      },
+      {
+        "width": 68,
+        "height": 90
+      }
+    ],
+    "detail": {
+      "width": 240,
+      "height": 360
+    }
+  },
+  {
+    "viewport": 1000,
+    "dpr": 2,
+    "panels": [
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      }
+    ],
+    "detail": {
+      "width": 180,
+      "height": 360
+    }
+  },
+  {
+    "viewport": 720,
+    "dpr": 2,
+    "panels": [
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      }
+    ],
+    "detail": {
+      "width": 637.1875,
+      "height": 240
+    }
+  },
+  {
+    "viewport": 700,
+    "dpr": 2,
+    "panels": [
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      }
+    ],
+    "detail": {
+      "width": 618,
+      "height": 240
+    }
+  },
+  {
+    "viewport": 390,
+    "dpr": 2,
+    "panels": [
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      },
+      {
+        "width": 56,
+        "height": 76
+      }
+    ],
+    "detail": {
+      "width": 320.390625,
+      "height": 240
+    }
+  }
+]
