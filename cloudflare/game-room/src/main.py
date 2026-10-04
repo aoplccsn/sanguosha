@@ -9,7 +9,7 @@ from js import WebSocketPair
 from workers import DurableObject, Response, WorkerEntrypoint
 
 from sanguosha.engine.requests import Decision
-from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL, ALL_SKILL_CATALOGUE
+from sanguosha.content.characters.standard import ALL_GENERAL_POOL, ALL_SKILL_CATALOGUE
 from sanguosha.model.ids import PlayerId
 from sanguosha.multiplayer.protocol import (
     MAX_MESSAGE_BYTES,
@@ -77,7 +77,7 @@ class Default(WorkerEntrypoint):
                             "description": skills[str(skill_id)].description,
                             "type": skills[str(skill_id)].skill_type.value}
                            for skill_id in character.skill_ids],
-            } for character in ALL_65_GENERAL_POOL])
+            } for character in ALL_GENERAL_POOL])
         if path == "/api/rooms" and request.method == "POST":
             for _ in range(32):
                 code = _room_code()

@@ -139,3 +139,35 @@ def test_http_room_status_route(worker_module, monkeypatch):
     assert spa.status == 200
     assert spa.payload == "<html>SPA</html>"
     assert calls == [("assets", "https://example.test/room/ABC234")]
+
+
+def test_worker_catalog_matches_web_and_production_draft(worker_module, monkeypatch):
+    import asyncio
+    from types import SimpleNamespace
+
+    from fastapi.testclient import TestClient
+    from sanguosha.content.characters.standard import ALL_GENERAL_POOL, PLAYABLE_GENERAL_POOL
+    from sanguosha.web.app import app
+
+    class FakeResponse:
+        @staticmethod
+        def json(payload, status=200):
+            return SimpleNamespace(status=status, payload=payload)
+
+    monkeypatch.setattr(worker_module, "Response", FakeResponse)
+    worker = worker_module.Default()
+    request = SimpleNamespace(url="https://example.test/api/catalog/generals", method="GET", headers={})
+    worker_catalog = asyncio.run(worker.fetch(request)).payload
+    web_catalog = TestClient(app).get("/api/catalog/generals").json()
+    python_ids = {str(character.id) for character in ALL_GENERAL_POOL}
+    draft_ids = {str(character.id) for character in PLAYABLE_GENERAL_POOL}
+    worker_ids = {row["id"] for row in worker_catalog}
+    web_ids = {row["id"] for row in web_catalog}
+    assert len(worker_catalog) == len(web_catalog) == len(python_ids) == len(draft_ids) == 76
+    assert worker_ids == web_ids == python_ids == draft_ids
+    assert {row["id"] for row in worker_catalog if row["id"].startswith("yj2011_")} == {
+        "yj2011_zhang_chunhua", "yj2011_yu_jin", "yj2011_cao_zhi",
+        "yj2011_fa_zheng", "yj2011_ma_su", "yj2011_xu_shu",
+        "yj2011_ling_tong", "yj2011_xu_sheng", "yj2011_wu_guotai",
+        "yj2011_chen_gong", "yj2011_gao_shun",
+    }
