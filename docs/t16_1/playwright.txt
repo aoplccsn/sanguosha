@@ -1,0 +1,36 @@
+
+[WebServer] INFO:     Started server process [12808]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+
+[WebServer] (node:16472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 7 tests using 1 worker
+
+
+(node:25516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/7] [chromium] › e2e\t161-interactions.spec.ts:4:1 › first target and final card/response clicks at zero one three five videos
+[2/7] [chromium] › e2e\t161-portrait-first.spec.ts:9:1 › incarnation hover, keyboard focus and touch detail retain first option click
+[3/7] [chromium] › e2e\t161-portrait-first.spec.ts:19:1 › three speeds have measured intervals; human request bypasses queue
+[4/7] [chromium] › e2e\t161-portrait-first.spec.ts:33:1 › five and eight seat visual layouts, live portraits, target beam and first click
+[5/7] [chromium] › e2e\t161-portrait-first.spec.ts:48:1 › network diagnostics performs actual local HTTP/assets/WS/heartbeat and uses current origin
+[WebServer] INFO:     127.0.0.1:65227 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+
+[WebServer] INFO:     127.0.0.1:62484 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+[WebServer] INFO:     127.0.0.1:57642 - "WebSocket /api/network/ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+[6/7] [chromium] › e2e\t161-portrait-first.spec.ts:61:1 › portrait area, dense edge information and seat separation at desktop and tablet sizes
+[7/7] [chromium] › e2e\t161-portrait-first.spec.ts:100:1 › Slash and Dodge VFX render against full portrait seats
+  7 passed (42.9s)

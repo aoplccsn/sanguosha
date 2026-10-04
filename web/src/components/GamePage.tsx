@@ -78,37 +78,40 @@ export function PlayerPanel({ player, position, selected, selectable, responding
     + (eventKind?.includes('Recover') ? ' healing-flash' : '')
     + (!player.alive ? ' dead' : '')
   return <article data-player-id={player.player_id} className={classes} onClick={selectable ? onSelect : undefined}>
-    <button className="portrait-button" onClick={(event) => { event.stopPropagation(); if (selectable) onSelect(); else onDetail() }} aria-label={'查看' + player.character_name + '详情'}>
+    <button className="portrait-button" onClick={(event) => { event.stopPropagation(); if (selectable) onSelect(); else onDetail() }} aria-label={selectable ? '选择目标' + player.character_name : '查看' + player.character_name + '详情'}>
       <DynamicPortrait staticPortrait={portraitFor(player, state.generals)} idleVideo={idlePortrait(player.character_id)?.panelVideo ?? idlePortrait(player.character_id)?.video} objectPosition={idlePortrait(player.character_id)?.objectPosition} name={player.character_name} quality={vfxQuality} />
       {portrait.faceDown && <span className="face-down-mark">翻面</span>}
       {player.chained && <span className="chain-mark">锁</span>}
     </button>
     <div className="player-heading"><strong>{player.name}</strong><span>{player.identity_label}</span></div>
-    <div className="general-line"><b>{player.character_name}</b><small>{player.faction} · 距离 {player.effective_distance ?? '—'} · 范围 {player.attack_range}</small></div>
+    <div className="general-line"><b>{player.character_name}</b></div>
     <div className="hp-row" aria-label={player.hp + ' / ' + player.max_hp + ' 体力'}>
       {Array.from({ length: player.max_hp }, (_, index) => <i key={index} className={index < player.hp ? 'full' : ''}>♥</i>)}
     </div>
-    <div className="player-zones">
-      <span className="hand-count">手牌 {player.hand_count}</span>
-      {player.equipment.map((card) => <span key={card.card_id} className="zone-token equipment-token" tabIndex={0} aria-label={'装备 ' + card.name}>
-        {card.name}
-        <span className="equipment-preview" role="tooltip"><img src={assetForCard(card)} alt={card.name} /><small>{card.details}</small></span>
-      </span>)}
-      {player.judgments.map((card) => <span key={card.card_id} className="zone-token judgment-token" title={card.details}>{card.name}</span>)}
-      {buqu.length > 0 && <span className="zone-token buqu-token" title={'不屈牌：' + buqu.map((card) => card.suit + card.rank).join(' ')}>
-        不屈 {buqu.length} · {buqu.map((card) => card.suit + card.rank).join(' ')}
-      </span>}
-      {field.length > 0 && <span className="zone-token" title={'田：' + field.map((card) => card.suit + card.rank).join(' ')}>田 {field.length}</span>}
-      {player.active_transformation && <span className="zone-token">化身 {state.generals[player.active_transformation]?.name ?? '已选择武将'}</span>}
-      {!!player.transformation_pool?.length && <span className="zone-token">化身池 {player.transformation_pool.length}</span>}
-      {committed.map((card) => <span key={card.card_id} className="zone-token judgment-token"
-        title={card.name + (card.suit ? ' ' + card.suit + card.rank : '')}>蛊惑 · {card.name}</span>)}
+    <div className="seat-caption">
+      <div className="seat-facts"><span>{player.faction}</span><span>距离 {player.effective_distance ?? '—'} · 范围 {player.attack_range}</span></div>
+      <div className="player-zones">
+        <span className="hand-count">手牌 {player.hand_count}</span>
+        {player.equipment.map((card) => <span key={card.card_id} className="zone-token equipment-token" tabIndex={0} aria-label={'装备 ' + card.name}>
+          {card.name}
+          <span className="equipment-preview" role="tooltip"><img src={assetForCard(card)} alt={card.name} /><small>{card.details}</small></span>
+        </span>)}
+        {player.judgments.map((card) => <span key={card.card_id} className="zone-token judgment-token" title={card.details}>{card.name}</span>)}
+        {buqu.length > 0 && <span className="zone-token buqu-token" title={'不屈牌：' + buqu.map((card) => card.suit + card.rank).join(' ')}>
+          不屈 {buqu.length} · {buqu.map((card) => card.suit + card.rank).join(' ')}
+        </span>}
+        {field.length > 0 && <span className="zone-token" title={'田：' + field.map((card) => card.suit + card.rank).join(' ')}>田 {field.length}</span>}
+        {player.active_transformation && <span className="zone-token">化身 {state.generals[player.active_transformation]?.name ?? '已选择武将'}</span>}
+        {!!player.transformation_pool?.length && <span className="zone-token">化身池 {player.transformation_pool.length}</span>}
+        {committed.map((card) => <span key={card.card_id} className="zone-token judgment-token"
+          title={card.name + (card.suit ? ' ' + card.suit + card.rank : '')}>蛊惑 · {card.name}</span>)}
+      </div>
+      <div className="mini-skills">{player.skill_labels.map((skill) => <span key={skill}>{skill}</span>)}</div>
+      <div className="seat-marks">{!!player.marks && Object.entries(player.marks).filter(([, count]) => count > 0).map(([mark, count]) => <span key={mark} className="mark-badge">{markLabel(mark)} {count}</span>)}</div>
     </div>
-    <div className="mini-skills">{player.skill_labels.map((skill) => <span key={skill}>{skill}</span>)}</div>
     {eventKind && /CardUsed|Skill/.test(eventKind) && <span className="action-badge">正在行动</span>}
     {player.active && <span className="turn-badge">当前回合</span>}
     {responding && <span className="response-badge">正在响应</span>}
-    {!!player.marks && Object.entries(player.marks).filter(([, count]) => count > 0).map(([mark, count]) => <span key={mark} className="mark-badge">{markLabel(mark)} {count}</span>)}
   </article>
 }
 
@@ -446,7 +449,10 @@ export function GamePage() {
               eligible={request.choices.includes(card.card_id)}
               onClick={() => request.choices.includes(card.card_id) ? submitImmediate(card.card_id) : setHint('当前不能选择这张牌')} />)}</div>
         </section>)}
-      {projection.discard_top && <div className="discard-top"><HandCard card={projection.discard_top} selected={false} eligible={false} onClick={() => undefined} /></div>}
+      <div className="table-piles" aria-label="牌桌牌堆">
+        <div><span className="table-deck" aria-hidden="true" /><small>牌堆 {projection.deck_count}</small></div>
+        <div>{projection.discard_top ? <div className="discard-top"><HandCard card={projection.discard_top} selected={false} eligible={false} onClick={() => undefined} /></div> : <span className="table-discard" aria-hidden="true" />}<small>弃牌 {projection.discard_count}</small></div>
+      </div>
       <div className="self-area">
         {request && <DecisionPrompt request={request} projection={projection} canConfirm={canConfirm} processing={!!state.decisionProcessing} summary={summary} onConfirm={confirm} onCancel={() => updateSelection((current) => current.targets.length ? { ...current, targets: [] } : { ...current, cards: [], option: '' })} onPass={() => submitImmediate({ pass: true })} onBoolean={submitImmediate} onOption={submitImmediate} />}
         <PlayerPanel player={self} position="self" selected={false} selectable={false} responding={request?.player_id === self.player_id} eventKind={eventTarget === self.player_id || eventSource === self.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} eventCue={latestEvent} godCue={godCues[self.player_id]} vfxQuality={vfxQuality} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
