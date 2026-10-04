@@ -91,6 +91,8 @@ class TurnActionHandler:
                     state.players[action.player_id].marks.pop('wuwei', None)
                     for other in state.players.values():
                         other.marks.pop('wuwei_target_' + action.player_id, None)
+            from .yj2011_tier3 import clear_turn
+            clear_turn(state)
             state.current_phase = None
             self.recorder.record(TurnEndedEvent(f"{action.action_id}:end", action.player_id, state.turn_number))
             return StepResult.complete()

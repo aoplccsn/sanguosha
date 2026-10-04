@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Callable
 
-from sanguosha.content.characters.standard import PLAYABLE_57_GENERAL_POOL, PLAYABLE_65_GENERAL_POOL
+from sanguosha.content.characters.standard import ORDINARY_GENERAL_POOL, PLAYABLE_GENERAL_POOL
 from sanguosha.game_modes import game_mode
 from sanguosha.decisions.ai import AIDecisionProvider
 from sanguosha.engine.requests import Decision, PendingRequest, RequestType, PASS_RESPONSE
@@ -229,7 +229,7 @@ class MultiplayerRoom:
 
     def _new_draft_request(self, pid: PlayerId) -> None:
         assert self.pregame is not None
-        pool = PLAYABLE_65_GENERAL_POOL if self.allow_gods else PLAYABLE_57_GENERAL_POOL
+        pool = PLAYABLE_GENERAL_POOL if self.allow_gods else ORDINARY_GENERAL_POOL
         remaining = [c.id for c in pool if c.id not in self.pregame.generals.values()]
         self.pregame.rng.shuffle(remaining)
         candidates = tuple(map(str, remaining[:9])) + (('forest_god_lvbu',) if self.review_god_lvbu and pid == self.host_id else (str(remaining[9]),))
@@ -326,7 +326,7 @@ class MultiplayerRoom:
         if self.draft_requests:
             return
         assert self.pregame is not None
-        pool = PLAYABLE_65_GENERAL_POOL if self.allow_gods else PLAYABLE_57_GENERAL_POOL
+        pool = PLAYABLE_GENERAL_POOL if self.allow_gods else ORDINARY_GENERAL_POOL
         available = [c.id for c in pool if c.id not in self.pregame.generals.values()]
         for seat in self.seats.values():
             if seat.controller is Controller.AI:
@@ -546,6 +546,11 @@ class MultiplayerRoom:
             from hashlib import sha256
             result.update(kind='DiscardEvent', event_id=sha256(event.event_id.encode()).hexdigest()[:24],
                           player_id=str(event.actor_id or ''), count=len(event.card_ids))
+        elif isinstance(event, Event) and event.event_type == 'card_revealed':
+            card = self.session.state.cards[event.metadata['card_id']]
+            result.update(kind='CardRevealedEvent', source_id=str(event.source_id),
+                          definition_id=str(card.definition_id), card_name=self.session.definitions.get(card.definition_id).name,
+                          suit=card.suit.value, rank=card.rank, skill_id=event.metadata['skill_id'])
         elif isinstance(event, Event) and event.event_type == 'after_judgment':
             result.update(kind='JudgmentEvent', source_id=str(event.source_id or ''),
                           matched=bool(event.metadata.get('matched', False)))

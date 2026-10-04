@@ -95,3 +95,13 @@ assert len(PLAYABLE_65_GENERAL_POOL) == 65
 assert not DISABLED_GOD_POOL
 
 
+
+# Historical 57/65 constants remain exact for earlier art/pack audits.
+from sanguosha.content.characters.yj2011 import YJ2011_GENERAL_POOL, YJ2011_SKILL_CATALOGUE
+ALL_GENERAL_POOL = ALL_65_GENERAL_POOL + YJ2011_GENERAL_POOL
+PLAYABLE_GENERAL_POOL = tuple(c for c in ALL_GENERAL_POOL if c.metadata.get('playable', True))
+ORDINARY_GENERAL_POOL = tuple(c for c in PLAYABLE_GENERAL_POOL if c not in GOD_GENERAL_POOL)
+ALL_SKILL_CATALOGUE = ALL_SKILL_CATALOGUE + YJ2011_SKILL_CATALOGUE
+assert len(ALL_GENERAL_POOL) == len(PLAYABLE_GENERAL_POOL) == 76
+assert len(ORDINARY_GENERAL_POOL) == 68
+assert len({c.id for c in ALL_GENERAL_POOL}) == 76

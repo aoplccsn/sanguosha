@@ -1,4 +1,4 @@
-"""Development-only locked YJ2011 metadata; never a production draft pool."""
+"""Locked YJ2011 production content, with the historical development fixtures."""
 from sanguosha.model.character import CharacterDefinition
 from sanguosha.model.skill import SkillDefinition
 from sanguosha.model.enums import Gender, Kingdom, SkillType
@@ -38,3 +38,15 @@ YJ2011_DEV_SKILLS = (
     SkillDefinition('xianzhen', '陷阵', '阶段技。你可以与一名其他角色拼点：若你赢，本回合，该角色的防具无效，你无视与该角色的距离，你对该角色使用【杀】无次数限制；若你没赢，你不能使用【杀】，直到回合结束。', SkillType.ACTIVE, {'pack':'yj2011','development_only':True}),
     SkillDefinition('jinjiu', '禁酒', '锁定技。你的【酒】视为【杀】。', SkillType.LOCKED, {'pack':'yj2011','development_only':True}),
 )
+
+# T17B gate passed: expose the entire locked 2011 pack as one production batch.
+YJ2011_GENERAL_POOL = tuple(
+    CharacterDefinition(c.id, c.name, c.kingdom, c.max_hp, c.gender, c.skill_ids,
+        {**c.metadata, 'implemented': True, 'playable': True, 'development_only': False})
+    for c in YJ2011_DEV_GENERALS
+)
+YJ2011_SKILL_CATALOGUE = tuple(
+    SkillDefinition(s.id, s.name, s.description, s.skill_type,
+        {**s.metadata, 'development_only': False}) for s in YJ2011_DEV_SKILLS
+)
+assert len(YJ2011_GENERAL_POOL) == 11

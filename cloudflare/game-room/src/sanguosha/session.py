@@ -326,6 +326,8 @@ class GameSession:
         if military and skills is not None:
             from sanguosha.engine.yj2011 import register_yj2011
             register_yj2011(registry, skills, moves, definitions)
+            from sanguosha.engine.yj2011_tier3 import register as register_yj2011_tier3
+            register_yj2011_tier3(registry, skills, moves, definitions, deck)
         engine = GameEngine(state, registry)
         if military:
             engine.reaction_provider = moves.next_reaction

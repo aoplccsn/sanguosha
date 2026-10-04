@@ -1,0 +1,28 @@
+{
+  "t17b": "11/11 PASS",
+  "production_roster": 76,
+  "ordinary_roster": 68,
+  "gods": 8,
+  "pytest": {
+    "passed": 1014,
+    "failed": 0,
+    "t17b_targeted": 259,
+    "existing_five_regression": 89
+  },
+  "dedicated_ai_matches": {
+    "military-five": 40,
+    "military-eight": 40
+  },
+  "two_human_ai_room_cases": 16,
+  "pyside_new_general_cases": 6,
+  "vitest": 67,
+  "playwright_core": 17,
+  "typescript": "PASS",
+  "vite": "PASS",
+  "dynamic_media_unchanged": 18,
+  "static_zhang_jiao_sha256": "8ef77088bb09ef8190a4b6cdb71deb9cc94c060e63d8d9cf3da474886b41850d",
+  "checkpoint_title": "T17B complete checkpoint",
+  "new_art": false,
+  "deploy": false,
+  "remaining_issues": []
+}

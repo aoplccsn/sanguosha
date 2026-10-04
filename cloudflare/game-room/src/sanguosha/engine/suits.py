@@ -1,11 +1,11 @@
 """Contextual suit interpretation without changing physical card data."""
 
-from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL
+from sanguosha.content.characters.standard import ALL_GENERAL_POOL
 from sanguosha.model.enums import Color, Suit
 
 
 _CHARACTER_SKILLS = {character.id: frozenset(character.skill_ids)
-                     for character in ALL_65_GENERAL_POOL}
+                     for character in ALL_GENERAL_POOL}
 
 
 def _hongyan(suit):

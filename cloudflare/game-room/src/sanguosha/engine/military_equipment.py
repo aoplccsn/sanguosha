@@ -13,7 +13,7 @@ class MilitaryMoveService(CardMoveService):
         super().__init__(events)
         self.reactions=[]
         self.skills=skills
-    def move(self,state,move):
+    def _departure_facts(self,state,move):
         owner=move.from_zone.player_id
         lost_last_hand=(move.from_zone.zone_type is ZoneType.HAND and owner is not None
                         and self.skills is not None and self.skills.has(state,owner,'lianying')
@@ -22,7 +22,13 @@ class MilitaryMoveService(CardMoveService):
                         and self.skills is not None and self.skills.has(state,owner,'xiaoji'))
         silver=move.from_zone.zone_type is ZoneType.EQUIPMENT and any(
             state.cards[cid].definition_id=='equipment.armor.silver_lion' for cid in move.card_ids)
+        return owner, lost_last_hand, lost_equipment, silver
+    def move(self,state,move):
+        facts=self._departure_facts(state,move)
         super().move(state,move)
+        self._after_departure(state,move,facts)
+    def _after_departure(self,state,move,facts):
+        owner,lost_last_hand,lost_equipment,silver=facts
         if silver and state.players[owner].is_alive:
             self.reactions.append(RecoverAction(move.move_id+':silver-lion-loss',owner,owner,1))
         if lost_last_hand and state.players[owner].is_alive:
@@ -48,6 +54,8 @@ class MilitaryMoveService(CardMoveService):
             for event in new_events:
                 from .yj2011 import event_reactions
                 self.reactions.extend(event_reactions(state, event, self.skills, self.recorder))
+                from .yj2011_tier3 import reactions
+                self.reactions.extend(reactions(state, event, self.skills))
                 if isinstance(event, AfterDamageEvent):
                     if (event.source_id is not None and state.players[event.target_id].is_alive
                             and self.skills.has(state, event.target_id, 'wuhun')):
@@ -70,6 +78,7 @@ class MilitaryMoveService(CardMoveService):
                 definition = event.virtual_definition_id or state.cards[event.card_id].definition_id
                 if (definition != 'trick.duel'
                         and (definition not in ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash')
+                             or event.card_id not in state.cards
                              or effective_color(state, event.card_id, event.player_id) is not Color.RED)):
                     continue
                 for pid in dict.fromkeys((event.player_id, *event.target_ids)):
@@ -77,8 +86,8 @@ class MilitaryMoveService(CardMoveService):
                         self.reactions.append(JiangAction(event.event_id + ':jiang:' + pid, pid))
         while self.reactions:
             action=self.reactions.pop(0)
-            target=getattr(action,'target_id',getattr(action,'player_id',
-                           getattr(action,'owner_id',None)))
+            target=(getattr(action,'target_id',None) or getattr(action,'player_id',None)
+                    or getattr(action,'owner_id',None))
             if target is not None and state.players[target].is_alive:
                 return action
         return None

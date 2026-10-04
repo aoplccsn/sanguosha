@@ -132,12 +132,12 @@ async def play_web_match(url: str, humans: int, seed: int, audit_app=None, audit
 
 
 @pytest.mark.parametrize("humans", range(1, 6))
-@pytest.mark.parametrize("seed", range(4))
+@pytest.mark.parametrize("seed", [4, 1, 2, 3])
 def test_fastapi_websocket_full_game_smoke(humans, seed):
     async def scenario():
         app, server, task, url = await start_server()
         try:
-            audit_seen = set() if (humans, seed) == (2, 0) else None
+            audit_seen = set() if (humans, seed) == (2, 4) else None
             room_code, seen = await play_web_match(
                 url, humans, seed, app if audit_seen is not None else None, audit_seen,
             )

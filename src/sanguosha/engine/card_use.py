@@ -39,7 +39,7 @@ class UseCardActionHandler:
         if (action.user_id not in state.players or not state.players[action.user_id].is_alive
                 or action.card_id not in state.cards_in(ZoneRef(ZoneType.HAND, action.user_id))):
             raise InvalidCardUse('forced-use card is unavailable')
-        rule = self.validator.rule_for(state, action.card_id)
+        rule = self.validator.rule_for(state, action.card_id, action.user_id)
         if not rule.can_use(state, action.user_id):
             raise InvalidCardUse('forced-use card condition is not met')
         return rule
@@ -70,8 +70,17 @@ class UseCardActionHandler:
         if not action.forced:
             usage = state.play_usage
             assert usage is not None
-            usage.record(getattr(rule, 'usage_key', state.cards[action.card_id].definition_id))
-        self.recorder.record(CardUsedEvent(f"{action.action_id}:used", action.user_id, action.card_id, targets))
+            from .yj2011_tier3 import record_slash_use
+            usage_key = getattr(rule, 'usage_key', state.cards[action.card_id].definition_id)
+            if usage_key == 'basic.slash':
+                record_slash_use(state, action.user_id, targets)
+            else:
+                usage.record(usage_key)
+        from .yj2011_tier3 import canonical_definition
+        physical = state.cards[action.card_id].definition_id
+        canonical = canonical_definition(state, self.skills, action.user_id, physical)
+        self.recorder.record(CardUsedEvent(f"{action.action_id}:used", action.user_id, action.card_id, targets,
+            canonical if canonical != physical else ''))
         if (any(state.players[pid].identity is Identity.LORD for pid in targets)
                 and str(state.cards[action.card_id].definition_id) in
                 ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash',
@@ -113,7 +122,7 @@ class UseCardActionHandler:
 
     def _jizhi_effect(self, state, frame, action):
         targets = frame.local['jizhi_targets']
-        rule = self.validator.rule_for(state, action.card_id)
+        rule = self.validator.rule_for(state, action.card_id, action.user_id)
         return rule.effect_action(f"{action.action_id}:effect", action.user_id, action.card_id, targets)
 
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
@@ -121,7 +130,7 @@ class UseCardActionHandler:
         assert isinstance(action, UseCardAction)
         if frame.step_index == 0:
             self.validate_start(state, action)
-            rule = self.validator.rule_for(state, action.card_id)
+            rule = self.validator.rule_for(state, action.card_id, action.user_id)
             if rule.requires_target_selection and not action.target_ids and not action.targets_confirmed:
                 frame.step_index = 1
                 low, high = rule.target_bounds(state, action.user_id, action.card_id) if hasattr(rule, 'target_bounds') else (1, 1)

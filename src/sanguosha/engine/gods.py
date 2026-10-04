@@ -7,6 +7,7 @@ from sanguosha.model.enums import DamageNature, Phase, Suit
 from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.model.virtual_card import VirtualCard
 
+from .yj2011_tier3 import record_slash_use
 from .actions import Action, StepResult
 from .card_moves import CardMove, CardMoveReason
 from .card_rules import InvalidCardUse
@@ -80,7 +81,7 @@ class WushenHandler:
                 action.action_id + ':processing', (action.material_id,),
                 ZoneRef(ZoneType.HAND, actor), ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.USE, actor, action.action_id))
-            state.play_usage.record('basic.slash')
+            record_slash_use(state, actor, (target,))
             frame.step_index = 2
             return StepResult.push(SlashSequence(
                 action.action_id + ':slash', actor, action.material_id,
@@ -652,7 +653,7 @@ class LonghunUseHandler:
                 raise InvalidCardUse('龙魂材料已失效')
             if action.definition_id == 'basic.fire_slash':
                 self.slash_rule.validate_targets(state, actor, (target,))
-                state.play_usage.record('basic.slash')
+                record_slash_use(state, actor, (target,))
             frame.local['target'] = target
             self.moves.move(state, CardMove(action.action_id + ':processing',
                 action.material_ids, hand, processing, CardMoveReason.USE,

@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 import json
 
-from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL as CHARACTERS, ALL_SKILL_CATALOGUE as SKILLS
+from sanguosha.content.characters.standard import ALL_GENERAL_POOL as CHARACTERS, ALL_SKILL_CATALOGUE as SKILLS
 from sanguosha.model.enums import Identity, Phase, Color, Kingdom, EquipmentSlot, Suit, Gender
 from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.model.virtual_card import VirtualCard
@@ -24,11 +24,11 @@ class SkillRegistry:
     def __init__(self):
         self.characters = {character.id: character for character in CHARACTERS}
         self.skills = {skill.id: skill for skill in SKILLS}
-        # Development metadata can be loaded by engine tests/snapshots. The
-        # production pools, draft, and web catalogue remain unchanged until gate.
+        # Keep historical development snapshots loadable without overriding
+        # accepted production metadata.
         from sanguosha.content.characters.yj2011 import YJ2011_DEV_GENERALS, YJ2011_DEV_SKILLS
-        self.characters.update({c.id: c for c in YJ2011_DEV_GENERALS})
-        self.skills.update({s.id: s for s in YJ2011_DEV_SKILLS})
+        self.characters.update({c.id: c for c in YJ2011_DEV_GENERALS if c.id not in self.characters})
+        self.skills.update({s.id: s for s in YJ2011_DEV_SKILLS if s.id not in self.skills})
 
     def has(self, state, player_id, skill_id):
         player = state.players[player_id]
@@ -774,7 +774,8 @@ class LongdanUseHandler:
             self.moves.move(state, CardMove(action.action_id + ':processing', (action.material_id,),
                 hand, ZoneRef(ZoneType.PROCESSING), CardMoveReason.USE,
                 action.player_id, action.action_id))
-            state.play_usage.record('basic.slash')
+            from .yj2011_tier3 import record_slash_use
+            record_slash_use(state, action.player_id, (target,))
             self.recorder.record(CardUsedEvent(action.action_id + ':used', action.player_id,
                 action.material_id, (target,), 'basic.slash'))
             frame.step_index = 2
@@ -1051,7 +1052,8 @@ class WushengUseHandler:
             self.moves.move(state, CardMove(action.action_id+':processing', (action.material_id,),
                 ZoneRef(ZoneType.HAND,action.player_id), ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.USE, action.player_id))
-            state.play_usage.record('basic.slash')
+            from .yj2011_tier3 import record_slash_use
+            record_slash_use(state, action.player_id, (target,))
             frame.step_index = 2
             return StepResult.push(SlashSequence(action.action_id+':slash', action.player_id,
                 action.material_id, (target,), virtual))
@@ -1095,7 +1097,8 @@ class JijiangUseHandler:
             if result is None:
                 return StepResult.complete()
             material=result.material_ids[0] if isinstance(result,VirtualCard) else result
-            state.play_usage.record('basic.slash')
+            from .yj2011_tier3 import record_slash_use
+            record_slash_use(state, action.player_id, (frame.local['target'],))
             frame.step_index=3
             return StepResult.push(MilitaryStrike(action.action_id+':strike',action.player_id,
                 frame.local['target'],material,'basic.dodge',virtual_card=result if isinstance(result,VirtualCard) else None))
@@ -1112,7 +1115,8 @@ class SkillPlayOptions:
 
     def options(self, state, pid):
         ordinary = self.base.options(state,pid)
-        extra = []
+        from .yj2011_tier3 import play_options
+        extra = play_options(state, pid, self.skills)
         hand = state.cards_in(ZoneRef(ZoneType.HAND,pid))
         materials = tuple(cid for ref, zone in state.zones.items()
                           if ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
@@ -1267,6 +1271,9 @@ class SkillPlayOptions:
     def build_action(self, state, pid, option, aid):
         if option not in self.options(state,pid):
             raise InvalidCardUse('skill option is no longer legal')
+        if option in ('skill:jiushi', 'skill:xinzhan', 'skill:ganlu', 'skill:mingce', 'skill:xianzhen'):
+            from .yj2011_tier3 import YJSkillAction
+            return YJSkillAction(aid + ':yj2011', pid, option.split(':')[1])
         if option.startswith('skill:jilue-'):
             from .gods import JiluePlayAction
             return JiluePlayAction(aid + ':jilue', pid, option.split('-', 1)[1])

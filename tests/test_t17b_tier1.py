@@ -112,4 +112,5 @@ def test_development_metadata_is_not_production_draft():
     s=game()
     assert len(ALL_65_GENERAL_POOL)==65
     assert not any(str(g.id).startswith('yj2011') for g in ALL_65_GENERAL_POOL)
-    assert s.skills.characters['yj2011_yu_jin'].metadata['development_only']
+    assert s.skills.characters['yj2011_yu_jin'].metadata['playable']
+    assert not s.skills.characters['yj2011_yu_jin'].metadata['development_only']

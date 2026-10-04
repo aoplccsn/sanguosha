@@ -65,7 +65,8 @@ class UseSpearHandler:
             self.provider.validator.rules.get('basic.slash').validate_targets(state,a.player_id,(target,))
             virtual=VirtualCard.spear(state,materials,effective_suit)
             self.moves.move(state,CardMove(a.action_id+':processing',materials,hand,ZoneRef(ZoneType.PROCESSING),CardMoveReason.USE,a.player_id))
-            state.play_usage.record('basic.slash')
+            from .yj2011_tier3 import record_slash_use
+            record_slash_use(state, a.player_id, (target,))
             f.step_index=3
             return StepResult.push(SlashSequence(a.action_id+':slash',a.player_id,materials[0],(target,),virtual))
         remaining=tuple(cid for cid in materials if cid in state.cards_in(ZoneRef(ZoneType.PROCESSING)))

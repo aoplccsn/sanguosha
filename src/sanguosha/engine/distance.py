@@ -7,7 +7,7 @@ small DistanceModifier protocol.
 
 from typing import Protocol
 
-from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL
+from sanguosha.content.characters.standard import ALL_GENERAL_POOL
 from sanguosha.model.enums import EquipmentSlot
 from sanguosha.model.ids import PlayerId
 from sanguosha.model.state import GameState
@@ -50,7 +50,7 @@ class CharacterDistanceModifier:
         return current
 
 
-_CHARACTERS = {character.id: character for character in ALL_65_GENERAL_POOL}
+_CHARACTERS = {character.id: character for character in ALL_GENERAL_POOL}
 
 
 class DistanceSystem:
@@ -68,6 +68,9 @@ class DistanceSystem:
         return base
 
     def distance_between(self, state: GameState, source: PlayerId, target: PlayerId) -> int:
+        from .yj2011_tier3 import scoped_target
+        if scoped_target(state, source, target) and state.players[target].is_alive:
+            return 1
         base = self.base_distance(state, source, target)
         return max(1, base + sum(mod.distance_delta(state, source, target) for mod in self.modifiers))
 

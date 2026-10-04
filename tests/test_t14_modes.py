@@ -130,7 +130,7 @@ def test_god_toggle_changes_private_draft_pool_and_reconnect_keeps_owner():
 
     def started(allow_gods):
         wire = {"p1": [], "p2": []}
-        room = MultiplayerRoom(seed=2, allow_gods=allow_gods)
+        room = MultiplayerRoom(seed=0, allow_gods=allow_gods)
         host, host_token = room.join("host", wire["p1"].append)
         guest, guest_token = room.join("guest", wire["p2"].append)
         room.ready(guest, True)

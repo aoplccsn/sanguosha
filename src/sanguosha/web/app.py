@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from sanguosha.engine.errors import InvalidDecision
-from sanguosha.content.characters.standard import ALL_65_GENERAL_POOL, ALL_SKILL_CATALOGUE
+from sanguosha.content.characters.standard import ALL_GENERAL_POOL, ALL_SKILL_CATALOGUE
 from sanguosha.model.ids import PlayerId
 from sanguosha.multiplayer.protocol import (
     MAX_MESSAGE_BYTES, PROTOCOL_VERSION, ProtocolError, check_message,
@@ -157,7 +157,8 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                 "implemented": character.metadata.get("implemented", True),
                 "playable": character.metadata.get("playable", True),
                 "portrait_mode": character.metadata.get("portrait_mode", "static"),
-                "portrait": f"/assets/generals/{character.kingdom.value}/{character.id}.png",
+                "portrait": ("/assets/generals/default_general.png" if character.metadata.get("pack") == "yj2011"
+                             else f"/assets/generals/{character.kingdom.value}/{character.id}.png"),
                 "skills": [
                     {"id": str(skill_id), "name": skills[str(skill_id)].name,
                      "description": skills[str(skill_id)].description,
@@ -165,7 +166,7 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                     for skill_id in character.skill_ids
                 ],
             }
-            for character in ALL_65_GENERAL_POOL
+            for character in ALL_GENERAL_POOL
         ]
 
     @app.websocket("/ws")

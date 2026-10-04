@@ -1,3 +1,5 @@
+> 已由 [T17B complete checkpoint](t17b_complete_checkpoint.md) 取代；以下保留 6862b75 的历史五将状态。
+
 # T17B 当前开发 checkpoint（未完成）
 
 日期：2026-10-04。T17A.1 checkpoint：8ce827d。最终版本38/38 LOCKED、未解决武将版本0；来源仍为固定revision社区档案，官方卡面未验证。

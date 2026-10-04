@@ -218,6 +218,9 @@ class TargetTrickHandler:
         d=a.definition_id
         hand=ZoneRef(ZoneType.HAND,a.target_id)
         if f.step_index == 0:
+            from .yj2011_tier3 import protected
+            if protected(state, a.target_id):
+                return StepResult.complete('prevented')
             f.step_index=1
             if d == 'trick.ex_nihilo':
                 return StepResult.push(DrawCardsAction(a.action_id+':draw',a.target_id,2))

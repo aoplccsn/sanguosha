@@ -30,6 +30,10 @@ class AIDecisionProvider:
 
     def decide(self, state: GameState, request: PendingRequest) -> Decision:
         player_id = request.player_id
+        from .yj2011_tier3 import decide as decide_tier3
+        tier3 = decide_tier3(self, state, request)
+        if tier3 is not None:
+            return tier3
         from .yj2011 import decide_yj2011
         yj2011_decision = decide_yj2011(self, state, request, player_id)
         if yj2011_decision is not None:
@@ -87,7 +91,10 @@ class AIDecisionProvider:
             peach = [choice for choice in usable if state.cards[CardInstanceId(choice[4:])].definition_id == PEACH_ID]
             slash = [choice for choice in usable if state.cards[CardInstanceId(choice[4:])].definition_id == SLASH_ID]
             if state.ruleset_id == 'classic-military':
-                slash = [choice for choice in usable if state.cards[CardInstanceId(choice[4:])].definition_id in ('basic.slash','basic.fire_slash','basic.thunder_slash')]
+                from sanguosha.engine.skills import SkillRegistry
+                from sanguosha.engine.yj2011_tier3 import canonical_definition
+                skill_registry=SkillRegistry()
+                slash = [choice for choice in usable if canonical_definition(state, skill_registry, player_id, state.cards[CardInstanceId(choice[4:])].definition_id) in ('basic.slash','basic.fire_slash','basic.thunder_slash')]
             enemies = [pid for pid in state.seat_order if pid != player_id and state.players[pid].is_alive and self._priority(state, player_id, pid) > 0]
             lord = next((pid for pid in state.seat_order
                          if state.players[pid].is_alive and state.players[pid].identity is Identity.LORD), None)

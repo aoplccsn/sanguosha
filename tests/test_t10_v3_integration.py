@@ -29,12 +29,19 @@ def test_all_playable_v3_portraits_are_live_and_readable():
                 for pack in readiness["packs"].values() for candidate in pack["candidates"]}
     assert len(reviewed) == 57
 
+    # T15 intentionally replaced Zhang Jiao's fallback with the first frame of
+    # the accepted dynamic Master (7cc5996). Preserve the historical T10 audit.
+    t15 = json.loads((ROOT / "docs/t15/media_report.json").read_text(encoding="utf-8"))
+    accepted = next(row for row in t15 if row["id"] == "wind_zhang_jiao")
+    assert accepted["static"] == "assets/generals/qun/wind_zhang_jiao.png"
+    assert accepted["static_sha256"] == "8ef77088bb09ef8190a4b6cdb71deb9cc94c060e63d8d9cf3da474886b41850d"
+    current_reviewed = {**reviewed, "wind_zhang_jiao": accepted["static_sha256"]}
     digests = set()
     for row in inventory:
         key = f"general.{row['runtime_general_id']}"
         live = ROOT / "assets" / manifest[key]
         assert live == ROOT / row["当前资源路径"]
-        assert hashlib.sha256(live.read_bytes()).hexdigest() == reviewed[row["general_id"]], key
+        assert hashlib.sha256(live.read_bytes()).hexdigest() == current_reviewed[row["general_id"]], key
         reader = QImageReader(str(live))
         assert reader.canRead() and not reader.read().isNull(), key
         digest = hashlib.sha256(live.read_bytes()).hexdigest()

@@ -34,6 +34,16 @@ class DyingActionHandler:
             if target.hp > 0:
                 self.recorder.record(DyingRescuedEvent(f"{action.action_id}:rescued", action.target_id, target.hp))
                 return StepResult.complete("rescued")
+            if self.skills is not None:
+                from .yj2011_tier3 import YJSkillAction
+                offered = frame.local.setdefault('yj_buyi_owners', [])
+                owner = next((pid for pid in state.seat_order if pid not in offered
+                    and state.players[pid].is_alive and self.skills.has(state, pid, 'buyi')), None)
+                if owner is not None:
+                    offered.append(owner)
+                    frame.step_index = 4
+                    return StepResult.push(YJSkillAction(action.action_id + ':buyi:' + owner,
+                        owner, 'buyi', action.target_id))
             if self.before_rescue is not None and not frame.local.get('before_rescue_checked'):
                 frame.local['before_rescue_checked'] = True
                 offer = self.before_rescue(state, action.target_id,

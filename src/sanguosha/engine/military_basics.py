@@ -21,6 +21,7 @@ from .events import BeforeDamageEvent, DamageDealtEvent, AfterDamageEvent, Dying
 from .judgment import JudgmentAction, JudgmentPattern, JudgmentHandler
 from .response import RespondWithCardAction, RespondWithCardHandler
 from .recovery import RecoverAction
+from .turnover import TurnoverAction
 from .deck import DrawCardsAction
 from .suits import effective_color, effective_suit
 from .requests import PendingRequest, RequestType
@@ -101,7 +102,10 @@ class MilitaryDamageHandler(DamageActionHandler):
                     and not getattr(action, 'propagated', False) and action.card_id in state.cards
                     and state.cards[action.card_id].definition_id in (*SLASH_IDS, 'trick.duel')):
                 amount += 1
-            if not getattr(action, 'ignore_armor', False):
+            from .yj2011_tier3 import scoped_target
+            ignores_armor = getattr(action, 'ignore_armor', False) or (
+                action.source_id is not None and scoped_target(state, action.source_id, action.target_id))
+            if not ignores_armor:
                 if armor == 'equipment.armor.vine' and action.nature is DamageNature.FIRE:
                     amount += 1
                 if armor == 'equipment.armor.silver_lion':
@@ -116,7 +120,11 @@ class MilitaryDamageHandler(DamageActionHandler):
                     chain = tuple(pid for pid in order if state.players[pid].is_alive and state.players[pid].chained)
             frame.local['chain'] = '|'.join(chain)
             self.recorder.record(BeforeDamageEvent(action.action_id + ':before', action.source_id, action.target_id, amount))
+            frame.local['yj_face_down_before'] = not target.face_up
             target.hp -= amount
+            if (self.skills is not None and self.skills.has(state, action.target_id, 'zhichi')
+                    and state.current_player_id != action.target_id):
+                target.marks['yj_zhichi'] = state.turn_number
             if self.skills is not None and self.skills.has(state, action.target_id, 'renjie'):
                 target.marks['ren'] = target.marks.get('ren', 0) + amount
             self.recorder.record(DamageDealtEvent(action.action_id + ':dealt', action.source_id, action.target_id, amount, target.hp))
@@ -333,6 +341,10 @@ class MilitaryDamageHandler(DamageActionHandler):
         reaction = after_damage(state, frame, self.skills)
         if reaction is not None:
             return reaction
+        from .yj2011_tier3 import damage_reaction
+        reaction = damage_reaction(state, frame, self.skills)
+        if reaction is not None:
+            return reaction
         chain = str(frame.local['chain']).split('|') if frame.local['chain'] else []
         if state.status is GameStatus.FINISHED or frame.cursor >= len(chain):
             return StepResult.complete(int(frame.local['amount']))
@@ -386,15 +398,30 @@ class MilitarySlashRule(SlashRule):
         super().__init__(ReachableOpponent(distance), SkillSlashLimit(skills))
         self.skills = skills
     def can_use(self, state, user):
-        return not state.players[user].marks.get('slash_prohibited')
+        return (not state.players[user].marks.get('slash_prohibited')
+                and state.players[user].marks.get('yj_xianzhen_loss') != state.turn_number)
+    def usage_limit(self, state, user):
+        from .yj2011_tier3 import scoped_target
+        if any(pid != user and state.players[pid].is_alive and scoped_target(state, user, pid)
+               for pid in state.seat_order):
+            return None
+        return super().usage_limit(state, user)
     def target_candidates(self, state, user):
+        from .yj2011_tier3 import scoped_target
         marks = state.players[user].marks
-        if marks.get('slash_prohibited'):
+        if not self.can_use(state, user):
             return ()
         candidates = (tuple(pid for pid in state.seat_order if pid != user
                            and state.players[pid].is_alive)
                       if marks.get('slash_ignore_distance') else
                       super().target_candidates(state, user))
+        scoped = tuple(pid for pid in state.seat_order if pid != user and state.players[pid].is_alive
+                       and scoped_target(state, user, pid))
+        candidates = tuple(dict.fromkeys((*candidates, *scoped)))
+        ordinary_limit = self.limit_provider.limit(state, user)
+        if (state.current_player_id == user and state.current_phase is Phase.PLAY and state.play_usage is not None
+                and ordinary_limit is not None and state.play_usage.count('basic.slash') >= ordinary_limit):
+            candidates = scoped
         if self.skills is None:
             return candidates
         return tuple(pid for pid in candidates if not (
@@ -454,13 +481,19 @@ class MilitarySlashHandler:
         weapon = equipped(state, action.source_id, EquipmentSlot.WEAPON)
         card = state.cards.get(action.card_id)
         virtual=getattr(action,'virtual_card',None)
-        definition=virtual.definition_id if virtual else card.definition_id
+        from .yj2011_tier3 import canonical_definition
+        definition=virtual.definition_id if virtual else canonical_definition(
+            state, self.skills, action.source_id, card.definition_id)
         color=virtual.color if virtual else effective_color(state, action.card_id, action.source_id)
         nature = DamageNature.FIRE if frame.local.get('fan_fire') else {'basic.fire_slash': DamageNature.FIRE, 'basic.thunder_slash': DamageNature.THUNDER}.get(definition, DamageNature.NORMAL)
         ignore = weapon == 'equipment.weapon.qinggang_sword' or bool(
             state.players[action.source_id].marks.get('wuwei') and
             state.players[action.target_id].marks.get('wuwei_target_' + action.source_id))
+        from .yj2011_tier3 import scoped_target, protected
+        ignore = ignore or scoped_target(state, action.source_id, action.target_id)
         if frame.step_index == 0:
+            if protected(state, action.target_id):
+                return StepResult.complete('prevented')
             from .yj2011 import slash_ineffective
             if slash_ineffective(state, self.skills, action.source_id, action.target_id, color):
                 return StepResult.complete('prevented')
@@ -796,6 +829,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
 
     def _step_response(self, state, frame):
         action = frame.action
+        if frame.step_index == 41:
+            return StepResult.complete(VirtualCard('basic.wine', (), None, None))
         if frame.step_index == 12:
             return StepResult.complete(frame.child_result)
         if frame.step_index == 11:
@@ -825,7 +860,10 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 state.cards[cid].definition_id == action.required_definition_id
                 or action.required_definition_id == 'basic.slash' and state.cards[cid].definition_id in SLASH_IDS
                 or action.required_definition_id == 'basic.peach' and action.subject_player_id == action.player_id
-                and state.players[action.player_id].hp <= 0 and state.cards[cid].definition_id == 'basic.wine')
+                and state.players[action.player_id].hp <= 0 and state.cards[cid].definition_id == 'basic.wine'
+                and not (self.skills is not None and self.skills.has(state, action.player_id, 'jinjiu')))
+            if self.skills is not None and self.skills.has(state, action.player_id, 'jinjiu') and action.required_definition_id == 'basic.slash':
+                eligible += tuple(cid for cid in hand if state.cards[cid].definition_id == 'basic.wine')
             frame.local['eligible'] = '|'.join(eligible)
             if action.required_definition_id=='basic.slash' and equipped(state,action.player_id,EquipmentSlot.WEAPON)=='equipment.weapon.serpent_spear' and len(hand)>=2:
                 eligible=(*eligible,'virtual:spear')
@@ -843,6 +881,11 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                     eligible += tuple(f'virtual:qingguo:{cid}' for cid in hand
                                       if effective_color(state, cid, action.player_id) is Color.BLACK)
                 if action.required_definition_id == 'basic.peach':
+                    if (action.subject_player_id == action.player_id and state.players[action.player_id].hp <= 0
+                            and state.players[action.player_id].face_up
+                            and self.skills.has(state, action.player_id, 'jiushi')
+                            and not self.skills.has(state, action.player_id, 'jinjiu')):
+                        eligible += ('virtual:jiushi',)
                     eligible += tuple(f'virtual:jijiu:{cid}' for cid in self.skills.emergency_peach_materials(state,action.player_id))
                     if (action.subject_player_id == action.player_id
                             and state.players[action.player_id].hp <= 0
@@ -895,6 +938,16 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 self.recorder.record(CardRespondedEvent(action.action_id+':virtual-responded:'+cid,action.player_id,cid,
                                                         action.source_action_id,'basic.slash'))
             return StepResult.complete(virtual)
+        if choice == 'virtual:jiushi':
+            if (self.skills is None or not self.skills.has(state, action.player_id, 'jiushi')
+                    or not state.players[action.player_id].face_up
+                    or action.required_definition_id != 'basic.peach'
+                    or action.subject_player_id != action.player_id or state.players[action.player_id].hp > 0):
+                raise InvalidCardUse('酒诗自救不可用')
+            frame.step_index = 41
+            self.recorder.record(VirtualResponseEvent(action.action_id + ':jiushi-response',
+                action.player_id, action.source_action_id, 'basic.wine'))
+            return StepResult.push(TurnoverAction(action.action_id + ':jiushi-turn', action.player_id))
         if choice=='virtual:spear':
             frame.step_index=2
             return StepResult.ask(PendingRequest(action.action_id+':spear-cost',action.player_id,RequestType.CHOOSE_CARDS,
@@ -1085,8 +1138,10 @@ class MilitaryResponseHandler(RespondWithCardHandler):
         processing = ZoneRef(ZoneType.PROCESSING)
         self.moves.move(state, CardMove(action.action_id + ':processing', (card,),
             ZoneRef(ZoneType.HAND, action.player_id), processing, CardMoveReason.RESPONSE, action.player_id))
+        from .yj2011_tier3 import canonical_definition
         self.recorder.record(CardRespondedEvent(action.action_id + ':responded', action.player_id, card,
-                                                action.source_action_id,str(state.cards[card].definition_id),
+                                                action.source_action_id,
+                                                canonical_definition(state, self.skills, action.player_id, state.cards[card].definition_id),
                                                 action.response_number, action.response_total))
         self.moves.move(state, CardMove(action.action_id + ':discard', (card,), processing,
             ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.RESPONSE, action.player_id))

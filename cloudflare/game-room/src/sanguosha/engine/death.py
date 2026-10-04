@@ -63,6 +63,17 @@ class DeathActionHandler:
                                                        action.target_id))
             return StepResult.continue_()
         if frame.step_index == 3:
+            if (self.skills is not None and self.skills.has(state, action.target_id, 'huilei')
+                    and action.killer_id is not None and action.killer_id != action.target_id
+                    and state.players[action.killer_id].is_alive):
+                # Locked Q08: killer's hand/equipment are discarded before rewards.
+                for ref in tuple(state.zones):
+                    if ref.player_id == action.killer_id and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT):
+                        ids = state.cards_in(ref)
+                        if ids:
+                            self.moves.move(state, CardMove(action.action_id + ':huilei:' + str(ref), ids,
+                                ref, ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD,
+                                action.killer_id, action.action_id))
             self._discard_all(state, action.target_id, action.action_id)
             self.recorder.record(PlayerDiedEvent(
                 f"{action.action_id}:died", action.target_id, victim.identity, action.killer_id,

@@ -182,7 +182,12 @@ def event_reactions(state,event,skills,recorder):
                if ref.zone_type is ZoneType.HAND and ref.player_id is not None]
         owner=event.from_zone.player_id
         if (event.from_zone.zone_type is ZoneType.EQUIPMENT and owner is not None
+                and not (event.related_action_id or '').startswith('equipment-exchange:')
                 and state.players[owner].is_alive and skills.has(state,owner,'xuanfeng')):
+            reactions.append(XuanfengAction(event.event_id+':xuanfeng',owner))
+    elif isinstance(event,Event) and event.event_type == 'equipment_departure_batch':
+        owner=event.source_id
+        if state.players[owner].is_alive and skills.has(state,owner,'xuanfeng'):
             reactions.append(XuanfengAction(event.event_id+':xuanfeng',owner))
     elif isinstance(event,(AfterDamageEvent,HpRecoveredEvent)):
         dirty=[event.target_id]

@@ -161,8 +161,18 @@ class DrawPhaseBody:
         self.skills = skills
 
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
+        if frame.step_index == 40:
+            if frame.child_result is True:
+                return StepResult.complete()
+            frame.step_index = 1
         if frame.step_index == 1:
             action = frame.action
+            if (self.skills is not None and self.skills.has(state, action.player_id, 'xuanhuo')
+                    and not frame.local.get('yj_xuanhuo')):
+                from .yj2011_tier3 import YJSkillAction
+                frame.local['yj_xuanhuo'] = True
+                frame.step_index = 40
+                return StepResult.push(YJSkillAction(action.action_id + ':xuanhuo', action.player_id, 'xuanhuo'))
             state.players[action.player_id].marks.pop('luoyi', None)
             if (self.skills is not None and not frame.local.get('haoshi_offered')
                     and self.skills.has(state, action.player_id, 'haoshi')):

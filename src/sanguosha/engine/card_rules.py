@@ -62,9 +62,15 @@ class CardUseValidator:
         self.targets = targets
         self.skills = skills
 
-    def rule_for(self, state: GameState, card_id: CardInstanceId) -> CardRule:
+    def rule_for(self, state: GameState, card_id: CardInstanceId, user_id=None) -> CardRule:
         try:
             definition_id = state.cards[card_id].definition_id
+            if user_id is None:
+                user_id = next((ref.player_id for ref, zone in state.zones.items()
+                    if ref.zone_type is ZoneType.HAND and card_id in zone.card_ids), None)
+            if user_id is not None:
+                from .yj2011_tier3 import canonical_definition
+                definition_id = canonical_definition(state, self.skills, user_id, definition_id)
             self.definitions.get(definition_id)
             return self.rules.get(definition_id)
         except KeyError as exc:
@@ -73,7 +79,7 @@ class CardUseValidator:
             raise InvalidCardUse(f"unregistered card definition for {card_id}") from exc
 
     def target_candidates(self, state: GameState, user_id: PlayerId, card_id: CardInstanceId) -> tuple[PlayerId, ...]:
-        rule = self.rule_for(state, card_id)
+        rule = self.rule_for(state, card_id, user_id)
         candidates = rule.target_candidates(state, user_id)
         if self.skills is None:
             return candidates
@@ -96,7 +102,7 @@ class CardUseValidator:
             raise InvalidCardUse("card can only be used in the owner's play phase")
         if card_id not in state.cards_in(ZoneRef(ZoneType.HAND, user_id)):
             raise InvalidCardUse("card is not in user's hand")
-        rule = self.rule_for(state, card_id)
+        rule = self.rule_for(state, card_id, user_id)
         usage = state.play_usage
         if usage is None or usage.player_id != user_id or usage.turn_number != state.turn_number:
             raise InvalidCardUse("play phase usage state is missing")

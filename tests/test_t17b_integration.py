@@ -84,10 +84,11 @@ def test_xuanfeng_ai_choice_invariant_under_hidden_card_changes():
     assert s.ai.decide(s.state,request)==first
 
 
-def test_development_general_pool_never_enters_old_huashen():
+def test_completed_yj2011_pool_is_eligible_for_huashen():
     from sanguosha.engine.mountain import draw_transformations
     s=game(); draw_transformations(s.state,'p1',200,s.skills,s.rng)
-    assert not any(g.startswith('yj2011') for g in s.state.players['p1'].transformation_pool)
+    assert any(g.startswith('yj2011') for g in s.state.players['p1'].transformation_pool)
+    assert all(s.skills.characters[g].metadata['playable'] for g in s.state.players['p1'].transformation_pool)
 
 
 def test_pyside_all_development_generals_have_readable_fallback_portraits():
