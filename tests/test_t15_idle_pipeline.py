@@ -76,21 +76,18 @@ def test_all_final_portraits_have_verified_audio_free_runtime_and_matched_static
             assert hashlib.sha256(image.convert('RGB').tobytes()).hexdigest()==report['static_pixel_sha256']
 
 
-def test_optimized_panel_integrity():
+def test_current_panel_integrity():
     import hashlib
-    reports=json.loads((ROOT/'docs/t15_1/media_report.json').read_text())
+    reports=json.loads((ROOT/'docs/t18a3/panel_media_report.json').read_text())
     manifest=json.loads((ROOT/'assets/idle_portraits.json').read_text())
     sys.path.insert(0,str(ROOT/'scripts'))
     from prepare_idle_portraits import faststart
+    assert len(reports)==len(manifest)==9
     for report in reports:
-        panel=next(v for v in report['variants'] if v['kind']=='panel')
-        path=ROOT/panel['path']
-        assert manifest[report['id']]['panelVideo']=='/'+panel['path']
-        assert hashlib.sha256(path.read_bytes()).hexdigest()==panel['sha256']
-        assert faststart(path)
-        streams=panel['probe']['streams']
-        assert len(streams)==1
-        v=streams[0]
-        assert (v['width'],v['height'])==(180,320)
-        assert v['codec_name']=='h264' and v['pix_fmt']=='yuv420p'
-        assert v['avg_frame_rate']=='24/1'
+        path=ROOT/report['path']
+        assert manifest[report['id']]['panelVideo']=='/'+report['path']
+        assert hashlib.sha256(path.read_bytes()).hexdigest()==report['panel_sha256']
+        assert path.stat().st_size==report['bytes']
+        assert hashlib.sha256((ROOT/'assets/portraits/idle'/(report['id']+'.mp4')).read_bytes()).hexdigest()==report['detail_sha256']
+        assert faststart(path) and report['resolution']==[360,640]
+        assert report['codec']=='h264' and report['pixel_format']=='yuv420p' and not report['audio']

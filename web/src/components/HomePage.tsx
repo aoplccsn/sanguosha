@@ -12,7 +12,6 @@ export function HomePage() {
   const [name, setName] = useState(localStorage.getItem('sanguosha.web.nickname') ?? '')
   const [roomCode, setRoomCode] = useState(initialRoom)
   const [modeId, setModeId] = useState<'military-five' | 'military-eight'>('military-five')
-  const [allowGods, setAllowGods] = useState(false)
   const [entering, setEntering] = useState(false)
 
   useEffect(() => { if (state.error || state.connection === 'offline' || state.connection === 'fatal') setEntering(false) }, [state.error, state.connection])
@@ -46,10 +45,9 @@ export function HomePage() {
           <option value="military-eight">军八 · 8 人</option>
         </select>
       </label>
-      <label className="field-label"><input type="checkbox" checked={allowGods} onChange={(event) => setAllowGods(event.target.checked)} /> 允许神将进入候选池</label>
       <div className="home-actions">
-        <button className="brush-button primary" disabled={entering} onClick={() => { setEntering(true); actions.createRoom(remember(), true, modeId, allowGods) }}>{entering ? '正在进入…' : '单人游戏'}</button>
-        <button className="brush-button" disabled={entering} onClick={() => { setEntering(true); actions.createRoom(remember(), false, modeId, allowGods) }}>{entering ? '正在进入…' : '创建多人房间'}</button>
+        <button className="brush-button primary" disabled={entering} onClick={() => { setEntering(true); actions.createRoom(remember(), true, modeId) }}>{entering ? '正在进入…' : '单人游戏'}</button>
+        <button className="brush-button" disabled={entering} onClick={() => { setEntering(true); actions.createRoom(remember(), false, modeId) }}>{entering ? '正在进入…' : '创建多人房间'}</button>
       </div>
       {import.meta.env.DEV && <a className="god-preview-entry" href="/t11/god-lvbu-preview">God Lü Bu Presentation Preview · 神吕布视觉验收</a>}
       <div className="join-row">

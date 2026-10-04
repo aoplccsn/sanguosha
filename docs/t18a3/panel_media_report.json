@@ -1,0 +1,155 @@
+[
+  {
+    "id": "forest_god_lvbu",
+    "path": "assets/portraits/idle/forest_god_lvbu.panel.mp4",
+    "source_sha256": "bfada76663f50b6c81273c6f9c5d3c62f97c42e44e48f1747bc57db1055c8f2d",
+    "detail_sha256": "4efd3fe713ca386b508b76e06a38c395282ca0fa1f24325a32992ca28352bf17",
+    "panel_sha256": "28cd43e2db92dd76e954a6ba7284b38880ab3b6e1f63c1e4f70f97ee08e1f10c",
+    "bytes": 2488859,
+    "resolution": [
+      360,
+      640
+    ],
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio": false,
+    "faststart": true,
+    "fps": "24/1"
+  },
+  {
+    "id": "mountain_god_zhaoyun",
+    "path": "assets/portraits/idle/mountain_god_zhaoyun.panel.mp4",
+    "source_sha256": "b9757dc6152feed652afd0ba64539403020a8d5736ac4c4a7be51d3755f78f50",
+    "detail_sha256": "9613c5ae4a58e13978c6664f01cbe9f4431577c8f3648ac43049a40bec85edec",
+    "panel_sha256": "a040cb858020fd9450ac5010749d0bc67c06a971f7b211821ef77da4af93dbaf",
+    "bytes": 1868290,
+    "resolution": [
+      360,
+      640
+    ],
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio": false,
+    "faststart": true,
+    "fps": "24/1"
+  },
+  {
+    "id": "fire_god_zhouyu",
+    "path": "assets/portraits/idle/fire_god_zhouyu.panel.mp4",
+    "source_sha256": "0d119c81f98d8a5e49dcbd568b5260fde0501873e327e51d4215451d521fcfcd",
+    "detail_sha256": "64b44a782ae34218ad15ae949c53c74685b5cac5e21b8e73980e35533e87e1cf",
+    "panel_sha256": "d0d1c86d6044cbeacd2e58e958bfb3f4529b696b39d6292df3d105b76e7245fa",
+    "bytes": 2000288,
+    "resolution": [
+      360,
+      640
+    ],
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio": false,
+    "faststart": true,
+    "fps": "24/1"
+  },
+  {
+    "id": "fire_god_zhugeliang",
+    "path": "assets/portraits/idle/fire_god_zhugeliang.panel.mp4",
+    "source_sha256": "57c7f90e13c53e8508c59ea0726ee87da718330044cb203f5cf1ed18afe7684e",
+    "detail_sha256": "1bd76860618c3f63166f9d51f16727c09bff0b4485e747e80a967b483cfc4c11",
+    "panel_sha256": "4fb082494d960fc3ec8c6ac610c4ccb09ba45dd3c302d23ed9662eea838988d7",
+    "bytes": 1686812,
+    "resolution": [
+      360,
+      640
+    ],
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio": false,
+    "faststart": true,
+    "fps": "24/1"
+  },
+  {
+    "id": "forest_god_caocao",
+    "path": "assets/portraits/idle/forest_god_caocao.panel.mp4",
+    "source_sha256": "84acd0719d67d12f49a77f75903053de69f4b02698d35148280a02ef359f59e9",
+    "detail_sha256": "de1daea95e654b21010269577d6b5b4339a8f4326ce6b681f3c59b9bef75f22d",
+    "panel_sha256": "34137b4ee6438ed377230a13ea3c6ab19cddd17457aa108931a5b71d72398b63",
+    "bytes": 1835281,
+    "resolution": [
+      360,
+      640
+    ],
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio": false,
+    "faststart": true,
+    "fps": "24/1"
+  },
+  {
+    "id": "mountain_god_simayi",
+    "path": "assets/portraits/idle/mountain_god_simayi.panel.mp4",
+    "source_sha256": "d08429e8e5e54997a0e10b2319519eb2f9f968fcc60eae427fa5b3f5f60a752c",
+    "detail_sha256": "9f7e05e7cc4faf2514cdb43c553c417232447b5d5a2be0666d567d1e3973e6af",
+    "panel_sha256": "8222b767033e3c195579ee79ce9a0cb0326e6828d1630405cf3d815730b5265b",
+    "bytes": 1452602,
+    "resolution": [
+      360,
+      640
+    ],
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio": false,
+    "faststart": true,
+    "fps": "24/1"
+  },
+  {
+    "id": "wind_god_guanyu",
+    "path": "assets/portraits/idle/wind_god_guanyu.panel.mp4",
+    "source_sha256": "80837357fee3eddd4891347073e5557710af2dafdf1cf54c4fd896881e1834d9",
+    "detail_sha256": "78119bb448a88be86ff46d93bdffd403c62f177b2e952e9a23d9b1d1142bd5e5",
+    "panel_sha256": "8353a8a48e612a8d09d35393205a4fdd7c0235d7e3f8aeaf4895a374dcec51f5",
+    "bytes": 2059302,
+    "resolution": [
+      360,
+      640
+    ],
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio": false,
+    "faststart": true,
+    "fps": "24/1"
+  },
+  {
+    "id": "wind_god_lvmeng",
+    "path": "assets/portraits/idle/wind_god_lvmeng.panel.mp4",
+    "source_sha256": "a7833e4e4421882d2fe70e5fb712e4f393c3a28481588b5445676c75846cd6ef",
+    "detail_sha256": "787d9cca6654f8fcbdb5faac798ec469ce900d429087b21c36edde369b41d59d",
+    "panel_sha256": "3c0fb94d7b7fdb2f4941a01858b461dfc55bc2c0f99d42791edf2e3874590299",
+    "bytes": 1802380,
+    "resolution": [
+      360,
+      640
+    ],
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio": false,
+    "faststart": true,
+    "fps": "24/1"
+  },
+  {
+    "id": "wind_zhang_jiao",
+    "path": "assets/portraits/idle/wind_zhang_jiao.panel.mp4",
+    "source_sha256": "f3c4fb50f980fe1939225e68708b726b8470ffc7aeca62c5d2b95abeaba9a7b2",
+    "detail_sha256": "7960b3cc7f032b17f207c5128c58346a271e533f8322a9e6d59d608be495c6ca",
+    "panel_sha256": "7ec1e5a6f1fef1c79b06d5334abc18873ca238688a1f9c6f91c27c003e241dad",
+    "bytes": 2526577,
+    "resolution": [
+      360,
+      640
+    ],
+    "codec": "h264",
+    "pixel_format": "yuv420p",
+    "audio": false,
+    "faststart": true,
+    "fps": "24/1"
+  }
+]

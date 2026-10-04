@@ -547,12 +547,14 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 /* A single open edge anchors the figure, and doubles as the targeting signal. */
 .game-board .player-panel::after { content:''; position:absolute; z-index:2; inset:12% 2% 4%; border:1px solid transparent; border-top:0; pointer-events:none; transition:box-shadow .15s,border-color .15s; }
 .game-board .player-panel.active,.game-board .player-panel.selectable,.game-board .player-panel.selected-target,.game-board .player-panel.presenting-action { border:0; box-shadow:none; transform:none; }
-.game-board .player-panel.active::after { border-bottom-color:#e3bc68; box-shadow:0 12px 18px -13px #e9bb53; }
+.game-board .player-panel.active::after { border-color:#e3bc68a8; box-shadow:inset 0 0 18px #e9bb532c,0 0 21px #e9bb5399; }
+.game-board .player-panel.active .turn-badge { color:#fff1bd; background:#81541ed9; }
 .game-board .player-panel.selectable::after { border-color:#f2d78d99; box-shadow:inset 0 0 16px #f4bd4430,0 0 13px #e4b95955; }
 .game-board .player-panel.selectable:hover::after,.game-board .player-panel.selected-target::after { border-color:#ffe3a0; box-shadow:inset 0 0 22px #ffc35950,0 0 22px #f0ac55aa; }
 .game-board .player-panel.responding { outline:0; }
 .game-board .player-panel.responding::after { border-right-color:#7ed2dc; }
-.game-board .player-panel.presenting-action::after { border-bottom-color:#f7e7bd; }
+.game-board .player-panel.presenting-action::after { border-color:#ffe8ac; box-shadow:inset 0 0 28px #ffdc6866,0 0 28px #e8b44ac7; }
+.game-board .player-panel.event-target::after { border-color:#8bd7df; box-shadow:inset 0 0 21px #67cdd466,0 0 20px #67cdd4a6; }
 .game-board .player-heading { position:absolute; z-index:3; top:5px; left:9px; right:9px; display:flex; flex-wrap:nowrap; align-items:center; font-size:10px; pointer-events:none; }
 .game-board .player-heading strong { font-weight:400; color:#dfd3bc; }
 .game-board .player-heading span { padding:2px 4px; background:#71271fcc; font-size:10px; }
@@ -611,7 +613,7 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .game-board .decision-prompt .timer { width:46px; }
 .game-board .decision-prompt .timer span { color:#d9bd86; font-size:20px; }
 .game-board .decision-prompt .timer > div { height:3px; margin-top:3px; }
-.game-board .event-stage { top:48%; width:min(380px,38vw); min-width:0; padding:14px 12px; background:linear-gradient(90deg,transparent,#201a1280,transparent); border:0; font-size:16px; letter-spacing:.08em; pointer-events:none; }
+.game-board .event-stage { top:48%; width:min(480px,46vw); min-width:0; padding:14px 12px; background:linear-gradient(90deg,transparent,#201a1280,transparent); border:0; font-size:16px; letter-spacing:.08em; pointer-events:none; }
 .game-board .event-stage.quiet { font-size:12px; }
 .event-stage::before { content:'◆'; display:block; font-size:8px; color:#b68b4a99; margin-bottom:6px; }
 .game-board .table-piles { position:absolute; z-index:2; left:50%; top:55%; transform:translateX(-50%); display:flex; gap:28px; opacity:.65; pointer-events:none; }
@@ -657,28 +659,27 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
   .game-board .table-piles { display:none; }
 }
 
-/* T16.2 prototype: native, source-aligned masks for three subjects only.
+/* T16.2 prototype: native, source-aligned masks for 神吕布 and 张角.
    Each SVG has an opaque subject/weapon core plus a feathered background.
    preserveAspectRatio slice matches object-fit:cover, center top on both media.
    No crop/scale change, decoder change, video filter or animated mask. */
 .game-board [data-character-id="forest_god_lvbu"] .dynamic-portrait {
   --fusion-mask:url('./portraits/fusion/lvbu.svg');
 }
-.game-board [data-character-id="wind_god_guanyu"] .dynamic-portrait {
-  --fusion-mask:url('./portraits/fusion/guanyu.svg');
-}
 .game-board [data-character-id="wind_zhang_jiao"] .dynamic-portrait {
   --fusion-mask:url('./portraits/fusion/zhangjiao.svg');
 }
-.game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_god_guanyu"],[data-character-id="wind_zhang_jiao"]) .seat-caption {
+.game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_zhang_jiao"]) .seat-caption {
   background:radial-gradient(ellipse at bottom,#15120cad,transparent 78%);
 }
 
-.game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_god_guanyu"],[data-character-id="wind_zhang_jiao"]) .dynamic-portrait {
+.game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_zhang_jiao"]) .dynamic-portrait {
   mask-image:var(--fusion-mask),linear-gradient(90deg,transparent,#000 2% 98%,transparent),linear-gradient(transparent,#000 1%);
   mask-size:100% 100%; mask-repeat:no-repeat; mask-composite:intersect; mask-mode:alpha;
 }
+/* Preserve the full original Guan Yu composition in both static and video states. */
+.game-board [data-character-id="wind_god_guanyu"] .dynamic-portrait { mask-image:none; }
 
 /* Flip the sampled composition as a unit; an asymmetric mask must follow it. */
-.game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_god_guanyu"],[data-character-id="wind_zhang_jiao"]).face-down .dynamic-portrait { transform:scaleX(-1); }
-.game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_god_guanyu"],[data-character-id="wind_zhang_jiao"]).face-down .dynamic-portrait > :is(img,video) { transform:none; }
+.game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_zhang_jiao"]).face-down .dynamic-portrait { transform:scaleX(-1); }
+.game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_zhang_jiao"]).face-down .dynamic-portrait > :is(img,video) { transform:none; }

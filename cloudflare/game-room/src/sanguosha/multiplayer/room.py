@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Callable
 
-from sanguosha.content.characters.standard import ORDINARY_GENERAL_POOL, PLAYABLE_GENERAL_POOL
+from sanguosha.content.characters.standard import PLAYABLE_GENERAL_POOL
 from sanguosha.game_modes import game_mode
 from sanguosha.decisions.ai import AIDecisionProvider
 from sanguosha.engine.requests import Decision, PendingRequest, RequestType, PASS_RESPONSE
@@ -96,11 +96,9 @@ class MultiplayerRoom:
 
     def __init__(self, *, seed: int | None = None, timeout_seconds: float = TIMEOUT_SECONDS,
                  review_god_lvbu: bool = False, mode_id: str = 'military-five',
-                 allow_gods: bool = False):
+                 allow_gods: bool = True):
         self.mode = game_mode(mode_id)
-        if type(allow_gods) is not bool:
-            raise RoomError('allow_gods must be boolean')
-        self.allow_gods = allow_gods
+        self.allow_gods = True
         self.seats = {pid: Seat(pid) for pid in self.mode.seats}
         self.phase = RoomPhase.OPEN
         self.host_id: PlayerId | None = None
@@ -186,10 +184,6 @@ class MultiplayerRoom:
             self.seats = {pid: self.seats.get(pid, Seat(pid)) for pid in mode.seats}
             self.mode = mode
             self._ai = AIDecisionProvider(mode.seats[0])
-        if allow_gods is not None:
-            if type(allow_gods) is not bool:
-                raise RoomError('allow_gods must be boolean')
-            self.allow_gods = allow_gods
         self._broadcast_lobby()
 
     def kick(self, host_id: PlayerId, target_id: PlayerId) -> None:
@@ -229,7 +223,7 @@ class MultiplayerRoom:
 
     def _new_draft_request(self, pid: PlayerId) -> None:
         assert self.pregame is not None
-        pool = PLAYABLE_GENERAL_POOL if self.allow_gods else ORDINARY_GENERAL_POOL
+        pool = PLAYABLE_GENERAL_POOL
         remaining = [c.id for c in pool if c.id not in self.pregame.generals.values()]
         self.pregame.rng.shuffle(remaining)
         candidates = tuple(map(str, remaining[:9])) + (('forest_god_lvbu',) if self.review_god_lvbu and pid == self.host_id else (str(remaining[9]),))
@@ -326,7 +320,7 @@ class MultiplayerRoom:
         if self.draft_requests:
             return
         assert self.pregame is not None
-        pool = PLAYABLE_GENERAL_POOL if self.allow_gods else ORDINARY_GENERAL_POOL
+        pool = PLAYABLE_GENERAL_POOL
         available = [c.id for c in pool if c.id not in self.pregame.generals.values()]
         for seat in self.seats.values():
             if seat.controller is Controller.AI:
@@ -550,7 +544,7 @@ class MultiplayerRoom:
             card = self.session.state.cards[event.metadata['card_id']]
             result.update(kind='CardRevealedEvent', source_id=str(event.source_id),
                           definition_id=str(card.definition_id), card_name=self.session.definitions.get(card.definition_id).name,
-                          suit=card.suit.value, rank=card.rank, skill_id=event.metadata['skill_id'])
+                          suit=card.suit.value, rank=card.rank, skill_id=event.metadata.get('skill_id', ''))
         elif isinstance(event, Event) and event.event_type == 'after_judgment':
             result.update(kind='JudgmentEvent', source_id=str(event.source_id or ''),
                           matched=bool(event.metadata.get('matched', False)))

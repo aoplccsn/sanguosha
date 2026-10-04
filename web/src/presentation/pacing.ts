@@ -1,9 +1,9 @@
 import type { PublicEvent } from '../types'
 export type GameSpeed = 'slow' | 'normal' | 'fast'
 export const presentationPacing = {
-  slow: { ordinary: 1050, key: 1450, impact: 1550, turn: 1050 },
-  normal: { ordinary: 725, key: 1025, impact: 1100, turn: 725 },
-  fast: { ordinary: 300, key: 475, impact: 550, turn: 300 },
+  slow: { ordinary: 2200, key: 3000, impact: 3200, turn: 2600 },
+  normal: { ordinary: 1400, key: 2000, impact: 2100, turn: 1700 },
+  fast: { ordinary: 600, key: 900, impact: 950, turn: 800 },
 } as const
 export function readGameSpeed(): GameSpeed {
   const value = localStorage.getItem('sanguosha.web.speed')

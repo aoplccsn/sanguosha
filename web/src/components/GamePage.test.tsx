@@ -9,6 +9,7 @@ const submitDecision = vi.fn()
 const returnHome = vi.fn()
 let request: any
 let generals: Record<string, any> = {}
+let publicEvents: any[] = []
 const card = { card_id: 'slash-1', name: '杀', suit: '♠', rank: '7', definition_id: 'basic.slash', category: 'basic', equipment_slot: '', details: '' }
 const players = [
   { player_id: 'p1', name: '你 · 房主', character_name: '曹操', identity_label: '主公', hp: 4, max_hp: 4, hand_count: 1, alive: true, active: true, character_id: 'caocao', faction: '魏', chained: false, equipment: [], judgments: [], base_distance: null, effective_distance: null, attack_range: 1, skill_labels: ['奸雄'] },
@@ -24,7 +25,7 @@ vi.mock('../state/GameContext', () => ({
       decisionProcessing: null,
       projection: { players, hand: [card], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
       pendingRequest: request,
-      publicEvents: [],
+      publicEvents,
       generals,
       result: null,
       error: '',
@@ -34,7 +35,19 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
-  beforeEach(() => { submitDecision.mockClear(); request = null; generals = {}; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
+  beforeEach(() => { submitDecision.mockClear(); request = null; generals = {}; publicEvents = []; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
+
+  it.each([
+    [{ event_id: 'slash', kind: 'CardUsedEvent', source_id: 'p1', target_ids: ['p2'], card_name: '杀' }, '曹操 对 刘备 使用【杀】', 'p1', 'p2'],
+    [{ event_id: 'dodge', kind: 'CardRespondedEvent', source_id: 'p2', definition_id: 'basic.dodge' }, '刘备 打出【闪】', 'p2', ''],
+    [{ event_id: 'skill', kind: 'SkillEvent', source_id: 'p1', skill_name: '奸雄' }, '曹操 发动【奸雄】', 'p1', ''],
+  ])('names the actor and highlights action/target for %s', (event, text, actor, target) => {
+    publicEvents = [event]
+    const { container } = render(<GamePage />)
+    expect(screen.getByText(text)).toBeInTheDocument()
+    expect(container.querySelector(`[data-player-id="${actor}"]`)).toHaveClass('presenting-action')
+    if (target) expect(container.querySelector(`[data-player-id="${target}"]`)).toHaveClass('event-target')
+  })
 
   it('selects a Slash target and submits card plus target with one final confirm', async () => {
     request = { request_id: 'play-1', player_id: 'p1', request_type: 'choose_option', prompt: 'Choose a play action or end the play phase', choices: ['use:slash-1', 'end_play_phase'], allowed_player_ids: [], eligible_card_ids: [], required_definition_id: null, allow_pass: false, min_count: 0, max_count: 0, remaining_ms: 60000,

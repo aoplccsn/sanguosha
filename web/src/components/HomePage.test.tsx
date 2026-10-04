@@ -26,15 +26,15 @@ describe('HomePage', () => {
     render(<HomePage />)
     await userEvent.type(screen.getByLabelText('玩家昵称'), '玄德')
     await userEvent.click(screen.getByRole('button', { name: '单人游戏' }))
-    expect(createRoom).toHaveBeenCalledWith('玄德', true, 'military-five', false)
+    expect(createRoom).toHaveBeenCalledWith('玄德', true, 'military-five')
   })
 
-  it('creates a military-eight room with the God roster option', async () => {
+  it('creates a military-eight room with gods always available', async () => {
     render(<HomePage />)
     await userEvent.selectOptions(screen.getByLabelText('对局模式'), 'military-eight')
-    await userEvent.click(screen.getByLabelText('允许神将进入候选池'))
+    expect(screen.queryByLabelText('允许神将进入候选池')).not.toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: '创建多人房间' }))
-    expect(createRoom).toHaveBeenCalledWith('玩家', false, 'military-eight', true)
+    expect(createRoom).toHaveBeenCalledWith('玩家', false, 'military-eight')
   })
 
   it('prefills a shared room URL', () => {

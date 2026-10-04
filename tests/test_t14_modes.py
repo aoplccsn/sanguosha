@@ -125,7 +125,7 @@ def test_hidden_opponent_hand_uses_opaque_choice_and_restores_after_snapshot():
     decision = restored._resolve_hidden_choice(request, Decision('private-choice', 'p1', 'hidden-hand:1'))
     assert decision.value == hand[0]
 
-def test_god_toggle_changes_private_draft_pool_and_reconnect_keeps_owner():
+def test_gods_always_enter_private_draft_pool_and_reconnect_keeps_owner():
     import json
 
     def started(allow_gods):
@@ -139,8 +139,8 @@ def test_god_toggle_changes_private_draft_pool_and_reconnect_keeps_owner():
 
     ordinary, ordinary_wire, host, guest, host_token, guest_token = started(False)
     enabled, enabled_wire, _, _, enabled_host_token, enabled_guest_token = started(True)
-    assert not any("_god_" in choice for choice in ordinary.draft_requests[host].choices)
-    assert any("_god_" in choice for choice in enabled.draft_requests[host].choices)
+    assert ordinary.draft_requests[host].choices == enabled.draft_requests[host].choices
+    assert any("_god_" in choice for choice in ordinary.draft_requests[host].choices)
     for room, wire, tokens in (
         (ordinary, ordinary_wire, (host_token, guest_token)),
         (enabled, enabled_wire, (enabled_host_token, enabled_guest_token)),

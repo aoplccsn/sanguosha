@@ -121,11 +121,11 @@ function reducer(state: ClientState, action: Action): ClientState {
 }
 
 interface GameActions {
-  createRoom(name: string, singlePlayer?: boolean, modeId?: string, allowGods?: boolean): void
+  createRoom(name: string, singlePlayer?: boolean, modeId?: string): void
   joinRoom(name: string, roomCode: string): void
   setReady(ready: boolean): void
   startGame(): void
-  configureRoom(modeId: string, allowGods: boolean): void
+  configureRoom(modeId: string): void
   kickPlayer(seatId: string): void
   selectGeneral(id: string): void
   confirmGeneral(): void
@@ -373,7 +373,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const actions = useMemo<GameActions>(() => ({
-    createRoom(name, singlePlayer = false, modeId = 'military-five', allowGods = false) {
+    createRoom(name, singlePlayer = false, modeId = 'military-five') {
       const clean = name.trim() || '玩家'
       playerNameRef.current = clean
       dispatch({ type: 'set-name', payload: clean })
@@ -385,7 +385,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         name: clean,
         single_player: singlePlayer,
         mode_id: modeId,
-        allow_gods: allowGods,
+        allow_gods: true,
         review_god_lvbu: new URLSearchParams(window.location.search).get('t11_lvbu') === '1',
         ...(Number.isInteger(requestedSeed) && requestedSeed >= 0 ? { seed: requestedSeed } : {}),
       }
@@ -425,8 +425,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     startGame() {
       sendWhenConnected('START_GAME', {})
     },
-    configureRoom(modeId, allowGods) {
-      sendWhenConnected('CONFIGURE_ROOM', { mode_id: modeId, allow_gods: allowGods })
+    configureRoom(modeId) {
+      sendWhenConnected('CONFIGURE_ROOM', { mode_id: modeId })
     },
     kickPlayer(seatId) {
       sendWhenConnected('KICK_PLAYER', { seat_id: seatId })

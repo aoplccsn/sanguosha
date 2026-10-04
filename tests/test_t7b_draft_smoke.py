@@ -3,6 +3,7 @@
 from sanguosha.model.state import GameStatus
 from sanguosha.model.zones import ZoneRef, ZoneType
 from sanguosha.pregame import Pregame
+from sanguosha.content.characters.standard import PLAYABLE_GENERAL_POOL
 from sanguosha.session import GameSession
 
 
@@ -30,4 +31,6 @@ def test_seed_1_to_20_drafted_matches_resolve_without_residue():
         assert not session.state.cards_in(ZoneRef(ZoneType.PROCESSING)), seed
         session.state.__post_init__()
     assert len(assignments) > 1
-    assert len(seen_generals) == 25
+    assert len(seen_generals) > 25
+    assert seen_generals <= {general.id for general in PLAYABLE_GENERAL_POOL}
+    assert any('_god_' in general_id for general_id in seen_generals)

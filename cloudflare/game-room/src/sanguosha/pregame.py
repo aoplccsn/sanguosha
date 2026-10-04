@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from enum import StrEnum
 
-from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL
+from sanguosha.content.characters.standard import PLAYABLE_GENERAL_POOL
 from sanguosha.engine.requests import Decision, PendingRequest, RequestType
 from sanguosha.engine.rng import PythonRandomSource, RandomSource
 from sanguosha.model.enums import Identity
@@ -37,9 +37,7 @@ class Pregame:
         mode = game_mode(mode_id)
         roles = list(mode.roles)
         rng.shuffle(roles)
-        # Preserve the established standard-mode draft; T10 clients can opt
-        # into ALL_65_GENERAL_POOL through the pack-aware multiplayer path.
-        roster = list(STANDARD_25_GENERAL_POOL)
+        roster = list(PLAYABLE_GENERAL_POOL)
         rng.shuffle(roster)
         return cls(rng, dict(zip(mode.seats, roles)),
                    tuple(c.id for c in roster[:mode.general_offer_count]),
@@ -73,7 +71,7 @@ class Pregame:
         request.validate(decision.value)
         chosen = CharacterId(decision.value)
         self.generals[self.human_id] = chosen
-        available = [character.id for character in STANDARD_25_GENERAL_POOL if character.id != chosen]
+        available = [character.id for character in PLAYABLE_GENERAL_POOL if character.id != chosen]
         for pid in game_mode(self.mode_id).seats[1:]:
             selected = self.rng.choice(available)
             available.remove(selected)

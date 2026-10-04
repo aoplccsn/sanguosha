@@ -24,8 +24,7 @@ export function LobbyPage() {
         <div className="room-code-box"><span>房间码</span><strong>{state.roomCode}</strong><button onClick={copyCode}>复制房间码</button><button onClick={copyInvite}>复制邀请链接</button></div>
       </header>
       <div className="lobby-options">
-        <label>模式 <select aria-label="房间模式" value={lobby.mode_id} disabled={!isHost || !['OPEN', 'READY'].includes(lobby.phase)} onChange={(event) => actions.configureRoom(event.target.value, lobby.allow_gods)}><option value="military-five">军五 · 5 人</option><option value="military-eight">军八 · 8 人</option></select></label>
-        <label><input type="checkbox" checked={lobby.allow_gods} disabled={!isHost || !['OPEN', 'READY'].includes(lobby.phase)} onChange={(event) => actions.configureRoom(lobby.mode_id, event.target.checked)} /> 允许神将</label>
+        <label>模式 <select aria-label="房间模式" value={lobby.mode_id} disabled={!isHost || !['OPEN', 'READY'].includes(lobby.phase)} onChange={(event) => actions.configureRoom(event.target.value)}><option value="military-five">军五 · 5 人</option><option value="military-eight">军八 · 8 人</option></select></label>
       </div>
       <div className="seat-grid">
         {lobby.seats.map((seat, index) => <article className={`lobby-seat ${seat.controller_type.toLowerCase()} ${seat.connected ? '' : 'offline'}`} key={seat.seat_id}>

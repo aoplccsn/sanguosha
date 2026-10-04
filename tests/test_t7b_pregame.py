@@ -4,7 +4,7 @@ from collections import Counter
 
 import pytest
 
-from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL
+from sanguosha.content.characters.standard import STANDARD_25_GENERAL_POOL, PLAYABLE_GENERAL_POOL
 from sanguosha.engine.requests import Decision
 from sanguosha.model.enums import Gender, Identity
 from sanguosha.pregame import Pregame, SetupStage
@@ -19,7 +19,7 @@ def test_standard_roster_has_25_unique_classic_characters_and_gender():
 
 def test_seeded_roles_candidates_and_ai_draft_across_twenty_seeds():
     human_roles = set()
-    pool = {general.id for general in STANDARD_25_GENERAL_POOL}
+    pool = {general.id for general in PLAYABLE_GENERAL_POOL}
     for seed in range(1, 21):
         first, second = Pregame.create(seed), Pregame.create(seed)
         assert first.identities == second.identities

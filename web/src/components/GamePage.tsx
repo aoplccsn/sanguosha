@@ -45,13 +45,15 @@ export function portraitState(player: PlayerView, selected: boolean, selectable:
     judgment: false }
 }
 
-export function PlayerPanel({ player, position, selected, selectable, responding, eventKind, eventCue, godCue, vfxQuality, onSelect, onDetail }: {
+export function PlayerPanel({ player, position, selected, selectable, responding, eventKind, eventActor, eventTarget, eventCue, godCue, vfxQuality, onSelect, onDetail }: {
   player: PlayerView
   position: string
   selected: boolean
   selectable: boolean
   responding: boolean
   eventKind?: string
+  eventActor?: boolean
+  eventTarget?: boolean
   eventCue?: PublicEvent
   godCue?: { mode: GodPortraitMode; id: number }
   vfxQuality: VfxQuality
@@ -73,7 +75,8 @@ export function PlayerPanel({ player, position, selected, selectable, responding
     + (portrait.faceDown ? ' face-down' : '')
     + (portrait.dying ? ' dying' : '')
     + (portrait.chained ? ' chained' : '')
-    + (eventKind?.includes('CardUsed') || eventKind?.includes('Skill') ? ' presenting-action' : '')
+    + (eventActor && /CardUsed|Responded|VirtualResponse|Skill|Guhuo/.test(eventKind ?? '') ? ' presenting-action' : '')
+    + (eventTarget ? ' event-target' : '')
     + (eventKind?.includes('Damage') ? ' damage-flash' : '')
     + (eventKind?.includes('Recover') ? ' healing-flash' : '')
     + (!player.alive ? ' dead' : '')
@@ -109,7 +112,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
       <div className="mini-skills">{player.skill_labels.map((skill) => <span key={skill}>{skill}</span>)}</div>
       <div className="seat-marks">{!!player.marks && Object.entries(player.marks).filter(([, count]) => count > 0).map(([mark, count]) => <span key={mark} className="mark-badge">{markLabel(mark)} {count}</span>)}</div>
     </div>
-    {eventKind && /CardUsed|Skill/.test(eventKind) && <span className="action-badge">正在行动</span>}
+    {eventActor && eventKind && /CardUsed|Responded|VirtualResponse|Skill/.test(eventKind) && <span className="action-badge">正在行动</span>}
     {player.active && <span className="turn-badge">当前回合</span>}
     {responding && <span className="response-badge">正在响应</span>}
   </article>
@@ -246,10 +249,13 @@ function SharedCards({ cards, selected, eligible, onSelect }: { cards: CardView[
 function EventStage({ event, players }: { event?: PublicEvent; players: PlayerView[] }) {
   const { state: { generals: stateCatalogForEvents } } = useGame()
   if (!event) return <div className="event-stage quiet"><span>牌局进行中</span></div>
-  const name = (id: unknown) => players.find((player) => player.player_id === id)?.name ?? String(id ?? '')
+  const name = (id: unknown) => players.find((player) => player.player_id === id)?.character_name ?? String(id ?? '')
   const kind = String(event.kind ?? '')
   let text = '牌局结算'
-  if (kind.includes('CardUsed') || kind.includes('TrickTargets')) text = name(event.source_id) + ' 使用【' + String(event.card_name ?? '卡牌') + '】'
+  if (kind.includes('CardUsed') || kind.includes('TrickTargets')) {
+    const targets = Array.isArray(event.target_ids) ? event.target_ids.map(name).join('、') : ''
+    text = name(event.source_id) + (targets ? ' 对 ' + targets : '') + ' 使用【' + String(event.card_name ?? '卡牌') + '】'
+  }
   else if (kind === 'GuhuoEvent') text = name(event.source_id) + (event.stage === 'reveal'
     ? ' 揭示蛊惑牌【' + (cardNames[String(event.actual)] ?? String(event.actual)) + '】'
     : ' 蛊惑声明【' + (cardNames[String(event.declared)] ?? String(event.declared)) + '】')
@@ -262,6 +268,7 @@ function EventStage({ event, players }: { event?: PublicEvent; players: PlayerVi
   else if (kind.includes('Skill')) text = name(event.source_id ?? event.player_id) + ' 发动【' + String(event.skill_name ?? Object.values(stateCatalogForEvents).flatMap(item => item.skills).find(skill => skill.id === event.skill_id)?.name ?? '技能') + '】'
   else if (kind.includes('Turn')) text = name(event.player_id) + ' · ' + (kind.includes('Started') ? '回合开始' : '回合结束')
   else if (kind.includes('Discard') || kind.includes('CardMoved')) text = name(event.player_id ?? event.source_id) + ' 弃牌'
+  else if (kind === 'CardRevealedEvent') text = name(event.source_id) + ' 展示【' + String(event.card_name ?? '卡牌') + '】'
   else if (kind.includes('Dying')) text = name(event.player_id ?? event.target_id) + ' 濒死结算'
   else if (kind.includes('Death') || kind.includes('Died')) text = name(event.player_id ?? event.target_id) + ' 阵亡'
   else if (kind.includes('Judgment')) text = name(event.source_id) + ' · 判定' + (event.matched === true ? '命中' : event.matched === false ? '未命中' : '正在结算')
@@ -426,15 +433,15 @@ export function GamePage() {
   const beamMode = request?.request_type === 'respond_with_card' ? 'protect' : selectedOption.includes('slash') || request?.required_definition_id?.includes('slash') ? 'attack' : 'normal'
   const detailGeneral = detailPlayer ? state.generals[detailPlayer.character_id] : undefined
   const latestEvent = visibleEvents[visibleEvents.length - 1]
-  const eventTarget = String(latestEvent?.target_id ?? latestEvent?.player_id ?? '')
-  const eventSource = String(latestEvent?.source_id ?? '')
+  const eventActorId = String(latestEvent?.source_id ?? latestEvent?.player_id ?? '')
+  const eventTargetIds = [String(latestEvent?.target_id ?? ''), ...(Array.isArray(latestEvent?.target_ids) ? latestEvent.target_ids.map(String) : [])]
   const eventKind = String(latestEvent?.kind ?? '')
 
   return <main className="game-page table-background">
     <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><label>对局速度 <select aria-label="对局速度" value={gameSpeed} onChange={(event) => { const value = event.target.value as GameSpeed; setGameSpeed(value); localStorage.setItem('sanguosha.web.speed', value) }}><option value="slow">慢</option><option value="normal">正常</option><option value="fast">快</option></select></label><label className="vfx-quality-control">画质 <select aria-label="战斗特效画质" value={vfxQuality} onChange={(event) => { const value = event.target.value as VfxQuality; setVfxQuality(value); saveVfxQuality(value) }}><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></label><button onClick={actions.returnHome}>离开牌局</button></div></header>
     <section className={'game-board' + (projection.players.length === 8 ? ' eight-seats' : '')}>
       <CombatVFXLayer players={projection.players} targets={selectedTargets} mode={beamMode} events={visibleEvents} quality={vfxQuality} />
-      {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={(projection.players.length === 8 ? positionsEight : positions)[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} eventKind={eventTarget === player.player_id || eventSource === player.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} eventCue={latestEvent} godCue={godCues[player.player_id]} vfxQuality={vfxQuality} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
+      {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={(projection.players.length === 8 ? positionsEight : positions)[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} eventKind={eventTargetIds.includes(player.player_id) || eventActorId === player.player_id ? eventKind : undefined} eventActor={eventActorId === player.player_id} eventTarget={eventTargetIds.includes(player.player_id)} eventCue={latestEvent} godCue={godCues[player.player_id]} vfxQuality={vfxQuality} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
       <EventStage event={latestEvent} players={projection.players} />
       <SharedCards cards={projection.shared_cards} selected={selectedCards} eligible={eligibleCards} onSelect={toggleCard} />
       {otherCardChoices.length > 0 && <section className="shared-card-pool" aria-label="可选目标牌">
@@ -455,7 +462,7 @@ export function GamePage() {
       </div>
       <div className="self-area">
         {request && <DecisionPrompt request={request} projection={projection} canConfirm={canConfirm} processing={!!state.decisionProcessing} summary={summary} onConfirm={confirm} onCancel={() => updateSelection((current) => current.targets.length ? { ...current, targets: [] } : { ...current, cards: [], option: '' })} onPass={() => submitImmediate({ pass: true })} onBoolean={submitImmediate} onOption={submitImmediate} />}
-        <PlayerPanel player={self} position="self" selected={false} selectable={false} responding={request?.player_id === self.player_id} eventKind={eventTarget === self.player_id || eventSource === self.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} eventCue={latestEvent} godCue={godCues[self.player_id]} vfxQuality={vfxQuality} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
+        <PlayerPanel player={self} position="self" selected={false} selectable={false} responding={request?.player_id === self.player_id} eventKind={eventTargetIds.includes(self.player_id) || eventActorId === self.player_id ? eventKind : undefined} eventActor={eventActorId === self.player_id} eventTarget={eventTargetIds.includes(self.player_id)} eventCue={latestEvent} godCue={godCues[self.player_id]} vfxQuality={vfxQuality} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
         <SkillBar player={self} general={state.generals[self.character_id]} skillNames={Object.fromEntries(Object.values(state.generals).flatMap((general) => general.skills.map((skill) => [skill.id, skill.name])))} request={request} chosen={selectedOption} onUnavailable={() => setHint('此技能当前不可使用')} onChoose={(option) => { if (state.decisionProcessing) return; setHint(''); setSelectedOption(selectedOption === option ? '' : option); if (request?.request_type === 'respond_with_card') setSelectedCards([]) }} />
         <div className="hand" aria-label="手牌区">{projection.hand.map((card) => <HandCard key={card.card_id} card={card} selected={selectedCards.includes(card.card_id)} eligible={cardEligible(card.card_id)} onClick={() => toggleCard(card.card_id)} />)}</div>
       </div>

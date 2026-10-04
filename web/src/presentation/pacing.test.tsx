@@ -13,6 +13,12 @@ it('uses three ordered tiers only for semantic actions', () => {
   }
   expect(eventDuration({kind:'ProjectionUpdate'} as PublicEvent,'normal')).toBe(0)
 })
+it('holds key actions for the requested three speeds', () => {
+  const card = { kind: 'CardUsedEvent' } as PublicEvent
+  expect(eventDuration(card, 'slow')).toBe(3000)
+  expect(eventDuration(card, 'normal')).toBe(2000)
+  expect(eventDuration(card, 'fast')).toBe(900)
+})
 it('keeps event spacing when new events arrive, then immediately flushes for a human', () => {
   vi.useFakeTimers()
   const {result, rerender} = renderHook(({items,human}:{items:PublicEvent[],human?:string}) => usePresentation(items,'normal',human),{initialProps:{items:events.slice(0,2),human:undefined as string|undefined}})
