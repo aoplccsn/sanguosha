@@ -542,7 +542,7 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .game-board::before { content:''; position:absolute; inset:28% 17% 24%; border:1px solid #bfa2751a; border-radius:50%; background:radial-gradient(ellipse,#99815c12,transparent 68%); box-shadow:0 0 0 14px #a78d6010,0 0 65px #ba966710; pointer-events:none; }
 .game-board .player-panel { isolation:isolate; display:block; width:var(--seat-w); height:var(--seat-h); min-height:0; padding:0; border:0; border-radius:0; background:none; box-shadow:none; transition:none; text-shadow:0 1px 4px #000,0 0 8px #000; }
 .game-board .portrait-button { inset:0; width:100%; height:100%; border:0; border-radius:0; background:none; box-shadow:none; overflow:visible; }
-.game-board .dynamic-portrait { mask-image:linear-gradient(90deg,transparent,#000 5% 95%,transparent),linear-gradient(transparent,#000 4% 80%,transparent); mask-composite:intersect; }
+.game-board .dynamic-portrait { mask-image:none; }
 .game-board .portrait-button:focus-visible { outline:2px solid #f8da91; outline-offset:2px; }
 /* A single open edge anchors the figure, and doubles as the targeting signal. */
 .game-board .player-panel::after { content:''; position:absolute; z-index:2; inset:12% 2% 4%; border:1px solid transparent; border-top:0; pointer-events:none; transition:box-shadow .15s,border-color .15s; }
@@ -555,6 +555,9 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .game-board .player-panel.responding::after { border-right-color:#7ed2dc; }
 .game-board .player-panel.presenting-action::after { border-color:#ffe8ac; box-shadow:inset 0 0 28px #ffdc6866,0 0 28px #e8b44ac7; }
 .game-board .player-panel.event-target::after { border-color:#8bd7df; box-shadow:inset 0 0 21px #67cdd466,0 0 20px #67cdd4a6; }
+.game-board .player-panel.thinking::after { border-color:#f0cf7a; animation:thinkingPulse 1.35s ease-in-out infinite; }
+.game-board .thinking-badge { top:-9px; left:50%; transform:translateX(-50%); padding:2px 8px; border:1px solid #d5ae62; background:#4a321ccc; color:#ffe8ae; font-size:11px; letter-spacing:.08em; pointer-events:none; }
+@keyframes thinkingPulse { 0%,100% { box-shadow:inset 0 0 16px #d99b3826,0 0 10px #d99b385c; } 50% { box-shadow:inset 0 0 28px #f1c96655,0 0 30px #f1c966c2; } }
 .game-board .player-heading { position:absolute; z-index:3; top:5px; left:9px; right:9px; display:flex; flex-wrap:nowrap; align-items:center; font-size:10px; pointer-events:none; }
 .game-board .player-heading strong { font-weight:400; color:#dfd3bc; }
 .game-board .player-heading span { padding:2px 4px; background:#71271fcc; font-size:10px; }
@@ -673,12 +676,7 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
   background:radial-gradient(ellipse at bottom,#15120cad,transparent 78%);
 }
 
-.game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_zhang_jiao"]) .dynamic-portrait {
-  mask-image:var(--fusion-mask),linear-gradient(90deg,transparent,#000 2% 98%,transparent),linear-gradient(transparent,#000 1%);
-  mask-size:100% 100%; mask-repeat:no-repeat; mask-composite:intersect; mask-mode:alpha;
-}
-/* Preserve the full original Guan Yu composition in both static and video states. */
-.game-board [data-character-id="wind_god_guanyu"] .dynamic-portrait { mask-image:none; }
+.game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_zhang_jiao"]) .dynamic-portrait { mask-image:none; }
 
 /* Flip the sampled composition as a unit; an asymmetric mask must follow it. */
 .game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_zhang_jiao"]).face-down .dynamic-portrait { transform:scaleX(-1); }

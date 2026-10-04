@@ -28,6 +28,39 @@ class AIDecisionProvider:
             return 100 if living == 2 else -20
         return 20 + 10 * min(public_hostility, 3)
 
+    def _target_score(self, state: GameState, actor: PlayerId, target: PlayerId, *, damage: int = 1) -> int:
+        """Shared relation/threat/kill heuristic for legal target choices."""
+        if target == actor or not state.players[target].is_alive:
+            return -10_000
+        player = state.players[target]
+        hand = len(state.cards_in(ZoneRef(ZoneType.HAND, target)))
+        score = self._priority(state, actor, target) * 4 + (player.max_hp - player.hp) * 3 + hand
+        if player.hp <= damage:
+            score += 30
+        if player.hp == 1:
+            score += 12
+        if not player.face_up:
+            score -= 4
+        return score
+
+    def _card_value(self, state: GameState, player_id: PlayerId, definition_id: str) -> int:
+        player = state.players[player_id]
+        if definition_id == PEACH_ID:
+            return 28 if player.hp <= 1 else 3
+        if definition_id == DODGE_ID:
+            return 22 if player.hp <= 1 else 10
+        if definition_id in (SLASH_ID, 'basic.fire_slash', 'basic.thunder_slash'):
+            return 14 if player.hp <= 1 else 20
+        if definition_id == 'trick.nullification':
+            return 20 if player.hp <= 1 else 12
+        if definition_id.startswith('equipment.'):
+            return 8
+        return 6
+
+    def _choice_card_value(self, state: GameState, player_id: PlayerId, card_id: str) -> int:
+        card = state.cards.get(card_id)
+        return self._card_value(state, player_id, card.definition_id) if card is not None else 5
+
     def decide(self, state: GameState, request: PendingRequest) -> Decision:
         player_id = request.player_id
         from .yj2011_tier3 import decide as decide_tier3
@@ -131,7 +164,8 @@ class AIDecisionProvider:
                   and len(state.cards_in(ZoneRef(ZoneType.HAND, player_id))) >= 2):
                 value = 'skill:huangtian'
             elif slash and enemies:
-                value = slash[0]
+                value = max(slash, key=lambda choice: (
+                    self._choice_card_value(state, player_id, choice[4:]), str(choice)))
             elif enemies and any(choice.startswith('virtual:wusheng:') for choice in request.choices):
                 value = next(choice for choice in request.choices if choice.startswith('virtual:wusheng:'))
             elif enemies and any(choice.startswith('virtual:qixi:') for choice in request.choices):
@@ -201,12 +235,13 @@ class AIDecisionProvider:
                 value = (player_id if '青囊' in request.prompt and player_id in request.allowed_player_ids else
                      min(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid))
                      if '仁德' in request.prompt or '青囊' in request.prompt or '遗计' in request.prompt or '结姻' in request.prompt else
-                     max(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid)))
+                     max(request.allowed_player_ids, key=lambda pid: self._target_score(state, player_id, pid)))
         elif kind is RequestType.RESPOND_WITH_CARD:
             if not request.eligible_card_ids:
                 value = PASS_RESPONSE
             elif request.required_definition_id == DODGE_ID:
-                value = request.eligible_card_ids[0]
+                value = max(request.eligible_card_ids, key=lambda cid: (
+                    self._choice_card_value(state, player_id, cid), str(cid)))
             elif request.required_definition_id == PEACH_ID:
                 subject = request.subject_player_id
                 if subject is not None and (subject == player_id or self._priority(state, player_id, subject) < 0):
@@ -217,8 +252,9 @@ class AIDecisionProvider:
                 value = request.eligible_card_ids[0] if state.ruleset_id == 'classic-military' else PASS_RESPONSE
         elif kind is RequestType.CHOOSE_CARDS:
             # Low value is discarded first: Slash, Dodge, then Peach.
-            keep_value = {SLASH_ID: 0, DODGE_ID: 1, PEACH_ID: 2}
-            ordered = sorted(request.eligible_card_ids, key=lambda cid: (keep_value.get(state.cards[cid].definition_id, 0), str(cid)))
+            ordered = sorted(request.eligible_card_ids, key=lambda cid: (
+                100 if (state.cards.get(cid) is not None and state.cards[cid].definition_id == PEACH_ID)
+                else self._choice_card_value(state, player_id, cid), str(cid)))
             value = tuple(ordered[:request.min_count])
         elif kind is RequestType.CHOOSE_CARD:
             if '拼点：选择' in request.prompt:
