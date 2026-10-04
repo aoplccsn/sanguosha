@@ -157,8 +157,7 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                 "implemented": character.metadata.get("implemented", True),
                 "playable": character.metadata.get("playable", True),
                 "portrait_mode": character.metadata.get("portrait_mode", "static"),
-                "portrait": ("/assets/generals/default_general.png" if character.metadata.get("pack") == "yj2011"
-                             else f"/assets/generals/{character.kingdom.value}/{character.id}.png"),
+                "portrait": f"/assets/generals/{character.kingdom.value}/{character.id}.png",
                 "skills": [
                     {"id": str(skill_id), "name": skills[str(skill_id)].name,
                      "description": skills[str(skill_id)].description,

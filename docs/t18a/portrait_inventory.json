@@ -1,0 +1,255 @@
+[
+  {
+    "id": "yj2011_zhang_chunhua",
+    "name": "张春华",
+    "source": "assets/source_art/yj2011/yj2011_zhang_chunhua.png",
+    "source_size": 2911869,
+    "runtime": "assets/generals/wei/yj2011_zhang_chunhua.png",
+    "runtime_size": 1545032,
+    "webp": "assets/generals/wei/yj2011_zhang_chunhua.webp",
+    "webp_size": 114736,
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "runtime_dimensions": [
+      768,
+      1152
+    ],
+    "webp_dimensions": [
+      600,
+      900
+    ],
+    "retried": true
+  },
+  {
+    "id": "yj2011_yu_jin",
+    "name": "于禁",
+    "source": "assets/source_art/yj2011/yj2011_yu_jin.png",
+    "source_size": 3578488,
+    "runtime": "assets/generals/wei/yj2011_yu_jin.png",
+    "runtime_size": 1865384,
+    "webp": "assets/generals/wei/yj2011_yu_jin.webp",
+    "webp_size": 177934,
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "runtime_dimensions": [
+      768,
+      1152
+    ],
+    "webp_dimensions": [
+      600,
+      900
+    ],
+    "retried": false
+  },
+  {
+    "id": "yj2011_cao_zhi",
+    "name": "曹植",
+    "source": "assets/source_art/yj2011/yj2011_cao_zhi.png",
+    "source_size": 3328444,
+    "runtime": "assets/generals/wei/yj2011_cao_zhi.png",
+    "runtime_size": 1762888,
+    "webp": "assets/generals/wei/yj2011_cao_zhi.webp",
+    "webp_size": 166060,
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "runtime_dimensions": [
+      768,
+      1152
+    ],
+    "webp_dimensions": [
+      600,
+      900
+    ],
+    "retried": false
+  },
+  {
+    "id": "yj2011_fa_zheng",
+    "name": "法正",
+    "source": "assets/source_art/yj2011/yj2011_fa_zheng.png",
+    "source_size": 2904406,
+    "runtime": "assets/generals/shu/yj2011_fa_zheng.png",
+    "runtime_size": 1566062,
+    "webp": "assets/generals/shu/yj2011_fa_zheng.webp",
+    "webp_size": 134546,
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "runtime_dimensions": [
+      768,
+      1152
+    ],
+    "webp_dimensions": [
+      600,
+      900
+    ],
+    "retried": false
+  },
+  {
+    "id": "yj2011_ma_su",
+    "name": "马谡",
+    "source": "assets/source_art/yj2011/yj2011_ma_su.png",
+    "source_size": 3234650,
+    "runtime": "assets/generals/shu/yj2011_ma_su.png",
+    "runtime_size": 1730146,
+    "webp": "assets/generals/shu/yj2011_ma_su.webp",
+    "webp_size": 162142,
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "runtime_dimensions": [
+      768,
+      1152
+    ],
+    "webp_dimensions": [
+      600,
+      900
+    ],
+    "retried": false
+  },
+  {
+    "id": "yj2011_xu_shu",
+    "name": "徐庶",
+    "source": "assets/source_art/yj2011/yj2011_xu_shu.png",
+    "source_size": 3231463,
+    "runtime": "assets/generals/shu/yj2011_xu_shu.png",
+    "runtime_size": 1745424,
+    "webp": "assets/generals/shu/yj2011_xu_shu.webp",
+    "webp_size": 161086,
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "runtime_dimensions": [
+      768,
+      1152
+    ],
+    "webp_dimensions": [
+      600,
+      900
+    ],
+    "retried": false
+  },
+  {
+    "id": "yj2011_ling_tong",
+    "name": "凌统",
+    "source": "assets/source_art/yj2011/yj2011_ling_tong.png",
+    "source_size": 3281424,
+    "runtime": "assets/generals/wu/yj2011_ling_tong.png",
+    "runtime_size": 1787023,
+    "webp": "assets/generals/wu/yj2011_ling_tong.webp",
+    "webp_size": 182826,
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "runtime_dimensions": [
+      768,
+      1152
+    ],
+    "webp_dimensions": [
+      600,
+      900
+    ],
+    "retried": false
+  },
+  {
+    "id": "yj2011_xu_sheng",
+    "name": "徐盛",
+    "source": "assets/source_art/yj2011/yj2011_xu_sheng.png",
+    "source_size": 2826547,
+    "runtime": "assets/generals/wu/yj2011_xu_sheng.png",
+    "runtime_size": 1551254,
+    "webp": "assets/generals/wu/yj2011_xu_sheng.webp",
+    "webp_size": 131822,
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "runtime_dimensions": [
+      768,
+      1152
+    ],
+    "webp_dimensions": [
+      600,
+      900
+    ],
+    "retried": false
+  },
+  {
+    "id": "yj2011_wu_guotai",
+    "name": "吴国太",
+    "source": "assets/source_art/yj2011/yj2011_wu_guotai.png",
+    "source_size": 2996824,
+    "runtime": "assets/generals/wu/yj2011_wu_guotai.png",
+    "runtime_size": 1621005,
+    "webp": "assets/generals/wu/yj2011_wu_guotai.webp",
+    "webp_size": 144250,
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "runtime_dimensions": [
+      768,
+      1152
+    ],
+    "webp_dimensions": [
+      600,
+      900
+    ],
+    "retried": false
+  },
+  {
+    "id": "yj2011_chen_gong",
+    "name": "陈宫",
+    "source": "assets/source_art/yj2011/yj2011_chen_gong.png",
+    "source_size": 2946453,
+    "runtime": "assets/generals/qun/yj2011_chen_gong.png",
+    "runtime_size": 1586131,
+    "webp": "assets/generals/qun/yj2011_chen_gong.webp",
+    "webp_size": 133656,
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "runtime_dimensions": [
+      768,
+      1152
+    ],
+    "webp_dimensions": [
+      600,
+      900
+    ],
+    "retried": false
+  },
+  {
+    "id": "yj2011_gao_shun",
+    "name": "高顺",
+    "source": "assets/source_art/yj2011/yj2011_gao_shun.png",
+    "source_size": 3217299,
+    "runtime": "assets/generals/qun/yj2011_gao_shun.png",
+    "runtime_size": 1694285,
+    "webp": "assets/generals/qun/yj2011_gao_shun.webp",
+    "webp_size": 146964,
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "runtime_dimensions": [
+      768,
+      1152
+    ],
+    "webp_dimensions": [
+      600,
+      900
+    ],
+    "retried": false
+  }
+]
