@@ -22,7 +22,7 @@
 | 武将/技能 | 复用类型 | 具体语义 | 中文choice_labels |
 | --- | --- | --- | --- |
 | 张春华/jueqing | 无需主动请求 | 伤害正式产生前改为 LoseHpAction，保留原始行动链但不发布伤害事件；禁止铁索复制；无伤害杀手归因需Q08。 | {} |
-| 张春华/shangshi | YES_NO | 手牌/HP/maxHP变化后请求补至min(已损HP,2)；一次反应快照后再检测，避免自身摸牌递归。 | {"decline": "放弃发动", "done": "确认选择"} |
+| 张春华/shangshi | YES_NO | 手牌/HP/maxHP变化后，手牌小于已损失体力时请求补至已损失体力；无2张上限；自身摸牌防递归。 | {"decline": "放弃发动", "done": "确认选择"} |
 | 于禁/yizhong | 无需主动请求 | 被指定可合法；效果阶段黑色杀且无防具则对该角色无效。 | {} |
 | 曹植/luoying | YES_NO, CHOOSE_CARDS | 只接受他人牌的弃置与判定弃置批次，逐张重检仍在弃牌堆且有效梅花；对使用/响应弃牌不触发。 | {"decline": "放弃发动", "done": "确认选择"} |
 | 曹植/jiushi | CHOOSE_OPTION, YES_NO | 酒的合法窗口翻面虚拟使用；伤害扣HP前记录face_up，结算后只按快照决定翻正。 | {"decline": "放弃发动", "done": "确认选择"} |
@@ -59,7 +59,7 @@
 | 程普/chunlao | YES_NO, CHOOSE_CARDS, CHOOSE_CARD | 结束阶段没有醇时可存至少一杀；濒死时消耗一醇视为濒死者用酒，通过标准酒自救与濒死管线。 | {"decline": "放弃发动", "done": "确认选择"} |
 | 韩当/gongqi | CHOOSE_CARD, CHOOSE_PLAYER, CHOOSE_OPTION | 一次出牌阶段弃任意一牌，本回合攻击范围无限，若装备可再弃其他人牌1；不改通用距离。 | {"decline": "放弃发动", "done": "确认选择"} |
 | 韩当/jiefan | CHOOSE_PLAYER, CHOOSE_CARD | 限定PLAY选角色；按当前席位序依次询问攻击范围含目标者，弃一武器（手或装备）否则目标摸1。 | {"decline": "放弃发动", "done": "确认选择"} |
-| 刘表/zishou | YES_NO | 受伤摸牌阶段可增已损HP摸牌，并skip_play；非按势力数候选，禁止拼接新版。 | {"decline": "放弃发动", "done": "确认选择"} |
+| 刘表/zishou | YES_NO | 摸牌阶段可额外摸存活势力数；本回合出牌阶段用牌不能指定其他角色；不跳出牌阶段，回合边界清理限制。 | {"decline": "放弃发动", "done": "确认选择"} |
 | 刘表/zongshi | 无需主动请求 | 锁定手牌上限+存活有效势力种数，化身势力经SkillRegistry.faction；神当前映射群不自加新势力。 | {} |
 | 华雄/shiyong | 无需主动请求 | 实际红色杀或带wine标签杀伤后maxHP-1，每次伤害一次；红且酒不重复。 | {} |
 | 曹冲/chengxiang | YES_NO, CHOOSE_CARDS | 伤后公开顶4，选择非空子集且rank总和≤13；选中获得余牌弃置，服务端计算不是仅计数检查。 | {"decline": "放弃发动", "done": "确认选择"} |

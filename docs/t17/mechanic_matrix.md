@@ -1,5 +1,8 @@
 # 引擎依赖审计（仅设计）
 
+38/38 项目最终版本于2026-10-04按用户决定LOCKED。锁定不等于官方卡面已验证：证据保持固定revision社区档案，authority_status不变。2012/2013/四神仍为catalog only；生产65。
+
+
 证据为88ca556工作树src/sanguosha，不是Cloudflare副本。A是所需基础动作已存在且可复用；B是已有原语需要扩展通用接口/窗口；C是缺少相应通用primitive。已有某个武将专用handler不能等同所有新技能已支持。下表接口都是提案，没有新增运行代码。
 
 | 依赖键 | 类 | 代码证据 | 拟定接口与语义 |
@@ -42,7 +45,7 @@ DrawCardsAction、CardMoveService单次draw/discard/obtain的实体唯一位置�
 | 武将/技能 | 类 | 依赖接口 | 机制语义 | 请求 | 边界测试 |
 | --- | --- | --- | --- | --- | --- |
 | 张春华/jueqing | B | HPREWRITE | 伤害正式产生前改为 LoseHpAction，保留原始行动链但不发布伤害事件；禁止铁索复制；无伤害杀手归因需Q08。 | 自动 | 火杀连环不传导；失去体力无伤害触发；上限变化；伤逝上限2/不封顶 |
-| 张春华/shangshi | B | REACTION | 手牌/HP/maxHP变化后请求补至min(已损HP,2)；一次反应快照后再检测，避免自身摸牌递归。 | YES_NO | 火杀连环不传导；失去体力无伤害触发；上限变化；伤逝上限2/不封顶 |
+| 张春华/shangshi | B | REACTION | 手牌/HP/maxHP变化后，手牌小于已损失体力时请求补至已损失体力；无2张上限；自身摸牌防递归。 | YES_NO | 火杀连环不传导；失去体力无伤害触发；上限变化；伤逝上限2/不封顶 |
 | 于禁/yizhong | A（基础动作/事件直接组合；动态ownership仍需C） | TARGET | 被指定可合法；效果阶段黑色杀且无防具则对该角色无效。 | 自动 | 黑杀/红杀/虚拟无色杀；防具被移走；无效非不能指定 |
 | 曹植/luoying | B | MOVE, REACTION | 只接受他人牌的弃置与判定弃置批次，逐张重检仍在弃牌堆且有效梅花；对使用/响应弃牌不触发。 | YES_NO, CHOOSE_CARDS | 使用材料不落英；已被获得不可再取；濒死酒诗；翻面跳回合；多点伤害一次翻面 |
 | 曹植/jiushi | B | VIEWAS, DYING, REACTION | 酒的合法窗口翻面虚拟使用；伤害扣HP前记录face_up，结算后只按快照决定翻正。 | CHOOSE_OPTION, YES_NO | 使用材料不落英；已被获得不可再取；濒死酒诗；翻面跳回合；多点伤害一次翻面 |
@@ -79,7 +82,7 @@ DrawCardsAction、CardMoveService单次draw/discard/obtain的实体唯一位置�
 | 程普/chunlao | B | PILE, DYING, VIEWAS | 结束阶段没有醇时可存至少一杀；濒死时消耗一醇视为濒死者用酒，通过标准酒自救与濒死管线。 | YES_NO, CHOOSE_CARDS, CHOOSE_CARD | 铁索连伤只扣一次；原生火杀不扣HP；醇为空才补；多次救援；完杀；移去醇不是手牌酒 |
 | 韩当/gongqi | B | TARGET, SCOPE | 一次出牌阶段弃任意一牌，本回合攻击范围无限，若装备可再弃其他人牌1；不改通用距离。 | CHOOSE_CARD, CHOOSE_PLAYER, CHOOSE_OPTION | 攻击范围非距离；武器可来自手/装备；每次选择后重检存活；无武器摸；限定不可重复 |
 | 韩当/jiefan | B | TARGET, SEQUENCE | 限定PLAY选角色；按当前席位序依次询问攻击范围含目标者，弃一武器（手或装备）否则目标摸1。 | CHOOSE_PLAYER, CHOOSE_CARD | 攻击范围非距离；武器可来自手/装备；每次选择后重检存活；无武器摸；限定不可重复 |
-| 刘表/zishou | B | PHASE | 受伤摸牌阶段可增已损HP摸牌，并skip_play；非按势力数候选，禁止拼接新版。 | YES_NO | 满HP不自守；势力种数不是人数；神映射群；化身切换影响；不同原版修订另列 |
+| 刘表/zishou | B | PHASE | 摸牌阶段可额外摸存活势力数；本回合出牌阶段用牌不能指定其他角色；不跳出牌阶段，回合边界清理限制。 | YES_NO | 满HP不自守；势力种数不是人数；神映射群；化身切换影响；不同原版修订另列 |
 | 刘表/zongshi | B | SCOPE | 锁定手牌上限+存活有效势力种数，化身势力经SkillRegistry.faction；神当前映射群不自加新势力。 | 自动 | 满HP不自守；势力种数不是人数；神映射群；化身切换影响；不同原版修订另列 |
 | 华雄/shiyong | A（基础动作/事件直接组合；动态ownership仍需C） | MAXHP, REACTION | 实际红色杀或带wine标签杀伤后maxHP-1，每次伤害一次；红且酒不重复。 | 自动 | 红酒杀仅一次；黑酒杀一次；多点仅一次；上限0死亡；无体力流失触发 |
 | 曹冲/chengxiang | B | SUBSET | 伤后公开顶4，选择非空子集且rank总和≤13；选中获得余牌弃置，服务端计算不是仅计数检查。 | YES_NO, CHOOSE_CARDS | 和=13允许14拒绝；装备在手或装备区；成本翻面顺序；零装备；多点伤害整体防止 |

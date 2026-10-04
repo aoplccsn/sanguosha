@@ -44,8 +44,8 @@ def validate(data, general_ids, old_skills):
         require(re.fullmatch('[a-z][a-z0-9_]*', g['general_id']), 'general id format')
         require(g['authority_status'] == 'COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED',
                 'official evidence overstated')
-        require(g['version_status'] in ('LOCKED_REFERENCE', 'QUESTION'), 'version status')
-        require((g['version_status'] == 'QUESTION') == bool(g['question_ids']), 'question status mismatch')
+        require(g['version_status'] in ('LOCKED',), 'version status')
+        require(not g['question_ids'], 'unresolved general version')
         require(0 < g['base_hp'] <= g['max_hp'], 'base/max hp')
         require(g['ai_complexity'] in ('LOW', 'MEDIUM', 'HIGH', 'VERY HIGH'), 'ai rating')
         require(g['projection_risk'] in ('NONE', 'LOW', 'MEDIUM', 'HIGH'), 'projection rating')
@@ -81,7 +81,7 @@ def validate(data, general_ids, old_skills):
     require(next(g for g in records if g['chinese_name'] == '钟会')['gained_skill_ids'] == ['paiyi'],
             'paiyi must be awakening grant')
     return {'roster': len(records), 'unique_skills': len(definitions), 'counts': COUNTS,
-            'locked_reference': sum(g['version_status'] == 'LOCKED_REFERENCE' for g in records),
+            'locked': sum(g['version_status'] == 'LOCKED' for g in records),
             'question': sum(g['version_status'] == 'QUESTION' for g in records),
             'target_roster': 103}
 
@@ -129,6 +129,18 @@ def check_sources(root, data):
     for g in data['records']:
         for s in g['skills']:
             key = s['source_key']
+            if s.get('source_evidence'):
+                evidence = s['source_evidence']
+                alternatives = s['alternative_versions']
+                if not any(a['text'] == evidence['text'] and a['source'] == evidence['url']
+                           and a['source_key'] == key for a in alternatives):
+                    raise ValueError('alternate source evidence drift: ' + s['skill_id'])
+                if s['exact_chosen_text'] != evidence['text'] or s['source_url'] != evidence['url']:
+                    raise ValueError('chosen alternate source drift: ' + s['skill_id'])
+                rev = proof['qs_revision'] if 'Mogara/' in evidence['url'] else proof['noname_revision']
+                if '/blob/' + rev + '/' not in evidence['url']:
+                    raise ValueError('alternate revision drift: ' + s['skill_id'])
+                continue
             if g['year'] == 2018:
                 texts = proof['extra_translations']
                 text = texts[key + '_info']
@@ -188,7 +200,7 @@ def self_test(data, general_ids, old_skills):
     reject('wrong expansion', lambda d: d['records'][0].update(expansion='yj2012'))
     reject('unknown request enum', lambda d: d['records'][0]['skills'][0].update(request_types=['PINDIAN']))
     reject('missing skill text', lambda d: d['records'][0]['skills'][0].update(exact_chosen_text=''))
-    reject('pending without question', lambda d: d['records'][0].update(question_ids=[]))
+    reject('unresolved general version', lambda d: d['records'][0].update(question_ids=['Q02']))
     reject('tooltip drift', lambda d: d['records'][1]['skills'][0]['tooltip_metadata'].update(description='wrong'))
     def incompatible(d):
         d['records'][0]['skills'][1]['skill_id'] = 'jueqing'

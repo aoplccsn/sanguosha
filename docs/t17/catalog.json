@@ -1,5 +1,5 @@
 {
-  "schema": "t17a.design.v1",
+  "schema": "t17a.final-lock.v1",
   "baseline": "88ca556",
   "production": false,
   "implemented": false,
@@ -12,7 +12,7 @@
   },
   "current_roster": 65,
   "target_roster": 103,
-  "evidence_policy": "Community archives are evidence of text, not certification of official release history. Q00 applies to every record.",
+  "evidence_policy": "User locks all 38 project versions on 2026-10-04. Fixed community revisions evidence text; official release/card provenance remains unverified and is not a version gate.",
   "shared_choice_labels": {
     "decline": "放弃发动",
     "done": "确认选择",
@@ -55,13 +55,11 @@
         "shangshi"
       ],
       "gained_skill_ids": [],
-      "version_status": "QUESTION",
-      "question_ids": [
-        "Q02"
-      ],
+      "version_status": "LOCKED",
+      "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
-      "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。 此项等待人工确认，不能视为最终官方版本锁。",
+      "chosen_version": "经典OL/身份局张春华：绝情、伤逝（已损失体力，不设2张上限）",
+      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。",
       "estimated_power": "A",
       "implementation_tier": 2,
       "ai_complexity": "MEDIUM",
@@ -75,7 +73,7 @@
         "火杀连环不传导",
         "失去体力无伤害触发",
         "上限变化",
-        "伤逝上限2/不封顶"
+        "伤逝lost HP 0/1/2/3+，不封顶"
       ],
       "multiplayer_risk": "LOW",
       "ai_strategy": "可先通用heuristic：牌差、存活、身份收益、伤害成本；禁止随机发动",
@@ -85,7 +83,7 @@
           "skill_id": "jueqing",
           "chinese_name": "绝情",
           "exact_chosen_text": "锁定技。伤害结算开始前，你将要造成的伤害视为失去体力。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "jueqing",
           "source_url": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/YJCMPackage.lua",
           "reuse_status": "NEW",
@@ -111,8 +109,8 @@
           "tooltip_metadata": {
             "name": "绝情",
             "description": "锁定技。伤害结算开始前，你将要造成的伤害视为失去体力。",
-            "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "QUESTION"
+            "version": "经典OL/身份局张春华：绝情、伤逝（已损失体力，不设2张上限）",
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -143,12 +141,12 @@
         {
           "skill_id": "shangshi",
           "chinese_name": "伤逝",
-          "exact_chosen_text": "每当你的手牌数、体力值或体力上限改变后，你可以将手牌补至X张。（X为你已损失的体力值且至多为2）",
-          "text_status": "CANDIDATE_NOT_FINAL",
-          "source_key": "shangshi",
-          "source_url": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/YJCMPackage.lua",
+          "exact_chosen_text": "每当你的手牌数、体力值或体力上限改变后，若你的手牌数小于X，你可以将手牌补至X张。（X为你已损失的体力值）",
+          "text_status": "FROZEN_REFERENCE_TEXT",
+          "source_key": "nosshangshi",
+          "source_url": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/NostalgiaPackage.lua",
           "reuse_status": "NEW",
-          "mechanic_design": "手牌/HP/maxHP变化后请求补至min(已损HP,2)；一次反应快照后再检测，避免自身摸牌递归。",
+          "mechanic_design": "手牌/HP/maxHP变化后，手牌小于已损失体力时请求补至已损失体力；无2张上限；自身摸牌防递归。",
           "request_types": [
             "YES_NO"
           ],
@@ -174,9 +172,9 @@
           },
           "tooltip_metadata": {
             "name": "伤逝",
-            "description": "每当你的手牌数、体力值或体力上限改变后，你可以将手牌补至X张。（X为你已损失的体力值且至多为2）",
-            "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "QUESTION"
+            "description": "每当你的手牌数、体力值或体力上限改变后，若你的手牌数小于X，你可以将手牌补至X张。（X为你已损失的体力值）",
+            "version": "经典OL/身份局张春华：绝情、伤逝（已损失体力，不设2张上限）",
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -202,15 +200,25 @@
             "REACTION"
           ],
           "test_requirements": [
-            "手牌/HP/maxHP变化后请求补至min(已损HP,2)；一次反应快照后再检测，避免自身摸牌递归。",
-            "火杀连环不传导",
-            "失去体力无伤害触发",
-            "上限变化",
-            "伤逝上限2/不封顶",
-            "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
-          ]
+            "手牌/HP/maxHP变化后，手牌小于已损失体力时请求补至已损失体力；无2张上限；自身摸牌防递归。",
+            "lost HP 0/1/2/3+ 不封顶",
+            "手牌足够不触发",
+            "防递归",
+            "mid-request reconnect"
+          ],
+          "previous_reference_text": "每当你的手牌数、体力值或体力上限改变后，你可以将手牌补至X张。（X为你已损失的体力值且至多为2）",
+          "source_evidence": {
+            "kind": "FIXED_REVISION_COMMUNITY_ARCHIVE",
+            "text": "每当你的手牌数、体力值或体力上限改变后，若你的手牌数小于X，你可以将手牌补至X张。（X为你已损失的体力值）",
+            "url": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/NostalgiaPackage.lua"
+          }
         }
-      ]
+      ],
+      "resolved_question_ids": [
+        "Q02"
+      ],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2011_yu_jin",
@@ -228,7 +236,7 @@
         "yizhong"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -281,7 +289,7 @@
             "name": "毅重",
             "description": "锁定技。若你的装备区没有防具牌，黑色【杀】对你无效。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -302,7 +310,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2011_cao_zhi",
@@ -321,7 +332,7 @@
         "jiushi"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -385,7 +396,7 @@
             "name": "落英",
             "description": "其他角色的牌因判定或弃置而置入弃牌堆时，你可以获得其中至少一张梅花牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -452,7 +463,7 @@
             "name": "酒诗",
             "description": "若你的武将牌正面朝上，你可以将武将牌翻面，视为你使用了一张【酒】。每当你受到伤害扣减体力前，若武将牌背面朝上，你可以在伤害结算后将武将牌翻至正面朝上。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -489,7 +500,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2011_fa_zheng",
@@ -508,7 +522,7 @@
         "xuanhuo"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -575,7 +589,7 @@
             "name": "恩怨",
             "description": "每当你获得一名其他角色的两张或更多的牌后，你可以令其摸一张牌。每当你受到1点伤害后，你可以令伤害来源选择一项：交给你一张手牌，或失去1点体力。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -659,7 +673,7 @@
             "name": "眩惑",
             "description": "摸牌阶段开始时，你可以放弃摸牌并选择一名其他角色：若如此做，该角色摸两张牌，然后该角色可以对其攻击范围内由你选择的一名角色使用一张【杀】，否则令你获得其两张牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -702,7 +716,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2011_ma_su",
@@ -721,7 +738,7 @@
         "huilei"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -789,7 +806,7 @@
             "name": "心战",
             "description": "阶段技。若你的手牌数大于你的体力上限，你可以观看牌堆顶的三张牌，然后你可以展示并获得其中至少一张红桃牌，然后将其余的牌置于牌堆顶。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -844,7 +861,7 @@
             "name": "挥泪",
             "description": "锁定技。你死亡时，杀死你的其他角色弃置其所有牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -868,7 +885,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2011_xu_shu",
@@ -887,7 +907,7 @@
         "jujian"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -944,7 +964,7 @@
             "name": "无言",
             "description": "锁定技。每当你造成或受到伤害时，防止锦囊牌的伤害。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -1013,7 +1033,7 @@
             "name": "举荐",
             "description": "结束阶段开始时，你可以弃置一张非基本牌并选择一名其他角色：若如此做，该角色选择一项：摸两张牌，或回复1点体力，或重置武将牌并将其翻至正面朝上。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -1049,7 +1069,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2011_ling_tong",
@@ -1067,7 +1090,7 @@
         "xuanfeng"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -1129,7 +1152,7 @@
             "name": "旋风",
             "description": "每当你失去一次装备区的牌后，或弃牌阶段结束时若你于本阶段内弃置了至少两张你的牌，你可以弃置一名其他角色的一张牌，然后弃置一名其他角色的一张牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -1170,7 +1193,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2011_xu_sheng",
@@ -1188,7 +1214,7 @@
         "pojun"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -1247,7 +1273,7 @@
             "name": "破军",
             "description": "每当你使用【杀】对目标角色造成伤害后，你可以令其摸X张牌，然后将其武将牌翻面。（X为该角色的体力值且至多为5）",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -1287,7 +1313,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2011_wu_guotai",
@@ -1306,7 +1335,7 @@
         "buyi"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -1368,7 +1397,7 @@
             "name": "甘露",
             "description": "阶段技。你可以令装备区的牌数量差不超过你已损失体力值的两名角色交换他们装备区的装备牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -1436,7 +1465,7 @@
             "name": "补益",
             "description": "每当一名角色进入濒死状态时，你可以展示该角色的一张手牌：若此牌为非基本牌，该角色弃置此牌，然后回复1点体力。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -1465,7 +1494,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2011_chen_gong",
@@ -1484,7 +1516,7 @@
         "zhichi"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -1549,7 +1581,7 @@
             "name": "明策",
             "description": "阶段技。你可以将一张装备牌或【杀】交给一名其他角色：若如此做，该角色可以视为对其攻击范围内由你选择的一名角色使用一张【杀】，否则其摸一张牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -1609,7 +1641,7 @@
             "name": "智迟",
             "description": "锁定技。你的回合外，每当你受到伤害后，【杀】和非延时锦囊牌对你无效，直到回合结束。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -1632,7 +1664,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2011_gao_shun",
@@ -1651,7 +1686,7 @@
         "jinjiu"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -1718,7 +1753,7 @@
             "name": "陷阵",
             "description": "阶段技。你可以与一名其他角色拼点：若你赢，本回合，该角色的防具无效，你无视与该角色的距离，你对该角色使用【杀】无次数限制；若你没赢，你不能使用【杀】，直到回合结束。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -1793,7 +1828,7 @@
             "name": "禁酒",
             "description": "锁定技。你的【酒】视为【杀】。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -1829,7 +1864,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_xun_you",
@@ -1848,7 +1886,7 @@
         "zhiyu"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -1914,7 +1952,7 @@
             "name": "奇策",
             "description": "阶段技。你可以将你的所有手牌（至少一张）当任意一张非延时锦囊牌使用。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -1982,7 +2020,7 @@
             "name": "智愚",
             "description": "每当你受到伤害后，你可以摸一张牌：若如此做，你展示所有手牌。若你的手牌均为同一颜色，伤害来源弃置一张手牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -2013,7 +2051,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_wang_yi",
@@ -2032,7 +2073,7 @@
         "miji"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -2098,7 +2139,7 @@
             "name": "贞烈",
             "description": "每当你成为其他角色的【杀】或非延时锦囊牌的目标后，你可以失去1点体力：若如此做，你弃置该角色的一张牌，此牌对你无效。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -2176,7 +2217,7 @@
             "name": "秘计",
             "description": "结束阶段开始时，若你已受伤，你可以摸至多X张牌，然后将等量的手牌任意分配给其他角色。（X为你已损失的体力值）",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -2212,7 +2253,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_cao_zhang",
@@ -2230,7 +2274,7 @@
         "jiangchi"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -2292,7 +2336,7 @@
             "name": "将驰",
             "description": "摸牌阶段，你可以选择一项：1.少摸一张牌，然后本回合，你使用【杀】无距离限制，你可以额外使用一张【杀】；2.额外摸一张牌，且你不能使用或打出【杀】，直到回合结束。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -2322,7 +2366,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_zhong_hui",
@@ -2343,13 +2390,11 @@
       "gained_skill_ids": [
         "paiyi"
       ],
-      "version_status": "QUESTION",
-      "question_ids": [
-        "Q01"
-      ],
+      "version_status": "LOCKED",
+      "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
-      "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。 此项等待人工确认，不能视为最终官方版本锁。",
+      "chosen_version": "一将成名2012经典钟会：权计、自立、觉醒获得排异（单觉醒）",
+      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。",
       "estimated_power": "A",
       "implementation_tier": 3,
       "ai_complexity": "HIGH",
@@ -2377,7 +2422,7 @@
           "skill_id": "quanji",
           "chinese_name": "权计",
           "exact_chosen_text": "每当你受到1点伤害后，你可以摸一张牌，然后将一张手牌置于武将牌上，称为“权”。每有一张“权”，你的手牌上限+1。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "quanji",
           "source_url": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/YJCMPackage.lua",
           "reuse_status": "NEW",
@@ -2411,8 +2456,8 @@
           "tooltip_metadata": {
             "name": "权计",
             "description": "每当你受到1点伤害后，你可以摸一张牌，然后将一张手牌置于武将牌上，称为“权”。每有一张“权”，你的手牌上限+1。",
-            "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "QUESTION"
+            "version": "一将成名2012经典钟会：权计、自立、觉醒获得排异（单觉醒）",
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -2459,7 +2504,7 @@
           "skill_id": "zili",
           "chinese_name": "自立",
           "exact_chosen_text": "觉醒技。准备阶段开始时，若“权”大于或等于三张，你失去1点体力上限，摸两张牌或回复1点体力，然后获得“排异”（阶段技。你可以将一张“权”置入弃牌堆并选择一名角色：若如此做，该角色摸两张牌：若其手牌多于你，该角色受到1点伤害）。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "zili",
           "source_url": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/YJCMPackage.lua",
           "reuse_status": "NEW",
@@ -2490,8 +2535,8 @@
           "tooltip_metadata": {
             "name": "自立",
             "description": "觉醒技。准备阶段开始时，若“权”大于或等于三张，你失去1点体力上限，摸两张牌或回复1点体力，然后获得“排异”（阶段技。你可以将一张“权”置入弃牌堆并选择一名角色：若如此做，该角色摸两张牌：若其手牌多于你，该角色受到1点伤害）。",
-            "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "QUESTION"
+            "version": "一将成名2012经典钟会：权计、自立、觉醒获得排异（单觉醒）",
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -2532,7 +2577,7 @@
           "skill_id": "paiyi",
           "chinese_name": "排异",
           "exact_chosen_text": "阶段技。你可以将一张“权”置入弃牌堆并选择一名角色：若如此做，该角色摸两张牌：若其手牌多于你，该角色受到1点伤害。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "paiyi",
           "source_url": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/YJCMPackage.lua",
           "reuse_status": "NEW",
@@ -2564,8 +2609,8 @@
           "tooltip_metadata": {
             "name": "排异",
             "description": "阶段技。你可以将一张“权”置入弃牌堆并选择一名角色：若如此做，该角色摸两张牌：若其手牌多于你，该角色受到1点伤害。",
-            "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "QUESTION"
+            "version": "一将成名2012经典钟会：权计、自立、觉醒获得排异（单觉醒）",
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -2602,7 +2647,12 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [
+        "Q01"
+      ],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_liao_hua",
@@ -2621,7 +2671,7 @@
         "fuli"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -2677,7 +2727,7 @@
             "name": "当先",
             "description": "锁定技。回合开始时，你执行一个额外的出牌阶段。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -2742,7 +2792,7 @@
             "name": "伏枥",
             "description": "限定技。每当你处于濒死状态时，你可以将回复至X点体力，然后将武将牌翻面。（X为现存势力数）",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -2770,7 +2820,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_guan_xing_zhang_bao",
@@ -2788,7 +2841,7 @@
         "fuhun"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -2853,7 +2906,7 @@
             "name": "父魂",
             "description": "你可以将两张手牌当普通【杀】使用或打出。每当你于出牌阶段内以此法使用【杀】造成伤害后，你拥有“武圣”、“咆哮”，直到回合结束。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -2890,7 +2943,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_ma_dai",
@@ -2909,7 +2965,7 @@
         "qianxi"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -2967,7 +3023,7 @@
             "name": "马术",
             "description": "锁定技。你与其他角色的距离-1。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [],
           "dependency_keys": [
@@ -3021,7 +3077,7 @@
             "name": "潜袭",
             "description": "准备阶段开始时，你可以进行判定：若如此做，你令一名距离1的角色不能使用或打出与判定牌颜色相同的手牌，直到回合结束。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -3065,7 +3121,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_bu_lianshi",
@@ -3084,7 +3143,7 @@
         "zhuiyi"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -3150,7 +3209,7 @@
             "name": "安恤",
             "description": "阶段技。你可以选择手牌数不等的两名其他角色：若如此做，手牌较少的角色正面朝上获得另一名角色的一张手牌。若此牌不为黑桃，你摸一张牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -3224,7 +3283,7 @@
             "name": "追忆",
             "description": "你死亡时，你可以令一名其他角色（除杀死你的角色）摸三张牌并回复1点体力。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -3254,7 +3313,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_cheng_pu",
@@ -3273,7 +3335,7 @@
         "chunlao"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -3339,7 +3401,7 @@
             "name": "疠火",
             "description": "你可以将一张普通【杀】当火【杀】使用。你以此法使用【杀】结算后，若此【杀】造成了伤害，你失去1点体力。你使用火【杀】可以额外选择一名目标。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -3417,7 +3479,7 @@
             "name": "醇醪",
             "description": "结束阶段开始时，若你的武将牌上没有“醇”，你可以将至少一张【杀】置于武将牌上，称为“醇”。每当一名角色处于濒死状态时，你可以将一张“醇”置入弃牌堆，视为该角色使用一张【酒】。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -3455,7 +3517,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_han_dang",
@@ -3474,7 +3539,7 @@
         "jiefan"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -3538,7 +3603,7 @@
             "name": "弓骑",
             "description": "阶段技。你可以弃置一张牌：若如此做，本回合你的攻击范围无限；若此牌为装备牌，你可以弃置一名其他角色的一张牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -3600,7 +3665,7 @@
             "name": "解烦",
             "description": "限定技。出牌阶段，你可以选择一名角色，然后攻击范围内包含该角色的所有角色选择一项：弃置一张武器牌，或令该角色摸一张牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -3636,7 +3701,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_liu_biao",
@@ -3655,28 +3723,27 @@
         "zongshi"
       ],
       "gained_skill_ids": [],
-      "version_status": "QUESTION",
-      "question_ids": [
-        "Q03"
-      ],
+      "version_status": "LOCKED",
+      "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
-      "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。 此项等待人工确认，不能视为最终官方版本锁。",
-      "estimated_power": "C",
+      "chosen_version": "官方修订后的经典刘表：势力数额外摸牌、出牌阶段不能指定其他角色",
+      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。",
+      "estimated_power": "B",
       "implementation_tier": 2,
       "ai_complexity": "MEDIUM",
       "projection_risk": "LOW",
       "engine_dependencies": [
         "PHASE",
-        "SCOPE"
+        "SCOPE",
+        "TARGET"
       ],
-      "mechanic_design": "采用候选受伤额外摸已损HP并跳出牌；宗室按势力上限",
+      "mechanic_design": "摸牌阶段可额外摸存活势力数；本回合出牌阶段用牌不能指定其他角色；不跳出牌阶段，回合边界清理限制。",
       "test_requirements": [
-        "满HP不自守",
-        "势力种数不是人数",
-        "神映射群",
-        "化身切换影响",
-        "不同原版修订另列"
+        "存活势力计数",
+        "不能指定其他角色",
+        "无目标牌合法性",
+        "回合结束清理",
+        "不跳出牌阶段"
       ],
       "multiplayer_risk": "LOW",
       "ai_strategy": "可先通用heuristic：牌差、存活、身份收益、伤害成本；禁止随机发动",
@@ -3685,12 +3752,12 @@
         {
           "skill_id": "zishou",
           "chinese_name": "自守",
-          "exact_chosen_text": "摸牌阶段，若你已受伤，你可以额外摸X张牌，然后跳过出牌阶段。（X为你已损失的体力值）",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "exact_chosen_text": "摸牌阶段，你可以额外摸X张牌（X为场上势力数）。然后你于本回合的出牌阶段内使用的牌不能指定其他角色为目标。",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "zishou",
-          "source_url": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/YJCM2012Package.lua",
+          "source_url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/yijiang/translate.js",
           "reuse_status": "NEW",
-          "mechanic_design": "受伤摸牌阶段可增已损HP摸牌，并skip_play；非按势力数候选，禁止拼接新版。",
+          "mechanic_design": "摸牌阶段可额外摸存活势力数；本回合出牌阶段用牌不能指定其他角色；不跳出牌阶段，回合边界清理限制。",
           "request_types": [
             "YES_NO"
           ],
@@ -3716,9 +3783,9 @@
           },
           "tooltip_metadata": {
             "name": "自守",
-            "description": "摸牌阶段，若你已受伤，你可以额外摸X张牌，然后跳过出牌阶段。（X为你已损失的体力值）",
-            "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "QUESTION"
+            "description": "摸牌阶段，你可以额外摸X张牌（X为场上势力数）。然后你于本回合的出牌阶段内使用的牌不能指定其他角色为目标。",
+            "version": "官方修订后的经典刘表：势力数额外摸牌、出牌阶段不能指定其他角色",
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -3741,23 +3808,29 @@
             }
           ],
           "dependency_keys": [
-            "PHASE"
+            "PHASE",
+            "SCOPE",
+            "TARGET"
           ],
           "test_requirements": [
-            "受伤摸牌阶段可增已损HP摸牌，并skip_play；非按势力数候选，禁止拼接新版。",
-            "满HP不自守",
-            "势力种数不是人数",
-            "神映射群",
-            "化身切换影响",
-            "不同原版修订另列",
-            "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
-          ]
+            "存活势力计数",
+            "不能指定其他角色",
+            "无目标牌合法性",
+            "回合结束清理",
+            "不跳出牌阶段"
+          ],
+          "previous_reference_text": "摸牌阶段，若你已受伤，你可以额外摸X张牌，然后跳过出牌阶段。（X为你已损失的体力值）",
+          "source_evidence": {
+            "kind": "FIXED_REVISION_COMMUNITY_ARCHIVE",
+            "text": "摸牌阶段，你可以额外摸X张牌（X为场上势力数）。然后你于本回合的出牌阶段内使用的牌不能指定其他角色为目标。",
+            "url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/yijiang/translate.js"
+          }
         },
         {
           "skill_id": "zongshi",
           "chinese_name": "宗室",
           "exact_chosen_text": "锁定技。你的手牌上限+X。（X为现存势力数）",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "zongshi",
           "source_url": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/YJCM2012Package.lua",
           "reuse_status": "NEW",
@@ -3783,8 +3856,8 @@
           "tooltip_metadata": {
             "name": "宗室",
             "description": "锁定技。你的手牌上限+X。（X为现存势力数）",
-            "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "QUESTION"
+            "version": "官方修订后的经典刘表：势力数额外摸牌、出牌阶段不能指定其他角色",
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -3819,7 +3892,12 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [
+        "Q03"
+      ],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2012_hua_xiong",
@@ -3837,7 +3915,7 @@
         "shiyong"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -3893,7 +3971,7 @@
             "name": "恃勇",
             "description": "锁定技。每当你受到一次红色【杀】或【酒】【杀】的伤害后，你失去1点体力上限。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -3917,7 +3995,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2013_cao_chong",
@@ -3936,7 +4017,7 @@
         "renxin"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -4000,7 +4081,7 @@
             "name": "称象",
             "description": "每当你受到伤害后，你可以亮出牌堆顶的四张牌，然后获得其中至少一张点数之和小于或等于13的牌，并将其余的牌置入弃牌堆。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -4079,7 +4160,7 @@
             "name": "仁心",
             "description": "每当一名体力值为1的其他角色受到伤害时，你可以将武将牌翻面并弃置一张装备牌：若如此做，防止此伤害。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -4115,7 +4196,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2013_guo_huai",
@@ -4133,7 +4217,7 @@
         "jingce"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -4194,7 +4278,7 @@
             "name": "精策",
             "description": "出牌阶段结束时，若你本回合已使用的牌数大于或等于你的体力值，你可以摸两张牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -4236,7 +4320,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2013_man_chong",
@@ -4255,7 +4342,7 @@
         "yuce"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -4320,7 +4407,7 @@
             "name": "峻刑",
             "description": "阶段技。你可以弃置任意数量的手牌并选择一名其他角色：若如此做，该角色须弃置一张与你弃置的牌类型均不同的手牌，否则将武将牌翻面并摸X张牌。（X为你弃置的牌的数量）",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -4394,7 +4481,7 @@
             "name": "御策",
             "description": "每当你受到伤害后，你可以展示一张手牌：若如此做且此伤害有来源，伤害来源须弃置一张与此牌类型不同的手牌，否则你回复1点体力。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -4418,7 +4505,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2013_guan_ping",
@@ -4436,7 +4526,7 @@
         "longyin"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -4497,7 +4587,7 @@
             "name": "龙吟",
             "description": "每当一名角色于出牌阶段内使用【杀】时，你可以弃置一张牌：若如此做，此【杀】不计入次数限制，若此【杀】为红色，你摸一张牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -4526,7 +4616,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2013_jian_yong",
@@ -4545,7 +4638,7 @@
         "zongshi_jianyong"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -4615,7 +4708,7 @@
             "name": "巧说",
             "description": "出牌阶段开始时，你可以与一名其他角色拼点：若你赢，本回合你使用的下一张基本牌或非延时锦囊牌可以增加一个额外目标（无距离限制）或减少一名目标（若原有至少两名目标）；若你没赢，你不能使用锦囊牌，直到回合结束。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -4683,7 +4776,7 @@
             "name": "纵适",
             "description": "每当你拼点赢，你可以获得对方的拼点牌。每当你拼点没赢，你可以获得你的拼点牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [],
           "dependency_keys": [
@@ -4701,7 +4794,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2013_liu_feng",
@@ -4719,7 +4815,7 @@
         "xiansi"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -4788,7 +4884,7 @@
             "name": "陷嗣",
             "description": "准备阶段开始时，你可以将一至两名角色的各一张牌置于你的武将牌上，称为“逆”。其他角色可以将两张“逆”置入弃牌堆，视为对你使用一张【杀】（计入次数限制）。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -4820,7 +4916,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2013_pan_zhang_ma_zhong",
@@ -4839,7 +4938,7 @@
         "anjian"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -4903,7 +5002,7 @@
             "name": "夺刀",
             "description": "每当你受到【杀】的伤害后，你可以弃置一张牌：若如此做，你获得伤害来源装备区的武器牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -4964,7 +5063,7 @@
             "name": "暗箭",
             "description": "每当你使用【杀】对目标角色造成伤害时，若你不在其攻击范围内，此伤害+1。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -4993,7 +5092,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2013_yu_fan",
@@ -5012,7 +5114,7 @@
         "zhiyan"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -5078,7 +5180,7 @@
             "name": "纵玄",
             "description": "当你的牌因弃置而置入弃牌堆时，你可以将其中至少一张牌依次置于牌堆顶。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -5147,7 +5249,7 @@
             "name": "直言",
             "description": "结束阶段开始时，你可以令一名角色摸一张牌并展示之：若此牌为装备牌，该角色回复1点体力，然后使用之。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -5177,7 +5279,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2013_zhu_ran",
@@ -5195,7 +5300,7 @@
         "danshou"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -5262,7 +5367,7 @@
             "name": "胆守",
             "description": "出牌阶段，你可以弃置X张牌并选择攻击范围内的一名角色：若X为1，你弃置该角色的一张牌；若X为2，你令该角色交给你一张牌；若X为3，你对该角色造成一点伤害；若X大于或等于4，你与该角色各摸两张牌。（X为本阶段你已发动“胆守”的次数+1）",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -5306,7 +5411,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2013_fu_huanghou",
@@ -5325,7 +5433,7 @@
         "qiuyuan"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -5392,7 +5500,7 @@
             "name": "惴恐",
             "description": "一名其他角色的回合开始时，若你已受伤，你可以与其拼点：若你赢，本回合该角色使用牌不能选择除该角色外的角色为目标；若你没赢，该角色无视与你的距离，直到回合结束。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -5475,7 +5583,7 @@
             "name": "求援",
             "description": "每当你成为【杀】的目标时，你可以令一名除此【杀】使用者外的的其他角色交给你一张【闪】，否则该角色也成为此【杀】的目标。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -5518,7 +5626,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "yj2013_li_ru",
@@ -5538,7 +5649,7 @@
         "fencheng"
       ],
       "gained_skill_ids": [],
-      "version_status": "LOCKED_REFERENCE",
+      "version_status": "LOCKED",
       "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
       "chosen_version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
@@ -5602,7 +5713,7 @@
             "name": "绝策",
             "description": "结束阶段开始时，你可以对一名没有手牌的角色造成1点伤害。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -5683,7 +5794,7 @@
             "name": "灭计",
             "description": "阶段技。你可以将一张黑色锦囊牌置于牌堆顶并选择一名有手牌的其他角色，该角色弃置一张锦囊牌，否则弃置两张非锦囊牌。",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -5770,7 +5881,7 @@
             "name": "焚城",
             "description": "限定技。出牌阶段，你可以令所有其他角色：弃置至少X张牌，否则受到2点火焰伤害。（X为上一名进行选择的角色以此法弃置的牌数+1）",
             "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-            "status": "LOCKED_REFERENCE"
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -5811,7 +5922,10 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "shadow_god_liubei",
@@ -5830,13 +5944,11 @@
         "jieying_liubei"
       ],
       "gained_skill_ids": [],
-      "version_status": "QUESTION",
-      "question_ids": [
-        "Q04"
-      ],
+      "version_status": "LOCKED",
+      "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
-      "chosen_version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。 此项等待人工确认，不能视为最终官方版本锁。",
+      "chosen_version": "经典6 HP神刘备：龙怒、结营（阴阳转换）",
+      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。",
       "estimated_power": "A",
       "implementation_tier": 4,
       "ai_complexity": "VERY HIGH",
@@ -5865,7 +5977,7 @@
           "skill_id": "longnu",
           "chinese_name": "龙怒",
           "exact_chosen_text": "转换技，锁定技，阴：出牌阶段开始时，你失去1点体力并摸一张牌，然后本阶段内你的红色手牌均视为火【杀】且无距离限制。阳：出牌阶段开始时，你减1点体力上限并摸一张牌，然后本阶段内你的锦囊牌均视为雷【杀】且无使用次数限制。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "nzry_longnu",
           "source_url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/extra/translate.js",
           "reuse_status": "NEW",
@@ -5891,8 +6003,8 @@
           "tooltip_metadata": {
             "name": "龙怒",
             "description": "转换技，锁定技，阴：出牌阶段开始时，你失去1点体力并摸一张牌，然后本阶段内你的红色手牌均视为火【杀】且无距离限制。阳：出牌阶段开始时，你减1点体力上限并摸一张牌，然后本阶段内你的锦囊牌均视为雷【杀】且无使用次数限制。",
-            "version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-            "status": "QUESTION"
+            "version": "经典6 HP神刘备：龙怒、结营（阴阳转换）",
+            "status": "LOCKED"
           },
           "alternative_versions": [],
           "dependency_keys": [
@@ -5916,7 +6028,7 @@
           "skill_id": "jieying_liubei",
           "chinese_name": "结营",
           "exact_chosen_text": "锁定技，游戏开始时或当你的武将牌重置时，你横置；所有已横置的角色手牌上限+2；结束阶段，你横置一名其他角色。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "nzry_jieying",
           "source_url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/extra/translate.js",
           "reuse_status": "SAME NAME / DIFFERENT SEMANTICS",
@@ -5947,8 +6059,8 @@
           "tooltip_metadata": {
             "name": "结营",
             "description": "锁定技，游戏开始时或当你的武将牌重置时，你横置；所有已横置的角色手牌上限+2；结束阶段，你横置一名其他角色。",
-            "version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-            "status": "QUESTION"
+            "version": "经典6 HP神刘备：龙怒、结营（阴阳转换）",
+            "status": "LOCKED"
           },
           "alternative_versions": [],
           "dependency_keys": [
@@ -5965,7 +6077,12 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [
+        "Q04"
+      ],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "shadow_god_luxun",
@@ -5985,13 +6102,11 @@
         "zhanhuo"
       ],
       "gained_skill_ids": [],
-      "version_status": "QUESTION",
-      "question_ids": [
-        "Q04"
-      ],
+      "version_status": "LOCKED",
+      "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
-      "chosen_version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。 此项等待人工确认，不能视为最终官方版本锁。",
+      "chosen_version": "经典神陆逊：军略、摧克、绽火（奇偶军略体系）",
+      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。",
       "estimated_power": "S",
       "implementation_tier": 3,
       "ai_complexity": "VERY HIGH",
@@ -6018,7 +6133,7 @@
           "skill_id": "junlve",
           "chinese_name": "军略",
           "exact_chosen_text": "锁定技，当你受到或造成伤害后，你获得X个“军略”标记(X为伤害点数)。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "nzry_junlve",
           "source_url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/extra/translate.js",
           "reuse_status": "NEW",
@@ -6044,8 +6159,8 @@
           "tooltip_metadata": {
             "name": "军略",
             "description": "锁定技，当你受到或造成伤害后，你获得X个“军略”标记(X为伤害点数)。",
-            "version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-            "status": "QUESTION"
+            "version": "经典神陆逊：军略、摧克、绽火（奇偶军略体系）",
+            "status": "LOCKED"
           },
           "alternative_versions": [],
           "dependency_keys": [
@@ -6067,7 +6182,7 @@
           "skill_id": "cuike",
           "chinese_name": "摧克",
           "exact_chosen_text": "出牌阶段开始时，若“军略”标记的数量为奇数，你可以对一名角色造成1点伤害；若“军略”标记的数量为偶数，你可以横置一名角色并弃置其区域内的一张牌。然后，若“军略”标记的数量超过7个，你可以移去全部“军略”标记并对所有其他角色造成1点伤害。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "nzry_cuike",
           "source_url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/extra/translate.js",
           "reuse_status": "NEW",
@@ -6100,8 +6215,8 @@
           "tooltip_metadata": {
             "name": "摧克",
             "description": "出牌阶段开始时，若“军略”标记的数量为奇数，你可以对一名角色造成1点伤害；若“军略”标记的数量为偶数，你可以横置一名角色并弃置其区域内的一张牌。然后，若“军略”标记的数量超过7个，你可以移去全部“军略”标记并对所有其他角色造成1点伤害。",
-            "version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-            "status": "QUESTION"
+            "version": "经典神陆逊：军略、摧克、绽火（奇偶军略体系）",
+            "status": "LOCKED"
           },
           "alternative_versions": [],
           "dependency_keys": [
@@ -6123,7 +6238,7 @@
           "skill_id": "zhanhuo",
           "chinese_name": "绽火",
           "exact_chosen_text": "限定技，出牌阶段，你可以移去全部“军略”标记，令至多等量的已横置角色弃置所有装备区内的牌。然后，你对其中一名角色造成1点火焰伤害。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "nzry_dinghuo",
           "source_url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/extra/translate.js",
           "reuse_status": "NEW",
@@ -6156,8 +6271,8 @@
           "tooltip_metadata": {
             "name": "绽火",
             "description": "限定技，出牌阶段，你可以移去全部“军略”标记，令至多等量的已横置角色弃置所有装备区内的牌。然后，你对其中一名角色造成1点火焰伤害。",
-            "version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-            "status": "QUESTION"
+            "version": "经典神陆逊：军略、摧克、绽火（奇偶军略体系）",
+            "status": "LOCKED"
           },
           "alternative_versions": [],
           "dependency_keys": [
@@ -6175,7 +6290,12 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [
+        "Q04"
+      ],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "thunder_god_ganning",
@@ -6194,13 +6314,11 @@
         "jieying_ganning"
       ],
       "gained_skill_ids": [],
-      "version_status": "QUESTION",
-      "question_ids": [
-        "Q05"
-      ],
+      "version_status": "LOCKED",
+      "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
-      "chosen_version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。 此项等待人工确认，不能视为最终官方版本锁。",
+      "chosen_version": "经典神甘宁：魄袭、劫营（初始3/上限6，营标记）",
+      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。",
       "estimated_power": "S",
       "implementation_tier": 3,
       "ai_complexity": "VERY HIGH",
@@ -6228,7 +6346,7 @@
           "skill_id": "poxi",
           "chinese_name": "魄袭",
           "exact_chosen_text": "出牌阶段限一次，你可以观看一名其他角色的手牌，然后你可以弃置你与其手牌中的四张花色不同的牌。若如此做，根据此次弃置你的牌的数量执行以下效果：零张，扣减1点体力上限；一张，你结束出牌阶段且本回合手牌上限-1；三张，你回复1点体力；四张，你摸四张牌。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "drlt_poxi",
           "source_url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/extra/translate.js",
           "reuse_status": "NEW",
@@ -6264,8 +6382,8 @@
           "tooltip_metadata": {
             "name": "魄袭",
             "description": "出牌阶段限一次，你可以观看一名其他角色的手牌，然后你可以弃置你与其手牌中的四张花色不同的牌。若如此做，根据此次弃置你的牌的数量执行以下效果：零张，扣减1点体力上限；一张，你结束出牌阶段且本回合手牌上限-1；三张，你回复1点体力；四张，你摸四张牌。",
-            "version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-            "status": "QUESTION"
+            "version": "经典神甘宁：魄袭、劫营（初始3/上限6，营标记）",
+            "status": "LOCKED"
           },
           "alternative_versions": [],
           "dependency_keys": [
@@ -6287,7 +6405,7 @@
           "skill_id": "jieying_ganning",
           "chinese_name": "劫营",
           "exact_chosen_text": "回合开始时，若场上没有拥有“营”标记的角色，你获得1个“营”标记；结束阶段，你可以将你的一个“营”标记交给一名角色；有“营”标记的角色摸牌阶段多摸一张牌，出牌阶段使用【杀】的次数上限+1，手牌上限+1。有“营”的其他角色回合结束时，其移去“营”标记，然后你获得其所有手牌。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "drlt_jieying",
           "source_url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/extra/translate.js",
           "reuse_status": "SAME NAME / DIFFERENT SEMANTICS",
@@ -6320,8 +6438,8 @@
           "tooltip_metadata": {
             "name": "劫营",
             "description": "回合开始时，若场上没有拥有“营”标记的角色，你获得1个“营”标记；结束阶段，你可以将你的一个“营”标记交给一名角色；有“营”标记的角色摸牌阶段多摸一张牌，出牌阶段使用【杀】的次数上限+1，手牌上限+1。有“营”的其他角色回合结束时，其移去“营”标记，然后你获得其所有手牌。",
-            "version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-            "status": "QUESTION"
+            "version": "经典神甘宁：魄袭、劫营（初始3/上限6，营标记）",
+            "status": "LOCKED"
           },
           "alternative_versions": [],
           "dependency_keys": [
@@ -6338,7 +6456,12 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [
+        "Q05"
+      ],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     },
     {
       "general_id": "thunder_god_zhangliao",
@@ -6357,13 +6480,11 @@
         "zhiti"
       ],
       "gained_skill_ids": [],
-      "version_status": "QUESTION",
-      "question_ids": [
-        "Q06"
-      ],
+      "version_status": "LOCKED",
+      "question_ids": [],
       "authority_status": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
-      "chosen_version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。 此项等待人工确认，不能视为最终官方版本锁。",
+      "chosen_version": "经典夺技能神张辽：夺锐、止啼（废栏、临时获得、原主失效）",
+      "why_this_version": "保留经典身份局辨识机制，固定历史来源，不增加档案之外摸牌、增伤或额外次数。",
       "estimated_power": "S",
       "implementation_tier": 4,
       "ai_complexity": "VERY HIGH",
@@ -6391,7 +6512,7 @@
           "skill_id": "duorui",
           "chinese_name": "夺锐",
           "exact_chosen_text": "当你于出牌阶段内对一名其他角色造成伤害后，你可以废除你装备区内的一个装备栏（若已全部废除则可以跳过此步骤），然后获得该角色的一个技能直到其的下回合结束或其死亡(觉醒技，限定技，主公技，隐匿技，使命技等特殊技能除外)。若如此做，该角色该技能失效且你不能再发动〖夺锐〗直到你失去以此法获得的技能。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "drlt_duorui",
           "source_url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/extra/translate.js",
           "reuse_status": "NEW",
@@ -6428,8 +6549,8 @@
           "tooltip_metadata": {
             "name": "夺锐",
             "description": "当你于出牌阶段内对一名其他角色造成伤害后，你可以废除你装备区内的一个装备栏（若已全部废除则可以跳过此步骤），然后获得该角色的一个技能直到其的下回合结束或其死亡(觉醒技，限定技，主公技，隐匿技，使命技等特殊技能除外)。若如此做，该角色该技能失效且你不能再发动〖夺锐〗直到你失去以此法获得的技能。",
-            "version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-            "status": "QUESTION"
+            "version": "经典夺技能神张辽：夺锐、止啼（废栏、临时获得、原主失效）",
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -6452,13 +6573,14 @@
             "化身/极略",
             "拼点决斗胜利事件",
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
-          ]
+          ],
+          "lock_scope_note": "锁定夺技能机制，非后期OL只令失效版；档案括号含后期技能类别，属于社区档案文字而非已核验2018卡面。仅原生武将技能，排除主公/限定/觉醒及不可租借特殊技能；全废栏可跳过费用沿用固定参考。现有四装备槽，不虚构宝物槽。"
         },
         {
           "skill_id": "zhiti",
           "chinese_name": "止啼",
           "exact_chosen_text": "锁定技。①你攻击范围内已受伤的其他角色手牌上限-1；②当你和已受伤的角色拼点或【决斗】胜利/受到已受伤角色造成的伤害后，若对方/伤害来源在你的攻击范围内，则你恢复一个装备栏。",
-          "text_status": "CANDIDATE_NOT_FINAL",
+          "text_status": "FROZEN_REFERENCE_TEXT",
           "source_key": "drlt_zhiti",
           "source_url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/extra/translate.js",
           "reuse_status": "NEW",
@@ -6490,8 +6612,8 @@
           "tooltip_metadata": {
             "name": "止啼",
             "description": "锁定技。①你攻击范围内已受伤的其他角色手牌上限-1；②当你和已受伤的角色拼点或【决斗】胜利/受到已受伤角色造成的伤害后，若对方/伤害来源在你的攻击范围内，则你恢复一个装备栏。",
-            "version": "候选：阴雷基础神将档案 @ e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
-            "status": "QUESTION"
+            "version": "经典夺技能神张辽：夺锐、止啼（废栏、临时获得、原主失效）",
+            "status": "LOCKED"
           },
           "alternative_versions": [
             {
@@ -6517,7 +6639,12 @@
             "60秒timeout产生合法Decision；ACK重放不重复支付；request期间重连恢复同一frame；Web/PySide候选一致"
           ]
         }
-      ]
+      ],
+      "resolved_question_ids": [
+        "Q06"
+      ],
+      "lock_date": "2026-10-04",
+      "lock_authority": "USER_FINAL_VERSION_DECISION_T17A_1"
     }
   ]
 }
