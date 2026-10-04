@@ -139,7 +139,7 @@ test('Yinghun branch choices display Chinese labels', async ({ page }) => {
 test('legal ViewAs Nullification remains selectable', async ({ page }) => {
   const { submitted } = await room(page, { ...pending('kanpo', 'trick.nullification', ['virtual:kanpo:black-card']),
     choice_labels: { 'virtual:kanpo:black-card': '看破' } })
-  await page.getByRole('button', { name: '看破' }).click()
+  await page.getByRole('button', { name: '看破', exact: true }).click()
   await page.getByRole('button', { name: '确定' }).click()
   await expect.poll(() => submitted.length).toBe(1)
   expect(submitted[0].decision.value).toBe('virtual:kanpo:black-card')

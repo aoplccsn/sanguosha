@@ -139,3 +139,13 @@ describe('GameConnection', () => {
     expect(second.sent.map((item) => JSON.parse(item).type)).toEqual(['HELLO', 'PING', 'JOIN_ROOM'])
   })
 })
+
+it('times out a stuck handshake, stops after six failures and allows explicit retry', () => {
+ vi.useFakeTimers();FakeSocket.instances=[];vi.stubGlobal('WebSocket',FakeSocket)
+ const connection=new GameConnection();const statuses:string[]=[];connection.subscribeStatus(status=>statuses.push(status))
+ connection.openRoom('ABC234','JOIN_ROOM',{name:'测试'})
+ vi.advanceTimersByTime(120000)
+ expect(statuses.at(-1)).toBe('offline');expect(FakeSocket.instances).toHaveLength(6)
+ connection.retry();expect(FakeSocket.instances).toHaveLength(7)
+ connection.disconnect();vi.useRealTimers();vi.unstubAllGlobals()
+})

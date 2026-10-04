@@ -14,7 +14,8 @@ from sanguosha.decisions.ai import AIDecisionProvider
 from sanguosha.engine.requests import Decision, PendingRequest, RequestType, PASS_RESPONSE
 from sanguosha.engine.events import (Event, CardUsedEvent, CardRespondedEvent, TrickTargetsDeclaredEvent,
                                      VirtualResponseEvent, DamageDealtEvent, HpRecoveredEvent,
-                                     PlayerDiedEvent, GameEndedEvent)
+                                     PlayerDiedEvent, GameEndedEvent, TurnStartedEvent, TurnEndedEvent,
+                                     CardMovedEvent, DyingRequiredEvent)
 from sanguosha.engine.rng import PythonRandomSource
 from sanguosha.model.enums import Identity
 from sanguosha.model.ids import CharacterId, PlayerId
@@ -536,6 +537,25 @@ class MultiplayerRoom:
                           target_id=str(event.target_id), amount=event.amount)
         elif isinstance(event, PlayerDiedEvent):
             result.update(target_id=str(event.player_id), source_id=str(event.killer_id) if event.killer_id else "")
+        elif isinstance(event, (TurnStartedEvent, TurnEndedEvent)):
+            result.update(player_id=str(event.player_id), turn_number=event.turn_number)
+        elif isinstance(event, DyingRequiredEvent):
+            result.update(player_id=str(event.target_id))
+        elif isinstance(event, CardMovedEvent) and event.reason == 'discard':
+            # Count only; never serialize hand IDs, hidden draws or move metadata.
+            from hashlib import sha256
+            result.update(kind='DiscardEvent', event_id=sha256(event.event_id.encode()).hexdigest()[:24],
+                          player_id=str(event.actor_id or ''), count=len(event.card_ids))
+        elif isinstance(event, Event) and event.event_type == 'after_judgment':
+            result.update(kind='JudgmentEvent', source_id=str(event.source_id or ''),
+                          matched=bool(event.metadata.get('matched', False)))
+        elif isinstance(event, Event) and event.event_type.startswith('skill_'):
+            from sanguosha.content.characters.standard import ALL_SKILL_CATALOGUE
+            skill_id = event.event_type.removeprefix('skill_')
+            skill = next((item for item in ALL_SKILL_CATALOGUE if str(item.id) == skill_id), None)
+            if skill is None:
+                return None
+            result.update(kind='SkillEvent', source_id=str(event.source_id or ''), skill_name=skill.name)
         elif isinstance(event, GameEndedEvent):
             result.update(label=event.label, winner_ids=list(map(str, event.winner_ids)))
         else:
@@ -554,5 +574,3 @@ class MultiplayerRoom:
         seat = self.seats[pid]
         if seat.connected and seat.send:
             seat.send(message)
-
-

@@ -116,6 +116,23 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
     app.state.room_manager = manager
     app.state.web_config = config
 
+    @app.websocket("/api/network/ws")
+    async def network_probe(websocket: WebSocket):
+        await websocket.accept()
+        try:
+            while True:
+                payload = await websocket.receive_text()
+                if len(payload) > 256:
+                    await websocket.close(code=1009)
+                    break
+                try:
+                    if json.loads(payload).get("type") == "PING":
+                        await websocket.send_json({"type": "PONG"})
+                except (ValueError, TypeError, AttributeError):
+                    pass
+        except WebSocketDisconnect:
+            pass
+
     @app.get("/health")
     async def health() -> dict[str, Any]:
         if shutting_down:

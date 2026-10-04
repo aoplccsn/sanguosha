@@ -3,6 +3,9 @@ import type { CardView, GeneralInfo, PendingRequest, PlayerView, Projection, Pub
 import { useGame } from '../state/GameContext'
 import { cardImage, defaultCardImage, defaultGeneralPortrait, generalPortrait } from '../assets'
 import { Timer } from './Timer'
+import { SkillTooltip, optionMetadata } from './SkillTooltip'
+import { readGameSpeed, type GameSpeed } from '../presentation/pacing'
+import { usePresentation } from '../presentation/usePresentation'
 import { DynamicPortrait } from './DynamicPortrait'
 import { idlePortrait } from '../idlePortraits'
 import { markLabel, skillTypeLabel } from '../labels'
@@ -70,6 +73,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
     + (portrait.faceDown ? ' face-down' : '')
     + (portrait.dying ? ' dying' : '')
     + (portrait.chained ? ' chained' : '')
+    + (eventKind?.includes('CardUsed') || eventKind?.includes('Skill') ? ' presenting-action' : '')
     + (eventKind?.includes('Damage') ? ' damage-flash' : '')
     + (eventKind?.includes('Recover') ? ' healing-flash' : '')
     + (!player.alive ? ' dead' : '')
@@ -101,6 +105,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
         title={card.name + (card.suit ? ' ' + card.suit + card.rank : '')}>蛊惑 · {card.name}</span>)}
     </div>
     <div className="mini-skills">{player.skill_labels.map((skill) => <span key={skill}>{skill}</span>)}</div>
+    {eventKind && /CardUsed|Skill/.test(eventKind) && <span className="action-badge">正在行动</span>}
     {player.active && <span className="turn-badge">当前回合</span>}
     {responding && <span className="response-badge">正在响应</span>}
     {!!player.marks && Object.entries(player.marks).filter(([, count]) => count > 0).map(([mark, count]) => <span key={mark} className="mark-badge">{markLabel(mark)} {count}</span>)}
@@ -133,7 +138,7 @@ const cardNames: Record<string, string> = {
 }
 
 const choiceNames: Record<string, string> = {
-  end_play_phase: '结束出牌', draw: '摸牌', discard: '弃牌', damage: '造成伤害',
+  keep: '保留当前化身', end_play_phase: '结束出牌', draw: '摸牌', discard: '弃牌', damage: '造成伤害',
   draw_x_discard_one: '摸 X 张，弃一张', draw_one_discard_x: '摸一张，弃 X 张',
   lose_hp: '失去体力', lose_max_hp: '减体力上限', rage: '弃一枚怒标记',
   slash: '打出杀', recover: '回复体力', top: '置于牌堆顶',
@@ -161,16 +166,18 @@ function SkillBar({ player, general, skillNames, request, chosen, onChoose, onUn
     ...(request?.choices.filter((choice) => choice.startsWith('skill:') || choice.startsWith('virtual:')) ?? []),
     ...(request?.eligible_card_ids.filter((choice) => choice.startsWith('virtual:')) ?? []),
   ]))
+  const { state } = useGame()
   return <div className="skill-bar" aria-label="技能栏">
     {player.skill_labels.map((label) => {
       const plain = label.split(' · ')[0]
       const skill = general?.skills.find((item) => item.name === plain)
       const option = skillOptions.find((item) => item.split(':')[1] === (skill?.id ?? (plain === '蛊惑' ? 'guhuo' : '')))
-      return <button key={label} aria-disabled={!option} className={chosen === option ? 'selected' : ''} onClick={() => option ? onChoose(option) : onUnavailable()}>{label}</button>
+      const metadata = skill ?? Object.values(state.generals).flatMap(item => item.skills).find(item => item.name === plain)
+      return <SkillTooltip key={label} skills={metadata ? [metadata] : []}><button aria-disabled={!option} className={chosen === option ? 'selected' : ''} onClick={() => option ? onChoose(option) : onUnavailable()}>{label}</button></SkillTooltip>
     })}
     {skillOptions.filter((option) => !general?.skills.some((skill) => skill.id === option.split(':')[1])
       && !(option.split(':')[1] === 'guhuo' && player.skill_labels.some((label) => label.split(' · ')[0] === '蛊惑'))).map((option) =>
-      <button key={option} className={chosen === option ? 'selected' : ''} onClick={() => onChoose(option)}>{request?.choice_labels?.[option] ?? skillNames[option.split(':')[1]] ?? '技能选项'}</button>)}
+      <SkillTooltip key={option} {...optionMetadata(option, state.generals)}><button className={chosen === option ? 'selected' : ''} onClick={() => onChoose(option)}>{request?.choice_labels?.[option] ?? skillNames[option.split(':')[1]] ?? '技能选项'}</button></SkillTooltip>)}
   </div>
 }
 
@@ -186,6 +193,7 @@ function DecisionPrompt({ request, projection, canConfirm, processing, summary, 
   onBoolean(value: boolean): void
   onOption(value: string): void
 }) {
+  const { state } = useGame()
   const prompt = ({
     'Choose a play action or end the play phase': '请选择出牌操作，或结束出牌阶段',
     'Choose a target': '请选择目标',
@@ -204,7 +212,11 @@ function DecisionPrompt({ request, projection, canConfirm, processing, summary, 
     <div className="prompt-copy"><strong>{prompt}</strong><small>选择后点击确认，操作才会提交</small></div>
     <Timer remainingMs={request.remaining_ms} />
     {summary && <div className="decision-summary">{summary}</div>}
-    {directOptions.map((choice, index) => <button key={choice} className="brush-button compact" disabled={processing} onClick={() => onOption(choice)}>{request.choice_labels?.[choice] ?? choiceLabel(choice, index, projection)}</button>)}
+    {directOptions.map((choice, index) => {
+      const detail = optionMetadata(choice, state.generals)
+      const label = detail.general ? detail.general.name + (detail.skills.length === 1 ? ' · ' + detail.skills[0].name : '') : detail.skills[0]?.name
+      return <SkillTooltip key={choice} {...detail}><button className="brush-button compact" disabled={processing} onClick={() => onOption(choice)}>{label ?? request.choice_labels?.[choice] ?? choiceLabel(choice, index, projection)}</button></SkillTooltip>
+    })}
     {request.allow_pass && <button className="brush-button subtle compact" disabled={processing} onClick={onPass}>{request.required_definition_id === 'trick.nullification' ? '本次均不响应' : '不出'}</button>}
     <button className="brush-button primary compact" disabled={!canConfirm || processing} onClick={onConfirm}>{processing ? '正在提交…' : '确定'}</button>
     {summary && <button className="brush-button subtle compact" disabled={processing} onClick={onCancel}>取消</button>}
@@ -229,10 +241,11 @@ function SharedCards({ cards, selected, eligible, onSelect }: { cards: CardView[
 }
 
 function EventStage({ event, players }: { event?: PublicEvent; players: PlayerView[] }) {
+  const { state: { generals: stateCatalogForEvents } } = useGame()
   if (!event) return <div className="event-stage quiet"><span>牌局进行中</span></div>
   const name = (id: unknown) => players.find((player) => player.player_id === id)?.name ?? String(id ?? '')
   const kind = String(event.kind ?? '')
-  let text = kind
+  let text = '牌局结算'
   if (kind.includes('CardUsed') || kind.includes('TrickTargets')) text = name(event.source_id) + ' 使用【' + String(event.card_name ?? '卡牌') + '】'
   else if (kind === 'GuhuoEvent') text = name(event.source_id) + (event.stage === 'reveal'
     ? ' 揭示蛊惑牌【' + (cardNames[String(event.actual)] ?? String(event.actual)) + '】'
@@ -243,9 +256,13 @@ function EventStage({ event, players }: { event?: PublicEvent; players: PlayerVi
   }
   else if (kind.includes('Damage')) text = name(event.source_id) + ' 对 ' + name(event.target_id) + ' 造成 ' + String(event.amount ?? 1) + ' 点伤害'
   else if (kind.includes('Recovered')) text = name(event.target_id ?? event.source_id) + ' 恢复体力'
-  else if (kind.includes('Death')) text = name(event.player_id ?? event.target_id) + ' 阵亡'
-  else if (kind.includes('Judgment')) text = '判定正在结算'
-  return <div className={'event-stage event-' + kind.toLowerCase()}><strong>{text}</strong></div>
+  else if (kind.includes('Skill')) text = name(event.source_id ?? event.player_id) + ' 发动【' + String(event.skill_name ?? Object.values(stateCatalogForEvents).flatMap(item => item.skills).find(skill => skill.id === event.skill_id)?.name ?? '技能') + '】'
+  else if (kind.includes('Turn')) text = name(event.player_id) + ' · ' + (kind.includes('Started') ? '回合开始' : '回合结束')
+  else if (kind.includes('Discard') || kind.includes('CardMoved')) text = name(event.player_id ?? event.source_id) + ' 弃牌'
+  else if (kind.includes('Dying')) text = name(event.player_id ?? event.target_id) + ' 濒死结算'
+  else if (kind.includes('Death') || kind.includes('Died')) text = name(event.player_id ?? event.target_id) + ' 阵亡'
+  else if (kind.includes('Judgment')) text = name(event.source_id) + ' · 判定' + (event.matched === true ? '命中' : event.matched === false ? '未命中' : '正在结算')
+  return <div key={String(event.event_id ?? kind)} data-event-id={event.event_id} className={'event-stage event-' + kind.toLowerCase()}><strong>{text}</strong></div>
 }
 
 export function ResultOverlay({ result, identity, godVictory = false, quality = 'medium', onHome, onReplay }: { result: string; identity?: string; godVictory?: boolean; quality?: VfxQuality; onHome(): void; onReplay(): void }) {
@@ -286,26 +303,13 @@ export function GamePage() {
   function setSelectedOption(option: string) { updateSelection((current) => ({ ...current, option })) }
   const [detailPlayer, setDetailPlayer] = useState<PlayerView | null>(null)
   const [vfxQuality, setVfxQuality] = useState<VfxQuality>(readVfxQuality)
-  const [gameSpeed, setGameSpeed] = useState<'normal' | 'fast'>(() => localStorage.getItem('sanguosha.web.speed') === 'fast' ? 'fast' : 'normal')
-  const [presentedEvent, setPresentedEvent] = useState<PublicEvent | null>(state.publicEvents.at(-1) ?? null)
-  const latestPublicEvent = state.publicEvents.at(-1) ?? null
-  const presentedIndex = presentedEvent ? state.publicEvents.findIndex((event) => event.event_id === presentedEvent.event_id) : -1
-  const visibleEvents = presentedIndex >= 0 ? state.publicEvents.slice(0, presentedIndex + 1) : []
+  const [gameSpeed, setGameSpeed] = useState<GameSpeed>(readGameSpeed)
+  const presentedEvent = usePresentation(state.publicEvents, gameSpeed, request?.player_id === state.seatId ? request.request_id : undefined)
+  const visibleEvents = presentedEvent ? [presentedEvent] : []
   const [godCues, setGodCues] = useState<Record<string, { mode: GodPortraitMode; id: number }>>({})
   const seenGodEvents = useRef(new Set<string>())
   const entryShown = useRef(new Set<string>())
   const nextGodCue = useRef(0)
-
-  useEffect(() => {
-    if (!latestPublicEvent) return
-    if (gameSpeed === 'fast' || request) { setPresentedEvent(latestPublicEvent); return }
-    const nextIndex = presentedEvent ? state.publicEvents.findIndex((event) => event.event_id === presentedEvent.event_id) + 1 : 0
-    if (nextIndex >= state.publicEvents.length) return
-    const previousKind = String(presentedEvent?.kind ?? '')
-    const delay = !presentedEvent ? 0 : /Damage|Judgment|CardUsed/.test(previousKind) ? 950 : /Turn|Phase/.test(previousKind) ? 600 : 700
-    const timer = window.setTimeout(() => setPresentedEvent(state.publicEvents[nextIndex]), delay)
-    return () => window.clearTimeout(timer)
-  }, [state.publicEvents, presentedEvent, gameSpeed, request?.request_id, latestPublicEvent])
 
   useEffect(() => {
     if (!projection) return
@@ -424,7 +428,7 @@ export function GamePage() {
   const eventKind = String(latestEvent?.kind ?? '')
 
   return <main className="game-page table-background">
-    <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><label>对局速度 <select aria-label="对局速度" value={gameSpeed} onChange={(event) => { const value = event.target.value as 'normal' | 'fast'; setGameSpeed(value); localStorage.setItem('sanguosha.web.speed', value) }}><option value="normal">正常</option><option value="fast">快速</option></select></label><label className="vfx-quality-control">画质 <select aria-label="战斗特效画质" value={vfxQuality} onChange={(event) => { const value = event.target.value as VfxQuality; setVfxQuality(value); saveVfxQuality(value) }}><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></label><button onClick={actions.returnHome}>离开牌局</button></div></header>
+    <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><label>对局速度 <select aria-label="对局速度" value={gameSpeed} onChange={(event) => { const value = event.target.value as GameSpeed; setGameSpeed(value); localStorage.setItem('sanguosha.web.speed', value) }}><option value="slow">慢</option><option value="normal">正常</option><option value="fast">快</option></select></label><label className="vfx-quality-control">画质 <select aria-label="战斗特效画质" value={vfxQuality} onChange={(event) => { const value = event.target.value as VfxQuality; setVfxQuality(value); saveVfxQuality(value) }}><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></label><button onClick={actions.returnHome}>离开牌局</button></div></header>
     <section className={'game-board' + (projection.players.length === 8 ? ' eight-seats' : '')}>
       <CombatVFXLayer players={projection.players} targets={selectedTargets} mode={beamMode} events={visibleEvents} quality={vfxQuality} />
       {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} position={(projection.players.length === 8 ? positionsEight : positions)[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={request?.player_id === player.player_id} eventKind={eventTarget === player.player_id || eventSource === player.player_id && eventKind.includes('CardUsed') ? eventKind : undefined} eventCue={latestEvent} godCue={godCues[player.player_id]} vfxQuality={vfxQuality} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}

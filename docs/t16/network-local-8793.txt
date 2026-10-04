@@ -1,0 +1,10 @@
+三国杀网络诊断
+HTTP：正常
+静态资源：正常
+实时连接：正常
+心跳响应：正常
+持续连接：正常
+往返延迟：2 ms
+断线次数：0
+浏览器：Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.8010.12 Safari/537.36
+时间：2026-10-04T07:14:12.435Z

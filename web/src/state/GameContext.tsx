@@ -101,7 +101,7 @@ function reducer(state: ClientState, action: Action): ClientState {
     case 'resume-session':
       return { ...state, resumeSession: action.payload as SessionRecord | null }
     case 'event':
-      return { ...state, publicEvents: [...state.publicEvents.slice(-39), action.payload as PublicEvent] }
+      return { ...state, publicEvents: [...state.publicEvents.slice(-511), action.payload as PublicEvent] }
     case 'result':
       return { ...state, result: action.payload as string, page: 'game', pendingRequest: null }
     case 'select-general':

@@ -60,6 +60,10 @@ class Default(WorkerEntrypoint):
     async def fetch(self, request):
         parsed = urlparse(request.url)
         path = parsed.path
+        if path == "/api/network/ws":
+            if request.headers.get("Upgrade", "").lower() != "websocket":
+                return Response.json({"error": "websocket required"}, status=426)
+            return await self.env.GAME_ROOMS.getByName("network-diagnostics").fetch(request)
         if path == "/health":
             return Response.json({"ok": True, "runtime": "cloudflare-python"})
         if path == "/api/catalog/generals" and request.method == "GET":
@@ -178,6 +182,11 @@ class GameRoomDurableObject(DurableObject):
         await self.ctx.storage.setAlarm(int(min(deadlines) * 1000))
 
     async def fetch(self, request):
+        if urlparse(request.url).path == "/api/network/ws":
+            client, server = WebSocketPair.new().object_values()
+            self.ctx.acceptWebSocket(server)
+            _save_attachment(server, {"diagnostic": True})
+            return Response(None, status=101, web_socket=client)
         parsed = urlparse(request.url)
         if parsed.path.startswith("/init/") and request.method == "POST":
             code = _normalize_room_code(parsed.path.rsplit("/", 1)[-1])
@@ -225,6 +234,14 @@ class GameRoomDurableObject(DurableObject):
             raise ProtocolError("message rate limit exceeded")
 
     async def webSocketMessage(self, ws, raw):
+        if _attachment(ws).get("diagnostic"):
+            try:
+                if isinstance(raw, str) and len(raw) <= 256 and json.loads(raw).get("type") == "PING":
+                    ws.send(json.dumps({"type": "PONG"}))
+            except (ValueError, TypeError, AttributeError):
+                pass
+            return
+
         received_at = time.perf_counter()
         received_epoch_ms = time.time() * 1000
         attachment = _attachment(ws)
@@ -337,6 +354,8 @@ class GameRoomDurableObject(DurableObject):
         await self._disconnect(ws)
 
     async def _disconnect(self, ws):
+        if _attachment(ws).get("diagnostic"):
+            return
         if not await self._load():
             return
         attachment = _attachment(ws)

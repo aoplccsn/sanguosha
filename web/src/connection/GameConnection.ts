@@ -46,8 +46,10 @@ export class GameConnection {
     this.setStatus(this.failures ? (this.failures >= 6 ? 'offline' : 'reconnecting') : 'connecting')
     const socket = new WebSocket(websocketUrl(window.location.protocol, window.location.host, this.roomCode))
     this.socket = socket
+    const handshakeTimeout = window.setTimeout(() => { if (this.socket === socket && socket.readyState === WebSocket.CONNECTING) socket.close() }, 8000)
     socket.addEventListener('open', () => {
       if (this.socket !== socket) return
+      window.clearTimeout(handshakeTimeout)
       this.reconnectDelay = 800
       this.failures = 0
       this.setStatus('connected')
@@ -61,7 +63,7 @@ export class GameConnection {
         this.send(this.reconnectMessage.type, this.reconnectMessage.fields)
       }
       this.heartbeat = window.setInterval(() => {
-        if (this.pingSentAt !== null && performance.now() - this.pingSentAt > 30000) this.pingSentAt = null
+        if (this.pingSentAt !== null && performance.now() - this.pingSentAt > 30000) { socket.close(); return }
         if (this.pingSentAt === null && this.send('PING')) this.pingSentAt = performance.now()
       }, 15000)
     })
@@ -86,6 +88,7 @@ export class GameConnection {
       }
     })
     socket.addEventListener('close', () => {
+      window.clearTimeout(handshakeTimeout)
       if (this.socket !== socket) return
       this.socket = null
       if (this.heartbeat !== null) window.clearInterval(this.heartbeat)
@@ -98,7 +101,7 @@ export class GameConnection {
         }
         this.failures += 1
         this.setStatus(this.failures >= 6 ? 'offline' : 'reconnecting')
-        if (this.intentionallyClosed) return
+        if (this.intentionallyClosed || this.failures >= 6) return
         const delay = this.reconnectDelay
         this.reconnectDelay = Math.min(this.reconnectDelay * 1.7, 8000)
         this.reconnectTimer = window.setTimeout(() => {
@@ -128,6 +131,12 @@ export class GameConnection {
     this.reconnectDelay = 800
     this.failures = 0
     this.connect(this.roomCode)
+  }
+
+  retry() {
+    this.failures = 0
+    this.reconnectDelay = 800
+    this.connect()
   }
 
   send(type: string, fields: Record<string, unknown> = {}) {

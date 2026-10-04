@@ -63,6 +63,7 @@ export function HomePage() {
       </div>}
       {state.error && <div className="error-banner" role="alert">{state.error}<button onClick={actions.clearError}>×</button></div>}
       {state.updateAvailable && <div className="version-banner" role="status">新版本可用：v{state.serverVersion?.app_version}</div>}
+      <a className="network-entry" href="/network-diagnostics" target="_blank" rel="noreferrer">网络诊断</a>
       <footer>
         <span><i className={`connection-dot ${state.connection}`} /> {state.connection === 'connected' ? '服务器已连接' : state.connection === 'idle' ? '等待进入房间' : '正在连接服务器'}</span>
         <span>v{__APP_VERSION__} · {__BUILD_COMMIT__.slice(0, 8)} · 协议 {state.serverVersion?.protocol_version ?? __PROTOCOL_VERSION__}</span>
