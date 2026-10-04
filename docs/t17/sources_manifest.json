@@ -1,0 +1,27 @@
+{
+  "qs_revision": "e8768851bd8054db9fd1b63cd6f1feca813590d7",
+  "noname_revision": "e18a8256e01ab1357e4c7472349dceb3d0aa1a3a",
+  "download_sha256": {
+    "extra_character.js": "270906b67902b1731e2cc9a6f4106c11cf7d04cc241691b2ccc8cff9ba5e6c63",
+    "extra_skill.js": "55a0d5de01df7d6943be29ca6d9c24c9c49c2a7363523ed4979ae9328d52f902",
+    "extra_translate.js": "2a6c91505d1d31b282b3ecea2d730a8d530c115b6db4639b9097e8d03c7c12cd",
+    "FirePackage.lua": "116624408047c80cc4b50e25b01f9958421cb637144d68aa819b43edf45f90e8",
+    "general.h": "3d33584b7ab99f048a2d0b759ddb90a60a7f2fe492841c1408529070329bd257",
+    "GodPackage.lua": "125414661a92a505c13093479a46f5af40fddb344909c45d9d06a5e085edd8ba",
+    "noname_sha.txt": "4a043f2274ee075e3880f8454a577f1b021afccf59e520539889dcffee7fadc1",
+    "nostalgia.cpp": "d53b1b7d51911ba8c6b832f1c2fa25f0779f5f74d514cbef723f1cfc1a431a3e",
+    "NostalgiaPackage.lua": "a3765280605f60cdbb911d747c19d35d1f48963ee429b910423ffcf7a617e8cc",
+    "qs_sha.txt": "41bfbb68144227096a22131bb0d6b832cd32c2650576a49501421aa370c33a3a",
+    "refresh_translate.js": "4804df4dd8e07772c9fa35e88ad99f396f945385c2f674d764779579bc866f06",
+    "shenhua_character.js": "c683a28021e778c00f549786055960208f4603e4eb857ec8de371da4c7c569a6",
+    "shenhua_translate.js": "dd63803d818f8fa898627769757ca5316299993555bf8e2dc77d435bf3cbdb52",
+    "StandardGeneralPackage.lua": "f84f161385faee2602df38b65faa76efd79757df1ecf975580cfb0570f6a1f48",
+    "yijiang_translate.js": "7da8c41487cb646004baff1880badf1a4173788aaaaa1a69bda8bd4d669203a9",
+    "yjcm.cpp": "f3d841e5d964096d3f9dfc76ee731aae1ae76639e4ffc9d6a575aff18d0068ab",
+    "yjcm2012.cpp": "4201945fa47162ac6987de35f4482ad22462b34838dee89af9138c41d4abbc4d",
+    "YJCM2012Package.lua": "27150268c8c002b39447327854da83358470d9e4b02144864529cc4badb39259",
+    "yjcm2013.cpp": "e95319d7dcc81faf2cdb04d71fb1a2c52113dc1aee6855c063bd98afebc0ae0c",
+    "YJCM2013Package.lua": "833c2c5664ebc38318dc6f0add7485a7f431d3e6fbd295dd26a82b9fec683987",
+    "YJCMPackage.lua": "f726849e526de57f590941e76430de2e0974e7df88934e15cb9a2e25d5c44030"
+  }
+}
