@@ -6,28 +6,28 @@
  RUN  v3.2.7 C:/Sanguosha/web
 
 ·······································stdout | src/components/GamePage.test.tsx > GamePage > selects a Slash target and submits card plus target with one final confirm
-[game] click card slash-1 request play-1 option 
+[game] click card slash-1 request play-1 option
 
 ·····stdout | src/components/GamePage.test.tsx > GamePage > confirms equipment without requesting a character target
-[game] click card slash-1 request play-equip option 
+[game] click card slash-1 request play-equip option
 
 ····stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
 [game] request replaced r1
 
 stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
-[game] click card dodge-1 request r1 option 
+[game] click card dodge-1 request r1 option
 
 stdout | src/components/GamePage.test.tsx > GamePage > requires confirm after selecting a response card
-[game] click card slash-1 request r1 option 
+[game] click card slash-1 request r1 option
 
 ······stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
-[game] click card dodge-1 request r1 option 
+[game] click card dodge-1 request r1 option
 
 ·stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
 [game] request replaced r1
 
 stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
-[game] click card dodge-1 request r1 option 
+[game] click card dodge-1 request r1 option
 
 ··stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
 [game] submit begin r1
@@ -42,31 +42,31 @@ stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection 
 [game] request replaced r1
 
 stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
-[game] click card dodge-1 request r1 option 
+[game] click card dodge-1 request r1 option
 
 ··stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
 [game] request replaced r2
 
 ·stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
-[game] click card dodge-1 request r2 option 
+[game] click card dodge-1 request r2 option
 
 ·stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
 [game] submit begin r2
 
 stdout | src/components/GamePage.test.tsx > T15 dynamic target interaction > selects immediately on the first portrait click with multiple dynamic panels
-[game] click card slash-1 request t15-target option 
+[game] click card slash-1 request t15-target option
 
 ··stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
 [game] request replaced r1
 
 ·stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
-[game] click card dodge-1 request r1 option 
+[game] click card dodge-1 request r1 option
 
 stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
 [game] request replaced r2
 
 ·stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
-[game] click card dodge-1 request r2 option 
+[game] click card dodge-1 request r2 option
 
 stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
 [game] submit begin r2
@@ -77,4 +77,3 @@ stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request a
       Tests  67 passed (67)
    Start at  15:23:12
    Duration  3.62s (transform 1.25s, setup 2.98s, collect 3.91s, tests 4.99s, environment 10.84s, prepare 1.50s)
-

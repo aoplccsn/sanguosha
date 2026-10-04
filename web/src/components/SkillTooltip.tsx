@@ -27,4 +27,3 @@ export function SkillTooltip({ children, general, skills }: { children: ReactNod
     </aside>, document.body)}
   </span>
 }
-

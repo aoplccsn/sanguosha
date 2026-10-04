@@ -15,7 +15,7 @@ tests\test_t10_v3_integration.py:37: in test_all_playable_v3_portraits_are_live_
     assert hashlib.sha256(live.read_bytes()).hexdigest() == reviewed[row["general_id"]], key
 E   AssertionError: general.wind_zhang_jiao
 E   assert '8ef77088bb09...474886b41850d' == '74d22003e5d3...0aa45439424d2'
-E     
+E
 E     - 74d22003e5d36227ae4600c50228344c5ee29220e494027ded20aa45439424d2
 E     + 8ef77088bb09ef8190a4b6cdb71deb9cc94c060e63d8d9cf3da474886b41850d
 =========================== short test summary info ===========================
