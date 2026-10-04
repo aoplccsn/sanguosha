@@ -1000,5 +1000,19 @@
     "2011": "    General *caozhi = new General(this, \"caozhi\", \"wei\", 3); // YJ 001\n    General *chengong = new General(this, \"chengong\", \"qun\", 3); // YJ 002\n    General *fazheng = new General(this, \"fazheng\", \"shu\", 3); // YJ 003\n    General *gaoshun = new General(this, \"gaoshun\", \"qun\"); // YJ 004\n    General *lingtong = new General(this, \"lingtong\", \"wu\"); // YJ 005\n    General *masu = new General(this, \"masu\", \"shu\", 3); // YJ 006\n    General *wuguotai = new General(this, \"wuguotai\", \"wu\", 3, false); // YJ 007\n    General *xusheng = new General(this, \"xusheng\", \"wu\"); // YJ 008\n    General *xushu = new General(this, \"xushu\", \"shu\", 3); // YJ 009\n    General *yujin = new General(this, \"yujin\", \"wei\"); // YJ 010\n    General *zhangchunhua = new General(this, \"zhangchunhua\", \"wei\", 3, false); // YJ 011\n    General *zhonghui = new General(this, \"zhonghui\", \"wei\"); // YJ 012",
     "2012": "    General *bulianshi = new General(this, \"bulianshi\", \"wu\", 3, false); // YJ 101\n    General *caozhang = new General(this, \"caozhang\", \"wei\"); // YJ 102\n    General *chengpu = new General(this, \"chengpu\", \"wu\"); // YJ 103\n    General *guanxingzhangbao = new General(this, \"guanxingzhangbao\", \"shu\"); // YJ 104\n    General *handang = new General(this, \"handang\", \"wu\"); // YJ 105\n    General *huaxiong = new General(this, \"huaxiong\", \"qun\", 6); // YJ 106\n    General *liaohua = new General(this, \"liaohua\", \"shu\"); // YJ 107\n    General *liubiao = new General(this, \"liubiao\", \"qun\", 4); // YJ 108\n    General *madai = new General(this, \"madai\", \"shu\"); // YJ 109\n    General *wangyi = new General(this, \"wangyi\", \"wei\", 3, false); // YJ 110\n    General *xunyou = new General(this, \"xunyou\", \"wei\", 3); // YJ 111",
     "2013": "    General *caochong = new General(this, \"caochong\", \"wei\", 3); // YJ 201\n    General *fuhuanghou = new General(this, \"fuhuanghou\", \"qun\", 3, false); // YJ 202\n    General *guohuai = new General(this, \"guohuai\", \"wei\"); // YJ 203\n    General *guanping = new General(this, \"guanping\", \"shu\", 4); // YJ 204\n    General *jianyong = new General(this, \"jianyong\", \"shu\", 3); // YJ 205\n    General *liru = new General(this, \"liru\", \"qun\", 3); // YJ 206\n    General *liufeng = new General(this, \"liufeng\", \"shu\"); // YJ 207\n    General *manchong = new General(this, \"manchong\", \"wei\", 3); // YJ 208\n    General *panzhangmazhong = new General(this, \"panzhangmazhong\", \"wu\"); // YJ 209\n    General *yufan = new General(this, \"yufan\", \"wu\", 3); // YJ 210\n    General *zhuran = new General(this, \"zhuran\", \"wu\"); // YJ 211"
+  },
+  "final_lock_alternate_excerpts": {
+    "shangshi": {
+      "key": "nosshangshi",
+      "text": "每当你的手牌数、体力值或体力上限改变后，若你的手牌数小于X，你可以将手牌补至X张。（X为你已损失的体力值）",
+      "url": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/NostalgiaPackage.lua",
+      "retrieval": "Already archived alternative excerpt in bd14d40 catalog; original fixed revision source hashes remain in sources_manifest.json."
+    },
+    "zishou": {
+      "key": "zishou",
+      "text": "摸牌阶段，你可以额外摸X张牌（X为场上势力数）。然后你于本回合的出牌阶段内使用的牌不能指定其他角色为目标。",
+      "url": "https://github.com/libccy/noname/blob/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/yijiang/translate.js",
+      "retrieval": "Already archived alternative excerpt in bd14d40 catalog; original fixed revision source hashes remain in sources_manifest.json."
+    }
   }
 }

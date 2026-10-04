@@ -24,6 +24,11 @@ class SkillRegistry:
     def __init__(self):
         self.characters = {character.id: character for character in CHARACTERS}
         self.skills = {skill.id: skill for skill in SKILLS}
+        # Development metadata can be loaded by engine tests/snapshots. The
+        # production pools, draft, and web catalogue remain unchanged until gate.
+        from sanguosha.content.characters.yj2011 import YJ2011_DEV_GENERALS, YJ2011_DEV_SKILLS
+        self.characters.update({c.id: c for c in YJ2011_DEV_GENERALS})
+        self.skills.update({s.id: s for s in YJ2011_DEV_SKILLS})
 
     def has(self, state, player_id, skill_id):
         player = state.players[player_id]
@@ -99,6 +104,10 @@ class FinishSkillBody:
     def step(self, state, frame):
         actor = frame.action.player_id
         if frame.step_index == 1:
+            if not frame.local.get('yj2011_jujian') and self.skills.has(state, actor, 'jujian'):
+                from .yj2011 import JujianAction
+                frame.local['yj2011_jujian'] = True
+                return StepResult.push(JujianAction(frame.action.action_id + ':jujian', actor))
             if state.players[actor].marks.pop('fangquan_pending', 0):
                 from .mountain import FangquanEndAction
                 frame.step_index = 10

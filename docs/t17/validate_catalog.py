@@ -131,6 +131,10 @@ def check_sources(root, data):
             key = s['source_key']
             if s.get('source_evidence'):
                 evidence = s['source_evidence']
+                original = proof['final_lock_alternate_excerpts'][s['skill_id']]
+                if (original['text'] != evidence['text'] or original['url'] != evidence['url']
+                        or original['key'] != key):
+                    raise ValueError('independent fixed source excerpt drift: ' + s['skill_id'])
                 alternatives = s['alternative_versions']
                 if not any(a['text'] == evidence['text'] and a['source'] == evidence['url']
                            and a['source_key'] == key for a in alternatives):

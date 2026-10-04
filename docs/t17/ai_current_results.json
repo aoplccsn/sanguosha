@@ -1,0 +1,326 @@
+{
+  "scope": "T17B Tier1/Tier2 only, five development generals, not 11/11 acceptance",
+  "games": 40,
+  "results": [
+    {
+      "mode": "military-five",
+      "seed": 100,
+      "turns": 96,
+      "steps": 896,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 101,
+      "turns": 62,
+      "steps": 779,
+      "mid_skill_restore": true,
+      "victory": "内奸胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 102,
+      "turns": 28,
+      "steps": 455,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 103,
+      "turns": 69,
+      "steps": 753,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 104,
+      "turns": 58,
+      "steps": 752,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 105,
+      "turns": 56,
+      "steps": 743,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 106,
+      "turns": 21,
+      "steps": 279,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 107,
+      "turns": 71,
+      "steps": 858,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 108,
+      "turns": 53,
+      "steps": 652,
+      "mid_skill_restore": true,
+      "victory": "内奸胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 109,
+      "turns": 59,
+      "steps": 651,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 110,
+      "turns": 77,
+      "steps": 967,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 111,
+      "turns": 101,
+      "steps": 873,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 112,
+      "turns": 66,
+      "steps": 694,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 113,
+      "turns": 72,
+      "steps": 793,
+      "mid_skill_restore": true,
+      "victory": "内奸胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 114,
+      "turns": 125,
+      "steps": 1410,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 115,
+      "turns": 27,
+      "steps": 348,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 116,
+      "turns": 99,
+      "steps": 1170,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 117,
+      "turns": 62,
+      "steps": 818,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 118,
+      "turns": 34,
+      "steps": 466,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 119,
+      "turns": 82,
+      "steps": 891,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 100,
+      "turns": 98,
+      "steps": 1567,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 101,
+      "turns": 25,
+      "steps": 778,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 102,
+      "turns": 61,
+      "steps": 1090,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 103,
+      "turns": 67,
+      "steps": 1035,
+      "mid_skill_restore": true,
+      "victory": "内奸胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 104,
+      "turns": 46,
+      "steps": 946,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 105,
+      "turns": 130,
+      "steps": 1750,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 106,
+      "turns": 75,
+      "steps": 978,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 107,
+      "turns": 25,
+      "steps": 682,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 108,
+      "turns": 51,
+      "steps": 1009,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 109,
+      "turns": 23,
+      "steps": 748,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 110,
+      "turns": 72,
+      "steps": 1336,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 111,
+      "turns": 69,
+      "steps": 1239,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 112,
+      "turns": 62,
+      "steps": 1335,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 113,
+      "turns": 77,
+      "steps": 1349,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 114,
+      "turns": 63,
+      "steps": 1266,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 115,
+      "turns": 106,
+      "steps": 1363,
+      "mid_skill_restore": true,
+      "victory": "内奸胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 116,
+      "turns": 58,
+      "steps": 1365,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 117,
+      "turns": 100,
+      "steps": 1585,
+      "mid_skill_restore": true,
+      "victory": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 118,
+      "turns": 74,
+      "steps": 1201,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 119,
+      "turns": 64,
+      "steps": 1075,
+      "mid_skill_restore": true,
+      "victory": "反贼胜利"
+    }
+  ]
+}

@@ -124,4 +124,4 @@ DrawCardsAction、CardMoveService单次draw/discard/obtain的实体唯一位置�
 6. 虚拟牌花色/颜色与材料区合法性统一，不能拿物理第一张作为组合牌唯一性质。
 7. 模拟每个ask前/后断线、60秒timeout、重复ACK、旧request_id、恶意额外card_id与skill_id，Web/PySide给同一结果。
 
-设计门禁：Q00–Q08未决规则不得自行写代码猜测。测试案例在各roster技能段及catalog.json，不在T17A写实现镜像测试或跑full pytest。
+T17A.1已解除武将版本门禁；Q00保留来源未验证说明，Q07及非T17B的Q08边界留至对应阶段。T17B测试案例见各roster技能段及catalog.json，按用户要求运行完整pytest。

@@ -30,6 +30,10 @@ class AIDecisionProvider:
 
     def decide(self, state: GameState, request: PendingRequest) -> Decision:
         player_id = request.player_id
+        from .yj2011 import decide_yj2011
+        yj2011_decision = decide_yj2011(self, state, request, player_id)
+        if yj2011_decision is not None:
+            return yj2011_decision
         kind = request.request_type
         if kind is RequestType.CHOOSE_OPTION and '英魂：选择' in request.prompt:
             target = request.subject_player_id

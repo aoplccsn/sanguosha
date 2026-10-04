@@ -77,7 +77,7 @@ for (const [name, id] of [['杀', 'slash-1'], ['顺手牵羊', 'trick-1']] as co
     await cardButton.click()
     await expect(cardButton).toHaveClass(/selected/)
     await expect(page.getByText(`${name} → 请选择目标`)).toBeVisible()
-    await page.locator('[data-player-id="p2"] .player-heading').click()
+    await page.locator('[data-player-id="p2"] .portrait-button').click()
     await expect(page.getByText(`${name} → 刘备`)).toBeVisible()
     await page.getByRole('button', { name: '确定' }).click()
     await expect.poll(() => submitted.length).toBe(1)
@@ -119,7 +119,7 @@ test('cancel keeps the selected card and returns to target selection', async ({ 
     eligible_card_ids: [], allow_pass: false, min_count: 0, max_count: 0,
     play_card_targets: { 'use:slash-1': { targets: ['p2'], min: 1, max: 1 } } })
   await page.getByRole('button', { name: /杀/ }).click()
-  await page.locator('[data-player-id="p2"] .player-heading').click()
+  await page.locator('[data-player-id="p2"] .portrait-button').click()
   await expect(page.locator('[data-player-id="p2"]')).toHaveClass(/selected-target/)
   await page.getByRole('button', { name: '取消' }).click()
   await expect(page.getByRole('button', { name: /杀/ })).toHaveClass(/selected/)

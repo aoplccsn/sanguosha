@@ -146,6 +146,8 @@ class GameSession:
                 moves.move(state, CardMove(f'initial-stars:{pid}:store', stars,
                     ZoneRef(ZoneType.HAND, pid), ZoneRef(ZoneType.SPECIAL, pid, special_key='star'),
                     CardMoveReason.SYSTEM, pid))
+        # Initialization moves are historical facts, not pending skill windows.
+        state.metadata['reaction_event_cursor'] = len(events.events)
         definitions = CardDefinitionRegistry()
         card_rules = CardRuleRegistry()
         register_basic_cards(definitions, card_rules)
@@ -321,6 +323,9 @@ class GameSession:
                 from sanguosha.engine.military_basics import MilitaryFinishBody
                 bodies.register(Phase.FINISH, FinishSkillBody(skills, MilitaryFinishBody()))
                 bodies.register(Phase.PREPARATION, PreparationSkillBody(skills, deck))
+        if military and skills is not None:
+            from sanguosha.engine.yj2011 import register_yj2011
+            register_yj2011(registry, skills, moves, definitions)
         engine = GameEngine(state, registry)
         if military:
             engine.reaction_provider = moves.next_reaction

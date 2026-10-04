@@ -66,6 +66,10 @@ class MilitaryDamageHandler(DamageActionHandler):
     def step(self, state, frame):
         action = frame.action
         target = state.players[action.target_id]
+        from .yj2011 import replace_damage
+        replacement = replace_damage(state, frame, self.skills, self.recorder)
+        if replacement is not None:
+            return replacement
         if frame.step_index == 0:
             self.validate_start(state, action)
             if (action.nature is not DamageNature.THUNDER
@@ -325,6 +329,10 @@ class MilitaryDamageHandler(DamageActionHandler):
                 if lord is not None:
                     from .forest import BaonueAction
                     return StepResult.push(BaonueAction(action.action_id + ':baonue', source, lord))
+        from .yj2011 import after_damage
+        reaction = after_damage(state, frame, self.skills)
+        if reaction is not None:
+            return reaction
         chain = str(frame.local['chain']).split('|') if frame.local['chain'] else []
         if state.status is GameStatus.FINISHED or frame.cursor >= len(chain):
             return StepResult.complete(int(frame.local['amount']))
@@ -453,6 +461,9 @@ class MilitarySlashHandler:
             state.players[action.source_id].marks.get('wuwei') and
             state.players[action.target_id].marks.get('wuwei_target_' + action.source_id))
         if frame.step_index == 0:
+            from .yj2011 import slash_ineffective
+            if slash_ineffective(state, self.skills, action.source_id, action.target_id, color):
+                return StepResult.complete('prevented')
             if 'amount' not in frame.local:
                 wine = action.wine_bonus if isinstance(action,MilitaryStrike) else state.players[action.source_id].marks.pop('wine', 0)
                 frame.local['amount'] = 1 + wine
