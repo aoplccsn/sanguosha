@@ -13,6 +13,19 @@ class AIDecisionProvider:
     def __init__(self, human_id: PlayerId) -> None:
         self.human_id = human_id
 
+    def thinking_profile(self, state: GameState, request: PendingRequest) -> tuple[str, int]:
+        """Only own legal candidates and public target facts affect pacing."""
+        candidates = len(request.choices) + len(request.eligible_card_ids) + len(request.allowed_player_ids)
+        skill = any(choice.startswith(('skill:', 'virtual:')) for choice in request.choices)
+        multi = request.max_count > 1 and bool(request.allowed_player_ids)
+        kill = any(state.players[pid].hp <= 1 and self._priority(state, request.player_id, pid) > 0
+                   for pid in request.allowed_player_ids)
+        if request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.YES_NO) and candidates <= 4:
+            return 'simple', 2200 + min(candidates, 4) * 120
+        if multi or skill or candidates > 8 or kill:
+            return 'complex', min(5900, 3500 + min(candidates, 16) * 100 + int(multi) * 350 + int(kill) * 400)
+        return 'ordinary', 2800 + min(candidates, 8) * 140
+
     def _priority(self, state: GameState, actor: PlayerId, target: PlayerId) -> int:
         role = state.players[actor].identity
         known_lord = target in state.revealed_identities and state.players[target].identity is Identity.LORD
@@ -41,14 +54,26 @@ class AIDecisionProvider:
             score += 12
         if not player.face_up:
             score -= 4
+        from sanguosha.engine.distance import DistanceSystem
+        from sanguosha.content.characters.standard import ALL_GENERAL_POOL
+        equipment = [state.cards[cid].definition_id for ref, zone in state.zones.items()
+                     if ref.player_id == target and ref.zone_type is ZoneType.EQUIPMENT for cid in zone.card_ids]
+        score -= min(hand, 6) * 3
+        score -= 8 * sum('.armor.' in definition for definition in equipment)
+        score += 3 * sum('.weapon.' in definition for definition in equipment)
+        if state.players[actor].is_alive:
+            score -= max(0, DistanceSystem().distance_between(state, actor, target) - 1) * 2
+        general = next((item for item in ALL_GENERAL_POOL if item.id == player.character_id), None)
+        if general:
+            score += 4 * len(set(general.skill_ids) & {'paoxiao', 'wushuang', 'jizhi', 'luanwu', 'shenfen'})
         return score
 
     def _card_value(self, state: GameState, player_id: PlayerId, definition_id: str) -> int:
         player = state.players[player_id]
         if definition_id == PEACH_ID:
-            return 28 if player.hp <= 1 else 3
+            return 32 if player.hp <= 2 else 18
         if definition_id == DODGE_ID:
-            return 22 if player.hp <= 1 else 10
+            return 26 if player.hp <= 2 else 10
         if definition_id in (SLASH_ID, 'basic.fire_slash', 'basic.thunder_slash'):
             return 14 if player.hp <= 1 else 20
         if definition_id == 'trick.nullification':
@@ -60,6 +85,49 @@ class AIDecisionProvider:
     def _choice_card_value(self, state: GameState, player_id: PlayerId, card_id: str) -> int:
         card = state.cards.get(card_id)
         return self._card_value(state, player_id, card.definition_id) if card is not None else 5
+
+    def _equipment_quality(self, state, actor, definition):
+        from sanguosha.content.cards.classic_military import WEAPONS, HORSES
+        from sanguosha.engine.distance import DistanceSystem
+        from sanguosha.model.enums import EquipmentSlot
+        if '.weapon.' in definition:
+            reach = dict((f'equipment.weapon.{key}', radius) for key, _, radius in WEAPONS).get(definition, 1)
+            enemies = [pid for pid in state.seat_order if pid != actor and state.players[pid].is_alive and self._priority(state, actor, pid) > 0]
+            accessible = sum(DistanceSystem().distance_between(state, actor, pid) <= reach for pid in enemies)
+            slashes = sum('slash' in state.cards[cid].definition_id for cid in state.cards_in(ZoneRef(ZoneType.HAND, actor)))
+            return EquipmentSlot.WEAPON, 8 + accessible * 6 + reach + (15 if definition.endswith('crossbow') and slashes >= 2 else 0)
+        if '.armor.' in definition:
+            quality = {'eight_trigrams': 22, 'renwang_shield': 20, 'silver_lion': 19, 'vine': 14}.get(definition.rsplit('.', 1)[-1], 10)
+            return EquipmentSlot.ARMOR, quality + (6 if state.players[actor].hp <= 2 and definition.endswith('silver_lion') else 0)
+        slot = next((slot for key, _, slot in HORSES if definition == f'equipment.horse.{key}'), EquipmentSlot.DEFENSIVE_HORSE)
+        return slot, 15
+
+    def _action_priority(self, state, actor, definition, enemies):
+        player = state.players[actor]
+        if definition == PEACH_ID:
+            return 130 if player.hp < player.max_hp else -100
+        if definition == 'trick.ex_nihilo':
+            return 105
+        if definition.startswith('equipment.'):
+            slot, quality = self._equipment_quality(state, actor, definition)
+            existing = state.cards_in(ZoneRef(ZoneType.EQUIPMENT, actor, slot))
+            if existing:
+                old = state.cards[existing[0]].definition_id
+                if quality <= self._equipment_quality(state, actor, old)[1]:
+                    return -100
+            return 95 if '.armor.' in definition and player.hp <= 2 else 82
+        if definition in ('trick.dismantlement', 'trick.snatch'):
+            defended = any(ref.player_id in enemies and ref.zone_type is ZoneType.EQUIPMENT and zone.card_ids
+                           for ref, zone in state.zones.items())
+            return 98 if defended else 65
+        if definition == 'basic.wine':
+            own_slash = any('slash' in state.cards[cid].definition_id for cid in state.cards_in(ZoneRef(ZoneType.HAND, actor)))
+            return 92 if enemies and own_slash else -100
+        if 'slash' in definition:
+            return 115 if any(state.players[pid].hp <= 1 for pid in enemies) else 72
+        if definition.startswith(('trick.', 'delayed.')):
+            return 60
+        return 0
 
     def decide(self, state: GameState, request: PendingRequest) -> Decision:
         player_id = request.player_id
@@ -163,6 +231,8 @@ class AIDecisionProvider:
                        or len(state.cards_in(ZoneRef(ZoneType.HAND, lord))) <= 1)
                   and len(state.cards_in(ZoneRef(ZoneType.HAND, player_id))) >= 2):
                 value = 'skill:huangtian'
+            elif usable and any(self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, enemies) > 72 for choice in usable):
+                value = max(usable, key=lambda choice: self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, enemies))
             elif slash and enemies:
                 value = max(slash, key=lambda choice: (
                     self._choice_card_value(state, player_id, choice[4:]), str(choice)))
@@ -181,7 +251,8 @@ class AIDecisionProvider:
             elif enemies and 'skill:jijiang' in request.choices:
                 value = 'skill:jijiang'
             elif usable and state.ruleset_id == 'classic-military':
-                value = usable[0]
+                worthwhile = [choice for choice in usable if self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, enemies) > 0]
+                value = max(worthwhile, key=lambda choice: self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, enemies)) if worthwhile else END_PLAY_PHASE
             elif 'skill:zhiheng' in request.choices:
                 value = 'skill:zhiheng'
             elif 'skill:zhijian' in request.choices:
@@ -240,6 +311,12 @@ class AIDecisionProvider:
             if not request.eligible_card_ids:
                 value = PASS_RESPONSE
             elif request.required_definition_id == DODGE_ID:
+                from sanguosha.engine.skills import SkillRegistry
+                benefits = any(SkillRegistry().has(state, player_id, skill) for skill in ('yiji', 'fankui', 'jieming'))
+                hand = state.cards_in(ZoneRef(ZoneType.HAND, player_id))
+                scarce = sum(state.cards[cid].definition_id == DODGE_ID for cid in hand) == 1
+                if request.allow_pass and state.players[player_id].hp >= 4 and benefits and scarce:
+                    return Decision(request.request_id, player_id, PASS_RESPONSE)
                 value = max(request.eligible_card_ids, key=lambda cid: (
                     self._choice_card_value(state, player_id, cid), str(cid)))
             elif request.required_definition_id == PEACH_ID:
@@ -291,7 +368,7 @@ class AIDecisionProvider:
                 value = next((cid for cid in request.eligible_card_ids
                               if f'better:{cid}' in request.choices), request.eligible_card_ids[0])
         elif kind is RequestType.CHOOSE_PLAYERS:
-            ordered=sorted(request.allowed_player_ids,key=lambda pid:self._priority(state,player_id,pid),reverse=True)
+            ordered=sorted(request.allowed_player_ids,key=lambda pid:self._target_score(state,player_id,pid),reverse=True)
             count=max(1,request.min_count) if state.ruleset_id=='classic-military' else request.min_count
             if state.ruleset_id=='classic-military' and request.max_count>1:
                 enemies=[pid for pid in ordered if pid!=player_id and self._priority(state,player_id,pid)>0]
