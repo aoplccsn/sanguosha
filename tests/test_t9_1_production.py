@@ -203,3 +203,52 @@ def test_container_serves_dist_outside_installed_package(monkeypatch, tmp_path):
         assert "container spa" in client.get("/", headers=headers).text
         assert "container spa" in client.get("/room/ABC123", headers=headers).text
         assert client.get("/assets/check.txt", headers=headers).text == "asset ready"
+
+
+def test_trusted_hosts_defaults_to_domain(monkeypatch):
+    monkeypatch.delenv("TRUSTED_HOSTS", raising=False)
+    config = WebConfig.from_env()
+    assert config.trusted_hosts == ()
+    with TestClient(create_app(production())) as client:
+        assert client.get("/api/health", headers={"host": "game.example.com"}).status_code == 200
+        assert client.get("/api/health", headers={"host": "internal.example"}).status_code == 400
+
+
+def test_extra_trusted_host_logs_proxy_headers_before_rejection(monkeypatch, caplog):
+    monkeypatch.setenv("TRUSTED_HOSTS", " internal.example , relay.example ")
+    extra = WebConfig.from_env().trusted_hosts
+    assert extra == ("internal.example", "relay.example")
+    caplog.set_level("INFO", logger="sanguosha.web.app")
+    with TestClient(create_app(production(trusted_hosts=extra))) as client:
+        assert client.get("/api/health", headers={"host": "game.example.com"}).status_code == 200
+        assert client.get("/api/health", headers={"host": "internal.example"}).status_code == 200
+        assert client.get("/api/health", headers={"host": "other.example",
+                          "x-forwarded-host": "game.example.com",
+                          "x-forwarded-proto": "https",
+                          "cookie": "sensitive-cookie",
+                          "authorization": "sensitive-authorization"}).status_code == 400
+    ingress = [record.getMessage() for record in caplog.records
+               if record.name == "sanguosha.web.app" and record.getMessage().startswith("http ingress")]
+    assert len(ingress) == 3
+    assert "host='other.example'" in ingress[-1]
+    assert "x_forwarded_host='game.example.com'" in ingress[-1]
+    assert "x_forwarded_proto='https'" in ingress[-1]
+    assert "sensitive-cookie" not in ingress[-1]
+    assert "sensitive-authorization" not in ingress[-1]
+
+
+def test_extra_trusted_host_does_not_relax_websocket_origin():
+    headers = {"host": "internal.example", "origin": "https://other.example"}
+    with TestClient(create_app(production(trusted_hosts=("internal.example",)))) as client:
+        with pytest.raises(WebSocketDisconnect):
+            with client.websocket_connect("/ws", headers=headers):
+                pass
+        headers["origin"] = "https://game.example.com"
+        with client.websocket_connect("/ws", headers=headers) as socket:
+            socket.send_json({"type": "HELLO", "version": PROTOCOL_VERSION})
+            assert socket.receive_json()["type"] == "WELCOME"
+
+
+def test_trusted_hosts_rejects_wildcard():
+    with pytest.raises(RuntimeError, match="TRUSTED_HOSTS"):
+        create_app(production(trusted_hosts=("*",)))

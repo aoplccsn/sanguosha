@@ -33,6 +33,7 @@ Set these environment variables in Sealos, not in the repository:
 | `PUBLIC_ORIGIN` | `https://` followed by that exact hostname |
 | `SECRET_KEY` | Unique random secret of at least 32 characters |
 | `PORT` | Container listening port, normally `8000`; set explicitly for the port-aware startup path |
+| `TRUSTED_HOSTS` | Optional comma-separated additional upstream Host names observed behind Sealos Ingress; omit to trust only `DOMAIN` |
 
 The image already sets `APP_ENV=production` and internal `WEB_DIST_DIR=/app/web/dist`; Sealos does not need to override them. `PUBLIC_BASE_URL` belongs to the separate relay and is not used by this Web service. No frontend API or WebSocket base URL variable is needed. Set the hostname variables after obtaining a Sealos hostname and before starting the service. Production startup rejects mismatched host, Origin, or weak secrets.
 
@@ -41,3 +42,5 @@ The image already sets `APP_ENV=production` and internal `WEB_DIST_DIR=/app/web/
 Docker was unavailable on the development machine, so an image build/run remains unverified. The equivalent source path was checked with the project's Python environment and a fresh Vite production build served by the FastAPI app at one local origin. The focused Python test also checks the explicit dist directory that the installed package uses in the image. The container image still needs a real Docker build and smoke run before any deployment.
 
 Local checks: 89 Python Web/multiplayer tests, TypeScript, 26 relevant Vitest tests, fresh Vite build, and the CN two-browser Playwright smoke test passed. HTTP checks returned 200 for all 76 portrait URLs, all 18 files for nine dynamic portraits, and a Slash card asset. Two older Playwright cases use outdated assumptions: one expects automatic reconnect on reload, while the current UI offers an explicit continue action; another expects T18A.3 stage copy instead of the current T18A.8 text. The CN smoke test covers the current reconnect and Slash/Dodge interaction.
+
+When diagnosing Sealos `Invalid host header`, inspect the HTTP ingress log fields `host`, `x_forwarded_host`, and `x_forwarded_proto`. Add only the actual upstream Host to `TRUSTED_HOSTS`; leave `DOMAIN` and `PUBLIC_ORIGIN` set to the public hostname. WebSocket `Origin` still has to equal `PUBLIC_ORIGIN`.

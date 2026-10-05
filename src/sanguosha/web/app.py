@@ -33,6 +33,23 @@ from .rooms import ManagedRoom, RoomManager
 LOG = logging.getLogger(__name__)
 
 
+class HostHeaderDiagnosticMiddleware:
+    """Log only proxy host headers before TrustedHost can reject HTTP."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            headers = dict(scope["headers"])
+            def value(name: bytes) -> str | None:
+                raw = headers.get(name)
+                return raw.decode("latin-1") if raw is not None else None
+            LOG.info("http ingress host=%r x_forwarded_host=%r x_forwarded_proto=%r",
+                     value(b"host"), value(b"x-forwarded-host"), value(b"x-forwarded-proto"))
+        await self.app(scope, receive, send)
+
+
 class BrowserConnection:
     def __init__(self, websocket: WebSocket):
         self.websocket = websocket
@@ -113,7 +130,10 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
 
     app = FastAPI(title="Sanguosha Web Edition", version=APP_VERSION, lifespan=lifespan)
     if config.production:
-        app.add_middleware(TrustedHostMiddleware, allowed_hosts=[config.domain])
+        app.add_middleware(TrustedHostMiddleware,
+                           allowed_hosts=list(dict.fromkeys((config.domain, *config.trusted_hosts))))
+        # Starlette inserts the last added middleware outermost.
+        app.add_middleware(HostHeaderDiagnosticMiddleware)
     app.state.room_manager = manager
     app.state.web_config = config
 
