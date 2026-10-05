@@ -175,6 +175,11 @@ class PreparationSkillBody:
         actor = frame.action.player_id
         if not state.players[actor].is_alive:
             return StepResult.complete()
+        if frame.step_index == 1 and not frame.local.get('yj2012_qianxi') and self.skills.has(state, actor, 'qianxi'):
+            from .yj2012 import YJ2012Action
+            frame.local['yj2012_qianxi'] = True
+            frame.step_index = 20
+            return StepResult.push(YJ2012Action(frame.action.action_id + ':qianxi', actor, 'qianxi'))
         if frame.step_index == 1 and not frame.local.get('yj2012_zili') and self.skills.has(state, actor, 'zili'):
             from .yj2012 import YJ2012Action
             frame.local['yj2012_zili'] = True
@@ -1291,6 +1296,10 @@ class SkillPlayOptions:
                 for cards in longhun_materials(state, pid, definition_id):
                     if handler.available(state, pid, definition_id, cards):
                         extra.append('virtual:longhun:' + kind + ':' + ':'.join(cards))
+        from .card_limits import card_allowed
+        extra = [option for option in extra if not option.startswith('virtual:') or
+                 card_allowed(state,pid,tuple(option.split(':')[3:] if option.startswith('virtual:longhun:')
+                                             else option.split(':')[2:]))]
         return (*ordinary,*extra)
 
     def build_action(self, state, pid, option, aid):

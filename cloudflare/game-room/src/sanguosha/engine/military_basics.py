@@ -514,6 +514,8 @@ class MilitarySlashHandler:
 
     def step(self, state, frame):
         action = frame.action
+        if state.status is GameStatus.FINISHED or not state.players[action.target_id].is_alive:
+            return StepResult.complete('prevented')
         from .fire import effective_armor
         armor = effective_armor(state, action.target_id, self.skills)
         weapon = equipped(state, action.source_id, EquipmentSlot.WEAPON)
@@ -549,6 +551,13 @@ class MilitarySlashHandler:
                     return StepResult.ask(PendingRequest(action.action_id+':liuli', action.target_id,
                         RequestType.YES_NO, '是否发动【流离】弃一张牌，转移【杀】的目标？',
                         action.action_id, frame.frame_id))
+            if (self.skills is not None and action.source_id!=action.target_id
+                    and not frame.local.get('zhenlie_offered')
+                    and self.skills.has(state,action.target_id,'zhenlie')):
+                frame.local['zhenlie_offered']=True;frame.step_index=32
+                from .yj2012 import YJ2012Action
+                return StepResult.push(YJ2012Action(action.action_id+':zhenlie',action.target_id,'zhenlie',action.source_id,
+                    card_ids=(action.card_id,),definition_id=definition))
             if (self.skills is not None and self.skills.has(state, action.target_id, 'xiangle')
                     and action.source_id != action.target_id
                     and not frame.local.get('xiangle_handled')):
@@ -756,6 +765,10 @@ class MilitarySlashHandler:
                 action.target_id, int(frame.local['amount']), nature, action.card_id, action.action_id,
                 ignore_armor=ignore, material_card_ids=virtual.material_ids if virtual else (),
                 card_kind='slash', wine_enhanced=bool(frame.local.get('wine_enhanced')), virtual_card=virtual))
+        if frame.step_index==32:
+            if frame.child_result is True:return StepResult.complete('prevented')
+            frame.step_index=0
+            return StepResult.continue_()
         if frame.step_index == 26:
             frame.child_result = 'dodged'
             frame.step_index = 3
@@ -905,7 +918,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 eligible += tuple(cid for cid in hand if state.cards[cid].definition_id == 'basic.wine')
             frame.local['eligible'] = '|'.join(eligible)
             if action.required_definition_id=='basic.slash' and equipped(state,action.player_id,EquipmentSlot.WEAPON)=='equipment.weapon.serpent_spear' and len(hand)>=2:
-                eligible=(*eligible,'virtual:spear')
+                from .card_limits import legal_pairs
+                if legal_pairs(state,action.player_id,hand):eligible=(*eligible,'virtual:spear')
             if self.skills is not None:
                 if action.required_definition_id == 'basic.slash':
                     eligible += tuple(f'virtual:wusheng:{cid}' for cid in self.skills.red_slash_materials(state,action.player_id))
@@ -955,6 +969,15 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                                        'basic.peach', 'trick.nullification'):
                         eligible += tuple(longhun_option(cards) for cards in
                                           longhun_materials(state, action.player_id, transformed))
+            from .card_limits import card_allowed
+            def allowed(option):
+                if not option.startswith('virtual:'):return card_allowed(state,action.player_id,(option,))
+                if option in ('virtual:spear','virtual:jijiang','virtual:hujia','virtual:jiushi'):return True
+                if option=='virtual:guhuo':return any(card_allowed(state,action.player_id,(cid,)) for cid in hand)
+                materials=tuple(option.split(':')[2:])
+                return card_allowed(state,action.player_id,materials)
+            eligible=tuple(option for option in eligible if allowed(option))
+            frame.local['eligible']='|'.join(option for option in eligible if not option.startswith('virtual:'))
             frame.step_index = 1
             if action.required_definition_id == 'basic.slash' and state.players[action.player_id].marks.get('slash_prohibited'):
                 eligible = ()
@@ -991,10 +1014,12 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 action.player_id, action.source_action_id, 'basic.wine'))
             return StepResult.push(TurnoverAction(action.action_id + ':jiushi-turn', action.player_id))
         if choice=='virtual:spear':
+            from .card_limits import legal_pairs
             frame.step_index=2
             return StepResult.ask(PendingRequest(action.action_id+':spear-cost',action.player_id,RequestType.CHOOSE_CARDS,
                 '丈八蛇矛：选择两张手牌当杀',action.action_id,frame.frame_id,
-                eligible_card_ids=state.cards_in(ZoneRef(ZoneType.HAND,action.player_id)),min_count=2,max_count=2))
+                eligible_card_ids=state.cards_in(ZoneRef(ZoneType.HAND,action.player_id)),min_count=2,max_count=2,
+                legal_card_sets=legal_pairs(state,action.player_id,state.cards_in(ZoneRef(ZoneType.HAND,action.player_id)))))
         if choice == 'virtual:guhuo':
             if (self.skills is None or not self.skills.has(state, action.player_id, 'guhuo')
                     or not state.cards_in(ZoneRef(ZoneType.HAND, action.player_id))):

@@ -20,6 +20,7 @@ class YJ2012Action(Action):
     opponent_id: str | None = None
     card_ids: tuple[str, ...] = ()
     amount: int = 1
+    definition_id: str = ''
 
 
 def power_zone(pid):
@@ -42,6 +43,60 @@ class YJ2012Handler(YJSkillHandler):
             return self.zhuiyi(state,f)
         return super().step(state,f)
 
+    def qianxi(self,state,f):
+        from .judgment import JudgmentAction, JudgmentPattern
+        a=f.action;pid=a.player_id
+        if f.step_index==0:
+            targets=tuple(q for q in state.seat_order if q!=pid and state.players[q].is_alive
+                          and self.authorized.distance.distance_between(state,pid,q)==1)
+            if not targets:return StepResult.complete()
+            f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【潜袭】是否判定并限制距离为一的一名角色的手牌？')
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted:return StepResult.complete()
+            f.step_index=2
+            return StepResult.push(JudgmentAction(a.action_id+':judge',pid,JudgmentPattern(),return_card_id=True))
+        if f.step_index==2:
+            targets=tuple(q for q in state.seat_order if q!=pid and state.players[q].is_alive
+                          and self.authorized.distance.distance_between(state,pid,q)==1)
+            if not targets:return StepResult.complete()
+            f.local['color']=effective_color(state,f.child_result,pid).value
+            f.step_index=3
+            return self.ask(f,RequestType.CHOOSE_PLAYER,'【潜袭】选择距离为一的角色',allowed_player_ids=targets,min_count=1,max_count=1)
+        from .card_limits import clear_source
+        target,f.decision=f.decision,None
+        clear_source(state,pid)
+        color=f.local['color']
+        state.metadata.setdefault('qianxi_limits',{})[pid]={'target':target,'color':color,'turn':state.turn_number}
+        state.players[target].marks['qianxi_'+color+'_'+pid]=1
+        return StepResult.complete()
+
+    def zhenlie(self,state,f):
+        from .hp import LoseHpAction
+        from .military_equipment import discardable
+        a=f.action;pid=a.player_id;source=a.opponent_id
+        if source==pid:return StepResult.complete(False)
+        if f.step_index==0:
+            f.step_index=1
+            name=self.definitions.get(a.definition_id).name if a.definition_id else '此牌'
+            return self.ask(f,RequestType.YES_NO,f'【贞烈】针对【{name}】，是否失去一点体力令其对你无效并弃置来源一张牌？',subject_player_id=source)
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted:return StepResult.complete(False)
+            f.step_index=2
+            return StepResult.push(LoseHpAction(a.action_id+':cost',pid,1))
+        if f.step_index==2:
+            if source not in state.players or not state.players[source].is_alive:return StepResult.complete(True)
+            cards=discardable(state,source)
+            if not cards:return StepResult.complete(True)
+            f.step_index=3
+            return self.ask(f,RequestType.CHOOSE_CARD,'【贞烈】弃置来源一张手牌或装备',eligible_card_ids=cards,subject_player_id=source)
+        if f.step_index==3:
+            card,f.decision=f.decision,None
+            self.transfer(state,a,(card,),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD)
+        return StepResult.complete(True)
+
     def qice_virtual(self, state, pid, definition):
         from dataclasses import replace
         from sanguosha.model.virtual_card import VirtualCard
@@ -59,7 +114,8 @@ class YJ2012Handler(YJSkillHandler):
 
     def qice_definitions(self,state,pid):
         from .military_tricks import MilitaryTrickRule
-        if not hand(state,pid): return ()
+        from .card_limits import card_allowed
+        if not hand(state,pid) or not card_allowed(state,pid,hand(state,pid)): return ()
         return tuple(d for d in self.definitions._definitions
             if d.startswith('trick.') and MilitaryTrickRule(d,self.authorized.distance,self.skills).can_use(state,pid)
             and (not MilitaryTrickRule(d,self.authorized.distance,self.skills).requires_target_selection
@@ -456,7 +512,8 @@ def play_options(state,pid,skills):
         options.append('skill:gongqi')
     if skills.has(state,pid,'jiefan') and not state.players[pid].marks.get('jiefan_used'):
         options.append('skill:jiefan')
-    if skills.has(state,pid,'qice') and not state.play_usage.count('skill.qice') and hand(state,pid):
+    from .card_limits import card_allowed
+    if skills.has(state,pid,'qice') and not state.play_usage.count('skill.qice') and hand(state,pid) and card_allowed(state,pid,hand(state,pid)):
         options.append('skill:qice')
     others=tuple(q for q in state.seat_order if q!=pid and state.players[q].is_alive)
     if skills.has(state,pid,'anxu') and not state.play_usage.count('skill.anxu') and len({len(hand(state,q)) for q in others})>1:

@@ -447,7 +447,8 @@ class AIDecisionProvider:
             ordered = sorted(request.eligible_card_ids, key=lambda cid: (
                 100 if (state.cards.get(cid) is not None and state.cards[cid].definition_id == PEACH_ID)
                 else self._choice_card_value(state, player_id, cid), str(cid)))
-            value = tuple(ordered[:request.min_count])
+            value = (min(request.legal_card_sets, key=lambda cards: sum(ordered.index(cid) for cid in cards))
+                     if request.legal_card_sets else tuple(ordered[:request.min_count]))
         elif kind is RequestType.CHOOSE_CARD:
             if '拼点：选择' in request.prompt:
                 value = max(request.eligible_card_ids,

@@ -22,7 +22,7 @@
     {
       "general_id": "yj2012_wang_yi",
       "skill_id": "zhenlie",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
@@ -92,7 +92,7 @@
     {
       "general_id": "yj2012_ma_dai",
       "skill_id": "qianxi",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },

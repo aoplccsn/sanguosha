@@ -18,11 +18,12 @@ class UseSpear(Action):
 
 class MilitaryPlayOptions(LegalPlayActionProvider):
     def spear_legal(self,state,pid):
+        from .card_limits import legal_pairs
         rule = self.validator.rules.get('basic.slash')
         limit = rule.usage_limit(state, pid)
         usage = state.play_usage
         return (equipped(state,pid,EquipmentSlot.WEAPON)=='equipment.weapon.serpent_spear'
-                and len(state.cards_in(ZoneRef(ZoneType.HAND,pid)))>=2
+                and bool(legal_pairs(state,pid,state.cards_in(ZoneRef(ZoneType.HAND,pid))))
                 and usage is not None and rule.can_use(state, pid)
                 and (limit is None or usage.count('basic.slash') < limit)
                 and bool(rule.target_candidates(state,pid)))
@@ -48,9 +49,11 @@ class UseSpearHandler:
         hand=ZoneRef(ZoneType.HAND,a.player_id)
         if f.step_index==0:
             self.validate_start(state,a)
+            from .card_limits import legal_pairs
             f.step_index=1
             return StepResult.ask(PendingRequest(a.action_id+':cost',a.player_id,RequestType.CHOOSE_CARDS,
-                '丈八蛇矛：选择两张手牌',a.action_id,f.frame_id,eligible_card_ids=state.cards_in(hand),min_count=2,max_count=2))
+                '丈八蛇矛：选择两张手牌',a.action_id,f.frame_id,eligible_card_ids=state.cards_in(hand),min_count=2,max_count=2,
+                legal_card_sets=legal_pairs(state,a.player_id,state.cards_in(hand))))
         if f.step_index==1:
             f.local['materials']='|'.join(f.decision)
             f.decision=None

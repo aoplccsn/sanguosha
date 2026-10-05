@@ -104,6 +104,9 @@ class CardUseValidator:
             raise InvalidCardUse("card can only be used in the owner's play phase")
         if card_id not in state.cards_in(ZoneRef(ZoneType.HAND, user_id)):
             raise InvalidCardUse("card is not in user's hand")
+        from .card_limits import card_allowed
+        if not card_allowed(state, user_id, (card_id,)):
+            raise InvalidCardUse("card color is prohibited by Qianxi")
         rule = self.rule_for(state, card_id, user_id)
         usage = state.play_usage
         if usage is None or usage.player_id != user_id or usage.turn_number != state.turn_number:

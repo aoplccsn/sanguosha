@@ -467,6 +467,8 @@ export function GamePage() {
   const canConfirm = !!request && state.connection === 'connected' && (playTargetSpec
     ? selectedTargets.length >= playTargetSpec.min && selectedTargets.length <= playTargetSpec.max
     : selectionCount >= minimum && selectionCount <= (request.max_count || 1))
+    && (!request.legal_card_sets?.length || request.legal_card_sets.some((cards) =>
+      cards.length === selectedCards.length && cards.every((id) => selectedCards.includes(id))))
   const selectedCard = [...projection.hand, ...projection.shared_cards].find((card) => card.card_id === selectedCards[0])
   const summary = playTargetSpec && selectedCard ? `${selectedCard.name}${selectedTargets.length
     ? ' → ' + selectedTargets.map((id) => projection.players.find((player) => player.player_id === id)?.name ?? id).join('、')

@@ -45,6 +45,8 @@ class PendingRequest:
     subject_player_id: PlayerId | None = None
     play_card_targets: dict[str, tuple[tuple[str, ...], int, int]] = field(default_factory=dict)
 
+    legal_card_sets: tuple[tuple[CardInstanceId, ...], ...] = ()
+
     def has_legal_response(self) -> bool:
         """The rule handler supplies physical and virtual response candidates here."""
         return self.request_type is RequestType.RESPOND_WITH_CARD and bool(self.eligible_card_ids)
@@ -65,7 +67,7 @@ class PendingRequest:
         elif self.request_type is RequestType.CHOOSE_CARD:
             value = self.eligible_card_ids[0]
         elif self.request_type is RequestType.CHOOSE_CARDS:
-            value = self.eligible_card_ids[:self.min_count]
+            value = self.legal_card_sets[0] if self.legal_card_sets else self.eligible_card_ids[:self.min_count]
         else:
             raise InvalidDecision(f"no timeout fallback for {self.request_type}")
         self.validate(value)
@@ -98,6 +100,7 @@ class PendingRequest:
                 and self.min_count <= len(value) <= self.max_count
                 and all(type(card_id) is str and card_id in self.eligible_card_ids for card_id in value)
                 and len(value) == len(set(value))
+                and (not self.legal_card_sets or any(set(value) == set(cards) for cards in self.legal_card_sets))
             )
         elif kind is RequestType.CHOOSE_PLAYERS:
             valid = (

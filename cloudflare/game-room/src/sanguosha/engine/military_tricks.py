@@ -191,6 +191,20 @@ class TrickHandler:
                     self.moves.move(state,CardMove(a.action_id+':pool',drawn,ZoneRef(ZoneType.HAND,a.source_id),pool,CardMoveReason.SYSTEM))
             frame.step_index=1
         targets=str(frame.local['targets']).split('|') if frame.local['targets'] else []
+        if frame.step_index==5:
+            if frame.child_result is True:
+                frame.local['zhenlie_cancelled']=(*frame.local.get('zhenlie_cancelled',()),frame.local['zhenlie_target'])
+            frame.step_index=1
+        if frame.step_index==1 and state.status is not GameStatus.FINISHED:
+            index=frame.local.get('zhenlie_cursor',0)
+            while index<len(targets):
+                target=targets[index];index+=1;frame.local['zhenlie_cursor']=index
+                if (target!=a.source_id and state.players[target].is_alive and self.skills is not None
+                        and self.skills.has(state,target,'zhenlie')):
+                    frame.local['zhenlie_target']=target;frame.step_index=5
+                    from .yj2012 import YJ2012Action
+                    return StepResult.push(YJ2012Action(a.action_id+':zhenlie:'+target,target,'zhenlie',a.source_id,
+                        card_ids=(a.card_id,),definition_id=d))
         if frame.step_index == 2:
             frame.step_index=3
             if not frame.child_result:
@@ -206,7 +220,7 @@ class TrickHandler:
             return StepResult.complete()
         target=targets[frame.cursor]
         frame.cursor+=1
-        if not state.players[target].is_alive:
+        if not state.players[target].is_alive or target in frame.local.get('zhenlie_cancelled',()):
             return StepResult.continue_()
         if d == 'trick.savage_assault':
             from .forest import savage_effect_immune

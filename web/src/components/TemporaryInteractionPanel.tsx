@@ -14,14 +14,15 @@ export function TemporaryInteractionPanel({ projection, request, seatId, connect
   const chooser = projection.players.find(p => p.player_id === (harvest ? projection.waiting?.player_id ?? request?.player_id : request?.player_id))
   const active = connected && !processing && request?.player_id === seatId && request.request_type === 'choose_card'
   const eligible = new Set(connected && !processing && request?.player_id === seatId ? request.eligible_card_ids : [])
-  const title = harvest ? '五谷丰登' : projection.combat?.definition_id === 'trick.dismantlement' ? '过河拆桥' : '顺手牵羊'
+  const skill = request?.prompt?.match(/【([^】]+)】/)?.[1]
+  const title = harvest ? '五谷丰登' : skill ?? (projection.combat?.definition_id === 'trick.dismantlement' ? '过河拆桥' : '顺手牵羊')
   const groups = harvest ? [{ name: '公共牌池', cards: projection.shared_cards }] : [
     { name: '手牌', cards: (target?.revealed_hand ?? []).filter(c => eligible.has(c.card_id)) },
     { name: '装备', cards: target?.equipment ?? [] }, { name: '判定', cards: target?.judgments ?? [] },
   ]
   if (requestControls) groups.push({name:'当前响应手牌', cards:projection.hand.filter(c=>eligible.has(c.card_id))})
   return <div className="temporary-backdrop"><section role="dialog" aria-modal="true" aria-label={title} className="temporary-panel">
-    <header><h2>【{title}】</h2><p>{harvest ? `当前选择：${chooser?.name ?? '等待服务器'}` : `请选择${title === '过河拆桥' ? '弃置' : '获得'}的一张牌 · 目标：${target?.name ?? ''}`}</p>
+    <header><h2>【{title}】</h2><p>{harvest ? `当前选择：${chooser?.name ?? '等待服务器'}` : skill ? request?.prompt : `请选择${title === '过河拆桥' ? '弃置' : '获得'}的一张牌 · 目标：${target?.name ?? ''}`}</p>
       <small>当前回合：{projection.players.find(p => p.active)?.character_name} · 当前响应：{chooser?.character_name ?? '等待服务器'}</small>
       {(request || projection.waiting) && <Timer key={request?.request_id ?? projection.waiting?.key} remainingMs={request?.remaining_ms ?? projection.waiting?.remaining_ms ?? 0} />}
     </header>

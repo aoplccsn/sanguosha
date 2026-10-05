@@ -606,6 +606,8 @@ class MultiplayerRoom:
             reverse = {card_id: alias for alias, card_id in aliases.items()}
             payload['eligible_card_ids'] = [reverse.get(card_id, card_id)
                                             for card_id in request.eligible_card_ids]
+            payload['legal_card_sets'] = [[reverse.get(cid, cid) for cid in cards]
+                                          for cards in request.legal_card_sets]
             payload['choice_labels'] = {reverse.get(card_id,card_id):label
                 for card_id,label in payload['choice_labels'].items()}
         return payload

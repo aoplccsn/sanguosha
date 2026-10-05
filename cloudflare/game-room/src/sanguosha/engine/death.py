@@ -49,6 +49,8 @@ class DeathActionHandler:
         victim = state.players[action.target_id]
         if frame.step_index == 0:
             victim.status = PlayerStatus.DEAD
+            from .card_limits import clear_source
+            clear_source(state, action.target_id)
             state.revealed_identities.add(action.target_id)
             if (self.skills is not None and self.skills.has(state, action.target_id, 'duanchang')
                     and action.killer_id is not None and action.killer_id != action.target_id

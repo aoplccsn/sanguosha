@@ -9,6 +9,20 @@ def decide(provider,state,r):
         own=hand(state,pid)
         if len(own)<=2 and not any(state.cards[c].definition_id=='basic.peach' for c in own):
             return Decision(r.request_id,pid,'skill:qice')
+    if '【潜袭】' in prompt:
+        value = True if kind is RequestType.YES_NO else max(r.allowed_player_ids,key=lambda q:provider._priority(state,pid,q))
+        r.validate(value)
+        return Decision(r.request_id,pid,value)
+    if '【贞烈】' in prompt:
+        if kind is RequestType.YES_NO:
+            harmful=not any(name in prompt for name in ('桃园结义','五谷丰登','无中生有'))
+            value=p.hp>1 and harmful and provider._priority(state,pid,r.subject_player_id)>0
+        elif kind is RequestType.CHOOSE_CARD:
+            public=tuple(c for c in r.eligible_card_ids if c not in hand(state,r.subject_player_id))
+            value=public[0] if public else r.eligible_card_ids[0]
+        else:return None
+        r.validate(value)
+        return Decision(r.request_id,pid,value)
     if '【奇策】' in prompt:
         if kind is RequestType.CHOOSE_OPTION:
             order=('trick.ex_nihilo','trick.snatch','trick.dismantlement','trick.duel','trick.iron_chain',

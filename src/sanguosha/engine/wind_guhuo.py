@@ -65,9 +65,10 @@ class GuhuoHandler:
         return tuple(result)
 
     def available(self, state, player_id):
+        from .card_limits import card_allowed
         return (self.skills.has(state, player_id, 'guhuo')
                 and state.players[player_id].is_alive
-                and bool(state.cards_in(ZoneRef(ZoneType.HAND, player_id)))
+                and any(card_allowed(state,player_id,(cid,)) for cid in state.cards_in(ZoneRef(ZoneType.HAND, player_id)))
                 and bool(self._active_definitions(state, player_id)))
 
     @staticmethod
@@ -170,6 +171,7 @@ class GuhuoHandler:
 
     def step(self, state, frame):
         action = frame.action
+        from .card_limits import card_allowed
         if frame.step_index == 0:
             self.validate_start(state, action)
             frame.step_index = 1
@@ -188,7 +190,8 @@ class GuhuoHandler:
                 action.player_id, RequestType.CHOOSE_CARD, '蛊惑：扣置一张手牌',
                 action.action_id, frame.frame_id,
                 choices=('declared:' + declared,),
-                eligible_card_ids=state.cards_in(ZoneRef(ZoneType.HAND, action.player_id))))
+                eligible_card_ids=tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, action.player_id))
+                                        if card_allowed(state,action.player_id,(cid,)))))
         if frame.step_index == 2:
             card_id = frame.decision
             frame.decision = None

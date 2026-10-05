@@ -95,6 +95,8 @@ class TurnActionHandler:
                     state.players[action.player_id].marks.pop('wuwei', None)
                     for other in state.players.values():
                         other.marks.pop('wuwei_target_' + action.player_id, None)
+            from .card_limits import clear_source
+            clear_source(state, action.player_id)
             from .yj2011_tier3 import clear_turn
             clear_turn(state)
             state.current_phase = None
