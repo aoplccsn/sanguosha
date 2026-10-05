@@ -10,6 +10,7 @@ COPY web/package.json web/package-lock.json ./
 RUN npm ci
 COPY web/ ./
 COPY --from=assets /build/web/public/assets ./public/assets
+COPY --from=assets /build/assets/idle_portraits.json /build/assets/idle_portraits.json
 ARG APP_VERSION=0.3.0
 ARG BUILD_COMMIT=unknown
 ARG RENDER_GIT_COMMIT
