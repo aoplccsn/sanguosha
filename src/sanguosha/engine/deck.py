@@ -173,6 +173,12 @@ class DrawPhaseBody:
                 frame.local['yj_xuanhuo'] = True
                 frame.step_index = 40
                 return StepResult.push(YJSkillAction(action.action_id + ':xuanhuo', action.player_id, 'xuanhuo'))
+            if self.skills is not None:
+                from .yj2012 import YJ2012Action
+                for skill in ('jiangchi', 'zishou'):
+                    if self.skills.has(state, action.player_id, skill):
+                        frame.step_index = 2
+                        return StepResult.push(YJ2012Action(action.action_id + ':' + skill, action.player_id, skill))
             state.players[action.player_id].marks.pop('luoyi', None)
             if (self.skills is not None and not frame.local.get('haoshi_offered')
                     and self.skills.has(state, action.player_id, 'haoshi')):

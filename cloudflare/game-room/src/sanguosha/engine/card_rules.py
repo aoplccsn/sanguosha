@@ -81,6 +81,8 @@ class CardUseValidator:
     def target_candidates(self, state: GameState, user_id: PlayerId, card_id: CardInstanceId) -> tuple[PlayerId, ...]:
         rule = self.rule_for(state, card_id, user_id)
         candidates = rule.target_candidates(state, user_id)
+        if (state.current_phase is Phase.PLAY and state.players[user_id].marks.get('yj_zishou') == state.turn_number):
+            candidates = tuple(pid for pid in candidates if pid == user_id)
         if self.skills is None:
             return candidates
         from .forest import weimu_blocks

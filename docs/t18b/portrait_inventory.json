@@ -1,0 +1,508 @@
+[
+  {
+    "id": "yj2012_xun_you",
+    "name": "荀攸",
+    "source": "assets/source_art/yj2012/yj2012_xun_you.png",
+    "source_sha256": "020e61377fe5e82f9516e018aa324c68c9c82588f6d79f764c23abda02e7570f",
+    "runtime": "assets/generals/wei/yj2012_xun_you.png",
+    "web": "assets/generals/wei/yj2012_xun_you.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2012_wang_yi",
+    "name": "王异",
+    "source": "assets/source_art/yj2012/yj2012_wang_yi.png",
+    "source_sha256": "4fb70c15bc6e0d4e608ef538b1fc60eecb26f8aea8755a719ee965cfa890caa6",
+    "runtime": "assets/generals/wei/yj2012_wang_yi.png",
+    "web": "assets/generals/wei/yj2012_wang_yi.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2012_cao_zhang",
+    "name": "曹彰",
+    "source": "assets/source_art/yj2012/yj2012_cao_zhang.png",
+    "source_sha256": "0944f3ccd76526566f735fae6cf94e129093e0624671a4fbc61369c0c6b26bf5",
+    "runtime": "assets/generals/wei/yj2012_cao_zhang.png",
+    "web": "assets/generals/wei/yj2012_cao_zhang.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2012_zhong_hui",
+    "name": "钟会",
+    "source": "assets/source_art/yj2012/yj2012_zhong_hui.png",
+    "source_sha256": "ba9af44503b108d0706e6ec6cebcc8ca661fef8af60d309b599fc8aed1d065dd",
+    "runtime": "assets/generals/wei/yj2012_zhong_hui.png",
+    "web": "assets/generals/wei/yj2012_zhong_hui.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2012_liao_hua",
+    "name": "廖化",
+    "source": "assets/source_art/yj2012/yj2012_liao_hua.png",
+    "source_sha256": "c3ca25769bd2a944e6a40b46b10414d9ae77f6fa2d6fa367b18cc4d8aca708c4",
+    "runtime": "assets/generals/shu/yj2012_liao_hua.png",
+    "web": "assets/generals/shu/yj2012_liao_hua.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2012_guan_xing_zhang_bao",
+    "name": "关兴张苞",
+    "source": "assets/source_art/yj2012/yj2012_guan_xing_zhang_bao.png",
+    "source_sha256": "5149a7a59c69727c0f5c8a57d82d801d36c26b20ce939dd4ed63017ffef3e66a",
+    "runtime": "assets/generals/shu/yj2012_guan_xing_zhang_bao.png",
+    "web": "assets/generals/shu/yj2012_guan_xing_zhang_bao.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2012_ma_dai",
+    "name": "马岱",
+    "source": "assets/source_art/yj2012/yj2012_ma_dai.png",
+    "source_sha256": "70370a4622bb1d75f4324802bd60bb69e60d4b918e840b575a6f3b4714d1a574",
+    "runtime": "assets/generals/shu/yj2012_ma_dai.png",
+    "web": "assets/generals/shu/yj2012_ma_dai.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2012_bu_lianshi",
+    "name": "步练师",
+    "source": "assets/source_art/yj2012/yj2012_bu_lianshi.png",
+    "source_sha256": "074f37682447700cc51330434445c5e8582ce22fb2ab307027d8c52a837c59d9",
+    "runtime": "assets/generals/wu/yj2012_bu_lianshi.png",
+    "web": "assets/generals/wu/yj2012_bu_lianshi.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2012_cheng_pu",
+    "name": "程普",
+    "source": "assets/source_art/yj2012/yj2012_cheng_pu.png",
+    "source_sha256": "cce867125c891674a6b9bf2a76046921a928a15f54f72f36a100cb0830dba38f",
+    "runtime": "assets/generals/wu/yj2012_cheng_pu.png",
+    "web": "assets/generals/wu/yj2012_cheng_pu.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2012_han_dang",
+    "name": "韩当",
+    "source": "assets/source_art/yj2012/yj2012_han_dang.png",
+    "source_sha256": "a6cf66e9fe77ad34e3b3c30abe11502ba535e5a15586dcabe3cc2e030f05e720",
+    "runtime": "assets/generals/wu/yj2012_han_dang.png",
+    "web": "assets/generals/wu/yj2012_han_dang.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2012_liu_biao",
+    "name": "刘表",
+    "source": "assets/source_art/yj2012/yj2012_liu_biao.png",
+    "source_sha256": "2f63f65930f49107be171ffff68e5c24bdc10ac24facf086e169d5c78f10e39d",
+    "runtime": "assets/generals/qun/yj2012_liu_biao.png",
+    "web": "assets/generals/qun/yj2012_liu_biao.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2012_hua_xiong",
+    "name": "华雄",
+    "source": "assets/source_art/yj2012/yj2012_hua_xiong.png",
+    "source_sha256": "0f8dc398329bef8f1a1fb90226a174766e06d13de6aa72483332650aa827e552",
+    "runtime": "assets/generals/qun/yj2012_hua_xiong.png",
+    "web": "assets/generals/qun/yj2012_hua_xiong.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2013_cao_chong",
+    "name": "曹冲",
+    "source": "assets/source_art/yj2013/yj2013_cao_chong.png",
+    "source_sha256": "e6a830151801ecf2dbba5a85acc1802a7304ee9569c4fe093f8494b7f0cfeab9",
+    "runtime": "assets/generals/wei/yj2013_cao_chong.png",
+    "web": "assets/generals/wei/yj2013_cao_chong.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2013_guo_huai",
+    "name": "郭淮",
+    "source": "assets/source_art/yj2013/yj2013_guo_huai.png",
+    "source_sha256": "a46362d8ca7e0635fcb7bc8a88a6d13b4485e50ecf68af349e6dedf668a1ffb2",
+    "runtime": "assets/generals/wei/yj2013_guo_huai.png",
+    "web": "assets/generals/wei/yj2013_guo_huai.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2013_man_chong",
+    "name": "满宠",
+    "source": "assets/source_art/yj2013/yj2013_man_chong.png",
+    "source_sha256": "4ebf3e4c101826e7a8254b3fe2dd00a3fc7b25a45d9dc10b296fb7a765666d3c",
+    "runtime": "assets/generals/wei/yj2013_man_chong.png",
+    "web": "assets/generals/wei/yj2013_man_chong.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2013_guan_ping",
+    "name": "关平",
+    "source": "assets/source_art/yj2013/yj2013_guan_ping.png",
+    "source_sha256": "60b3dae2953e5bb5f999cb211a593688b75b5c8feb875d2a25630a70339b725f",
+    "runtime": "assets/generals/shu/yj2013_guan_ping.png",
+    "web": "assets/generals/shu/yj2013_guan_ping.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2013_jian_yong",
+    "name": "简雍",
+    "source": "assets/source_art/yj2013/yj2013_jian_yong.png",
+    "source_sha256": "567f312c5e54a1d9afaa7428f83a2d4263b78f7ee789b277bc596b1d33300522",
+    "runtime": "assets/generals/shu/yj2013_jian_yong.png",
+    "web": "assets/generals/shu/yj2013_jian_yong.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2013_liu_feng",
+    "name": "刘封",
+    "source": "assets/source_art/yj2013/yj2013_liu_feng.png",
+    "source_sha256": "0439cd91eff1649b30efb7170497be9e5c44016b83a83b04c6c9244cb3723a47",
+    "runtime": "assets/generals/shu/yj2013_liu_feng.png",
+    "web": "assets/generals/shu/yj2013_liu_feng.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2013_pan_zhang_ma_zhong",
+    "name": "潘璋马忠",
+    "source": "assets/source_art/yj2013/yj2013_pan_zhang_ma_zhong.png",
+    "source_sha256": "303800604a1703a69ecce237746f329002fdf86e1e47e98e2a455657a56118dc",
+    "runtime": "assets/generals/wu/yj2013_pan_zhang_ma_zhong.png",
+    "web": "assets/generals/wu/yj2013_pan_zhang_ma_zhong.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2013_yu_fan",
+    "name": "虞翻",
+    "source": "assets/source_art/yj2013/yj2013_yu_fan.png",
+    "source_sha256": "7e605a089be7360ac9aefdc6e5e441ad86aa508106fb016fdb37e9a6cbd1a270",
+    "runtime": "assets/generals/wu/yj2013_yu_fan.png",
+    "web": "assets/generals/wu/yj2013_yu_fan.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2013_zhu_ran",
+    "name": "朱然",
+    "source": "assets/source_art/yj2013/yj2013_zhu_ran.png",
+    "source_sha256": "bd0cb22923d473342571c81b1832e25bc5fa6ff52ec92cd91ac173b6b1ffd3c2",
+    "runtime": "assets/generals/wu/yj2013_zhu_ran.png",
+    "web": "assets/generals/wu/yj2013_zhu_ran.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2013_fu_huanghou",
+    "name": "伏皇后",
+    "source": "assets/source_art/yj2013/yj2013_fu_huanghou.png",
+    "source_sha256": "a9a13bf1af450c55105e98923b25fade2d49d431ddb160c254dae544e11445fe",
+    "runtime": "assets/generals/qun/yj2013_fu_huanghou.png",
+    "web": "assets/generals/qun/yj2013_fu_huanghou.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  },
+  {
+    "id": "yj2013_li_ru",
+    "name": "李儒",
+    "source": "assets/source_art/yj2013/yj2013_li_ru.png",
+    "source_sha256": "8be4157389fcd7f78482b94e8424c650cd08a055ef3e86cf1a3a4ae8910192cc",
+    "runtime": "assets/generals/qun/yj2013_li_ru.png",
+    "web": "assets/generals/qun/yj2013_li_ru.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    }
+  }
+]

@@ -49,6 +49,12 @@ class DiscardPhaseBody:
         if frame.step_index == 1:
             eligible = state.cards_in(hand)
             limit = self.hand_limit(state, action.player_id)
+            if self.skills is not None:
+                from .yj2012 import factions, power_zone
+                if self.skills.has(state, action.player_id, "quanji"):
+                    limit += len(state.cards_in(power_zone(action.player_id)))
+                if self.skills.has(state, action.player_id, "zongshi"):
+                    limit += factions(state, self.skills)
             excess = len(eligible) - limit
             if excess <= 0:
                 return StepResult.complete()

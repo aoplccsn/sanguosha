@@ -52,13 +52,15 @@ class MilitaryDamageAction(DamageAction):
     material_card_ids: tuple[str, ...] = ()
     redirected: bool = False
     card_kind: str = ''
+    wine_enhanced: bool = False
+    virtual_card: VirtualCard | None = None
 
 class MilitaryDamageHandler(DamageActionHandler):
     """The first recipient completes dying before the chain cursor advances."""
-    def __init__(self, recorder, moves=None, skills=None):
+    def __init__(self, recorder, moves=None, skills=None, definitions=None):
         super().__init__(recorder)
         self.moves, self.skills = moves, skills
-        self.distance = DistanceSystem()
+        self.distance = DistanceSystem(definitions)
 
     def validate_start(self, state, action):
         if action.amount <= 0 or action.target_id not in state.players or not state.players[action.target_id].is_alive:
@@ -101,6 +103,12 @@ class MilitaryDamageHandler(DamageActionHandler):
                     and state.players[action.source_id].marks.get('luoyi')
                     and not getattr(action, 'propagated', False) and action.card_id in state.cards
                     and state.cards[action.card_id].definition_id in (*SLASH_IDS, 'trick.duel')):
+                amount += 1
+            if (self.skills is not None and action.source_id is not None
+                    and action.source_id != action.target_id and not getattr(action, 'propagated', False)
+                    and getattr(action,'card_kind','') == 'slash'
+                    and self.skills.has(state,action.source_id,'anjian')
+                    and not self.distance.can_reach_with_slash(state,action.target_id,action.source_id)):
                 amount += 1
             from .yj2011_tier3 import scoped_target
             ignores_armor = getattr(action, 'ignore_armor', False) or (
@@ -193,7 +201,8 @@ class MilitaryDamageHandler(DamageActionHandler):
                 action.related_action_id, getattr(action, 'propagated', False),
                 getattr(action, 'ignore_armor', False),
                 getattr(action, 'material_card_ids', ()), True,
-                getattr(action, 'card_kind', '')))
+                getattr(action, 'card_kind', ''), getattr(action, 'wine_enhanced', False),
+                getattr(action, 'virtual_card', None)))
         if frame.step_index == 12:
             redirected_to = frame.local['tianxiang_target']
             if (state.status is not GameStatus.FINISHED and state.players[redirected_to].is_alive):
@@ -347,6 +356,14 @@ class MilitaryDamageHandler(DamageActionHandler):
         reaction = damage_reaction(state, frame, self.skills)
         if reaction is not None:
             return reaction
+        from .yj2013 import damage_reaction as yj2013_damage_reaction
+        reaction = yj2013_damage_reaction(state, frame, self.skills)
+        if reaction is not None:
+            return reaction
+        from .yj2012 import damage_reaction as yj2012_damage_reaction
+        reaction = yj2012_damage_reaction(state, frame, self.skills)
+        if reaction is not None:
+            return reaction
         chain = str(frame.local['chain']).split('|') if frame.local['chain'] else []
         if state.status is GameStatus.FINISHED or frame.cursor >= len(chain):
             return StepResult.complete(int(frame.local['amount']))
@@ -400,7 +417,8 @@ class MilitarySlashRule(SlashRule):
         super().__init__(ReachableOpponent(distance), SkillSlashLimit(skills))
         self.skills = skills
     def can_use(self, state, user):
-        return (not state.players[user].marks.get('slash_prohibited')
+        return (state.players[user].marks.get('yj_zishou') != state.turn_number
+                and not state.players[user].marks.get('slash_prohibited')
                 and state.players[user].marks.get('yj_xianzhen_loss') != state.turn_number)
     def usage_limit(self, state, user):
         from .yj2011_tier3 import scoped_target
@@ -502,6 +520,7 @@ class MilitarySlashHandler:
             if 'amount' not in frame.local:
                 wine = action.wine_bonus if isinstance(action,MilitaryStrike) else state.players[action.source_id].marks.pop('wine', 0)
                 frame.local['amount'] = 1 + wine
+                frame.local['wine_enhanced'] = bool(wine)
             if (self.skills is not None and self.skills.has(state, action.target_id, 'liuli')
                     and not frame.local.get('liuli_offered')):
                 from .military_equipment import discardable
@@ -718,7 +737,7 @@ class MilitarySlashHandler:
             return StepResult.push(MilitaryDamageAction(action.action_id + ':damage', action.source_id,
                 action.target_id, int(frame.local['amount']), nature, action.card_id, action.action_id,
                 ignore_armor=ignore, material_card_ids=virtual.material_ids if virtual else (),
-                card_kind='slash'))
+                card_kind='slash', wine_enhanced=bool(frame.local.get('wine_enhanced')), virtual_card=virtual))
         if frame.step_index == 26:
             frame.child_result = 'dodged'
             frame.step_index = 3
@@ -766,7 +785,7 @@ class MilitarySlashHandler:
                     frame.step_index=4
                     return StepResult.push(MilitaryDamageAction(action.action_id+':damage',action.source_id,
                         action.target_id,int(frame.local['amount']),nature,action.card_id,action.action_id,
-                        card_kind='slash'))
+                        card_kind='slash', wine_enhanced=bool(frame.local.get('wine_enhanced')), virtual_card=virtual))
             else:
                 frame.step_index=16
             if yes:
@@ -790,7 +809,7 @@ class MilitarySlashHandler:
                 self.moves.move(state,CardMove(action.action_id+':axe:'+cid,(cid,),ref,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,action.source_id))
             frame.decision=None
             frame.step_index=4
-            return StepResult.push(MilitaryDamageAction(action.action_id+':forced-damage',action.source_id,action.target_id,int(frame.local['amount']),nature,action.card_id,action.action_id,card_kind='slash'))
+            return StepResult.push(MilitaryDamageAction(action.action_id+':forced-damage',action.source_id,action.target_id,int(frame.local['amount']),nature,action.card_id,action.action_id,card_kind='slash', wine_enhanced=bool(frame.local.get('wine_enhanced')), virtual_card=virtual))
         if frame.step_index==14:
             if frame.child_result is None:
                 return StepResult.complete('avoided')
@@ -919,6 +938,9 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                         eligible += tuple(longhun_option(cards) for cards in
                                           longhun_materials(state, action.player_id, transformed))
             frame.step_index = 1
+            if action.required_definition_id == 'basic.slash' and state.players[action.player_id].marks.get('slash_prohibited'):
+                eligible = ()
+                frame.local['eligible'] = ''
             return StepResult.ask(PendingRequest(action.action_id + ':request', action.player_id,
                 RequestType.RESPOND_WITH_CARD, action.prompt, action.action_id, frame.frame_id,
                 required_definition_id=action.required_definition_id, eligible_card_ids=eligible,
@@ -1172,7 +1194,7 @@ def register_military_basics(definitions, rules, registry, moves, events, bodies
     registry.register(SlashSequence, SlashSequenceHandler())
     from .military_equipment import WeaponChoice,WeaponChoiceHandler
     registry.register(WeaponChoice,WeaponChoiceHandler(moves))
-    handler = MilitaryDamageHandler(events, moves, skills)
+    handler = MilitaryDamageHandler(events, moves, skills, definitions)
     registry.register(DamageAction, handler)
     registry.register(MilitaryDamageAction, handler)
     registry.register(RespondWithCardAction, MilitaryResponseHandler(moves, events, skills))

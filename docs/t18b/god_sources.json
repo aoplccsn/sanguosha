@@ -1,0 +1,18 @@
+{
+  "shadow_god_liubei": {
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_liubei_idle.mp4",
+    "objectPosition": "center top"
+  },
+  "shadow_god_luxun": {
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_luxun_idle.mp4",
+    "objectPosition": "center top"
+  },
+  "thunder_god_ganning": {
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_ganning_idle.mp4",
+    "objectPosition": "center top"
+  },
+  "thunder_god_zhangliao": {
+    "source": "C:\\Users\\aopl\\Documents\\ChatGPT\\small game 1\\dynamic_portrait_sources\\god_zhangliao_idle.mp4",
+    "objectPosition": "center top"
+  }
+}

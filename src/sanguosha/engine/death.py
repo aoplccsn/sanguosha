@@ -99,6 +99,11 @@ class DeathActionHandler:
             ))
             frame.step_index = 2
             return StepResult.continue_()
+        if (frame.step_index == 2 and not frame.local.get('yj2012_zhuiyi')
+                and self.skills is not None and self.skills.has(state, action.target_id, 'zhuiyi')):
+            from .yj2012 import YJ2012Action
+            frame.local['yj2012_zhuiyi'] = True
+            return StepResult.push(YJ2012Action(action.action_id + ':zhuiyi', action.target_id, 'zhuiyi', action.killer_id))
         if (frame.step_index == 2 and not frame.local.get('wuhun_resolved')
                 and self.skills is not None and self.skills.has(state, action.target_id, 'wuhun')):
             from .gods import WuhunDeathAction

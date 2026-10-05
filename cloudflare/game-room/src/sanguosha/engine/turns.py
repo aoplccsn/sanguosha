@@ -65,6 +65,10 @@ class TurnActionHandler:
                 frame.cursor = len(action.phases)
             frame.step_index = 1
             return StepResult.continue_()
+        if (frame.step_index == 1 and frame.cursor == 0 and not frame.local.get('yj2012_dangxian')
+                and self.skills is not None and self.skills.has(state, action.player_id, 'dangxian')):
+            frame.local['yj2012_dangxian'] = True
+            return StepResult.push(PhaseAction(action.action_id + ':dangxian', action.player_id, Phase.PLAY))
         # A player who dies during a phase must not continue the rest of the turn.
         if (frame.cursor == len(action.phases) or state.status is GameStatus.FINISHED
                 or not state.players[action.player_id].is_alive):
@@ -85,7 +89,7 @@ class TurnActionHandler:
                 state.players[action.player_id].marks.pop('jilue_wansha', None)
                 for key in ('slash_quota_bonus', 'slash_ignore_distance',
                             'slash_extra_targets', 'slash_prohibited',
-                            'shuangxiong_color'):
+                            'shuangxiong_color', 'yj_zishou', 'yj_gongqi'):
                     state.players[action.player_id].marks.pop(key, None)
                 if state.players[action.player_id].character_id == 'forest_god_lvbu':
                     state.players[action.player_id].marks.pop('wuwei', None)

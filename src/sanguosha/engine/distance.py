@@ -36,13 +36,10 @@ class CharacterDistanceModifier:
     """Declarative character distance effects in the shared distance path."""
 
     def distance_delta(self, state: GameState, source: PlayerId, target: PlayerId) -> int:
-        character = _CHARACTERS.get(state.players[source].character_id)
-        delta = -1 if character is not None and 'mashu' in character.skill_ids else 0
-        target_character = _CHARACTERS.get(state.players[target].character_id)
-        if (target_character is not None and 'feiying' in target_character.skill_ids
-                and 'feiying' not in state.players[target].disabled_skills):
-            delta += 1
-        if character is not None and 'tuntian' in character.skill_ids and 'tuntian' not in state.players[source].disabled_skills:
+        from .skills import SkillRegistry
+        skills = SkillRegistry()
+        delta = -int(skills.has(state, source, 'mashu')) + int(skills.has(state, target, 'feiying'))
+        if skills.has(state, source, 'tuntian'):
             delta -= len(state.cards_in(ZoneRef(ZoneType.SPECIAL, source, special_key='tian')))
         return delta
 
@@ -77,6 +74,8 @@ class DistanceSystem:
     def attack_range(self, state: GameState, player: PlayerId) -> int:
         if player not in state.players or not state.players[player].is_alive:
             raise ValueError("attack range requires a living player")
+        if state.players[player].marks.get('yj_gongqi') == state.turn_number:
+            return max(1,len(state.seat_order)*2)
         current = 1
         weapon = state.cards_in(ZoneRef(ZoneType.EQUIPMENT, player, EquipmentSlot.WEAPON))
         if weapon and self.definitions is not None:

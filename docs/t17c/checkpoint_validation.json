@@ -1,0 +1,20 @@
+{
+  "status": "IN_PROGRESS",
+  "python": {
+    "passed": 1159,
+    "seconds": 119.16
+  },
+  "vitest": {
+    "passed": 86,
+    "files": 15
+  },
+  "typescript": "PASS",
+  "vite_build": "PASS",
+  "worker_mirror": "PASS",
+  "production_roster": 76,
+  "target_roster": 103,
+  "final_ai_60_games": "NOT_RUN",
+  "final_playwright": "NOT_RUN",
+  "final_pyside": "NOT_RUN",
+  "deployment": "NOT_PERFORMED"
+}

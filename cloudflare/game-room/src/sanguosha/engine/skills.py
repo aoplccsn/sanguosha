@@ -30,6 +30,10 @@ class SkillRegistry:
         self.characters.update({c.id: c for c in YJ2011_DEV_GENERALS if c.id not in self.characters})
         self.skills.update({s.id: s for s in YJ2011_DEV_SKILLS if s.id not in self.skills})
 
+        from sanguosha.content.characters.remaining import REMAINING_DEV_GENERALS, REMAINING_DEV_SKILLS
+        self.characters.update({c.id: c for c in REMAINING_DEV_GENERALS})
+        self.skills.update({s.id: s for s in REMAINING_DEV_SKILLS})
+
     def has(self, state, player_id, skill_id):
         player = state.players[player_id]
         if skill_id in player.disabled_skills:
@@ -104,6 +108,14 @@ class FinishSkillBody:
     def step(self, state, frame):
         actor = frame.action.player_id
         if frame.step_index == 1:
+            if not frame.local.get('yj2013_juece') and self.skills.has(state,actor,'juece'):
+                from .yj2013 import YJ2013Action
+                frame.local['yj2013_juece']=True
+                return StepResult.push(YJ2013Action(frame.action.action_id+':juece',actor,'juece'))
+            if not frame.local.get('yj2012_miji') and self.skills.has(state, actor, 'miji'):
+                from .yj2012 import YJ2012Action
+                frame.local['yj2012_miji'] = True
+                return StepResult.push(YJ2012Action(frame.action.action_id + ':miji', actor, 'miji'))
             if not frame.local.get('yj2011_jujian') and self.skills.has(state, actor, 'jujian'):
                 from .yj2011 import JujianAction
                 frame.local['yj2011_jujian'] = True
@@ -163,6 +175,11 @@ class PreparationSkillBody:
         actor = frame.action.player_id
         if not state.players[actor].is_alive:
             return StepResult.complete()
+        if frame.step_index == 1 and not frame.local.get('yj2012_zili') and self.skills.has(state, actor, 'zili'):
+            from .yj2012 import YJ2012Action
+            frame.local['yj2012_zili'] = True
+            frame.step_index = 20
+            return StepResult.push(YJ2012Action(frame.action.action_id + ':zili', actor, 'zili'))
         if (frame.step_index == 1 and not frame.local.get('baiyin_checked')
                 and self.skills.has(state, actor, 'baoyin')):
             from .gods import BaiyinAction
@@ -1117,6 +1134,8 @@ class SkillPlayOptions:
         ordinary = self.base.options(state,pid)
         from .yj2011_tier3 import play_options
         extra = play_options(state, pid, self.skills)
+        from .yj2012 import play_options as yj2012_play_options
+        extra.extend(yj2012_play_options(state, pid, self.skills))
         hand = state.cards_in(ZoneRef(ZoneType.HAND,pid))
         materials = tuple(cid for ref, zone in state.zones.items()
                           if ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
@@ -1274,6 +1293,9 @@ class SkillPlayOptions:
         if option in ('skill:jiushi', 'skill:xinzhan', 'skill:ganlu', 'skill:mingce', 'skill:xianzhen'):
             from .yj2011_tier3 import YJSkillAction
             return YJSkillAction(aid + ':yj2011', pid, option.split(':')[1])
+        if option in ('skill:paiyi', 'skill:anxu', 'skill:gongqi', 'skill:jiefan', 'skill:qice'):
+            from .yj2012 import YJ2012Action
+            return YJ2012Action(aid + ':yj2012', pid, option.split(':')[1])
         if option.startswith('skill:jilue-'):
             from .gods import JiluePlayAction
             return JiluePlayAction(aid + ':jilue', pid, option.split('-', 1)[1])

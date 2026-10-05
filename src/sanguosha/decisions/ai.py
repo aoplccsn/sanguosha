@@ -201,6 +201,28 @@ class AIDecisionProvider:
                 threshold = 7 if own_counters <= 1 else 5
                 if want_cancel == cancelled or value < threshold:
                     return Decision(request.request_id, player_id, PASS_RESPONSE)
+        if request.request_type is RequestType.YES_NO and '【精策】' in request.prompt:
+            return Decision(request.request_id, player_id, True)
+        if '【绝策】' in request.prompt:
+            if request.request_type is RequestType.YES_NO:
+                from sanguosha.engine.yj2011_tier3 import hand
+                value=any(q!=player_id and state.players[q].is_alive and not hand(state,q)
+                    and self._priority(state,player_id,q)>0 for q in state.seat_order)
+                return Decision(request.request_id,player_id,value)
+            if request.request_type is RequestType.CHOOSE_PLAYER:
+                value=max(request.allowed_player_ids,key=lambda q:self._priority(state,player_id,q))
+                return Decision(request.request_id,player_id,value)
+        if '【夺刀】' in request.prompt:
+            if request.request_type is RequestType.YES_NO:
+                return Decision(request.request_id, player_id, True)
+            if request.request_type is RequestType.CHOOSE_CARD:
+                value=min(request.eligible_card_ids,key=lambda c:
+                    {'basic.peach':9,'basic.dodge':6,'trick.nullification':7}.get(state.cards[c].definition_id,2))
+                return Decision(request.request_id,player_id,value)
+        from .yj2012 import decide as decide_yj2012
+        yj2012_decision = decide_yj2012(self, state, request)
+        if yj2012_decision is not None:
+            return yj2012_decision
         from .yj2011_tier3 import decide as decide_tier3
         tier3 = decide_tier3(self, state, request)
         if tier3 is not None:

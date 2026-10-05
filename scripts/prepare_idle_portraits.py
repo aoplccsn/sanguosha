@@ -21,6 +21,7 @@ IDS = {
     'forest_god_lvbu', 'mountain_god_zhaoyun', 'fire_god_zhouyu',
     'fire_god_zhugeliang', 'forest_god_caocao', 'mountain_god_simayi',
     'wind_god_guanyu', 'wind_god_lvmeng', 'wind_zhang_jiao',
+    'shadow_god_liubei', 'shadow_god_luxun', 'thunder_god_ganning', 'thunder_god_zhangliao',
 }
 
 def digest(path):

@@ -1,11 +1,14 @@
 """Contextual suit interpretation without changing physical card data."""
 
-from sanguosha.content.characters.standard import ALL_GENERAL_POOL
+from functools import lru_cache
 from sanguosha.model.enums import Color, Suit
 
 
-_CHARACTER_SKILLS = {character.id: frozenset(character.skill_ids)
-                     for character in ALL_GENERAL_POOL}
+@lru_cache(maxsize=1)
+def _skill_registry():
+    # Lazy import keeps the skills/suits dependency acyclic at module load.
+    from .skills import SkillRegistry
+    return SkillRegistry()
 
 
 def _hongyan(suit):
@@ -23,9 +26,9 @@ def effective_suit(state, card_id, owner_id=None):
                          if ref.player_id is not None and card_id in zone.card_ids), None)
     if owner_id is None or owner_id not in state.players:
         return suit
-    skills = _CHARACTER_SKILLS.get(state.players[owner_id].character_id, ())
+    skills = _skill_registry()
     for skill_id, modifier in SUIT_MODIFIERS.items():
-        if skill_id in skills:
+        if skills.has(state, owner_id, skill_id):
             suit = modifier(suit)
     return suit
 

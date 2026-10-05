@@ -46,11 +46,11 @@ def savage_damage_source(state, user_id, skills):
                  and skills.has(state, pid, 'huoshou')), user_id)
 
 
-def weimu_blocks(state, target_id, card_id, definition_id, user_id, skills):
+def weimu_blocks(state, target_id, card_id, definition_id, user_id, skills, virtual_card=None):
     return (skills is not None and state.players[target_id].is_alive
             and skills.has(state, target_id, 'weimu')
             and definition_id.startswith(('trick.', 'delayed.'))
-            and effective_color(state, card_id, user_id) is Color.BLACK)
+            and (virtual_card.color if virtual_card is not None else effective_color(state, card_id, user_id)) is Color.BLACK)
 
 
 @dataclass(frozen=True, slots=True)

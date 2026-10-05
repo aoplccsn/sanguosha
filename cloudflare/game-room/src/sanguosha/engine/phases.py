@@ -179,6 +179,13 @@ class PhaseActionHandler:
                 frame.local['qixing_exchanged'] = True
                 return StepResult.push(QixingExchangeAction(
                     f'{action.action_id}:qixing', action.player_id))
+            if (action.phase is Phase.PLAY and self.skills is not None
+                    and not frame.local.get('jingce_offered')
+                    and self.skills.has(state, action.player_id, 'jingce')
+                    and state.players[action.player_id].is_alive):
+                frame.local['jingce_offered'] = True
+                from .yj2013 import YJ2013Action
+                return StepResult.push(YJ2013Action(action.action_id + ':jingce', action.player_id, 'jingce'))
             if not frame.local.get('phase_end_recorded'):
                 self.recorder.record(PhaseEndedEvent(f"{action.action_id}:end", action.player_id, action.phase))
                 state.current_phase = None

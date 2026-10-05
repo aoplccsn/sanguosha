@@ -13,6 +13,7 @@ def pipeline(tmp_path, manifest):
     shutil.copy2(ROOT/'scripts/sync_web_assets.py',scripts/'sync_web_assets.py')
     assets=tmp_path/'assets'
     assets.mkdir()
+    (assets/'manifest.json').write_text('{}',encoding='utf-8')
     (assets/'idle_portraits.json').write_text(json.dumps(manifest),encoding='utf-8')
     return scripts/'sync_web_assets.py',assets,tmp_path/'web/public/assets'
 
@@ -57,7 +58,7 @@ def test_all_final_portraits_have_verified_audio_free_runtime_and_matched_static
     from PIL import Image
     reports=json.loads((ROOT/'docs/t15/media_report.json').read_text(encoding='utf-8'))
     manifest=json.loads((ROOT/'assets/idle_portraits.json').read_text(encoding='utf-8'))
-    expected={'forest_god_lvbu','mountain_god_zhaoyun','fire_god_zhouyu','fire_god_zhugeliang','forest_god_caocao','mountain_god_simayi','wind_god_guanyu','wind_god_lvmeng','wind_zhang_jiao'}
+    expected={'forest_god_lvbu','mountain_god_zhaoyun','fire_god_zhouyu','fire_god_zhugeliang','forest_god_caocao','mountain_god_simayi','wind_god_guanyu','wind_god_lvmeng','wind_zhang_jiao','shadow_god_liubei','shadow_god_luxun','thunder_god_ganning','thunder_god_zhangliao'}
     assert set(manifest)==expected
     assert {r['id'] for r in reports}==expected
     for report in reports:
@@ -78,11 +79,11 @@ def test_all_final_portraits_have_verified_audio_free_runtime_and_matched_static
 
 def test_current_panel_integrity():
     import hashlib
-    reports=json.loads((ROOT/'docs/t18a3/panel_media_report.json').read_text())
+    reports=json.loads((ROOT/'docs/t18b/panel_media_report.json').read_text())
     manifest=json.loads((ROOT/'assets/idle_portraits.json').read_text())
     sys.path.insert(0,str(ROOT/'scripts'))
     from prepare_idle_portraits import faststart
-    assert len(reports)==len(manifest)==9
+    assert len(reports)==len(manifest)==13
     for report in reports:
         path=ROOT/report['path']
         assert manifest[report['id']]['panelVideo']=='/'+report['path']

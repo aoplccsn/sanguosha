@@ -61,6 +61,7 @@ class TrickAction(Action):
     card_id: str
     definition_id: str
     targets: tuple[str, ...] = ()
+    virtual_card: VirtualCard | None = None
 
 @dataclass(frozen=True, slots=True)
 class TargetTrick(Action):
@@ -78,6 +79,9 @@ class MilitaryTrickRule:
         self.requires_target_selection = definition not in ('trick.ex_nihilo','trick.savage_assault',
             'trick.archery_attack','trick.god_salvation','trick.amazing_grace','delayed.lightning')
     def can_use(self, state, user):
+        if (state.current_phase is Phase.PLAY and state.players[user].marks.get('yj_zishou') == state.turn_number
+                and self.definition in ('trick.savage_assault', 'trick.archery_attack', 'trick.god_salvation', 'trick.amazing_grace')):
+            return False
         if self.definition == 'trick.nullification':
             return False
         if self.definition == 'delayed.lightning':
@@ -89,6 +93,9 @@ class MilitaryTrickRule:
     def target_candidates(self, state, user):
         d = self.definition
         def valid(pid):
+            if (pid != user and state.current_phase is Phase.PLAY
+                    and state.players[user].marks.get('yj_zishou') == state.turn_number):
+                return False
             if not state.players[pid].is_alive:
                 return False
             if self.skills is not None:
@@ -143,7 +150,7 @@ class TrickHandler:
             from .forest import weimu_blocks
             if d.startswith('delayed.'):
                 target = a.targets[0] if a.targets else a.source_id
-                if weimu_blocks(state, target, a.card_id, d, a.source_id, self.skills):
+                if weimu_blocks(state, target, a.card_id, d, a.source_id, self.skills, a.virtual_card):
                     raise InvalidCardUse('帷幕阻止黑色锦囊成为目标')
                 self.moves.move(state,CardMove(a.action_id+':attach',(a.card_id,),ZoneRef(ZoneType.PROCESSING),
                     ZoneRef(ZoneType.JUDGMENT,target),CardMoveReason.USE,a.source_id))
@@ -162,7 +169,7 @@ class TrickHandler:
             elif d in ('trick.god_salvation','trick.amazing_grace'):
                 targets=tuple(pid for pid in order if state.players[pid].is_alive)
             targets=tuple(pid for pid in targets if not weimu_blocks(
-                state, pid, a.card_id, d, a.source_id, self.skills))
+                state, pid, a.card_id, d, a.source_id, self.skills, a.virtual_card))
             if d in ('trick.savage_assault', 'trick.archery_attack'):
                 from .forest import savage_effect_immune
                 from .yj2011_tier3 import protected

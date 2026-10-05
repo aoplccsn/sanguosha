@@ -1,5 +1,5 @@
 """Create Web detail/panel variants without changing final source masters.
-Panel 180x320 covers the measured 68x90 CSS portrait at DPR2 with cover crop.
+Panel 360x640 follows the T18A.3 production panel pipeline.
 Detail keeps source 720x1280: mobile detail can reach 637px wide before DPR.
 """
 from pathlib import Path
@@ -15,16 +15,23 @@ def faststart(path):
     return verify(path)
 def main():
     p=argparse.ArgumentParser();p.add_argument('--ffmpeg',required=True);p.add_argument('--ffprobe',required=True);p.add_argument('--backup',type=Path,required=True)
+    p.add_argument('--only', nargs='+', help='Optimize only these registry IDs, preserving existing media and reports')
     args=p.parse_args();args.backup.mkdir(parents=True,exist_ok=True)
     reports=json.loads((ROOT/'docs/t15/media_report.json').read_text(encoding='utf-8'))
     manifest=json.loads((ROOT/'assets/idle_portraits.json').read_text(encoding='utf-8'))
-    output=[]
+    selected=set(args.only) if args.only else {item["id"] for item in reports}
+    unknown=selected-set(manifest)
+    if unknown: p.error("Unknown registry IDs: " + ", ".join(sorted(unknown)))
+    report_path=ROOT/"docs/t15_1/media_report.json"
+    previous=json.loads(report_path.read_text(encoding="utf-8")) if report_path.exists() else []
+    output=[item for item in previous if item["id"] not in selected]
     for old in reports:
+        if old['id'] not in selected: continue
         source=Path(old['source']);before=sha(source);assert before==old['source_sha256']
         full=ROOT/old['runtime'];backup=args.backup/full.name
         if not backup.exists():shutil.copy2(full,backup)
         entries=[]
-        for kind,size,crf in [('detail',(720,1280),20),('panel',(180,320),18)]:
+        for kind,size,crf in [('detail',(720,1280),20),('panel',(360,640),18)]:
             destination=full if kind=='detail' else full.with_name(full.stem+'.panel.mp4')
             pending=destination.with_suffix('.optimized.pending.mp4')
             assert not pending.exists()

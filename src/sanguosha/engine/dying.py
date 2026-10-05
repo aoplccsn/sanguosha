@@ -34,6 +34,11 @@ class DyingActionHandler:
             if target.hp > 0:
                 self.recorder.record(DyingRescuedEvent(f"{action.action_id}:rescued", action.target_id, target.hp))
                 return StepResult.complete("rescued")
+            if self.skills is not None and not frame.local.get('yj2012_fuli') and self.skills.has(state, action.target_id, 'fuli'):
+                from .yj2012 import YJ2012Action
+                frame.local['yj2012_fuli'] = True
+                frame.step_index = 4
+                return StepResult.push(YJ2012Action(action.action_id + ':fuli', action.target_id, 'fuli'))
             if self.skills is not None:
                 from .yj2011_tier3 import YJSkillAction
                 offered = frame.local.setdefault('yj_buyi_owners', [])

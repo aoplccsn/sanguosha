@@ -342,6 +342,10 @@ class GameSession:
             register_yj2011(registry, skills, moves, definitions)
             from sanguosha.engine.yj2011_tier3 import register as register_yj2011_tier3
             register_yj2011_tier3(registry, skills, moves, definitions, deck)
+            from sanguosha.engine.yj2012 import register as register_yj2012
+            register_yj2012(registry, skills, moves, definitions, deck)
+            from sanguosha.engine.yj2013 import register as register_yj2013
+            register_yj2013(registry, skills, moves, definitions, deck)
         engine = GameEngine(state, registry)
         if military:
             engine.reaction_provider = moves.next_reaction

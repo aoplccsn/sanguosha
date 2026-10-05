@@ -43,5 +43,25 @@
     "video": "/assets/portraits/idle/wind_zhang_jiao.mp4",
     "objectPosition": "center top",
     "panelVideo": "/assets/portraits/idle/wind_zhang_jiao.panel.mp4"
+  },
+  "shadow_god_liubei": {
+    "video": "/assets/portraits/idle/shadow_god_liubei.mp4",
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/shadow_god_liubei.panel.mp4"
+  },
+  "shadow_god_luxun": {
+    "video": "/assets/portraits/idle/shadow_god_luxun.mp4",
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/shadow_god_luxun.panel.mp4"
+  },
+  "thunder_god_ganning": {
+    "video": "/assets/portraits/idle/thunder_god_ganning.mp4",
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/thunder_god_ganning.panel.mp4"
+  },
+  "thunder_god_zhangliao": {
+    "video": "/assets/portraits/idle/thunder_god_zhangliao.mp4",
+    "objectPosition": "center top",
+    "panelVideo": "/assets/portraits/idle/thunder_god_zhangliao.panel.mp4"
   }
 }
