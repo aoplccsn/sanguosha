@@ -125,6 +125,7 @@ interface GameActions {
   joinRoom(name: string, roomCode: string): void
   setReady(ready: boolean): void
   startGame(): void
+  setPresentationSpeed(speed: string): void
   configureRoom(modeId: string): void
   kickPlayer(seatId: string): void
   selectGeneral(id: string): void
@@ -425,6 +426,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     startGame() {
       sendWhenConnected('START_GAME', {})
     },
+    setPresentationSpeed(speed) {
+      if (!__CLOUDFLARE_ROOMS__ && state.lobby?.host_id === state.seatId) sendWhenConnected('PRESENTATION_SPEED', { speed })
+    },
     configureRoom(modeId) {
       sendWhenConnected('CONFIGURE_ROOM', { mode_id: modeId })
     },
@@ -496,7 +500,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       recovering.current = false
       dispatch({ type: 'home' })
     },
-  }), [sendWhenConnected, state.draft, state.selectedGeneral])
+  }), [sendWhenConnected, state.draft, state.selectedGeneral, state.lobby?.host_id, state.seatId])
 
   return <Context.Provider value={{ state, actions, connection: connectionRef.current }}>{children}</Context.Provider>
 }

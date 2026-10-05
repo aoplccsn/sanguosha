@@ -65,7 +65,7 @@ def decide(provider, state, request):
                 # The first selection is exposed through the allowed partner set;
                 # choose the largest positive equipment transfer for an ally.
                 value = max(request.allowed_player_ids, key=lambda q: pair_score(request.subject_player_id, q))
-        elif '受赠者' in prompt or '摸牌角色' in prompt:
+        elif '选择受赠者' in prompt or '摸牌角色' in prompt:
             value = min(request.allowed_player_ids, key=lambda q: (priority(q), len(hand(state, q))))
         else:
             value = max(request.allowed_player_ids, key=lambda q: (priority(q), -state.players[q].hp))

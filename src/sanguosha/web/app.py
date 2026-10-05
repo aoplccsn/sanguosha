@@ -258,6 +258,8 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                         raise RoomError("seat reconnected elsewhere")
                     elif kind == "READY":
                         connection.managed.game.ready(connection.player_id, message.get("ready"))
+                    elif kind == 'PRESENTATION_SPEED':
+                        connection.managed.game.set_presentation_speed(connection.player_id, message.get('speed'))
                     elif kind == 'CONFIGURE_ROOM':
                         connection.managed.game.configure(connection.player_id,
                             mode_id=message.get('mode_id'), allow_gods=message.get('allow_gods'))

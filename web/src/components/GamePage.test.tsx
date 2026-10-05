@@ -8,6 +8,7 @@ vi.mock('../idlePortraits', () => ({ idlePortrait: (id: string) => id.includes('
 const submitDecision = vi.fn()
 const returnHome = vi.fn()
 let request: any
+let waiting: any = undefined
 let generals: Record<string, any> = {}
 let publicEvents: any[] = []
 const card = { card_id: 'slash-1', name: '杀', suit: '♠', rank: '7', definition_id: 'basic.slash', category: 'basic', equipment_slot: '', details: '' }
@@ -23,7 +24,7 @@ vi.mock('../state/GameContext', () => ({
       seatId: 'p1',
       connection: 'connected',
       decisionProcessing: null,
-      projection: { players, hand: [card], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
+      projection: { waiting, players, hand: [card], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
       pendingRequest: request,
       publicEvents,
       generals,
@@ -35,11 +36,26 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
+  it('binds a public remote response timer to one seat and restores its server remaining fraction', () => {
+    request = null
+    waiting = {key:'reconnected',player_id:'p2',responding:true,thinking:false,remaining_ms:12000,total_ms:60000}
+    const {container,rerender}=render(<GamePage />)
+    expect(container.querySelectorAll('.responding')).toHaveLength(1)
+    expect(container.querySelector('[data-player-id="p1"]')).toHaveClass('active')
+    expect(container.querySelector('[data-player-id="p2"]')).toHaveClass('responding')
+    expect(container.querySelector('[data-player-id="p2"] .seat-timer .timer i')).toHaveStyle({width:'20%'})
+    expect(container.querySelectorAll('.seat-timer')).toHaveLength(1)
+    expect(container.querySelector('.decision-prompt')).toBeNull()
+    waiting=null
+    rerender(<GamePage />)
+    expect(container.querySelector('.seat-timer')).toBeNull()
+    expect(container.querySelector('.responding')).toBeNull()
+  })
   it('highlights only the real decision actor while thinking and clears for a human request', () => {
     request = null
     publicEvents = [{ event_id: 'thinking', kind: 'AIThinkingEvent', source_id: 'p2', complexity: 'ordinary' }]
     const { container, rerender } = render(<GamePage />)
-    expect(screen.getByText('刘备 正在思考……')).toBeInTheDocument()
+    expect(screen.getByText('思考中…')).toBeInTheDocument()
     expect(container.querySelectorAll('.player-panel.thinking')).toHaveLength(1)
     expect(container.querySelector('[data-player-id="p2"]')).toHaveClass('thinking')
     request = { request_id: 'human', player_id: 'p1', request_type: 'yes_no', prompt: '真人响应', choices: [], eligible_card_ids: [], allowed_player_ids: [], min_count: 0, max_count: 0, remaining_ms: 60000 }
@@ -47,7 +63,7 @@ describe('GamePage', () => {
     expect(screen.getByText('真人响应')).toBeInTheDocument()
     expect(container.querySelectorAll('.player-panel.thinking')).toHaveLength(0)
   })
-  beforeEach(() => { submitDecision.mockClear(); request = null; generals = {}; publicEvents = []; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
+  beforeEach(() => { submitDecision.mockClear(); request = null; waiting = undefined; generals = {}; publicEvents = []; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
 
   it.each([
     [{ event_id: 'slash', kind: 'CardUsedEvent', source_id: 'p1', target_ids: ['p2'], card_name: '杀' }, '曹操 对 刘备 使用【杀】', 'p1', 'p2'],
@@ -58,7 +74,7 @@ describe('GamePage', () => {
     const { container } = render(<GamePage />)
     expect(screen.getByText(text)).toBeInTheDocument()
     expect(container.querySelector(`[data-player-id="${actor}"]`)).toHaveClass('presenting-action')
-    if (target) expect(container.querySelector(`[data-player-id="${target}"]`)).toHaveClass('event-target')
+    if (target) expect(container.querySelector(`[data-player-id="${target}"]`)).not.toHaveClass('event-target')
   })
 
   it('selects a Slash target and submits card plus target with one final confirm', async () => {

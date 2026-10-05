@@ -1,10 +1,8 @@
 import type { PublicEvent } from '../types'
 export type GameSpeed = 'slow' | 'normal' | 'fast'
-export const presentationPacing = {
-  slow: { ordinary: 2200, key: 3000, impact: 3200, turn: 2600 },
-  normal: { ordinary: 1400, key: 2000, impact: 2100, turn: 1700 },
-  fast: { ordinary: 600, key: 900, impact: 950, turn: 800 },
-} as const
+const normal = { ordinary: 1000, key: 1100, impact: 800, turn: 600, target: 650, skill: 1300 }
+const scaled = (factor: number) => Object.fromEntries(Object.entries(normal).map(([key, ms]) => [key, Math.round(ms * factor)])) as typeof normal
+export const presentationPacing = { slow: scaled(1.4), normal, fast: scaled(.65) }
 export function readGameSpeed(): GameSpeed {
   const value = localStorage.getItem('sanguosha.web.speed')
   return value === 'slow' || value === 'fast' ? value : 'normal'
@@ -12,15 +10,19 @@ export function readGameSpeed(): GameSpeed {
 export function eventDuration(event: PublicEvent | null, speed: GameSpeed) {
   const kind = String(event?.kind ?? '')
   if (kind === 'AIThinkingEvent') {
-    const base = event?.complexity === 'simple' ? 1500 : event?.complexity === 'complex' ? 3600 : 2400
-    return Math.round(base * (speed === 'slow' ? 1.5 : speed === 'fast' ? .6 : 1))
+    const base = Number(event?.thinking_ms ?? (event?.complexity === 'simple' ? 2400 : event?.complexity === 'complex' ? 4400 : 3200))
+    return Math.round(base * (speed === 'slow' ? 1.4 : speed === 'fast' ? .65 : 1))
   }
   const config = presentationPacing[speed]
+  const targets = Array.isArray(event?.target_ids) ? event.target_ids.length : 0
+  if (event?.presentation_phase === 'target') return Math.round(config.target * (1 + Math.min(3, Math.max(0, targets - 1)) * .07))
+  if (/Skill|Guhuo/.test(kind)) return Math.round(config.skill * (1 + Math.min(3, Number(event?.level ?? 0)) * .04))
   if (/^(BeforeDamage|AfterDamage|Phase|CardResolved|TrickTargetsDeclared)/.test(kind)) return 0
-  if (/DamageDealt|Recovered|Judgment|Skill|Dying|Died|Death/.test(kind)) return config.impact
+  if (/DamageDealt|Recovered|Judgment|Skill|Dying|Died|Death/.test(kind)) return Math.round(config.impact * (1 + Math.min(3, Math.max(0, Number(event?.amount ?? 1) - 1)) * .08))
   if (/TurnStarted|TurnEnded/.test(kind)) return config.turn
-  if (/CardUsed/.test(kind)) return config.key
-  if (/Responded|VirtualResponse|Discard|Guhuo/.test(kind)) return config.ordinary
+  if (/CardUsed/.test(kind)) return Math.round(config.key * (targets > 2 ? 1.15 : 1))
+  if (/Responded|VirtualResponse/.test(kind)) return Math.round(config.ordinary * (Number(event?.response_total ?? 1) > 1 ? (event?.response_number === event?.response_total ? 1.08 : .92) : 1))
+  if (/Discard|Guhuo/.test(kind)) return config.ordinary
   if (/CardMoved/.test(kind) && /discard/i.test(String(event?.to_zone ?? event?.destination ?? ''))) return config.ordinary
   return 0
 }

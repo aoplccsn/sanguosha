@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export function Timer({ remainingMs }: { remainingMs: number }) {
+export function Timer({ remainingMs, totalMs = remainingMs, warnAt = 5 }: { remainingMs: number; totalMs?: number; warnAt?: number }) {
   const [remaining, setRemaining] = useState(Math.max(0, remainingMs))
   useEffect(() => {
     setRemaining(Math.max(0, remainingMs))
@@ -9,8 +9,8 @@ export function Timer({ remainingMs }: { remainingMs: number }) {
     return () => window.clearInterval(timer)
   }, [remainingMs])
   const seconds = Math.ceil(remaining / 1000)
-  const percent = Math.max(0, Math.min(100, remainingMs ? remaining / remainingMs * 100 : 0))
-  return <div className={`timer ${seconds <= 5 ? 'urgent' : ''}`} aria-label={`剩余 ${seconds} 秒`}>
-    <span>{seconds}</span><div><i style={{ width: `${percent}%` }} /></div>
+  const percent = Math.max(0, Math.min(100, totalMs ? remaining / totalMs * 100 : 0))
+  return <div className={`timer ${seconds <= warnAt ? 'urgent' : ''}`} aria-label={`剩余 ${seconds} 秒`}>
+    <span>{(remaining / 1000).toFixed(1)}s</span><div><i style={{ width: `${percent}%` }} /></div>
   </div>
 }

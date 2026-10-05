@@ -1,0 +1,142 @@
+
+> sanguosha-web@0.3.0 test
+> vitest run --reporter=dot
+
+
+ RUN  v3.2.7 C:/Sanguosha/web
+
+stderr | src/components/GamePage.test.tsx > GamePage > binds a public remote response timer to one seat and restores its server remaining fraction
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > highlights only the real decision actor while thinking and clears for a human request
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > names the actor and highlights action/target for { event_id: 'slash', kind: 'CardUsedEvent', source_id: 'p1', target_ids: [ 'p2' ], card_name: '杀' }
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > names the actor and highlights action/target for { event_id: 'dodge', kind: 'CardRespondedEvent', source_id: 'p2', definition_id: 'basic.dodge' }
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > names the actor and highlights action/target for { event_id: 'skill', kind: 'SkillEvent', source_id: 'p1', skill_name: '奸雄' }
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > selects a Slash target and submits card plus target with one final confirm
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+······················································stdout | src/components/GamePage.test.tsx > GamePage > selects a Slash target and submits card plus target with one final confirm
+[game] click card slash-1 request play-1 option
+
+stderr | src/components/GamePage.test.tsx > GamePage > confirms equipment without requesting a character target
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > GamePage > confirms equipment without requesting a character target
+[game] click card slash-1 request play-equip option
+
+stderr | src/components/GamePage.test.tsx > GamePage > shows Chinese labels for Yinghun branches while preserving machine values
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > renders the five-player table, hand and skill bar
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > shows Mountain field and private transformation state
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > requires confirm after selecting a response card
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+····stdout | src/components/GamePage.test.tsx > GamePage > requires confirm after selecting a response card
+[game] click card slash-1 request r1 option
+
+stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
+[game] request replaced r1
+
+stderr | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+······stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
+[game] click card dodge-1 request r1 option
+
+stderr | src/components/GamePage.test.tsx > GamePage > offers Guhuo in a response window and submits the virtual choice
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
+[game] click card dodge-1 request r1 option
+
+stderr | src/components/GamePage.test.tsx > GamePage > submits Jiuchi wine from a hand card during self rescue
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+··stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] request replaced r1
+stderr | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+
+stderr | src/components/GamePage.test.tsx > GamePage > lets a physical response replace a previously selected Guhuo option
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] click card dodge-1 request r1 option
+
+·stdout | src/components/GamePage.test.tsx > GamePage > lets a physical response replace a previously selected Guhuo option
+[game] click card slash-1 request guhuo-switch option virtual:guhuo
+
+·stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] submit begin r1
+
+stderr | src/components/GamePage.test.tsx > GamePage > labels the two challenge decisions
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > selects a target before submitting it
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+··stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] submit rejected rejected
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+stderr | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] request replaced r1
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] click card dodge-1 request r1 option
+
+stderr | src/components/GamePage.test.tsx > T15 dynamic target interaction > selects immediately on the first portrait click with multiple dynamic panels
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+·stdout | src/components/GamePage.test.tsx > T15 dynamic target interaction > selects immediately on the first portrait click with multiple dynamic panels
+[game] click card slash-1 request t15-target option
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] request replaced r2
+
+·stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] click card dodge-1 request r2 option
+
+···stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] submit begin r2
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+stderr | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] request replaced r1
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] click card dodge-1 request r1 option
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] request replaced r2
+
+·stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] click card dodge-1 request r2 option
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] submit begin r2
+
+·
+
+ Test Files  14 passed (14)
+      Tests  77 passed (77)
+   Start at  15:36:51
+   Duration  3.64s (transform 1.19s, setup 2.57s, collect 3.88s, tests 4.95s, environment 10.58s, prepare 1.29s)

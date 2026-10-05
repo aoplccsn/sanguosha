@@ -1,0 +1,18 @@
+
+> sanguosha-web@0.3.0 prebuild
+> python ../scripts/sync_web_assets.py --production
+
+Web production assets synchronized: C:\Sanguosha\web\public\assets
+
+> sanguosha-web@0.3.0 build
+> tsc -b && vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 55 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.46 kB │ gzip:  0.32 kB
+dist/assets/index-Dr6x4unN.css   85.44 kB │ gzip: 19.44 kB
+dist/assets/index-D8Ayl4p3.js   306.54 kB │ gzip: 96.41 kB
+✓ built in 797ms

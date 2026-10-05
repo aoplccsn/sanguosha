@@ -1,0 +1,12 @@
+
+Running 2 tests using 1 worker
+
+
+(node:30016) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/2] [chromium] › e2e\t18a6-real-rounds.spec.ts:3:56 › military-five real several turns presentation audit
+[2/2] [chromium] › e2e\t18a6-real-rounds.spec.ts:3:56 › military-eight real several turns presentation audit
+  Slow test file: [chromium] › e2e\t18a6-real-rounds.spec.ts (11.9m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  2 passed (11.9m)

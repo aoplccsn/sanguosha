@@ -1,0 +1,63 @@
+{
+  "military-five": {
+    "elapsed_seconds": 229,
+    "turn_max": 11,
+    "event_counts": {
+      "TurnStartedEvent": 11,
+      "DiscardEvent": 6,
+      "TurnEndedEvent": 10,
+      "AIThinkingEvent": 80,
+      "CardUsedEvent": 20,
+      "DamageDealtEvent": 4,
+      "CardRespondedEvent": 2,
+      "JudgmentEvent": 2,
+      "VirtualResponseEvent": 1
+    },
+    "thinking_range_ms": [
+      2200,
+      4350
+    ],
+    "response_seats": [
+      "p1",
+      "p2",
+      "p3",
+      "p4",
+      "p5"
+    ],
+    "center_thinking_samples": 0,
+    "page_errors": []
+  },
+  "military-eight": {
+    "elapsed_seconds": 480,
+    "turn_max": 9,
+    "event_counts": {
+      "TurnStartedEvent": 9,
+      "DiscardEvent": 6,
+      "TurnEndedEvent": 8,
+      "AIThinkingEvent": 184,
+      "CardUsedEvent": 22,
+      "CardRespondedEvent": 11,
+      "DamageDealtEvent": 8,
+      "SkillEvent": 6,
+      "HpRecoveredEvent": 1,
+      "JudgmentEvent": 2,
+      "TrickTargetsDeclaredEvent": 1
+    },
+    "thinking_range_ms": [
+      2200,
+      4650
+    ],
+    "response_seats": [
+      "p1",
+      "p2",
+      "p3",
+      "p4",
+      "p5",
+      "p6",
+      "p7",
+      "p8"
+    ],
+    "center_thinking_samples": 0,
+    "page_errors": []
+  }
+}

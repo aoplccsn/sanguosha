@@ -77,6 +77,8 @@ class GameServer:
                         raise RoomError("join room first")
                     elif kind == "READY":
                         self.room.ready(pid, message.get("ready"))
+                    elif kind == "PRESENTATION_SPEED":
+                        self.room.set_presentation_speed(pid, message.get("speed"))
                     elif kind == "START_GAME":
                         self.room.start(pid)
                     elif kind == "SUBMIT_DECISION":

@@ -113,6 +113,7 @@ export interface PortraitState {
 }
 
 export interface Projection {
+  waiting?: { key: string; player_id: string; responding: boolean; thinking: boolean; remaining_ms: number; total_ms?: number } | null
   players: PlayerView[]
   hand: CardView[]
   current_phase: string

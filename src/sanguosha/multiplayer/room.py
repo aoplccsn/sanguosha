@@ -119,6 +119,7 @@ class MultiplayerRoom:
         self.auto_step_budget = 20_000
         self.suspend_on_budget = False
         self.ai_presentation = False
+        self.presentation_speed = "normal"
         self.ai_deadline: float | None = None
         self._ai_wait_request: str | None = None
 
@@ -301,7 +302,9 @@ class MultiplayerRoom:
                 raise RoomError('combined decision requires a physical card')
             built = replace(built, target_ids=decision.value['targets'], targets_confirmed=True)
             self.session.engine.registry.handler_for(built).validate_start(self.session.state, built)
+        cue_start = len(self.session.events.events)
         self.session.engine.submit_decision(decision, defer_resolution=defer_resolution)
+        self._present_decision(request, decision, cue_start)
         if send_ack:
             self._send(pid, envelope("DECISION_RESULT", request_id=decision.request_id, accepted=True))
         self._last_request_id = None
@@ -358,6 +361,38 @@ class MultiplayerRoom:
                         hand.append(found)
                     break
 
+    def _present_decision(self, request: PendingRequest, decision: Decision, since: int) -> None:
+        """Public skill cues for accepted choices; never changes rule execution."""
+        from sanguosha.content.characters.standard import ALL_SKILL_CATALOGUE
+        from hashlib import sha256
+        value = decision.value
+        skill = None
+        targets = ()
+        if request.request_type is RequestType.CHOOSE_OPTION and isinstance(value, str) and value.startswith('skill:'):
+            skill = next((item for item in ALL_SKILL_CATALOGUE if str(item.id) == value.split(':')[1]), None)
+        elif request.request_type in (RequestType.CHOOSE_PLAYER, RequestType.CHOOSE_PLAYERS) and '【' in request.prompt:
+            name = request.prompt.split('【', 1)[1].split('】', 1)[0]
+            skill = next((item for item in ALL_SKILL_CATALOGUE if item.name == name), None)
+            targets = (value,) if isinstance(value, str) else tuple(value)
+        if skill is None:
+            return
+        if any(isinstance(event, Event) and event.event_type == 'skill_' + str(skill.id)
+               for event in self.session.events.events[since:]):
+            return
+        self.session.events.record(Event('presentation-skill:' + sha256(request.request_id.encode()).hexdigest()[:24],
+            'presentation_skill', request.player_id, targets, {'skill_id': str(skill.id)}))
+
+    def set_presentation_speed(self, pid: PlayerId, speed: str) -> None:
+        if pid != self.host_id or speed not in ('slow', 'normal', 'fast'):
+            raise RoomError('only the host can set a valid AI presentation speed')
+        previous = {'slow': 1.4, 'normal': 1, 'fast': .65}[self.presentation_speed]
+        factor = {'slow': 1.4, 'normal': 1, 'fast': .65}[speed]
+        if self.ai_deadline is not None:
+            self.ai_deadline = time.time() + max(0, self.ai_deadline - time.time()) * factor / previous
+        self.presentation_speed = speed
+        if self.session is not None:
+            self._sync()
+
     def pump(self, max_steps: int | None = None) -> None:
         if self.session is None:
             return
@@ -382,26 +417,26 @@ class MultiplayerRoom:
                 self.network_decisions.dispatch(request)
                 return
             if request is not None:
-                if request.request_type in (RequestType.CHOOSE_OPTION, RequestType.RESPOND_WITH_CARD,
-                                             RequestType.YES_NO):
+                if request.request_type in RequestType:
                     if self._ai_wait_request != request.request_id:
                         from hashlib import sha256
-                        candidates = len(request.choices) + len(request.eligible_card_ids)
-                        complexity = ('simple' if request.request_type is RequestType.RESPOND_WITH_CARD
-                                      else 'complex' if candidates > 8 else 'ordinary')
+                        complexity, thinking_ms = self._ai.thinking_profile(self.session.state, request)
                         self.session.events.record(Event(
                             'thinking:' + sha256(request.request_id.encode()).hexdigest()[:24],
-                            'ai_thinking', request.player_id, metadata={'complexity': complexity}))
+                            'ai_thinking', request.player_id, metadata={'complexity': complexity, 'thinking_ms': thinking_ms}))
                         if self.ai_presentation:
                             self._ai_wait_request = request.request_id
-                            self.ai_deadline = time.time() + {'simple': 1.5, 'ordinary': 2.4, 'complex': 3.6}[complexity]
+                            self.ai_deadline = time.time() + thinking_ms / 1000 * {'slow': 1.4, 'normal': 1, 'fast': .65}[self.presentation_speed]
                             self._sync()
                             return
                     if self.ai_deadline is not None and time.time() < self.ai_deadline:
                         return
                 self._ai_wait_request = None
                 self.ai_deadline = None
-                self.session.engine.submit_decision(self._ai.decide(self.session.state, request))
+                decision = self._ai.decide(self.session.state, request)
+                cue_start = len(self.session.events.events)
+                self.session.engine.submit_decision(decision)
+                self._present_decision(request, decision, cue_start)
             else:
                 self.session.step_auto()
         self.phase = RoomPhase.FINISHED
@@ -522,6 +557,21 @@ class MultiplayerRoom:
         for player in result["players"]:
             pid = PlayerId(player["player_id"])
             player["name"] = ("你 · " if pid == viewer else "") + self.seats[pid].name
+        request = self.session.engine.pending_request
+        result['waiting'] = None
+        if request is not None:
+            ai = self.seats[request.player_id].controller is Controller.AI
+            deadline = self.ai_deadline if ai else self.request_deadline
+            if deadline is not None:
+                from hashlib import sha256
+                result['waiting'] = {
+                    'key': sha256(request.request_id.encode()).hexdigest()[:24],
+                    'player_id': str(request.player_id),
+                    'responding': request.request_type is RequestType.RESPOND_WITH_CARD or request.player_id != self.session.state.current_player_id,
+                    'thinking': ai,
+                    'remaining_ms': max(0, int((deadline - time.time()) * 1000)),
+                    'total_ms': round(self._ai.thinking_profile(self.session.state, request)[1] * {'slow': 1.4, 'normal': 1, 'fast': .65}[self.presentation_speed]) if ai else round(self.timeout_seconds * 1000),
+                }
         return result
 
     def _public_event(self, event) -> dict | None:
@@ -529,7 +579,7 @@ class MultiplayerRoom:
         result = {"kind": type(event).__name__, "event_id": event.event_id}
         if isinstance(event, Event) and event.event_type == 'ai_thinking':
             result.update(kind='AIThinkingEvent', source_id=str(event.source_id),
-                          complexity=event.metadata['complexity'])
+                          complexity=event.metadata['complexity'], thinking_ms=event.metadata.get('thinking_ms', 3200))
         elif isinstance(event, Event) and event.event_type in ('skill_wuwei', 'skill_shenfen'):
             result.update(kind='GodSkillEvent', source_id=str(event.source_id),
                           target_ids=list(map(str, event.target_ids)),
@@ -575,13 +625,14 @@ class MultiplayerRoom:
         elif isinstance(event, Event) and event.event_type == 'after_judgment':
             result.update(kind='JudgmentEvent', source_id=str(event.source_id or ''),
                           matched=bool(event.metadata.get('matched', False)))
-        elif isinstance(event, Event) and event.event_type.startswith('skill_'):
+        elif isinstance(event, Event) and (event.event_type.startswith('skill_') or event.event_type == 'presentation_skill'):
             from sanguosha.content.characters.standard import ALL_SKILL_CATALOGUE
-            skill_id = event.event_type.removeprefix('skill_')
+            skill_id = str(event.metadata['skill_id']) if event.event_type == 'presentation_skill' else event.event_type.removeprefix('skill_')
             skill = next((item for item in ALL_SKILL_CATALOGUE if str(item.id) == skill_id), None)
             if skill is None:
                 return None
-            result.update(kind='SkillEvent', source_id=str(event.source_id or ''), skill_name=skill.name)
+            result.update(kind='SkillEvent', source_id=str(event.source_id or ''), skill_name=skill.name,
+                          target_ids=list(map(str, event.target_ids)))
         elif isinstance(event, GameEndedEvent):
             result.update(label=event.label, winner_ids=list(map(str, event.winner_ids)))
         else:

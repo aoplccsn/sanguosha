@@ -681,3 +681,66 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 /* Flip the sampled composition as a unit; an asymmetric mask must follow it. */
 .game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_zhang_jiao"]).face-down .dynamic-portrait { transform:scaleX(-1); }
 .game-board :is([data-character-id="forest_god_lvbu"],[data-character-id="wind_zhang_jiao"]).face-down .dynamic-portrait > :is(img,video) { transform:none; }
+
+/* T18A.6: independent turn edge, response ring, actor seal and transient target brackets. */
+.game-board .player-panel.active::after { border-color:#d6af63; animation:none; box-shadow:inset 0 0 14px #e9bb5320,0 0 14px #e9bb5360; }
+.game-board .player-panel.thinking::after { animation:none; }
+.game-board .player-panel.presenting-action::after { border-color:#cc845b; box-shadow:inset 0 0 18px #b85f3426; }
+.game-board .player-panel.event-target::after { border:2px dashed #c28d76; box-shadow:inset 0 0 18px #ae6e4033; }
+.game-board .player-panel.responding::after { border:2px solid #e2f4ec; border-top:2px solid #e2f4ec; outline:1px solid #88b9b1; outline-offset:3px; animation:responseBreath 1.8s ease-in-out infinite; }
+@keyframes responseBreath { 0%,100% { box-shadow:0 0 12px #92c6ba60; } 50% { box-shadow:0 0 23px #c4e2d099,inset 0 0 10px #92c6ba30; } }
+.game-board .seat-timer { position:absolute; top:calc(100% + 6px); left:2%; width:96%; z-index:6; }
+.game-board .seat-timer .timer { width:100%; display:flex; flex-direction:column-reverse; gap:2px; padding:0; color:#e4ece0; background:#151a16d9; font-size:11px; }
+.game-board .seat-timer .timer > div { width:100%; height:5px; background:#b8c4b126; }
+.game-board .seat-timer .timer i { background:linear-gradient(90deg,#668f7e,#d3dfb5); }
+.game-board .seat-timer .timer.urgent i { background:#c97b58; }
+.game-board .event-stage { display:flex; flex-direction:column; align-items:center; gap:10px; pointer-events:none; z-index:8; }
+.game-board .center-action-card { position:relative; width:clamp(144px,13vw,196px); aspect-ratio: .7; box-shadow:0 8px 28px #0007; }
+.game-board .center-action-card img { width:100%; height:100%; object-fit:contain; }
+.game-board .center-action-card b { position:absolute; bottom:5%; left:5%; right:5%; padding:3px; font-size:23px; color:#f5dfb3; background:#261b13db; }
+.game-board .event-stage:has(.center-action-card) { top:46%; }
+.game-board .event-stage strong { font-size:clamp(14px,1.3vw,20px); }
+@media(prefers-reduced-motion:reduce) { .game-board .player-panel.responding::after { animation:none; } }
+
+.game-board .event-stage { animation:actionReveal .18s ease-out; }
+@keyframes actionReveal { from { opacity:.85; transform:translate(-50%,-50%) scale(.96); } }
+.game-board .event-stage::before { display:none; }
+.game-board .event-stage:has(.center-action-card) { background:none; }
+
+@media(min-width:721px) {
+  .game-board { min-height:0; height:calc(100vh - 48px); }
+  .game-board .self-area { bottom:36px; }
+  .eight-seats .player-east-lower,.eight-seats .player-west-lower { bottom:36px; }
+}
+
+@media(min-width:721px) and (max-height:800px) {
+  .game-board .event-stage:has(.center-action-card) { top:57%; }
+  .game-board .center-action-card { width:144px; }
+}
+
+.game-board .thinking-badge { position:absolute; z-index:7; top:21px; white-space:nowrap; }
+.game-board .action-badge { position:absolute; z-index:7; }
+.game-board .seat-timer .timer span { font:500 12px/1.35 ui-monospace,monospace; color:#e4ece0; animation:none; }
+.game-board .seat-timer .timer.urgent span { color:#e5b18b; animation:none; }
+
+.game-board .player-panel.active::before { content:''; position:absolute; inset:8% 0 2%; z-index:2; border:1px solid #d6af6380; box-shadow:0 0 12px #e9bb5340; pointer-events:none; }
+
+@media(min-width:721px) {
+  .game-board .event-stage:has(.center-action-card) { top:55%; }
+}
+@media(min-width:721px) and (max-height:800px) {
+  .game-board .event-stage:has(.center-action-card) { top:56%; }
+  .game-board .center-action-card { width:144px; }
+  .game-board .decision-prompt { bottom:calc(var(--self-h) + 8px); }
+}
+
+@media(min-width:721px) {
+  .game-board .event-stage:has(.center-action-card) { top:60%; }
+  .game-board .event-stage strong { background:#211c12b3; padding:4px 10px; }
+}
+@media(min-width:721px) and (max-height:800px) {
+  .game-board .event-stage:has(.center-action-card) { top:60%; }
+  .game-board .decision-prompt { bottom:-30px; }
+}
+
+.game-board .event-stage { z-index:12; }

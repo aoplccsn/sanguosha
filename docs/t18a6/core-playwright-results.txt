@@ -1,0 +1,13 @@
+
+Running 5 tests using 1 worker
+
+
+(node:32384) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/5] [chromium] › e2e\t18a3-gameplay.spec.ts:3:1 › god generals enter the default draft without a switch
+[2/5] [chromium] › e2e\t18a3-gameplay.spec.ts:13:1 › local browsers show actor target Slash and Dodge
+[3/5] [chromium] › e2e\t18a6-polish.spec.ts:8:1 › AI action reveal then target; dedicated human response ring and seat deadline
+[4/5] [chromium] › e2e\t18a6-polish.spec.ts:26:1 › eight seats continuous responses show Dodge Peach skill and one public waiting seat
+[5/5] [chromium] › e2e\t18a6-polish.spec.ts:46:1 › real human Slash opens an AI response seat then displays Dodge
+  5 passed (17.1s)

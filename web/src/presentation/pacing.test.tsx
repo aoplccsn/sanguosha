@@ -15,16 +15,16 @@ it('uses three ordered tiers only for semantic actions', () => {
 })
 it('holds key actions for the requested three speeds', () => {
   const card = { kind: 'CardUsedEvent' } as PublicEvent
-  expect(eventDuration(card, 'slow')).toBe(3000)
-  expect(eventDuration(card, 'normal')).toBe(2000)
-  expect(eventDuration(card, 'fast')).toBe(900)
+  expect(eventDuration(card, 'slow')).toBe(1540)
+  expect(eventDuration(card, 'normal')).toBe(1100)
+  expect(eventDuration(card, 'fast')).toBe(715)
 })
 it('paces actual AI decisions by complexity independently of action dwell', () => {
-  for (const [complexity, duration] of [['simple', 1500], ['ordinary', 2400], ['complex', 3600]] as const) {
+  for (const [complexity, duration] of [['simple', 2400], ['ordinary', 3200], ['complex', 4400]] as const) {
     const event = { kind: 'AIThinkingEvent', complexity }
     expect(eventDuration(event, 'normal')).toBe(duration)
-    expect(eventDuration(event, 'slow')).toBe(duration * 1.5)
-    expect(eventDuration(event, 'fast')).toBe(duration * .6)
+    expect(eventDuration(event, 'slow')).toBe(Math.round(duration * 1.4))
+    expect(eventDuration(event, 'fast')).toBe(Math.round(duration * .65))
   }
 })
 it('keeps event spacing when new events arrive, then immediately flushes for a human', () => {
@@ -46,4 +46,33 @@ it('plays already queued events even if the retained public history rolls over',
   rerender({items:[events[2]]})
   act(()=>vi.advanceTimersByTime(presentationPacing.fast.key))
   expect(result.current?.event_id).toBe('2')
+})
+
+it('reveals then targets without delaying protocol state, and preserves a reveal during repeated human updates', () => {
+  vi.useFakeTimers()
+  const slash: PublicEvent = {kind:'CardUsedEvent',event_id:'slash',target_ids:['p2'],definition_id:'basic.slash'}
+  const {result,rerender}=renderHook(({items,human}:{items:PublicEvent[],human?:string})=>usePresentation(items,'normal',human),{initialProps:{items:[slash],human:undefined as string|undefined}})
+  expect(result.current?.presentation_phase).toBe('reveal')
+  act(()=>vi.advanceTimersByTime(1100))
+  expect(result.current?.presentation_phase).toBe('target')
+  act(()=>vi.advanceTimersByTime(650))
+  expect(result.current).toBeNull()
+  const next = {...slash,event_id:'human-slash'}
+  rerender({items:[slash,next],human:'response'})
+  rerender({items:[slash,next,{kind:'BeforeDamageEvent'}],human:'response'})
+  expect(result.current?.event_id).toBe('human-slash')
+})
+it('does not queue a second thinking delay when the server supplies live waiting state', () => {
+  vi.useFakeTimers()
+  const {result}=renderHook(()=>usePresentation([{kind:'AIThinkingEvent',thinking_ms:3200},{kind:'CardUsedEvent',event_id:'action'}],'normal',undefined,true))
+  expect(result.current?.event_id).toBe('action')
+})
+
+it('keeps an AI response card when the next human projection arrives in a separate message', () => {
+  vi.useFakeTimers()
+  const response: PublicEvent = {kind:'CardRespondedEvent',event_id:'ai-dodge',definition_id:'basic.dodge'}
+  const {result,rerender}=renderHook(({human}:{human?:string})=>usePresentation([response],'normal',human),{initialProps:{human:undefined as string|undefined}})
+  expect(result.current?.event_id).toBe('ai-dodge')
+  rerender({human:'next-play'})
+  expect(result.current?.event_id).toBe('ai-dodge')
 })
