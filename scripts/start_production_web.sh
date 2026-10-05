@@ -1,7 +1,8 @@
 #!/bin/sh
 set -eu
 
-if [ "${ZEABUR:-}" = "true" ] || [ "${BACK4APP:-}" = "true" ]; then
+if [ "${ZEABUR:-}" = "true" ] || [ "${BACK4APP:-}" = "true" ] || [ -n "${PORT:-}" ]; then
+    export HOST=0.0.0.0
     exec python -m sanguosha.web
 fi
 

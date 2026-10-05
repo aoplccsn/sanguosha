@@ -166,3 +166,40 @@ def test_back4app_requires_assigned_domain_before_first_start(monkeypatch):
     monkeypatch.delenv("PUBLIC_ORIGIN", raising=False)
     with pytest.raises(RuntimeError, match="DOMAIN"):
         WebConfig.from_env().validate_production()
+
+
+def test_cn_container_uses_platform_port_same_origin_and_health(monkeypatch):
+    for key in ("RENDER", "ZEABUR", "BACK4APP"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("HOST", "0.0.0.0")
+    monkeypatch.setenv("PORT", "34567")
+    monkeypatch.setenv("DOMAIN", "game.example.cn")
+    monkeypatch.setenv("PUBLIC_ORIGIN", "https://game.example.cn")
+    monkeypatch.setenv("SECRET_KEY", "s" * 48)
+    config = WebConfig.from_env()
+    assert (config.host, config.port) == ("0.0.0.0", 34567)
+    config.validate_production()
+    calls = []
+    monkeypatch.setattr(web_main.uvicorn, "run", lambda *args, **kwargs: calls.append((args, kwargs)))
+    web_main.main()
+    assert calls[0][1]["workers"] == 1
+    with TestClient(create_app(config)) as client:
+        headers = {"host": config.domain, "origin": config.public_origin}
+        assert client.get("/api/health", headers=headers).json()["status"] == "ok"
+        assert client.get("/api/version", headers=headers).status_code == 200
+        with client.websocket_connect("/ws", headers=headers) as socket:
+            socket.send_json({"type": "HELLO", "version": PROTOCOL_VERSION})
+            assert socket.receive_json()["type"] == "WELCOME"
+
+
+def test_container_serves_dist_outside_installed_package(monkeypatch, tmp_path):
+    (tmp_path / "assets").mkdir()
+    (tmp_path / "index.html").write_text("<h1>container spa</h1>", encoding="utf-8")
+    (tmp_path / "assets" / "check.txt").write_text("asset ready", encoding="utf-8")
+    monkeypatch.setenv("WEB_DIST_DIR", str(tmp_path))
+    with TestClient(create_app(production())) as client:
+        headers = {"host": "game.example.com"}
+        assert "container spa" in client.get("/", headers=headers).text
+        assert "container spa" in client.get("/room/ABC123", headers=headers).text
+        assert client.get("/assets/check.txt", headers=headers).text == "asset ready"

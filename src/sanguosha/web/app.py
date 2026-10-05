@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import time
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager, suppress
@@ -134,6 +135,7 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
             pass
 
     @app.get("/health")
+    @app.get("/api/health")
     async def health() -> dict[str, Any]:
         if shutting_down:
             return JSONResponse({"status": "stopping"}, status_code=503)
@@ -298,7 +300,7 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
             with suppress(asyncio.CancelledError, RuntimeError):
                 await sender
 
-    dist = Path(__file__).resolve().parents[3] / "web" / "dist"
+    dist = Path(os.getenv("WEB_DIST_DIR", Path(__file__).resolve().parents[3] / "web" / "dist"))
     assets = dist / "assets"
     if assets.is_dir():
         app.mount("/assets", StaticFiles(directory=assets), name="assets")

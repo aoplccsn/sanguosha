@@ -20,7 +20,7 @@ RUN if [ "$BUILD_COMMIT" = unknown ] && [ -n "$RENDER_GIT_COMMIT" ]; then export
 
 FROM python:3.12-slim
 WORKDIR /app
-ENV PYTHONUNBUFFERED=1 APP_ENV=production
+ENV PYTHONUNBUFFERED=1 APP_ENV=production WEB_DIST_DIR=/app/web/dist
 COPY pyproject.toml README.md ./
 COPY src ./src
 COPY scripts/start_production_web.sh ./start_production_web.sh
