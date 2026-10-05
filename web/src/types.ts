@@ -112,8 +112,21 @@ export interface PortraitState {
   skillName?: string
 }
 
+export interface CombatContext {
+  root_id?: string
+  source_id: string
+  definition_id: string
+  card_name?: string
+  target_ids: string[]
+  current_target_id?: string
+  resolved_target_ids?: string[]
+  nullification_count?: number
+  cancelled?: boolean
+  top_response?: { source_id: string; definition_id: string }
+}
 export interface Projection {
-  waiting?: { key: string; player_id: string; responding: boolean; thinking: boolean; remaining_ms: number; total_ms?: number } | null
+  combat?: CombatContext | null
+  waiting?: { key: string; player_id: string; responding: boolean; thinking: boolean; remaining_ms: number; total_ms?: number; required_definition_id?: string; response_to?: string; deadline?: number } | null
   players: PlayerView[]
   hand: CardView[]
   current_phase: string

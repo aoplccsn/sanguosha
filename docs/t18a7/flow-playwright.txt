@@ -1,0 +1,19 @@
+
+
+Running 10 tests using 2 workers
+
+
+
+
+
+[1/10] [chromium] › e2e\t18a7-flow.spec.ts:10:1 › A AI Cao Cao Slash -> human Liu Bei Dodge, persistent turn and semantic responder
+[2/10] [chromium] › e2e\t18a7-flow.spec.ts:25:1 › B human Slash -> AI seat thinking then visible Dodge
+[3/10] [chromium] › e2e\t18a7-flow.spec.ts:36:75 › C authoritative AOE fanout and ordered response
+[4/10] [chromium] › e2e\t18a7-flow.spec.ts:36:75 › D authoritative AOE fanout and ordered response
+[5/10] [chromium] › e2e\t18a7-flow.spec.ts:48:1 › E both counter commands and root card stay visible
+[6/10] [chromium] › e2e\t18a7-flow.spec.ts:58:1 › F counter and counter-counter retain original trick and final parity
+[7/10] [chromium] › e2e\t18a7-flow.spec.ts:68:67 › mobile 390 semantic response and controls visible
+[8/10] [chromium] › e2e\t18a7-flow.spec.ts:68:67 › mobile 430 semantic response and controls visible
+[9/10] [chromium] › e2e\t18a7-flow.spec.ts:77:67 › eight-player mobile 390 keeps response and controls readable
+[10/10] [chromium] › e2e\t18a7-flow.spec.ts:77:67 › eight-player mobile 430 keeps response and controls readable
+  10 passed (1.1m)

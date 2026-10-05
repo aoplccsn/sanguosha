@@ -163,8 +163,15 @@ class TrickHandler:
                 targets=tuple(pid for pid in order if state.players[pid].is_alive)
             targets=tuple(pid for pid in targets if not weimu_blocks(
                 state, pid, a.card_id, d, a.source_id, self.skills))
+            if d in ('trick.savage_assault', 'trick.archery_attack'):
+                from .forest import savage_effect_immune
+                from .yj2011_tier3 import protected
+                targets = tuple(pid for pid in targets if
+                    equipped(state, pid, EquipmentSlot.ARMOR) != 'equipment.armor.vine'
+                    and not protected(state, pid)
+                    and not (d == 'trick.savage_assault' and savage_effect_immune(state, pid, self.skills)))
             frame.local['targets']='|'.join(targets)
-            if len(targets) > 1 and not a.targets:
+            if not a.targets and d in ('trick.savage_assault', 'trick.archery_attack', 'trick.god_salvation', 'trick.amazing_grace'):
                 self.recorder.record(TrickTargetsDeclaredEvent(a.action_id+':targets',
                     a.source_id, a.card_id, d, tuple(targets)))
             frame.local['pool']=a.action_id

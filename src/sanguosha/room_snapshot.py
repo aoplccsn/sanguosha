@@ -51,6 +51,7 @@ def snapshot_room(room: MultiplayerRoom) -> bytes:
         "ai_presentation": room.ai_presentation,
         "presentation_speed": room.presentation_speed,
         "ai_deadline": room.ai_deadline,
+        "presentation_deadline": room.presentation_deadline,
         "ai_wait_request": room._ai_wait_request,
         "last_request_id": room._last_request_id,
         "seen_events": room._seen_events,
@@ -98,6 +99,7 @@ def restore_room(blob: bytes) -> MultiplayerRoom:
     room.presentation_speed = data.get("presentation_speed", "normal")
     room.ai_presentation = data.get("ai_presentation", False)
     room.ai_deadline = data.get("ai_deadline")
+    room.presentation_deadline = data.get("presentation_deadline")
     room._ai_wait_request = data.get("ai_wait_request")
     room.request_deadline = data["request_deadline"]
     room._last_request_id = data["last_request_id"]

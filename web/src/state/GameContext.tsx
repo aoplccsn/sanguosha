@@ -83,7 +83,7 @@ function reducer(state: ClientState, action: Action): ClientState {
     case 'pending':
       return { ...state, pendingRequest: action.payload as PendingRequest, decisionProcessing: null, decisionAccepted: null,
         requestEpoch: state.pendingRequest?.request_id === (action.payload as PendingRequest).request_id ? state.requestEpoch : state.requestEpoch + 1,
-        notice: state.pendingRequest?.request_id !== (action.payload as PendingRequest).request_id ? '当前响应已更新' : state.notice }
+        notice: state.pendingRequest && state.pendingRequest.request_id !== (action.payload as PendingRequest).request_id ? '当前响应已更新' : state.notice }
     case 'decision-result':
       return state.decisionProcessing === action.payload
         ? { ...state, pendingRequest: state.pendingRequest?.request_id === action.payload ? null : state.pendingRequest,
@@ -477,7 +477,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
         if (__CLOUDFLARE_ROOMS__) connectionRef.current.openRoom(session.roomCode, 'RECONNECT', {
           room_code: session.roomCode, name: session.playerName, token: session.reconnectToken,
         })
-        else connectionRef.current.connect()
+        else if (!connectionRef.current.send('RECONNECT', {
+          room_code: session.roomCode, name: session.playerName, token: session.reconnectToken,
+        })) connectionRef.current.connect()
       } catch { localStorage.removeItem(SESSION_KEY); dispatch({ type: 'resume-session', payload: null }) }
     },
     discardSession() {

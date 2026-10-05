@@ -112,6 +112,8 @@ def decision_from_wire(payload: Any, player_id: PlayerId) -> Decision:
     if isinstance(value, dict):
         if value == {"pass": True}:
             value = PASS_RESPONSE
+        elif value == {"pass": True, "scope": "root_trick"}:
+            value = 'ui.pass_root_trick'
         elif (set(value) == {"option", "targets"} and type(value["option"]) is str
               and type(value["targets"]) is list and len(value["targets"]) <= 8
               and all(type(item) is str for item in value["targets"])):

@@ -6,7 +6,7 @@ import type { PublicEvent } from '../types'
 afterEach(() => vi.useRealTimers())
 const events = [1,2,3].map(n => ({event_id: String(n), kind:'CardUsedEvent'})) as PublicEvent[]
 it('uses three ordered tiers only for semantic actions', () => {
-  for (const kind of ['CardUsedEvent','SkillEvent','DamageDealtEvent','HpRecoveredEvent','JudgmentEvent','CardRespondedEvent','VirtualResponseEvent','DyingRequiredEvent','DiscardEvent','TurnStartedEvent']) {
+  for (const kind of ['CardUsedEvent','SkillEvent','DamageDealtEvent','HpRecoveredEvent','JudgmentEvent','CardRespondedEvent','VirtualResponseEvent','DyingRequiredEvent','DiscardEvent']) {
     const event = {kind} as PublicEvent
     expect(eventDuration(event,'slow')).toBeGreaterThan(eventDuration(event,'normal'))
     expect(eventDuration(event,'normal')).toBeGreaterThan(eventDuration(event,'fast'))
@@ -15,12 +15,12 @@ it('uses three ordered tiers only for semantic actions', () => {
 })
 it('holds key actions for the requested three speeds', () => {
   const card = { kind: 'CardUsedEvent' } as PublicEvent
-  expect(eventDuration(card, 'slow')).toBe(1540)
-  expect(eventDuration(card, 'normal')).toBe(1100)
-  expect(eventDuration(card, 'fast')).toBe(715)
+  expect(eventDuration(card, 'slow')).toBe(1960)
+  expect(eventDuration(card, 'normal')).toBe(1400)
+  expect(eventDuration(card, 'fast')).toBe(910)
 })
 it('paces actual AI decisions by complexity independently of action dwell', () => {
-  for (const [complexity, duration] of [['simple', 2400], ['ordinary', 3200], ['complex', 4400]] as const) {
+  for (const [complexity, duration] of [['simple', 2800], ['ordinary', 4000], ['complex', 5500]] as const) {
     const event = { kind: 'AIThinkingEvent', complexity }
     expect(eventDuration(event, 'normal')).toBe(duration)
     expect(eventDuration(event, 'slow')).toBe(Math.round(duration * 1.4))
@@ -53,9 +53,9 @@ it('reveals then targets without delaying protocol state, and preserves a reveal
   const slash: PublicEvent = {kind:'CardUsedEvent',event_id:'slash',target_ids:['p2'],definition_id:'basic.slash'}
   const {result,rerender}=renderHook(({items,human}:{items:PublicEvent[],human?:string})=>usePresentation(items,'normal',human),{initialProps:{items:[slash],human:undefined as string|undefined}})
   expect(result.current?.presentation_phase).toBe('reveal')
-  act(()=>vi.advanceTimersByTime(1100))
+  act(()=>vi.advanceTimersByTime(1400))
   expect(result.current?.presentation_phase).toBe('target')
-  act(()=>vi.advanceTimersByTime(650))
+  act(()=>vi.advanceTimersByTime(850))
   expect(result.current).toBeNull()
   const next = {...slash,event_id:'human-slash'}
   rerender({items:[slash,next],human:'response'})

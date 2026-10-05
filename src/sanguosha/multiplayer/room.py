@@ -12,7 +12,7 @@ from sanguosha.content.characters.standard import PLAYABLE_GENERAL_POOL
 from sanguosha.game_modes import game_mode
 from sanguosha.decisions.ai import AIDecisionProvider
 from sanguosha.engine.requests import Decision, PendingRequest, RequestType, PASS_RESPONSE
-from sanguosha.engine.events import (Event, CardUsedEvent, CardRespondedEvent, TrickTargetsDeclaredEvent,
+from sanguosha.engine.events import (Event, CardUsedEvent, CardResolvedEvent, CardRespondedEvent, TrickTargetsDeclaredEvent,
                                      VirtualResponseEvent, DamageDealtEvent, HpRecoveredEvent,
                                      PlayerDiedEvent, GameEndedEvent, TurnStartedEvent, TurnEndedEvent,
                                      CardMovedEvent, DyingRequiredEvent)
@@ -121,6 +121,7 @@ class MultiplayerRoom:
         self.ai_presentation = False
         self.presentation_speed = "normal"
         self.ai_deadline: float | None = None
+        self.presentation_deadline: float | None = None
         self._ai_wait_request: str | None = None
 
     def join(self, name: str, send: Send, *, token: str | None = None) -> tuple[PlayerId, str]:
@@ -289,7 +290,14 @@ class MultiplayerRoom:
             raise RoomError("stale request; current response refreshed")
         if request is not None and request.request_id == decision.request_id:
             decision = self._resolve_hidden_choice(request, decision)
+        skip_root = decision.value == 'ui.pass_root_trick'
+        if skip_root:
+            if request.required_definition_id != 'trick.nullification' or self.session.nullification_window_id(request) is None:
+                raise RoomError('root trick pass requires a current nullification request')
+            decision = Decision(decision.request_id, decision.player_id, PASS_RESPONSE)
         self.network_decisions.validate(pid, decision)
+        if skip_root:
+            self.session.decline_nullification_window(pid)
         if isinstance(decision.value, dict):
             from dataclasses import replace
             from sanguosha.engine.card_use import UseCardAction
@@ -389,6 +397,8 @@ class MultiplayerRoom:
         factor = {'slow': 1.4, 'normal': 1, 'fast': .65}[speed]
         if self.ai_deadline is not None:
             self.ai_deadline = time.time() + max(0, self.ai_deadline - time.time()) * factor / previous
+        if self.presentation_deadline is not None:
+            self.presentation_deadline = time.time() + max(0, self.presentation_deadline - time.time()) * factor / previous
         self.presentation_speed = speed
         if self.session is not None:
             self._sync()
@@ -396,6 +406,10 @@ class MultiplayerRoom:
     def pump(self, max_steps: int | None = None) -> None:
         if self.session is None:
             return
+        if self.presentation_deadline is not None:
+            if time.time() < self.presentation_deadline:
+                return
+            self.presentation_deadline = None
         if (self.session.engine.pending_request is None
                 and getattr(self.session.engine, 'stack', None) is not None
                 and not self.session.engine.stack.is_empty()):
@@ -409,6 +423,14 @@ class MultiplayerRoom:
                     return
                 raise RuntimeError("multiplayer match step limit exceeded")
             request = self.session.engine.pending_request
+            self.session.clear_finished_nullification_windows()
+            if request is not None and request.request_type is RequestType.RESPOND_WITH_CARD and request.allow_pass:
+                root = self.session.nullification_window_id(request)
+                skipped = self.session.state.metadata.get('nullification_passes', {}).get(root, [])
+                # No legal response is a forced engine result, not an AI choice.
+                if not request.has_legal_response() or request.player_id in skipped:
+                    self.session.engine.submit_decision(Decision(request.request_id, request.player_id, PASS_RESPONSE))
+                    continue
             if request is not None and self.seats[request.player_id].controller is Controller.HUMAN:
                 if (request.request_type is RequestType.RESPOND_WITH_CARD
                         and request.allow_pass and not request.has_legal_response()):
@@ -433,10 +455,22 @@ class MultiplayerRoom:
                         return
                 self._ai_wait_request = None
                 self.ai_deadline = None
-                decision = self._ai.decide(self.session.state, request)
+                decision = self._ai.decide(self.session.state, request, response_context=self._combat_context())
                 cue_start = len(self.session.events.events)
                 self.session.engine.submit_decision(decision)
                 self._present_decision(request, decision, cue_start)
+                if self.ai_presentation:
+                    # One maximum per accepted action; internal events never add sleeps.
+                    events = self.session.events.events[cue_start:]
+                    dwell = max((2.3 if isinstance(e, CardUsedEvent) else
+                                 1.2 if isinstance(e, (CardRespondedEvent, VirtualResponseEvent)) else
+                                 1.5 if isinstance(e, Event) and e.event_type.startswith(('skill_', 'presentation_skill')) else
+                                 1.0 if isinstance(e, (DamageDealtEvent, HpRecoveredEvent)) else 0
+                                 for e in events), default=0)
+                    if dwell:
+                        self.presentation_deadline = time.time() + dwell * {'slow': 1.4, 'normal': 1, 'fast': .65}[self.presentation_speed]
+                        self._sync()
+                        return
             else:
                 self.session.step_auto()
         self.phase = RoomPhase.FINISHED
@@ -446,7 +480,8 @@ class MultiplayerRoom:
 
     def poll(self) -> None:
         now = time.time()
-        if self.ai_deadline is not None and now >= self.ai_deadline:
+        if ((self.ai_deadline is not None and now >= self.ai_deadline)
+                or (self.presentation_deadline is not None and now >= self.presentation_deadline)):
             self.pump()
         if self.phase is RoomPhase.DRAFT:
             for pid, deadline in tuple(self.draft_deadlines.items()):
@@ -490,7 +525,7 @@ class MultiplayerRoom:
             if seat.controller is Controller.HUMAN and seat.connected:
                 view = project_for_human(self.session.state, self.session.definitions,
                                          seat.player_id, self.session.character_names)
-                active_id = request.request_id if request is not None and request.player_id == seat.player_id else None
+                active_id = request.request_id if request is not None and request.player_id == seat.player_id and self.request_deadline is not None else None
                 self._send(seat.player_id, envelope("PROJECTION_UPDATE", revision=self._revision,
                                                     active_request_id=active_id,
                                                     projection=self._named_projection(view, seat.player_id)))
@@ -499,7 +534,7 @@ class MultiplayerRoom:
             if public:
                 self._broadcast(envelope("PUBLIC_EVENT", event=public))
         self._seen_events = len(self.session.events.events)
-        if request is not None and self.seats[request.player_id].controller is Controller.HUMAN:
+        if request is not None and self.seats[request.player_id].controller is Controller.HUMAN and self.request_deadline is not None:
             self._send(request.player_id, envelope("PENDING_REQUEST", request=self._request_payload(request)))
 
     def _send_current(self, pid: PlayerId) -> None:
@@ -509,7 +544,7 @@ class MultiplayerRoom:
         elif self.session is not None:
             view = project_for_human(self.session.state, self.session.definitions, pid, self.session.character_names)
             request = self.session.engine.pending_request
-            active_id = request.request_id if request is not None and request.player_id == pid else None
+            active_id = request.request_id if request is not None and request.player_id == pid and self.request_deadline is not None else None
             self._send(pid, envelope("PROJECTION_UPDATE", revision=self._revision,
                                      active_request_id=active_id,
                                      projection=self._named_projection(view, pid)))
@@ -553,11 +588,13 @@ class MultiplayerRoom:
                 "seats": [seat.public() for seat in self.seats.values()]}
 
     def _named_projection(self, view, viewer):
+        self.session.clear_finished_nullification_windows()
         result = serialize_projection(view)
         for player in result["players"]:
             pid = PlayerId(player["player_id"])
             player["name"] = ("你 · " if pid == viewer else "") + self.seats[pid].name
         request = self.session.engine.pending_request
+        result['combat'] = self._combat_context()
         result['waiting'] = None
         if request is not None:
             ai = self.seats[request.player_id].controller is Controller.AI
@@ -569,10 +606,58 @@ class MultiplayerRoom:
                     'player_id': str(request.player_id),
                     'responding': request.request_type is RequestType.RESPOND_WITH_CARD or request.player_id != self.session.state.current_player_id,
                     'thinking': ai,
+                    'required_definition_id': str(request.required_definition_id or ''),
+                    'response_to': (result['combat'] or {}).get('definition_id', ''),
+                    'deadline': deadline,
                     'remaining_ms': max(0, int((deadline - time.time()) * 1000)),
                     'total_ms': round(self._ai.thinking_profile(self.session.state, request)[1] * {'slow': 1.4, 'normal': 1, 'fast': .65}[self.presentation_speed]) if ai else round(self.timeout_seconds * 1000),
                 }
         return result
+
+    def _base_action(self, action_id):
+        from hashlib import sha256
+        used = next((e for e in reversed(self.session.events.events)
+                     if isinstance(e, CardUsedEvent) and action_id.startswith(e.event_id.removesuffix(':used'))), None)
+        if used is None:
+            return None
+        aid = used.event_id.removesuffix(':used')
+        declared = next((e for e in reversed(self.session.events.events)
+                         if isinstance(e, TrickTargetsDeclaredEvent) and e.event_id.startswith(aid)), None)
+        definition = used.virtual_definition_id or str(self.session.state.cards[used.card_id].definition_id)
+        return {'root_id': sha256(aid.encode()).hexdigest()[:24], 'source_id': str(used.player_id),
+                'definition_id': definition, 'card_name': self.session.definitions.get(definition).name,
+                'target_ids': list(map(str, declared.target_ids if declared else used.target_ids))}
+
+    def _combat_context(self):
+        from sanguosha.engine.card_use import UseCardAction
+        from sanguosha.engine.military_tricks import TrickAction, NullificationWindow, TargetTrick
+        if self.session is None:
+            return None
+        frames = self.session.engine.stack.snapshot()
+        root = next((f for f in reversed(frames) if isinstance(f.action, UseCardAction)), None)
+        if root is None:
+            return None
+        base = self._base_action(root.action.action_id)
+        if base is None:
+            return None
+        trick = next((f for f in reversed(frames) if isinstance(f.action, TrickAction)), None)
+        window = next((f for f in reversed(frames) if isinstance(f.action, NullificationWindow)), None)
+        effect = next((f for f in reversed(frames) if isinstance(f.action, TargetTrick)), None)
+        if trick:
+            base['target_ids'] = str(trick.local.get('targets', '')).split('|') if trick.local.get('targets') else base['target_ids']
+            base['resolved_target_ids'] = base['target_ids'][:max(0, trick.cursor - 1)]
+        base['current_target_id'] = str(window.action.target_id if window else effect.action.target_id if effect else '')
+        if window:
+            count = sum(isinstance(e, (CardRespondedEvent, VirtualResponseEvent)) and
+                        e.source_action_id == window.action.action_id for e in self.session.events.events)
+            base['nullification_count'] = count
+            base['cancelled'] = bool(count % 2)
+        responses = [e for e in self.session.events.events if isinstance(e, (CardRespondedEvent, VirtualResponseEvent))
+                     and e.source_action_id.startswith(root.action.action_id)]
+        if responses:
+            e = responses[-1]
+            base['top_response'] = {'source_id': str(e.player_id), 'definition_id': str(e.response_definition_id)}
+        return base
 
     def _public_event(self, event) -> dict | None:
         """Allowlist semantic facts; card instance IDs and hidden moves are excluded."""
@@ -597,7 +682,20 @@ class MultiplayerRoom:
                              if isinstance(event, CardUsedEvent) else event.definition_id)
             result["definition_id"] = str(definition_id)
             result["card_name"] = self.session.definitions.get(definition_id).name
+            base = self._base_action(event.event_id)
+            if base:
+                result.update(root_id=base['root_id'], target_ids=base['target_ids'])
+        elif isinstance(event, CardResolvedEvent):
+            base = self._base_action(event.event_id.removesuffix(':resolved'))
+            if base:
+                result.update(root_id=base['root_id'])
         elif isinstance(event, (CardRespondedEvent, VirtualResponseEvent)):
+            base = self._base_action(event.source_action_id)
+            if base:
+                if event.response_definition_id == 'trick.nullification':
+                    count = sum(isinstance(e, (CardRespondedEvent, VirtualResponseEvent)) and e.source_action_id == event.source_action_id for e in self.session.events.events[:self.session.events.events.index(event) + 1])
+                    base.update(nullification_count=count, cancelled=bool(count % 2))
+                result['base_action'] = base
             result.update(source_id=str(event.player_id), response_number=event.response_number,
                           response_total=event.response_total)
             definition_id = (event.response_definition_id or str(self.session.state.cards[event.card_id].definition_id)

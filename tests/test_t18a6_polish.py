@@ -85,7 +85,7 @@ def test_public_waiting_two_humans_reconnect_and_clear(mode, monkeypatch):
     room.network_decisions.dispatch(pending)
     wait = next(m for m in reversed(messages['p1']) if m['type'] == 'PROJECTION_UPDATE')['projection']['waiting']
     assert wait['player_id'] == 'p2' and wait['responding'] and not wait['thinking']
-    assert set(wait) == {'key', 'player_id', 'responding', 'thinking', 'remaining_ms', 'total_ms'}
+    assert set(wait) == {'key', 'player_id', 'responding', 'thinking', 'remaining_ms', 'total_ms', 'required_definition_id', 'response_to', 'deadline'}
     assert 'eligible_card_ids' not in json.dumps(wait)
     deadline = room.request_deadline; clock[0] += 7.5
     room._send_current('p1')
@@ -103,8 +103,8 @@ def test_thinking_profile_range_and_complexity():
     s = game(); ai = AIDecisionProvider('human')
     simple = request(RequestType.RESPOND_WITH_CARD, eligible_card_ids=('dodge',))
     complex = request(RequestType.CHOOSE_PLAYERS, allowed_player_ids=('p2', 'p3'), max_count=2)
-    assert 2000 <= ai.thinking_profile(s.state, simple)[1] <= 2800
-    assert 3500 <= ai.thinking_profile(s.state, complex)[1] <= 6000
+    assert 3500 <= ai.thinking_profile(s.state, simple)[1] <= 5000
+    assert 4500 <= ai.thinking_profile(s.state, complex)[1] <= 7000
 
 
 def test_speed_changes_only_ai_wait_not_human_deadline(monkeypatch):

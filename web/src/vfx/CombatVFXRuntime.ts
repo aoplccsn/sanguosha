@@ -1,7 +1,7 @@
 export type VfxQuality = 'high' | 'medium' | 'low'
 export type BeamMode = 'attack' | 'normal' | 'protect'
 type Point = { x: number; y: number }
-type Effect = { kind: 'slash' | 'god-slash' | 'dodge' | 'impact'; from: Point; to: Point; start: number; duration: number; color: string; style?: string }
+type Effect = { kind: 'slash' | 'god-slash' | 'savage' | 'arrows' | 'dodge' | 'impact'; from: Point; to: Point; start: number; duration: number; color: string; style?: string }
 
 const QUALITY_KEY = 'sanguosha.vfx.quality.v1'
 export function readVfxQuality(): VfxQuality {
@@ -118,7 +118,8 @@ export class CombatVFXRuntime {
       const recycled = this.effects.shift()
       if (recycled) this.effectPool.push(recycled)
     }
-    const duration = this.reduced ? 120 : kind === 'god-slash' ? 440 : kind === 'slash' ? 340 : kind === 'dodge' ? 260 : 300
+    if (kind === 'dodge') this.effects = this.effects.filter(e => e.to.x !== to.x || e.to.y !== to.y || !['slash', 'god-slash', 'arrows', 'savage'].includes(e.kind))
+    const duration = this.reduced ? 120 : kind === 'dodge' ? 1100 : kind === 'impact' ? 900 : 900
     const effect = this.effectPool.pop() ?? { kind, from, to, color, start: 0, duration }
     Object.assign(effect, { kind, from, to, color, style, start: performance.now(), duration })
     this.effects.push(effect)
@@ -177,14 +178,23 @@ export class CombatVFXRuntime {
     ctx.strokeStyle = color
     ctx.fillStyle = color
     ctx.lineCap = 'round'
-    if (kind === 'slash' || kind === 'god-slash') {
+    if (kind === 'slash' || kind === 'god-slash' || kind === 'savage' || kind === 'arrows') {
       const eased = 1 - Math.pow(1 - Math.min(progress * 1.7, 1), 3)
       const x = from.x + (to.x - from.x) * eased
       const y = from.y + (to.y - from.y) * eased
       ctx.globalAlpha = .2 * fade; ctx.lineWidth = this.quality === 'low' ? 10 : kind === 'god-slash' ? 28 : 22
       ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(x, y); ctx.stroke()
-      ctx.globalAlpha = .95 * fade; ctx.lineWidth = 3
+      ctx.globalAlpha = .95 * fade; ctx.lineWidth = kind === 'savage' ? 6 : 3
       ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(x, y); ctx.stroke()
+      const angle = Math.atan2(to.y - from.y, to.x - from.x)
+      const size = kind === 'arrows' ? 15 : 22
+      ctx.beginPath(); ctx.moveTo(x - Math.cos(angle - .5) * size, y - Math.sin(angle - .5) * size)
+      ctx.lineTo(x, y); ctx.lineTo(x - Math.cos(angle + .5) * size, y - Math.sin(angle + .5) * size); ctx.stroke()
+      if (kind === 'arrows') for (const offset of [-10, 10]) {
+        ctx.lineWidth = 1.5
+        const ox = Math.sin(angle) * offset, oy = -Math.cos(angle) * offset
+        ctx.beginPath();ctx.moveTo(from.x + ox, from.y + oy);ctx.lineTo(x + ox, y + oy);ctx.stroke()
+      }
       if (progress > .35) {
         const radius = (progress - .35) * 75
         ctx.globalAlpha = Math.max(0, 1 - progress) * .8; ctx.lineWidth = 4
@@ -192,10 +202,21 @@ export class CombatVFXRuntime {
       }
       if (kind === 'god-slash' && progress > .25 && this.quality !== 'low') this.drawGodAccent(ctx, effect, progress)
     } else {
-      const radius = kind === 'dodge' ? 14 + progress * 55 : 8 + progress * 65
+      const radius = kind === 'dodge' ? 30 + progress * 85 : 8 + progress * 65
       ctx.globalAlpha = fade * (kind === 'dodge' ? .75 : .9)
       ctx.lineWidth = kind === 'dodge' ? 3 : 5
       ctx.beginPath(); ctx.ellipse(to.x, to.y, radius, radius * .55, -.45, 0, Math.PI * 2); ctx.stroke()
+      if (kind === 'dodge') {
+        if (from.x !== to.x || from.y !== to.y) {
+          const splitX=from.x+(to.x-from.x)*.75, splitY=from.y+(to.y-from.y)*.75
+          ctx.globalAlpha=fade*.7;ctx.strokeStyle='#efbd67';ctx.lineWidth=3
+          ctx.beginPath();ctx.moveTo(from.x,from.y);ctx.lineTo(splitX,splitY);ctx.stroke()
+          ctx.globalAlpha=fade*.45;ctx.beginPath();ctx.moveTo(splitX,splitY);ctx.lineTo(to.x+65*progress,to.y-75*progress);ctx.stroke()
+          ctx.strokeStyle=color
+        }
+        ctx.globalAlpha = fade * .9; ctx.lineWidth = 5
+        ctx.beginPath();ctx.moveTo(to.x - radius, to.y + radius * .65);ctx.lineTo(to.x + radius, to.y - radius * .65);ctx.stroke()
+      }
       if (kind === 'dodge' && this.quality !== 'low') {
         ctx.globalAlpha = fade * .32
         for (let i = 1; i <= 2; i++) { ctx.beginPath(); ctx.ellipse(to.x + i * 12, to.y - i * 7, radius, radius * .55, -.45, 0, Math.PI * 2); ctx.stroke() }

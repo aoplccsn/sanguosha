@@ -23,13 +23,16 @@ export function usePresentation(events: PublicEvent[], speed: GameSpeed, humanRe
     timer.current = window.setTimeout(() => advance.current(), eventDuration(next, speedRef.current))
   }
   useEffect(() => {
-    const fresh = events.filter(event => !seen.current.has(event))
-    fresh.forEach(event => seen.current.add(event))
+    const incoming = events.filter(event => !seen.current.has(event))
+    // Target declaration belongs to its original reveal, not a second action.
+    const fresh = incoming.filter(event => !(event.kind === 'TrickTargetsDeclaredEvent' && incoming.some(
+      other => other.kind === 'CardUsedEvent' && other.root_id && other.root_id === event.root_id)))
+    incoming.forEach(event => seen.current.add(event))
     if (seen.current.size > 1024) seen.current = new Set(events)
     const changedHuman = humanRequest !== previousHuman.current
     previousHuman.current = humanRequest
     if (humanRequest) {
-      const newAction = [...fresh].some(event => /CardUsed|Responded|VirtualResponse|Skill/.test(String(event.kind)))
+      const newAction = [...fresh].some(event => /CardUsed|TrickTargetsDeclared|Responded|VirtualResponse|Skill/.test(String(event.kind)))
       if (!changedHuman && !newAction && humanRequest !== 'connection-reset') return
       const retained = currentRef.current
       if (timer.current !== undefined) window.clearTimeout(timer.current)
@@ -39,7 +42,7 @@ export function usePresentation(events: PublicEvent[], speed: GameSpeed, humanRe
       // The prompt is immediate; a newly received action can remain visible
       // alongside it. Thinking and queued history are always cleared.
       const action = humanRequest === 'connection-reset' ? undefined
-        : [...fresh].reverse().find(event => /CardUsed|Responded|VirtualResponse|Skill/.test(String(event.kind)))
+        : [...fresh].reverse().find(event => /CardUsed|TrickTargetsDeclared|Responded|VirtualResponse|Skill/.test(String(event.kind)))
           ?? (changedHuman && /Responded|VirtualResponse/.test(String(retained?.kind)) ? retained ?? undefined : undefined)
       const reveal = action ? { ...action, presentation_phase: 'reveal' } : null
       if (action && Array.isArray(action.target_ids) && action.target_ids.length) queue.current.push({ ...action, presentation_phase: 'target' })
@@ -49,8 +52,8 @@ export function usePresentation(events: PublicEvent[], speed: GameSpeed, humanRe
       return
     }
     queue.current.push(...fresh.filter(event => eventDuration(event, speedRef.current) > 0 && !(authoritativeWaiting && event.kind === 'AIThinkingEvent')).flatMap(event => {
-      const reveal = { ...event, presentation_phase: /CardUsed|Skill/.test(String(event.kind)) ? 'reveal' : /Responded|VirtualResponse/.test(String(event.kind)) ? 'response' : 'result' }
-      return /CardUsed|Skill/.test(String(event.kind)) && Array.isArray(event.target_ids) && event.target_ids.length
+      const reveal = { ...event, presentation_phase: /CardUsed|TrickTargetsDeclared|Skill/.test(String(event.kind)) ? 'reveal' : /Responded|VirtualResponse/.test(String(event.kind)) ? 'response' : 'result' }
+      return /CardUsed|TrickTargetsDeclared|Skill/.test(String(event.kind)) && Array.isArray(event.target_ids) && event.target_ids.length
         ? [reveal, { ...event, presentation_phase: 'target' }] : [reveal]
     }))
     if (timer.current === undefined && queue.current.length) advance.current()

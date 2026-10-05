@@ -20,11 +20,12 @@ class AIDecisionProvider:
         multi = request.max_count > 1 and bool(request.allowed_player_ids)
         kill = any(state.players[pid].hp <= 1 and self._priority(state, request.player_id, pid) > 0
                    for pid in request.allowed_player_ids)
-        if request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.YES_NO) and candidates <= 4:
-            return 'simple', 2200 + min(candidates, 4) * 120
+        skill = skill or any(cid.startswith('virtual:') for cid in request.eligible_card_ids)
+        if request.request_type is RequestType.YES_NO and candidates <= 1:
+            return 'simple', 2800
         if multi or skill or candidates > 8 or kill:
-            return 'complex', min(5900, 3500 + min(candidates, 16) * 100 + int(multi) * 350 + int(kill) * 400)
-        return 'ordinary', 2800 + min(candidates, 8) * 140
+            return 'complex', min(7000, 4500 + min(candidates, 16) * 100 + int(multi) * 350 + int(kill) * 400)
+        return 'ordinary', 3500 + min(candidates, 8) * 180
 
     def _priority(self, state: GameState, actor: PlayerId, target: PlayerId) -> int:
         role = state.players[actor].identity
@@ -125,12 +126,47 @@ class AIDecisionProvider:
             return 92 if enemies and own_slash else -100
         if 'slash' in definition:
             return 115 if any(state.players[pid].hp <= 1 for pid in enemies) else 72
+        if definition in ('trick.savage_assault', 'trick.archery_attack'):
+            from sanguosha.engine.military_basics import equipped
+            from sanguosha.model.enums import EquipmentSlot
+            from sanguosha.engine.skills import SkillRegistry
+            from sanguosha.engine.forest import savage_effect_immune
+            net = 0
+            for pid in state.seat_order:
+                if pid == actor or not state.players[pid].is_alive:
+                    continue
+                if equipped(state, pid, EquipmentSlot.ARMOR) == 'equipment.armor.vine':
+                    continue
+                if definition == 'trick.savage_assault' and savage_effect_immune(state, pid, SkillRegistry()):
+                    continue
+                relation = 1 if self._priority(state, actor, pid) > 0 else -1
+                danger = 3 if state.players[pid].hp <= 1 else 2 if state.players[pid].hp <= 2 else 1
+                # Opponent hand count is public; card definitions are never inspected.
+                chance = max(.35, 1 - len(state.cards_in(ZoneRef(ZoneType.HAND, pid))) * .1)
+                net += relation * danger * chance
+            return 60 + round(net * 8) if net > 0 else -100
         if definition.startswith(('trick.', 'delayed.')):
             return 60
         return 0
 
-    def decide(self, state: GameState, request: PendingRequest) -> Decision:
+    def decide(self, state: GameState, request: PendingRequest, *, response_context=None) -> Decision:
         player_id = request.player_id
+        if request.required_definition_id == 'trick.nullification' and response_context:
+            target = response_context.get('current_target_id') or request.subject_player_id
+            definition = response_context.get('definition_id', '')
+            if target in state.players:
+                allied = target == player_id or self._priority(state, player_id, target) < 0
+                beneficial = definition in ('trick.ex_nihilo', 'trick.god_salvation', 'trick.amazing_grace')
+                want_cancel = allied != beneficial
+                cancelled = bool(response_context.get('cancelled'))
+                value = (10 if state.players[target].hp <= 2 and not beneficial else
+                         8 if definition == 'trick.ex_nihilo' else
+                         7 if definition in ('trick.dismantlement', 'trick.snatch') else 6)
+                own_counters = sum(state.cards[cid].definition_id == 'trick.nullification'
+                                   for cid in state.cards_in(ZoneRef(ZoneType.HAND, player_id)))
+                threshold = 7 if own_counters <= 1 else 5
+                if want_cancel == cancelled or value < threshold:
+                    return Decision(request.request_id, player_id, PASS_RESPONSE)
         from .yj2011_tier3 import decide as decide_tier3
         tier3 = decide_tier3(self, state, request)
         if tier3 is not None:

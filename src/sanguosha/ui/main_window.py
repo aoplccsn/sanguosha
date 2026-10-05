@@ -724,7 +724,7 @@ class MainWindow(QMainWindow):
             if request.allow_pass:
                 actions.append(("不出", PASS_RESPONSE, True))
             if self.session.nullification_window_id(request) is not None:
-                actions.append(("本次均不响应", "ui.decline_nullification", True))
+                actions.append(("本次不无懈", "ui.decline_nullification", True))
             actions.append(("确认响应", "ui.confirm_response", self.interaction.card_id is not None))
             if 'virtual:spear' in request.eligible_card_ids:
                 actions.append(('丈八蛇矛（两张手牌）','virtual:spear',True))

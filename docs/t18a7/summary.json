@@ -1,0 +1,94 @@
+{
+  "military-five": {
+    "elapsed_ms": 263730,
+    "max_turn": 11,
+    "events": {
+      "TurnStartedEvent": 11,
+      "DiscardEvent": 5,
+      "TurnEndedEvent": 10,
+      "AIThinkingEvent": 52,
+      "CardUsedEvent": 20,
+      "CardResolvedEvent": 20,
+      "DamageDealtEvent": 4,
+      "CardRespondedEvent": 2,
+      "JudgmentEvent": 2,
+      "VirtualResponseEvent": 1
+    },
+    "thinking_samples": [
+      {
+        "kind": "AIThinkingEvent",
+        "event_id": "thinking:f93e39dfcc4275af13224b8a",
+        "source_id": "p2",
+        "complexity": "ordinary",
+        "thinking_ms": 4580
+      },
+      {
+        "kind": "AIThinkingEvent",
+        "event_id": "thinking:29ea57a4d15c1716efcd1198",
+        "source_id": "p2",
+        "complexity": "ordinary",
+        "thinking_ms": 4400
+      },
+      {
+        "kind": "AIThinkingEvent",
+        "event_id": "thinking:526ffad6d9c37571cfd76265",
+        "source_id": "p2",
+        "complexity": "ordinary",
+        "thinking_ms": 3860
+      }
+    ],
+    "thinking_ms_range": [
+      2800,
+      5350
+    ],
+    "ui_observations": 113,
+    "js_errors": []
+  },
+  "military-eight": {
+    "elapsed_ms": 514810,
+    "max_turn": 11,
+    "events": {
+      "TurnStartedEvent": 11,
+      "DiscardEvent": 10,
+      "TurnEndedEvent": 10,
+      "AIThinkingEvent": 99,
+      "CardUsedEvent": 33,
+      "CardRespondedEvent": 8,
+      "CardResolvedEvent": 32,
+      "DamageDealtEvent": 10,
+      "SkillEvent": 6,
+      "HpRecoveredEvent": 4,
+      "JudgmentEvent": 4,
+      "DyingRequiredEvent": 2
+    },
+    "thinking_samples": [
+      {
+        "kind": "AIThinkingEvent",
+        "event_id": "thinking:f93e39dfcc4275af13224b8a",
+        "source_id": "p2",
+        "complexity": "ordinary",
+        "thinking_ms": 4580
+      },
+      {
+        "kind": "AIThinkingEvent",
+        "event_id": "thinking:fdf3d1595e4a6af01fabd335",
+        "source_id": "p2",
+        "complexity": "ordinary",
+        "thinking_ms": 3860
+      },
+      {
+        "kind": "AIThinkingEvent",
+        "event_id": "thinking:29ea57a4d15c1716efcd1198",
+        "source_id": "p2",
+        "complexity": "ordinary",
+        "thinking_ms": 4220
+      }
+    ],
+    "thinking_ms_range": [
+      2800,
+      6050
+    ],
+    "ui_observations": 224,
+    "js_errors": []
+  }
+}

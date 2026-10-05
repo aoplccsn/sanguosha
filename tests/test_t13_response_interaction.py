@@ -30,7 +30,9 @@ def test_room_skips_only_pass_only_human_responses(eligible, auto_pass):
         engine.pending_request = None
 
     engine.submit_decision = submit
-    room.session = SimpleNamespace(state=SimpleNamespace(status=GameStatus.ACTIVE), engine=engine)
+    room.session = SimpleNamespace(state=SimpleNamespace(status=GameStatus.ACTIVE, metadata={}), engine=engine,
+                                   clear_finished_nullification_windows=lambda: None,
+                                   nullification_window_id=lambda request: None)
     room.network_decisions.dispatch = dispatched.append
     room.suspend_on_budget = True
     room.pump(max_steps=1)

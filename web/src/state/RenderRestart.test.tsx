@@ -66,3 +66,13 @@ it('ignores a StrictMode cleanup socket after its replacement connects', async (
   await waitFor(() => expect(screen.getByText('服务器已连接')).toBeInTheDocument())
   expect(screen.queryByText('无法连接游戏服务器')).not.toBeInTheDocument()
 })
+
+it('continues a saved room after the initial websocket is already connected',async()=>{
+  localStorage.setItem('sanguosha.web.session.v1',JSON.stringify({roomCode:'ABC234',playerName:'房主',seatId:'p1',reconnectToken:'existing-token'}))
+  render(<GameProvider><App /></GameProvider>)
+  const socket=FakeSocket.instances[0]
+  act(()=>{socket.readyState=FakeSocket.OPEN;socket.emit('open');socket.emit('message',{data:JSON.stringify({type:'WELCOME',version:2})})})
+  screen.getByRole('button',{name:'继续对局'}).click()
+  await waitFor(()=>expect(socket.sent.map(x=>JSON.parse(x)).filter(x=>x.type==='RECONNECT')).toHaveLength(1))
+  expect(JSON.parse(socket.sent.at(-1)!)).toMatchObject({type:'RECONNECT',token:'existing-token',room_code:'ABC234'})
+})

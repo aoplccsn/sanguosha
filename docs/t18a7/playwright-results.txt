@@ -1,0 +1,182 @@
+
+
+Running 10 tests using 2 workers
+
+
+
+
+
+[1/10] [chromium] › e2e\t18a7-flow.spec.ts:23:1 › B human Slash -> AI seat thinking then visible Dodge
+[2/10] [chromium] › e2e\t18a7-flow.spec.ts:10:1 › A AI Cao Cao Slash -> human Liu Bei Dodge, persistent turn and semantic responder
+[3/10] [chromium] › e2e\t18a7-flow.spec.ts:34:75 › C authoritative AOE fanout and ordered response
+  1) [chromium] › e2e\t18a7-flow.spec.ts:10:1 › A AI Cao Cao Slash -> human Liu Bei Dodge, persistent turn and semantic responder
+
+    Error: locator.click: Error: strict mode violation: getByRole('button', { name: /^闪 / }) resolved to 2 elements:
+        1) <button title="闪 · ♦9" aria-label="闪 ♦9" aria-disabled="true" class="hand-card disabled">…</button> aka getByRole('button', { name: '闪 ♦' })
+        2) <button title="闪 · ♥8" class="hand-card" aria-label="闪 ♥8" aria-disabled="false">…</button> aka getByRole('button', { name: '闪 ♥' })
+
+    Call log:
+      - waiting for getByRole('button', { name: /^闪 / })
+
+
+      16 |   expect((await page.locator('.base-card').boundingBox())!.width).toBeGreaterThanOrEqual(220)
+      17 |   await page.screenshot({path:'../docs/t18a7/A-slash-response.png'})
+    > 18 |   await page.getByRole('button',{name:/^闪 /}).click();await page.getByRole('button',{name:'确定',exact:true}).click()
+         |                                               ^
+      19 |   await expect(page.locator('.response-card img')).toHaveAttribute('alt','闪')
+      20 |   await page.screenshot({path:'../docs/t18a7/A-dodge.png'})
+      21 |   await expect(page.locator('[data-player-id="p1"].responding')).toHaveCount(0)
+        at C:\Sanguosha\web\e2e\t18a7-flow.spec.ts:18:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\t18a7-flow-A-AI-Cao-Cao-Sl-137a0-turn-and-semantic-responder-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\t18a7-flow-A-AI-Cao-Cao-Sl-137a0-turn-and-semantic-responder-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\t18a7-flow-A-AI-Cao-Cao-Sl-137a0-turn-and-semantic-responder-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\t18a7-flow-A-AI-Cao-Cao-Sl-137a0-turn-and-semantic-responder-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+
+[4/10] [chromium] › e2e\t18a7-flow.spec.ts:34:75 › D authoritative AOE fanout and ordered response
+  2) [chromium] › e2e\t18a7-flow.spec.ts:34:75 › C authoritative AOE fanout and ordered response ───
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('[data-player-id="p1"] .responder-state')
+    Expected substring: "请出【杀】"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" locator('[data-player-id="p1"] .responder-state') with timeout 5000ms
+      - waiting for locator('[data-player-id="p1"] .responder-state')
+
+
+      36 |   await expect(page.locator('.base-card img')).toHaveAttribute('alt',card,{timeout:25000})
+      37 |   await expect(page.locator('.aoe-badge')).toHaveCount(4)
+    > 38 |   await expect(page.locator('[data-player-id="p1"] .responder-state')).toContainText('请出【'+response+'】')
+         |                                                                        ^
+      39 |   await page.screenshot({path:'../docs/t18a7/'+caseName+'-fanout.png'})
+      40 |   await page.getByRole('button',{name:new RegExp('^'+response+' ')}).first().click();await page.getByRole('button',{name:'确定',exact:true}).click()
+      41 |   await expect(page.locator('[data-player-id="p3"].responding')).toBeVisible({timeout:15000})
+        at C:\Sanguosha\web\e2e\t18a7-flow.spec.ts:38:72
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\t18a7-flow-C-authoritative-AOE-fanout-and-ordered-response-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\t18a7-flow-C-authoritative-AOE-fanout-and-ordered-response-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\t18a7-flow-C-authoritative-AOE-fanout-and-ordered-response-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\t18a7-flow-C-authoritative-AOE-fanout-and-ordered-response-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+
+[5/10] [chromium] › e2e\t18a7-flow.spec.ts:44:1 › E both counter commands and root card stay visible
+[6/10] [chromium] › e2e\t18a7-flow.spec.ts:54:1 › F counter and counter-counter retain original trick and final parity
+  3) [chromium] › e2e\t18a7-flow.spec.ts:34:75 › D authoritative AOE fanout and ordered response ───
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('[data-player-id="p1"] .responder-state')
+    Expected substring: "请出【闪】"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" locator('[data-player-id="p1"] .responder-state') with timeout 5000ms
+      - waiting for locator('[data-player-id="p1"] .responder-state')
+
+
+      36 |   await expect(page.locator('.base-card img')).toHaveAttribute('alt',card,{timeout:25000})
+      37 |   await expect(page.locator('.aoe-badge')).toHaveCount(4)
+    > 38 |   await expect(page.locator('[data-player-id="p1"] .responder-state')).toContainText('请出【'+response+'】')
+         |                                                                        ^
+      39 |   await page.screenshot({path:'../docs/t18a7/'+caseName+'-fanout.png'})
+      40 |   await page.getByRole('button',{name:new RegExp('^'+response+' ')}).first().click();await page.getByRole('button',{name:'确定',exact:true}).click()
+      41 |   await expect(page.locator('[data-player-id="p3"].responding')).toBeVisible({timeout:15000})
+        at C:\Sanguosha\web\e2e\t18a7-flow.spec.ts:38:72
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\t18a7-flow-D-authoritative-AOE-fanout-and-ordered-response-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\t18a7-flow-D-authoritative-AOE-fanout-and-ordered-response-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\t18a7-flow-D-authoritative-AOE-fanout-and-ordered-response-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\t18a7-flow-D-authoritative-AOE-fanout-and-ordered-response-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+
+[7/10] [chromium] › e2e\t18a7-flow.spec.ts:64:67 › mobile 390 semantic response and controls visible
+[8/10] [chromium] › e2e\t18a7-flow.spec.ts:64:67 › mobile 430 semantic response and controls visible
+[9/10] [chromium] › e2e\t18a7-real-rounds.spec.ts:3:56 › military-five real several turns presentation audit
+  4) [chromium] › e2e\t18a7-flow.spec.ts:54:1 › F counter and counter-counter retain original trick and final parity
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('.nullification-status')
+    Expected substring: "无懈×2"
+    Timeout: 20000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" locator('.nullification-status') with timeout 20000ms
+      - waiting for locator('.nullification-status')
+        11 × locator resolved to <small class="nullification-status">无懈×1 · 当前锦囊失效</small>
+           - unexpected value "无懈×1 · 当前锦囊失效"
+
+
+      58 |   await expect(page.locator('.response-card img')).toHaveAttribute('alt','无懈可击')
+      59 |   await expect(page.locator('.nullification-status')).toContainText('无懈×1')
+    > 60 |   await expect(page.locator('.nullification-status')).toContainText('无懈×2',{timeout:20000})
+         |                                                       ^
+      61 |   await expect(page.locator('.nullification-status')).toContainText('锦囊有效')
+      62 |   await page.screenshot({path:'../docs/t18a7/F-counter-chain.png'})
+      63 | })
+        at C:\Sanguosha\web\e2e\t18a7-flow.spec.ts:60:55
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\t18a7-flow-F-counter-and-c-4f48c-inal-trick-and-final-parity-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\t18a7-flow-F-counter-and-c-4f48c-inal-trick-and-final-parity-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\t18a7-flow-F-counter-and-c-4f48c-inal-trick-and-final-parity-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\t18a7-flow-F-counter-and-c-4f48c-inal-trick-and-final-parity-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+
+[10/10] [chromium] › e2e\t18a7-real-rounds.spec.ts:3:56 › military-eight real several turns presentation audit
+  4 failed
+    [chromium] › e2e\t18a7-flow.spec.ts:10:1 › A AI Cao Cao Slash -> human Liu Bei Dodge, persistent turn and semantic responder
+    [chromium] › e2e\t18a7-flow.spec.ts:34:75 › C authoritative AOE fanout and ordered response ────
+    [chromium] › e2e\t18a7-flow.spec.ts:34:75 › D authoritative AOE fanout and ordered response ────
+    [chromium] › e2e\t18a7-flow.spec.ts:54:1 › F counter and counter-counter retain original trick and final parity
+  6 passed (9.8m)

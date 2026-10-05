@@ -1,0 +1,100 @@
+
+> sanguosha-web@0.3.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/Sanguosha/web
+
+ ✓ src/presentation/pacing.test.tsx (8 tests) 33ms
+ ✓ src/vfx/CombatVFXRuntime.test.ts (4 tests) 23ms
+ ✓ src/connection/GameConnection.test.ts (8 tests) 14ms
+ ✓ src/components/Timer.test.tsx (1 test) 42ms
+ ✓ src/connection/networkProbe.test.ts (2 tests) 10ms
+ ✓ src/components/LobbyPage.test.tsx (1 test) 271ms
+ ✓ src/components/PregamePage.test.tsx (1 test) 316ms
+   ✓ PregamePage > shows identity and requires a deliberate general selection  315ms
+ ✓ src/components/SkillTooltip.test.tsx (2 tests) 639ms
+   ✓ shows Chinese details for hover, focus and touch/info without consuming choice clicks  636ms
+ ✓ src/components/DynamicPortrait.test.tsx (18 tests) 326ms
+ ✓ src/components/HomePage.test.tsx (4 tests) 613ms
+   ✓ HomePage > creates a single-player cloud room  400ms
+stdout | src/components/GamePage.test.tsx > GamePage > selects a Slash target and submits card plus target with one final confirm
+[game] click card slash-1 request play-1 option
+
+stdout | src/components/GamePage.test.tsx > GamePage > confirms equipment without requesting a character target
+[game] click card slash-1 request play-equip option
+
+ ✓ src/vfx/GodAttackFX.test.ts (2 tests) 3ms
+stdout | src/components/GamePage.test.tsx > GamePage > requires confirm after selecting a response card
+[game] click card slash-1 request r1 option
+
+stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
+[game] request replaced r1
+
+stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
+[game] click card dodge-1 request r1 option
+
+ ✓ src/state/RenderRestart.test.tsx (3 tests) 437ms
+   ✓ returns to the home banner when a saved room disappeared after restart  343ms
+stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
+[game] click card dodge-1 request r1 option
+
+stdout | src/components/GamePage.test.tsx > GamePage > lets a physical response replace a previously selected Guhuo option
+[game] click card slash-1 request guhuo-switch option virtual:guhuo
+
+stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] request replaced r1
+
+stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] click card dodge-1 request r1 option
+
+stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] submit begin r1
+
+stdout | src/components/GamePage.test.tsx > T15 dynamic target interaction > selects immediately on the first portrait click with multiple dynamic panels
+[game] click card slash-1 request t15-target option
+
+stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] submit rejected rejected
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] request replaced r1
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] click card dodge-1 request r1 option
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] request replaced r2
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] click card dodge-1 request r2 option
+
+ ✓ src/components/GamePage.test.tsx (23 tests) 2265ms
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] submit begin r2
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] request replaced r1
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] click card dodge-1 request r1 option
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] request replaced r2
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] click card dodge-1 request r2 option
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] submit begin r2
+
+ ✓ src/state/InteractionFlow.test.tsx (4 tests) 2101ms
+   ✓ first click selects, second click cancels, and illegal cards explain why  695ms
+   ✓ first confirm shows processing, blocks duplicates, and rejection restores action  454ms
+   ✓ replaced request clears selection and the next request accepts its first click  429ms
+   ✓ projection revokes stale request and old rejection cannot overwrite the replacement  521ms
+
+ Test Files  14 passed (14)
+      Tests  81 passed (81)
+   Start at  21:04:38
+   Duration  5.58s (transform 2.51s, setup 3.55s, collect 6.21s, tests 7.09s, environment 16.76s, prepare 2.28s)

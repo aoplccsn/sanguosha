@@ -22,10 +22,10 @@ def test_current_roster_ai_full_game(mode, seed, monkeypatch):
     seen = set()
     original = AIDecisionProvider.decide
 
-    def decide_once(provider, state, request):
+    def decide_once(provider, state, request, **kwargs):
         assert request.request_id not in seen, 'AI decision repeated'
         seen.add(request.request_id)
-        decision = original(provider, state, request)
+        decision = original(provider, state, request, **kwargs)
         request.validate(decision.value)
         return decision
 
@@ -43,8 +43,9 @@ def test_current_roster_ai_full_game(mode, seed, monkeypatch):
     for _ in range(20_000):
         if room.phase is RoomPhase.FINISHED:
             break
-        assert room.ai_deadline is not None, 'AI progression stalled'
-        clock[0] = room.ai_deadline + .01
+        deadline = room.ai_deadline or room.presentation_deadline
+        assert deadline is not None, 'AI progression stalled'
+        clock[0] = deadline + .01
         room.poll()
     assert seen
     assert session.state.status.value == 'finished'
@@ -68,9 +69,9 @@ def test_ai_thinking_wait_survives_snapshot_without_repeating_decision(monkeypat
     room.submit(p1, Decision(request.request_id, p1, request.choices[0]))
     calls = []
     original = AIDecisionProvider.decide
-    def tracked(ai, state, request):
+    def tracked(ai, state, request, **kwargs):
         calls.append(request.request_id)
-        return original(ai, state, request)
+        return original(ai, state, request, **kwargs)
     monkeypatch.setattr(AIDecisionProvider, 'decide', tracked)
     for _ in range(30):
         if room.ai_deadline is not None:

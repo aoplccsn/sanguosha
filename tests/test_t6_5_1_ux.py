@@ -42,7 +42,7 @@ def test_empty_nullification_is_passed_without_human_prompt():
     window.session = session
     window._render()
     assert not (session.engine.pending_request and session.engine.pending_request.player_id == 'p1')
-    assert all(button.text() != '本次均不响应' for button in window.decision.buttons)
+    assert all(button.text() != '本次不无懈' for button in window.decision.buttons)
     window.close()
 
 
@@ -55,7 +55,7 @@ def test_nullification_decline_is_scoped_to_one_window():
     window = MainWindow()
     window.session = session
     window._render()
-    assert any(button.text() == '本次均不响应' for button in window.decision.buttons)
+    assert any(button.text() == '本次不无懈' for button in window.decision.buttons)
     window._submit_value('ui.decline_nullification')
     assert 'first-window' in session.declined_nullification_windows
     while session.engine.pending_request:

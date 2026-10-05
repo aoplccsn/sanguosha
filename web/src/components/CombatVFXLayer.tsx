@@ -44,7 +44,7 @@ export function CombatVFXLayer({ players, targets, mode, events, quality, reduce
   useEffect(() => { runtime.current?.setBeam(targetKey ? targetKey.split('|') : [], mode) }, [targetKey, mode])
   useEffect(() => {
     for (const [index, event] of events.entries()) {
-      const identity = String(event.event_id ?? index + ':' + event.kind)
+      const identity = String(event.event_id ?? index + ':' + event.kind) + ':' + String(event.presentation_phase ?? '')
       if (seen.current.has(identity)) continue
       seen.current.add(identity)
       const kind = String(event.kind)
@@ -53,7 +53,8 @@ export function CombatVFXLayer({ players, targets, mode, events, quality, reduce
       const sourceCharacter = players.find((player) => player.player_id === source)?.character_id
       const godColor = godAttackColor(sourceCharacter ?? '', definition)
       const color = godColor ?? (definition.includes('fire') ? '#fa7837' : definition.includes('thunder') ? '#9ca9ff' : '#efbd67')
-      if (kind === 'CardUsedEvent' && (definition.includes('slash') || (sourceCharacter === 'forest_god_lvbu' && (definition === 'trick.savage_assault' || definition === 'trick.archery_attack')))) {
+      if (event.presentation_phase === 'reveal' && Array.isArray(event.target_ids) && event.target_ids.length) continue
+      if ((kind === 'CardUsedEvent' || kind === 'TrickTargetsDeclaredEvent') && (definition.includes('slash') || definition === 'trick.savage_assault' || definition === 'trick.archery_attack')) {
         const targetIds = Array.isArray(event.target_ids) ? event.target_ids.map(String) : []
         const luBu = sourceCharacter === 'forest_god_lvbu'
         const empowered = luBu && wuweiReady.current.has(source)
@@ -63,7 +64,7 @@ export function CombatVFXLayer({ players, targets, mode, events, quality, reduce
           title: empowered ? '无前·戟斩' : definition === 'trick.savage_assault' ? '南蛮入侵' : definition === 'trick.archery_attack' ? '万箭齐发' : undefined,
           targets: locateTargets(targetIds),
         }])
-        const launch = () => { for (const target of targetIds) runtime.current?.trigger(luBu || godColor ? 'god-slash' : 'slash', source, target, luBu ? '#f0c78c' : color, sourceCharacter) }
+        const launch = () => { for (const target of targetIds) runtime.current?.trigger(definition === 'trick.archery_attack' ? 'arrows' : definition === 'trick.savage_assault' ? 'savage' : luBu || godColor ? 'god-slash' : 'slash', source, target, luBu ? '#f0c78c' : color, sourceCharacter) }
         if (luBu) {
           const timer = window.setTimeout(() => { launchTimers.current.delete(timer); launch() }, 350)
           launchTimers.current.add(timer)
@@ -78,7 +79,7 @@ export function CombatVFXLayer({ players, targets, mode, events, quality, reduce
           title: '神愤', targets: locateTargets(targetIds),
         }])
       } else if ((kind === 'CardRespondedEvent' || kind === 'VirtualResponseEvent') && definition === 'basic.dodge') {
-        runtime.current?.trigger('dodge', source, source, '#8fe9ef')
+        runtime.current?.trigger('dodge', String((event.base_action as {source_id?:string} | undefined)?.source_id ?? source), source, '#8fe9ef')
       } else if (kind === 'DamageDealtEvent') {
         runtime.current?.trigger('impact', source, String(event.target_id ?? ''), godColor ?? '#ef6a46')
       }

@@ -57,8 +57,12 @@ class GameSession:
         if request is None or request.required_definition_id != "trick.nullification":
             return None
         from sanguosha.engine.military_tricks import NullificationWindow
-        return next((frame.action.action_id for frame in reversed(self.engine.stack.snapshot())
-                     if isinstance(frame.action, NullificationWindow)), None)
+        from sanguosha.engine.military_tricks import TrickAction
+        frames = self.engine.stack.snapshot()
+        return next((frame.action.action_id for frame in reversed(frames)
+                     if isinstance(frame.action, TrickAction)), None) or next(
+                     (frame.action.action_id for frame in reversed(frames)
+                      if isinstance(frame.action, NullificationWindow)), None)
 
     def pass_unavailable_nullification(self) -> bool:
         """Resolve only the current human counter request using its rule candidates."""
@@ -71,17 +75,27 @@ class GameSession:
         self.submit_human(Decision(request.request_id, request.player_id, PASS_RESPONSE))
         return True
 
-    def decline_nullification_window(self) -> None:
+    def decline_nullification_window(self, player_id=None) -> None:
         window = self.nullification_window_id()
         if window is None:
             raise ValueError("no nullification window is pending")
-        self.declined_nullification_windows.add(window)
+        if player_id is None or player_id == self.human_id:
+            self.declined_nullification_windows.add(window)
+        skipped = self.state.metadata.setdefault('nullification_passes', {})
+        skipped.setdefault(window, [])
+        pid = str(player_id or self.human_id)
+        if pid not in skipped[window]:
+            skipped[window].append(pid)
 
     def clear_finished_nullification_windows(self) -> None:
-        from sanguosha.engine.military_tricks import NullificationWindow
+        from sanguosha.engine.military_tricks import NullificationWindow, TrickAction
         live = {frame.action.action_id for frame in self.engine.stack.snapshot()
-                if isinstance(frame.action, NullificationWindow)}
+                if isinstance(frame.action, (NullificationWindow, TrickAction))}
         self.declined_nullification_windows.intersection_update(live)
+        skipped = self.state.metadata.get('nullification_passes', {})
+        for root in tuple(skipped):
+            if root not in live:
+                del skipped[root]
 
     @classmethod
     def new_game(cls, seed: int = 6, *, military: bool = False, five_generals: bool = False,

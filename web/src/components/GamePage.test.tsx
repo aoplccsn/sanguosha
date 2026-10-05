@@ -9,6 +9,7 @@ const submitDecision = vi.fn()
 const returnHome = vi.fn()
 let request: any
 let waiting: any = undefined
+let combat: any = undefined
 let generals: Record<string, any> = {}
 let publicEvents: any[] = []
 const card = { card_id: 'slash-1', name: '杀', suit: '♠', rank: '7', definition_id: 'basic.slash', category: 'basic', equipment_slot: '', details: '' }
@@ -24,7 +25,7 @@ vi.mock('../state/GameContext', () => ({
       seatId: 'p1',
       connection: 'connected',
       decisionProcessing: null,
-      projection: { waiting, players, hand: [card], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
+      projection: { waiting, combat, players, hand: [card], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
       pendingRequest: request,
       publicEvents,
       generals,
@@ -63,7 +64,7 @@ describe('GamePage', () => {
     expect(screen.getByText('真人响应')).toBeInTheDocument()
     expect(container.querySelectorAll('.player-panel.thinking')).toHaveLength(0)
   })
-  beforeEach(() => { submitDecision.mockClear(); request = null; waiting = undefined; generals = {}; publicEvents = []; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
+  beforeEach(() => { submitDecision.mockClear(); request = null; waiting = undefined; combat=undefined; generals = {}; publicEvents = []; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
 
   it.each([
     [{ event_id: 'slash', kind: 'CardUsedEvent', source_id: 'p1', target_ids: ['p2'], card_name: '杀' }, '曹操 对 刘备 使用【杀】', 'p1', 'p2'],
@@ -231,4 +232,41 @@ describe('T15 dynamic target interaction', () => {
       expect(screen.getByRole('button', { name: '确定' })).toBeEnabled()
     } finally { players.forEach((p, i) => p.character_id = originals[i]); vi.unstubAllGlobals() }
   })
+})
+
+describe('T18A.7 response semantics',()=>{
+  it('keeps turn phase and binds response description, thinking and countdown to one seat',()=>{
+    request=null; publicEvents=[]; waiting={key:'slash',player_id:'p2',responding:true,thinking:true,remaining_ms:8700,total_ms:60000,required_definition_id:'basic.dodge',response_to:'basic.slash'}
+    const {container,rerender}=render(<GamePage />)
+    expect(container.querySelector('[data-player-id="p1"] .turn-badge')).toHaveTextContent('当前回合 · 出牌')
+    const responder=container.querySelector('[data-player-id="p2"] .responder-state')!
+    expect(responder).toHaveTextContent('响应【杀】请出【闪】')
+    expect(responder).toHaveTextContent('思考中')
+    expect(responder.querySelector('.timer')).not.toBeNull()
+    waiting=null;rerender(<GamePage />)
+    expect(container.querySelector('.responder-state')).toBeNull()
+  })
+  it('submits distinct current-request and root-trick commands',async()=>{
+    waiting=undefined;publicEvents=[]
+    request={request_id:'counter',player_id:'p1',request_type:'respond_with_card',prompt:'无懈可击',choices:[],eligible_card_ids:[],allowed_player_ids:[],min_count:0,max_count:1,allow_pass:true,remaining_ms:60000,required_definition_id:'trick.nullification'}
+    render(<GamePage />)
+    expect(screen.getByRole('button',{name:'使用无懈'})).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button',{name:'不响应'}))
+    expect(submitDecision).toHaveBeenLastCalledWith('counter',{pass:true})
+    await userEvent.click(screen.getByRole('button',{name:'本次不无懈'}))
+    expect(submitDecision).toHaveBeenLastCalledWith('counter',{pass:true,scope:'root_trick'})
+  })
+})
+
+it('renders the authoritative AOE targets, root trick and top counter without a second stack UI',()=>{
+  request=null;publicEvents=[];waiting={key:'counter',player_id:'p3',responding:true,thinking:false,remaining_ms:8000,required_definition_id:'trick.nullification',response_to:'trick.savage_assault'}
+  combat={root_id:'root',source_id:'p1',definition_id:'trick.savage_assault',target_ids:['p2','p3'],resolved_target_ids:['p2'],current_target_id:'p3',nullification_count:2,cancelled:false,top_response:{source_id:'p2',definition_id:'trick.nullification'}}
+  const {container}=render(<GamePage />)
+  expect(container.querySelector('[data-player-id="p2"]')).toHaveClass('aoe-resolved')
+  expect(container.querySelector('[data-player-id="p3"]')).toHaveClass('aoe-current','responding')
+  expect(container.querySelector('[data-player-id="p4"]')!.className).not.toContain('aoe-')
+  expect(container.querySelector('.base-card img')).toHaveAttribute('alt','南蛮入侵')
+  expect(container.querySelector('.response-card img')).toHaveAttribute('alt','无懈可击')
+  expect(container.querySelector('.nullification-status')).toHaveTextContent('无懈×2 · 当前锦囊有效')
+  combat=undefined;waiting=undefined
 })
