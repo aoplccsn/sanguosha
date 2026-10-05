@@ -38,6 +38,8 @@ class MilitaryPlayOptions(LegalPlayActionProvider):
         return super().build_action(state,pid,option,aid)
 
 class UseSpearHandler:
+    label = "丈八蛇矛"
+    skill_id = ""
     def __init__(self,provider,moves):
         self.provider=provider
         self.moves=moves
@@ -52,14 +54,14 @@ class UseSpearHandler:
             from .card_limits import legal_pairs
             f.step_index=1
             return StepResult.ask(PendingRequest(a.action_id+':cost',a.player_id,RequestType.CHOOSE_CARDS,
-                '丈八蛇矛：选择两张手牌',a.action_id,f.frame_id,eligible_card_ids=state.cards_in(hand),min_count=2,max_count=2,
+                self.label+'：选择两张手牌',a.action_id,f.frame_id,eligible_card_ids=state.cards_in(hand),min_count=2,max_count=2,
                 legal_card_sets=legal_pairs(state,a.player_id,state.cards_in(hand))))
         if f.step_index==1:
             f.local['materials']='|'.join(f.decision)
             f.decision=None
             f.step_index=2
             return StepResult.ask(PendingRequest(a.action_id+':target',a.player_id,RequestType.CHOOSE_PLAYER,
-                '丈八蛇矛：选择杀目标',a.action_id,f.frame_id,
+                self.label+'：选择杀目标',a.action_id,f.frame_id,
                 allowed_player_ids=self.provider.validator.rules.get('basic.slash').target_candidates(state,a.player_id)))
         materials=tuple(str(f.local['materials']).split('|'))
         if f.step_index==2:
@@ -67,7 +69,8 @@ class UseSpearHandler:
             target=f.decision
             f.decision=None
             self.provider.validator.rules.get('basic.slash').validate_targets(state,a.player_id,(target,))
-            virtual=VirtualCard.spear(state,materials,effective_suit)
+            from dataclasses import replace
+            virtual=replace(VirtualCard.spear(state,materials,effective_suit),skill_id=self.skill_id)
             self.moves.move(state,CardMove(a.action_id+':processing',materials,hand,ZoneRef(ZoneType.PROCESSING),CardMoveReason.USE,a.player_id))
             from .yj2011_tier3 import record_slash_use
             counted=record_slash_use(state, a.player_id, (target,))

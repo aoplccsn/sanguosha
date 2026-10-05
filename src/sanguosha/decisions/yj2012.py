@@ -9,6 +9,24 @@ def decide(provider,state,r):
         own=hand(state,pid)
         if len(own)<=2 and not any(state.cards[c].definition_id=='basic.peach' for c in own):
             return Decision(r.request_id,pid,'skill:qice')
+    if kind is RequestType.CHOOSE_OPTION and 'skill:lihuo' in r.choices and p.hp>1:
+        if any(q!=pid and state.players[q].is_alive and provider._priority(state,pid,q)>0 for q in state.seat_order):
+            return Decision(r.request_id,pid,'skill:lihuo')
+    if '【烈火】' in prompt:
+        if kind is RequestType.CHOOSE_CARD:value=r.eligible_card_ids[0]
+        elif kind is RequestType.CHOOSE_PLAYERS:
+            targets=sorted(r.allowed_player_ids,key=lambda q:provider._priority(state,pid,q),reverse=True)
+            enemies=[q for q in targets if provider._priority(state,pid,q)>0]
+            value=tuple((enemies or targets)[:r.max_count])
+        else:return None
+        r.validate(value);return Decision(r.request_id,pid,value)
+    if '【醇醪】' in prompt:
+        value=True if kind is RequestType.YES_NO else tuple(r.eligible_card_ids[:min(2,r.max_count)])
+        r.validate(value);return Decision(r.request_id,pid,value)
+    if kind is RequestType.CHOOSE_OPTION and 'skill:fuhun' in r.choices:
+        own=hand(state,pid)
+        if len(own)>=3 and any(provider._priority(state,pid,q)>0 for q in state.seat_order if q!=pid and state.players[q].is_alive):
+            return Decision(r.request_id,pid,'skill:fuhun')
     if '【潜袭】' in prompt:
         value = True if kind is RequestType.YES_NO else max(r.allowed_player_ids,key=lambda q:provider._priority(state,pid,q))
         r.validate(value)

@@ -78,7 +78,7 @@
     {
       "general_id": "yj2012_guan_xing_zhang_bao",
       "skill_id": "fuhun",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
@@ -113,14 +113,14 @@
     {
       "general_id": "yj2012_cheng_pu",
       "skill_id": "lihuo",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
     {
       "general_id": "yj2012_cheng_pu",
       "skill_id": "chunlao",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
@@ -253,7 +253,7 @@
     {
       "general_id": "yj2013_zhu_ran",
       "skill_id": "danshou",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
@@ -288,7 +288,7 @@
     {
       "general_id": "yj2013_li_ru",
       "skill_id": "fencheng",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },

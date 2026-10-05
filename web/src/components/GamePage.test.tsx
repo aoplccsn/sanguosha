@@ -13,6 +13,7 @@ let combat: any = undefined
 let generals: Record<string, any> = {}
 let publicEvents: any[] = []
 const card = { card_id: 'slash-1', name: '杀', suit: '♠', rank: '7', definition_id: 'basic.slash', category: 'basic', equipment_slot: '', details: '' }
+let extraCards: typeof card[] = []
 const players = [
   { player_id: 'p1', name: '你 · 房主', character_name: '曹操', identity_label: '主公', hp: 4, max_hp: 4, hand_count: 1, alive: true, active: true, character_id: 'caocao', faction: '魏', chained: false, equipment: [], judgments: [], base_distance: null, effective_distance: null, attack_range: 1, skill_labels: ['奸雄'] },
   { player_id: 'p2', name: '来宾', character_name: '刘备', identity_label: '未知', hp: 4, max_hp: 4, hand_count: 4, alive: true, active: false, character_id: 'liubei', faction: '蜀', chained: false, equipment: [], judgments: [], base_distance: 1, effective_distance: 1, attack_range: 1, skill_labels: ['仁德'] },
@@ -25,7 +26,7 @@ vi.mock('../state/GameContext', () => ({
       seatId: 'p1',
       connection: 'connected',
       decisionProcessing: null,
-      projection: { waiting, combat, players, hand: [card], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
+      projection: { waiting, combat, players, hand: [card, ...extraCards], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
       pendingRequest: request,
       publicEvents,
       generals,
@@ -37,6 +38,26 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
+  it('permits declining Fencheng but rejects undersized nonempty card selections', async () => {
+    extraCards = [
+      { ...card, card_id: 'dodge-2', name: '闪', definition_id: 'basic.dodge' },
+      { ...card, card_id: 'wine-3', name: '酒', definition_id: 'basic.wine' },
+    ]
+    request = { request_id: 'fencheng', player_id: 'p1', request_type: 'choose_cards',
+      prompt: '【焚城】弃置至少三张牌，否则受到两点火焰伤害', choices: [],
+      allowed_player_ids: [], eligible_card_ids: ['slash-1', 'dodge-2', 'wine-3'],
+      min_count: 0, max_count: 3, minimum_nonempty_count: 3, remaining_ms: 60000 }
+    render(<GamePage />)
+    expect(screen.getByRole('button', { name: '确定' })).toBeEnabled()
+    await userEvent.click(screen.getByRole('button', { name: /杀/ }))
+    expect(screen.getByRole('button', { name: '确定' })).toBeDisabled()
+    await userEvent.click(screen.getByRole('button', { name: /闪/ }))
+    expect(screen.getByRole('button', { name: '确定' })).toBeDisabled()
+    await userEvent.click(screen.getByRole('button', { name: /酒/ }))
+    expect(screen.getByRole('button', { name: '确定' })).toBeEnabled()
+    await userEvent.click(screen.getByRole('button', { name: '确定' }))
+    expect(submitDecision).toHaveBeenCalledWith('fencheng', ['slash-1', 'dodge-2', 'wine-3'])
+  })
   it('binds a public remote response timer to one seat and restores its server remaining fraction', () => {
     request = null
     waiting = {key:'reconnected',player_id:'p2',responding:true,thinking:false,remaining_ms:12000,total_ms:60000}
@@ -64,7 +85,7 @@ describe('GamePage', () => {
     expect(screen.getByText('真人响应')).toBeInTheDocument()
     expect(container.querySelectorAll('.player-panel.thinking')).toHaveLength(0)
   })
-  beforeEach(() => { submitDecision.mockClear(); request = null; waiting = undefined; combat=undefined; generals = {}; publicEvents = []; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
+  beforeEach(() => { extraCards = []; submitDecision.mockClear(); request = null; waiting = undefined; combat=undefined; generals = {}; publicEvents = []; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
 
   it.each([
     [{ event_id: 'slash', kind: 'CardUsedEvent', source_id: 'p1', target_ids: ['p2'], card_name: '杀' }, '曹操 对 刘备 使用【杀】', 'p1', 'p2'],

@@ -8,6 +8,7 @@ class VirtualCard:
     material_ids: tuple[str,...]
     suit: Suit | None
     color: Color | None
+    skill_id: str = ""
 
     @classmethod
     def spear(cls,state,materials,suit_resolver=None):

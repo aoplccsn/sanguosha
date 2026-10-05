@@ -467,6 +467,7 @@ export function GamePage() {
   const canConfirm = !!request && state.connection === 'connected' && (playTargetSpec
     ? selectedTargets.length >= playTargetSpec.min && selectedTargets.length <= playTargetSpec.max
     : selectionCount >= minimum && selectionCount <= (request.max_count || 1))
+    && (!selectedCards.length || selectedCards.length >= (request.minimum_nonempty_count ?? 0))
     && (!request.legal_card_sets?.length || request.legal_card_sets.some((cards) =>
       cards.length === selectedCards.length && cards.every((id) => selectedCards.includes(id))))
   const selectedCard = [...projection.hand, ...projection.shared_cards].find((card) => card.card_id === selectedCards[0])

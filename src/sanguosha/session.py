@@ -332,6 +332,9 @@ class GameSession:
                 bodies.register(Phase.DISCARD, DiscardPhaseBody(moves, skills, events,
                     FireHandLimit(WindHandLimit(), skills)))
             registry.register(UseSpear,UseSpearHandler(provider,moves))
+            if skills is not None:
+                from sanguosha.engine.fuhun import UseFuhun, UseFuhunHandler
+                registry.register(UseFuhun,UseFuhunHandler(provider,moves))
             bodies.register(Phase.PLAY,PlayPhaseBody(provider))
             if skills is not None:
                 from sanguosha.engine.skills import FinishSkillBody, PreparationSkillBody

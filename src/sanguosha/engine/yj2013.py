@@ -29,11 +29,95 @@ def cards_used_this_turn(events, player_id):
 class YJ2013Handler(YJSkillHandler):
     def step(self, state, frame):
         action = frame.action
+        if action.skill=='fencheng' and frame.step_index>0:
+            from sanguosha.model.state import GameStatus
+            return StepResult.complete() if state.status is GameStatus.FINISHED else self.fencheng(state,frame)
         if action.skill=='junxing' and frame.step_index==0:
             self.validate_active(state,action)
         if not state.players[action.player_id].is_alive or not self.skills.has(state, action.player_id, action.skill):
             return StepResult.complete()
         return super().step(state,frame)
+
+    def danshou(self,state,f):
+        from copy import deepcopy
+        from sanguosha.model.enums import Phase
+        from sanguosha.model.zones import ZoneRef,ZoneType
+        from .military_equipment import discardable
+        from .card_moves import CardMoveReason
+        from .military_basics import MilitaryDamageAction
+        from .card_rules import InvalidCardUse
+        a=f.action;pid=a.player_id
+        if f.step_index==0:
+            if state.current_player_id!=pid or state.current_phase is not Phase.PLAY:raise InvalidCardUse('胆守仅出牌阶段发动')
+            n=state.play_usage.count('skill.danshou')+1;cards=discardable(state,pid)
+            if len(cards)<n:raise InvalidCardUse('胆守成本不足')
+            f.local['n']=n;f.step_index=1
+            return self.ask(f,RequestType.CHOOSE_CARDS,f'【胆守】弃置{n}张手牌或装备',eligible_card_ids=cards,min_count=n,max_count=n)
+        if f.step_index==1:
+            cards,f.decision=tuple(f.decision),None;f.local['cards']=cards
+            after=deepcopy(state)
+            for zone in after.zones.values():zone.card_ids[:]=[c for c in zone.card_ids if c not in cards]
+            targets=tuple(q for q in state.seat_order if q!=pid and state.players[q].is_alive and self.authorized.distance.can_reach_with_slash(after,pid,q))
+            if not targets:return StepResult.complete()
+            f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_PLAYER,'【胆守】选择支付成本后仍在攻击范围内的角色',allowed_player_ids=targets,min_count=1,max_count=1)
+        if f.step_index==2:
+            target,f.decision=f.decision,None;f.local['target']=target
+            self.transfer(state,a,f.local['cards'],ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD)
+            state.play_usage.record('skill.danshou');f.step_index=3
+            return StepResult.continue_()
+        target=f.local['target'];n=f.local['n']
+        if f.step_index==3:
+            if not state.players[target].is_alive:return StepResult.complete()
+            f.step_index=4
+            if n<=2:
+                cards=discardable(state,target)
+                if not cards:return StepResult.complete()
+                return self.ask(f,RequestType.CHOOSE_CARD,'【胆守】'+('弃置目标一张牌' if n==1 else '交给技能来源一张牌'),player=pid if n==1 else target,eligible_card_ids=cards,subject_player_id=target)
+            if n==3:return StepResult.push(MilitaryDamageAction(a.action_id+':damage',pid,target,1))
+            return StepResult.push(DrawCardsAction(a.action_id+':draw-self',pid,2))
+        if f.step_index==4 and n<=2:
+            card,f.decision=f.decision,None
+            self.transfer(state,a,(card,),ZoneRef(ZoneType.DISCARD_PILE) if n==1 else ZoneRef(ZoneType.HAND,pid),CardMoveReason.DISCARD if n==1 else CardMoveReason.SYSTEM,actor=target if n==2 else pid)
+            return StepResult.complete()
+        if f.step_index==4 and n>=4 and state.players[target].is_alive:
+            f.step_index=5
+            return StepResult.push(DrawCardsAction(a.action_id+':draw-target',target,2))
+        return StepResult.complete()
+
+    def fencheng(self,state,f):
+        from sanguosha.model.enums import Phase,DamageNature
+        from sanguosha.model.zones import ZoneRef,ZoneType
+        from .military_equipment import discardable
+        from .card_moves import CardMoveReason
+        from .military_basics import MilitaryDamageAction
+        from .card_rules import InvalidCardUse
+        a=f.action;pid=a.player_id
+        if f.step_index==0:
+            if state.current_player_id!=pid or state.current_phase is not Phase.PLAY or state.players[pid].marks.get('fencheng_used'):raise InvalidCardUse('焚城不可用')
+            state.players[pid].marks['fencheng_used']=1
+            start=state.seat_order.index(pid)
+            f.local['targets']=state.seat_order[start+1:]+state.seat_order[:start]
+            f.local['threshold']=1;f.step_index=1
+        targets=f.local['targets']
+        if f.step_index==2:
+            paid,f.decision=tuple(f.decision),None
+            target=targets[f.cursor]
+            if paid:
+                self.transfer(state,a,paid,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,actor=target)
+                f.local['threshold']=len(paid)+1;f.cursor+=1;f.step_index=1
+                return StepResult.continue_()
+            f.local['threshold']=1;f.cursor+=1;f.step_index=1
+            return StepResult.push(MilitaryDamageAction(a.action_id+':damage:'+target,pid,target,2,DamageNature.FIRE))
+        while f.cursor<len(targets) and not state.players[targets[f.cursor]].is_alive:f.cursor+=1
+        if f.cursor>=len(targets):return StepResult.complete()
+        target=targets[f.cursor];cards=discardable(state,target);threshold=f.local['threshold']
+        if len(cards)<threshold:
+            f.local['threshold']=1;f.cursor+=1
+            return StepResult.push(MilitaryDamageAction(a.action_id+':damage:'+target,pid,target,2,DamageNature.FIRE))
+        f.step_index=2
+        # Empty tuple means decline. Intermediate undersized payments are illegal.
+        return self.ask(f,RequestType.CHOOSE_CARDS,f'【焚城】弃置至少{threshold}张牌，否则受到两点火焰伤害',player=target,eligible_card_ids=cards,min_count=0,max_count=len(cards),minimum_nonempty_count=threshold)
 
     def longyin(self,state,f):
         from sanguosha.model.enums import Phase,Color
@@ -315,9 +399,13 @@ def damage_reaction(state,frame,skills):
 
 def play_options(state,pid,skills):
     from .yj2011_tier3 import hand
-    return ['skill:junxing'] if (skills.has(state,pid,'junxing') and state.play_usage is not None
+    from .military_equipment import discardable
+    options=[]
+    if skills.has(state,pid,'fencheng') and not state.players[pid].marks.get('fencheng_used'):options.append('skill:fencheng')
+    if skills.has(state,pid,'danshou') and len(discardable(state,pid))>=state.play_usage.count('skill.danshou')+1:options.append('skill:danshou')
+    return options + (['skill:junxing'] if (skills.has(state,pid,'junxing') and state.play_usage is not None
         and not state.play_usage.count('skill.junxing') and hand(state,pid)
-        and any(q!=pid and state.players[q].is_alive for q in state.seat_order)) else []
+        and any(q!=pid and state.players[q].is_alive for q in state.seat_order)) else [])
 
 
 def event_reactions(state,event,skills):

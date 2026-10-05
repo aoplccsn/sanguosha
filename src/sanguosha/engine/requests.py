@@ -45,6 +45,7 @@ class PendingRequest:
     subject_player_id: PlayerId | None = None
     play_card_targets: dict[str, tuple[tuple[str, ...], int, int]] = field(default_factory=dict)
 
+    minimum_nonempty_count: int = 0
     legal_card_sets: tuple[tuple[CardInstanceId, ...], ...] = ()
 
     def has_legal_response(self) -> bool:
@@ -98,6 +99,7 @@ class PendingRequest:
             valid = (
                 type(value) is tuple
                 and self.min_count <= len(value) <= self.max_count
+                and (not value or len(value) >= self.minimum_nonempty_count)
                 and all(type(card_id) is str and card_id in self.eligible_card_ids for card_id in value)
                 and len(value) == len(set(value))
                 and (not self.legal_card_sets or any(set(value) == set(cards) for cards in self.legal_card_sets))

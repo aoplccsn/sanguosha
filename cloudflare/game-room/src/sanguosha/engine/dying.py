@@ -84,6 +84,9 @@ class DyingActionHandler:
                 return StepResult.continue_()
             responder = state.seat_order[(state.seat_order.index(action.target_id) + frame.cursor - 1) % len(state.seat_order)]
             frame.step_index = 2
+            from sanguosha.model.virtual_card import VirtualCard
+            if isinstance(frame.child_result,VirtualCard) and frame.child_result.skill_id=='chunlao':
+                return StepResult.push(RecoverAction(action.action_id+':chunlao-recover:'+str(frame.cursor)+':'+str(frame.local.get('round',0)),action.target_id,action.target_id,1))
             round_number = int(frame.local.get("round", 0))
             return StepResult.push(RecoverAction(
                 f"{action.action_id}:recover:{round_number}:{frame.cursor}", responder, action.target_id,

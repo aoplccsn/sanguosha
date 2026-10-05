@@ -112,6 +112,10 @@ class FinishSkillBody:
                 from .yj2013 import YJ2013Action
                 frame.local['yj2013_juece']=True
                 return StepResult.push(YJ2013Action(frame.action.action_id+':juece',actor,'juece'))
+            if not frame.local.get('yj2012_chunlao') and self.skills.has(state,actor,'chunlao'):
+                from .yj2012 import YJ2012Action
+                frame.local['yj2012_chunlao']=True
+                return StepResult.push(YJ2012Action(frame.action.action_id+':chunlao',actor,'chunlao'))
             if not frame.local.get('yj2012_miji') and self.skills.has(state, actor, 'miji'):
                 from .yj2012 import YJ2012Action
                 frame.local['yj2012_miji'] = True
@@ -1143,6 +1147,12 @@ class SkillPlayOptions:
         ordinary = self.base.options(state,pid)
         from .yj2011_tier3 import play_options
         extra = play_options(state, pid, self.skills)
+        from .fuhun import available as fuhun_available
+        if fuhun_available(state,pid,self.skills,self.slash_rule):extra.append('skill:fuhun')
+        from .card_limits import card_allowed
+        limit=self.slash_rule.usage_limit(state,pid)
+        if self.skills.has(state,pid,'lihuo') and self.slash_rule.can_use(state,pid) and (limit is None or state.play_usage.count('basic.slash')<limit) and self.slash_rule.target_candidates(state,pid) and any(state.cards[c].definition_id=='basic.slash' and card_allowed(state,pid,(c,)) for c in state.cards_in(ZoneRef(ZoneType.HAND,pid))):
+            extra.append('skill:lihuo')
         from .yj2012 import play_options as yj2012_play_options
         extra.extend(yj2012_play_options(state, pid, self.skills))
         from .yj2013 import play_options as yj2013_play_options
@@ -1305,13 +1315,16 @@ class SkillPlayOptions:
     def build_action(self, state, pid, option, aid):
         if option not in self.options(state,pid):
             raise InvalidCardUse('skill option is no longer legal')
+        if option=='skill:fuhun':
+            from .fuhun import UseFuhun
+            return UseFuhun(aid+':fuhun',pid)
         if option in ('skill:jiushi', 'skill:xinzhan', 'skill:ganlu', 'skill:mingce', 'skill:xianzhen'):
             from .yj2011_tier3 import YJSkillAction
             return YJSkillAction(aid + ':yj2011', pid, option.split(':')[1])
-        if option=='skill:junxing':
+        if option in ('skill:junxing','skill:danshou','skill:fencheng'):
             from .yj2013 import YJ2013Action
-            return YJ2013Action(aid+':junxing',pid,'junxing')
-        if option in ('skill:paiyi', 'skill:anxu', 'skill:gongqi', 'skill:jiefan', 'skill:qice'):
+            return YJ2013Action(aid+':yj2013',pid,option.split(':')[1])
+        if option in ('skill:paiyi', 'skill:anxu', 'skill:gongqi', 'skill:jiefan', 'skill:qice', 'skill:lihuo'):
             from .yj2012 import YJ2012Action
             return YJ2012Action(aid + ':yj2012', pid, option.split(':')[1])
         if option.startswith('skill:jilue-'):

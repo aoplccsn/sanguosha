@@ -34,14 +34,80 @@ def factions(state, skills):
 class YJ2012Handler(YJSkillHandler):
     def step(self,state,f):
         if f.step_index == 0 and not self.skills.has(state, f.action.player_id, f.action.skill):
-            if f.action.skill in ('paiyi', 'anxu', 'gongqi', 'jiefan', 'qice'):
+            if f.action.skill in ('paiyi', 'anxu', 'gongqi', 'jiefan', 'qice', 'lihuo'):
                 raise InvalidCardUse('角色不具有该主动技能')
             return StepResult.complete()
+        if f.action.skill=='lihuo' and f.step_index>=3:
+            return self.lihuo(state,f)
         if f.action.skill == 'qice' and f.step_index == 3:
             return self.qice(state,f)
         if f.action.skill == 'zhuiyi':
             return self.zhuiyi(state,f)
         return super().step(state,f)
+
+    def chunlao(self,state,f):
+        from .military_basics import SLASH_IDS
+        a=f.action;pid=a.player_id
+        wine=ZoneRef(ZoneType.SPECIAL,pid,special_key='wine')
+        if f.step_index==0:
+            cards=tuple(c for c in hand(state,pid) if state.cards[c].definition_id in SLASH_IDS)
+            if state.cards_in(wine) or not cards:return StepResult.complete()
+            f.local['cards']=cards;f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【醇醪】是否将任意张手牌杀置为醇？')
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted:return StepResult.complete()
+            f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_CARDS,'【醇醪】选择置为醇的手牌杀',eligible_card_ids=f.local['cards'],min_count=1,max_count=len(f.local['cards']))
+        cards,f.decision=tuple(f.decision),None
+        self.transfer(state,a,cards,wine)
+        return StepResult.complete()
+
+    def lihuo(self,state,f):
+        from dataclasses import replace
+        from .military_basics import MilitarySlashRule,SlashSequence
+        from .suits import effective_suit
+        from sanguosha.model.virtual_card import VirtualCard
+        from .events import CardUsedEvent
+        from .yj2011_tier3 import record_slash_use
+        from .hp import LoseHpAction
+        a=f.action;pid=a.player_id
+        rule=MilitarySlashRule(self.authorized.distance,self.skills)
+        if f.step_index==0:
+            if state.current_player_id!=pid or state.current_phase is not Phase.PLAY:raise InvalidCardUse('烈火仅出牌阶段使用')
+            from .card_limits import card_allowed
+            cards=tuple(c for c in hand(state,pid) if state.cards[c].definition_id=='basic.slash' and card_allowed(state,pid,(c,)))
+            limit=rule.usage_limit(state,pid)
+            if not cards or not rule.can_use(state,pid) or not rule.target_candidates(state,pid) or (limit is not None and state.play_usage.count('basic.slash')>=limit):raise InvalidCardUse('烈火不可用')
+            f.step_index=1
+            return self.ask(f,RequestType.CHOOSE_CARD,'【烈火】选择一张普通杀当火杀',eligible_card_ids=cards)
+        if f.step_index==1:
+            f.local['card'],f.decision=f.decision,None
+            f.step_index=2
+            # A printed FireSlash has the same extra-target modifier as conversion.
+            maximum=rule.target_bounds(state,pid,None)[1]
+            return self.ask(f,RequestType.CHOOSE_PLAYERS,'【烈火】选择火杀目标',allowed_player_ids=rule.target_candidates(state,pid),min_count=1,max_count=maximum)
+        if f.step_index==2:
+            card=f.local['card'];targets,f.decision=tuple(f.decision),None
+            from .card_limits import card_allowed
+            if card not in hand(state,pid) or not card_allowed(state,pid,(card,)):raise InvalidCardUse('烈火素材不可用')
+            rule.validate_targets(state,pid,targets)
+            virtual=replace(VirtualCard.spear(state,(card,),lambda st,cid:effective_suit(st,cid,pid)),definition_id='basic.fire_slash',skill_id='lihuo')
+            self.transfer(state,a,(card,),ZoneRef(ZoneType.PROCESSING),CardMoveReason.USE)
+            counted=record_slash_use(state,pid,targets)
+            state.metadata.setdefault('lihuo_hits',{}).pop(pid+':'+card,None)
+            self.moves.recorder.record(CardUsedEvent(a.action_id+':used',pid,card,targets,'basic.fire_slash',counted,virtual))
+            f.step_index=3
+            return StepResult.push(SlashSequence(a.action_id+':slash',pid,card,targets,virtual))
+        if f.step_index==3:
+            card=f.local['card']
+            if card in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
+                self.transfer(state,a,(card,),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.USE)
+            hit=state.metadata.get('lihuo_hits',{}).pop(pid+':'+card,False)
+            if hit and state.players[pid].is_alive and self.skills.has(state,pid,'lihuo'):
+                f.step_index=4
+                return StepResult.push(LoseHpAction(a.action_id+':lihuo-cost',pid,1))
+        return StepResult.complete()
 
     def qianxi(self,state,f):
         from .judgment import JudgmentAction, JudgmentPattern

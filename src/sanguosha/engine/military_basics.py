@@ -145,6 +145,11 @@ class MilitaryDamageHandler(DamageActionHandler):
                 target.marks['yj_zhichi'] = state.turn_number
             if self.skills is not None and self.skills.has(state, action.target_id, 'renjie'):
                 target.marks['ren'] = target.marks.get('ren', 0) + amount
+            from .fuhun import grant_after_damage
+            grant_after_damage(state,action,self.skills)
+            virtual=getattr(action,"virtual_card",None)
+            if virtual is not None and virtual.skill_id=="lihuo" and virtual.material_ids:
+                state.metadata.setdefault("lihuo_hits",{})[str(action.source_id)+":"+virtual.material_ids[0]]=True
             self.recorder.record(DamageDealtEvent(action.action_id + ':dealt', action.source_id, action.target_id, amount, target.hp))
             from .god_lvbu import grant_rage_on_damage
             grant_rage_on_damage(state, action.source_id, action.target_id, amount)
@@ -467,7 +472,9 @@ class MilitarySlashRule(SlashRule):
             not state.cards_in(ZoneRef(ZoneType.HAND, pid))))
     def target_bounds(self,state,user,card):
         maximum = 3 if equipped(state,user,EquipmentSlot.WEAPON)=='equipment.weapon.halberd' and len(state.cards_in(ZoneRef(ZoneType.HAND,user)))==1 else 1
-        return 1,maximum + max(0, state.players[user].marks.get('slash_extra_targets', 0))
+        extra_fire = int(self.skills is not None and self.skills.has(state,user,'lihuo')
+                         and (card is None or state.cards[card].definition_id=='basic.fire_slash'))
+        return 1,maximum + extra_fire + max(0, state.players[user].marks.get('slash_extra_targets', 0))
     def validate_targets(self,state,user,targets):
         low,high=self.target_bounds(state,user,None)
         if not low<=len(targets)<=high or len(set(targets))!=len(targets) or any(pid not in self.target_candidates(state,user) for pid in targets):
@@ -921,6 +928,9 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 from .card_limits import legal_pairs
                 if legal_pairs(state,action.player_id,hand):eligible=(*eligible,'virtual:spear')
             if self.skills is not None:
+                if action.required_definition_id=='basic.slash' and self.skills.has(state,action.player_id,'fuhun'):
+                    from .card_limits import legal_pairs
+                    if legal_pairs(state,action.player_id,hand):eligible+=('virtual:fuhun',)
                 if action.required_definition_id == 'basic.slash':
                     eligible += tuple(f'virtual:wusheng:{cid}' for cid in self.skills.red_slash_materials(state,action.player_id))
                     if self.skills.has(state, action.player_id, 'wushen'):
@@ -934,6 +944,9 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                     eligible += tuple(f'virtual:qingguo:{cid}' for cid in hand
                                       if effective_color(state, cid, action.player_id) is Color.BLACK)
                 if action.required_definition_id == 'basic.peach':
+                    wine=state.cards_in(ZoneRef(ZoneType.SPECIAL,action.player_id,special_key='wine'))
+                    if self.skills.has(state,action.player_id,'chunlao') and wine:
+                        eligible+=tuple('virtual:chunlao:'+cid for cid in wine)
                     if (action.subject_player_id == action.player_id and state.players[action.player_id].hp <= 0
                             and state.players[action.player_id].face_up
                             and self.skills.has(state, action.player_id, 'jiushi')
@@ -972,7 +985,7 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             from .card_limits import card_allowed
             def allowed(option):
                 if not option.startswith('virtual:'):return card_allowed(state,action.player_id,(option,))
-                if option in ('virtual:spear','virtual:jijiang','virtual:hujia','virtual:jiushi'):return True
+                if option in ('virtual:spear','virtual:fuhun','virtual:jijiang','virtual:hujia','virtual:jiushi'):return True
                 if option=='virtual:guhuo':return any(card_allowed(state,action.player_id,(cid,)) for cid in hand)
                 materials=tuple(option.split(':')[2:])
                 return card_allowed(state,action.player_id,materials)
@@ -994,14 +1007,25 @@ class MilitaryResponseHandler(RespondWithCardHandler):
         choice = frame.decision
         frame.decision = None
         if frame.step_index==2:
-            if equipped(state,action.player_id,EquipmentSlot.WEAPON)!='equipment.weapon.serpent_spear':
+            if not frame.local.get('fuhun') and equipped(state,action.player_id,EquipmentSlot.WEAPON)!='equipment.weapon.serpent_spear':
                 raise InvalidCardUse('spear no longer equipped')
             materials=tuple(choice)
-            virtual=VirtualCard.spear(state,materials,effective_suit)
+            from dataclasses import replace
+            virtual=replace(VirtualCard.spear(state,materials,effective_suit),skill_id=
+                            "fuhun" if frame.local.get("fuhun") else "")
             for cid in materials:
                 self.moves.move(state,CardMove(action.action_id+':virtual:'+cid,(cid,),ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.RESPONSE,action.player_id))
                 self.recorder.record(CardRespondedEvent(action.action_id+':virtual-responded:'+cid,action.player_id,cid,
                                                         action.source_action_id,'basic.slash'))
+            return StepResult.complete(virtual)
+        if isinstance(choice,str) and choice.startswith('virtual:chunlao:'):
+            cid=choice.split(':',2)[2];wine=ZoneRef(ZoneType.SPECIAL,action.player_id,special_key='wine')
+            target=action.subject_player_id
+            if cid not in state.cards_in(wine) or not self.skills.has(state,action.player_id,'chunlao') or target not in state.players or state.players[target].hp>0:raise InvalidCardUse('醇醪救援不可用')
+            self.moves.move(state,CardMove(action.action_id+':chunlao',(cid,),wine,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM,action.player_id))
+            from .events import CardUsedEvent
+            virtual=VirtualCard('basic.wine',(),None,None,'chunlao')
+            self.recorder.record(CardUsedEvent(action.action_id+':wine-used',target,action.action_id,(target,),'basic.wine',virtual_card=virtual))
             return StepResult.complete(virtual)
         if choice == 'virtual:jiushi':
             if (self.skills is None or not self.skills.has(state, action.player_id, 'jiushi')
@@ -1013,11 +1037,12 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             self.recorder.record(VirtualResponseEvent(action.action_id + ':jiushi-response',
                 action.player_id, action.source_action_id, 'basic.wine'))
             return StepResult.push(TurnoverAction(action.action_id + ':jiushi-turn', action.player_id))
-        if choice=='virtual:spear':
+        if choice in ('virtual:spear','virtual:fuhun'):
+            frame.local['fuhun']=choice=='virtual:fuhun'
             from .card_limits import legal_pairs
             frame.step_index=2
             return StepResult.ask(PendingRequest(action.action_id+':spear-cost',action.player_id,RequestType.CHOOSE_CARDS,
-                '丈八蛇矛：选择两张手牌当杀',action.action_id,frame.frame_id,
+                ('【伏魂】' if frame.local['fuhun'] else '丈八蛇矛')+'：选择两张手牌当杀',action.action_id,frame.frame_id,
                 eligible_card_ids=state.cards_in(ZoneRef(ZoneType.HAND,action.player_id)),min_count=2,max_count=2,
                 legal_card_sets=legal_pairs(state,action.player_id,state.cards_in(ZoneRef(ZoneType.HAND,action.player_id)))))
         if choice == 'virtual:guhuo':
