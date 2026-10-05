@@ -20,6 +20,8 @@ export class GameConnection {
   private reconnectTimer: number | null = null
   private failures = 0
   private reconnectDelay = 800
+  private restoring = false
+  private welcomed = false
   private roomCode = ''
   private playerName = '玩家'
   private pendingMessage: { type: string; fields: Record<string, unknown> } | null = null
@@ -44,15 +46,17 @@ export class GameConnection {
     this.roomCode = roomCode
     this.intentionallyClosed = false
     this.setStatus(this.failures ? (this.failures >= 6 ? 'offline' : 'reconnecting') : 'connecting')
+    this.restoring = !!this.reconnectMessage
+    this.welcomed = false
     const socket = new WebSocket(websocketUrl(window.location.protocol, window.location.host, this.roomCode))
     this.socket = socket
-    const handshakeTimeout = window.setTimeout(() => { if (this.socket === socket && socket.readyState === WebSocket.CONNECTING) socket.close() }, 8000)
+    const handshakeTimeout = window.setTimeout(() => { if (this.socket === socket && (socket.readyState === WebSocket.CONNECTING || this.restoring)) socket.close() }, 8000)
     socket.addEventListener('open', () => {
       if (this.socket !== socket) return
-      window.clearTimeout(handshakeTimeout)
-      this.reconnectDelay = 800
-      this.failures = 0
-      this.setStatus('connected')
+      if (!this.restoring) {
+        window.clearTimeout(handshakeTimeout)
+        this.setStatus('connected')
+      }
       this.send('HELLO')
       this.pingSentAt = performance.now()
       if (!this.send('PING')) this.pingSentAt = null
@@ -81,6 +85,14 @@ export class GameConnection {
             room_code: String(message.room_code), token: String(message.reconnect_token),
             name: this.playerName,
           } }
+        }
+        if (message.type === 'WELCOME' && message.seat_id && message.reconnect_token) this.welcomed = true
+        if (this.restoring && this.welcomed && ['PROJECTION_UPDATE', 'LOBBY_STATE', 'DRAFT_REQUEST'].includes(String(message.type))) {
+          this.restoring = false
+          window.clearTimeout(handshakeTimeout)
+          this.failures = 0
+          this.reconnectDelay = 800
+          this.setStatus('connected')
         }
         this.listeners.forEach((listener) => listener(message))
       } catch {

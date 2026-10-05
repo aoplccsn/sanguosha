@@ -99,3 +99,15 @@ it('projection revokes stale request and old rejection cannot overwrite the repl
   await userEvent.click(screen.getByRole('button', { name: '确定' }))
   expect(JSON.parse(socket.sent.at(-1)!).decision.request_id).toBe('r2')
 })
+
+
+it('clears acknowledged notices and never toasts repeated snapshots of the same request', () => {
+ vi.useFakeTimers(); const socket=enterResponse()
+ act(()=>{socket.message({type:'PENDING_REQUEST',request:response('r1')});socket.message({type:'PENDING_REQUEST',request:{...response('r1'),remaining_ms:10000}})})
+ expect(screen.queryByText('当前响应已更新')).not.toBeInTheDocument()
+ act(()=>socket.message({type:'ERROR',request_id:'r1',message:'stale request'}))
+ expect(screen.getByText('当前响应已更新')).toBeInTheDocument()
+ act(()=>vi.advanceTimersByTime(1200))
+ expect(screen.queryByText('当前响应已更新')).not.toBeInTheDocument()
+ vi.useRealTimers()
+})

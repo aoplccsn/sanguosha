@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { CardView, GeneralInfo, PendingRequest, PlayerView, Projection, PublicEvent, PortraitState, CombatContext } from '../types'
 import { useGame } from '../state/GameContext'
 import { cardImage, defaultCardImage, defaultGeneralPortrait, generalPortrait } from '../assets'
+import { TemporaryInteractionPanel } from './TemporaryInteractionPanel'
 import { Timer } from './Timer'
 import { SkillTooltip, optionMetadata } from './SkillTooltip'
 import { readGameSpeed, type GameSpeed } from '../presentation/pacing'
@@ -131,7 +132,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
   </article>
 }
 
-function HandCard({ card, selected, eligible, onClick }: { card: CardView; selected: boolean; eligible: boolean; onClick(): void }) {
+export function HandCard({ card, selected, eligible, onClick }: { card: CardView; selected: boolean; eligible: boolean; onClick(): void }) {
   return <button
     className={'hand-card' + (selected ? ' selected' : '') + (!eligible ? ' disabled' : '')}
     aria-disabled={!eligible}
@@ -139,7 +140,7 @@ function HandCard({ card, selected, eligible, onClick }: { card: CardView; selec
     title={card.details || card.name + ' · ' + card.suit + card.rank}
     aria-label={card.name + ' ' + card.suit + card.rank}
   >
-    <img src={assetForCard(card)} onError={(event) => { event.currentTarget.src = defaultCardImage }} alt="" />
+    <img src={assetForCard(card)} alt="" />
     <span className="card-corner"><b>{card.rank}</b>{card.suit}</span>
     <strong>{card.name}</strong>
   </button>
@@ -298,7 +299,7 @@ function EventStage({ event, players, combat }: { event?: PublicEvent; players: 
   if (top?.definition_id === 'trick.nullification') text = name(top.source_id) + '【无懈可击】 → 【' + (cardNames[definition] ?? base?.card_name ?? '') + '】'
   return <div key={String(event.event_id ?? kind) + String(event.presentation_phase ?? '')} data-event-id={event.event_id} data-stage={String(event.presentation_phase ?? 'result')} className={'event-stage event-' + kind.toLowerCase()}>
     <div className="action-cards">
-    {showCard && <div className="center-action-card base-card"><img src={assetForCard({ definition_id: definition } as CardView)} alt={cardNames[definition] ?? String(event.card_name ?? '卡牌')} onError={e => { e.currentTarget.src = defaultCardImage }} /><b>{cardNames[definition] ?? String(event.card_name ?? '卡牌')}</b></div>}
+    {showCard && <div className="center-action-card base-card"><img src={assetForCard({ definition_id: definition } as CardView)} alt={cardNames[definition] ?? String(event.card_name ?? '卡牌')} /><b>{cardNames[definition] ?? String(event.card_name ?? '卡牌')}</b></div>}
     {top && <div className="center-action-card response-card"><img src={assetForCard({definition_id:top.definition_id} as CardView)} alt={cardNames[top.definition_id] ?? '响应牌'} /><b>{cardNames[top.definition_id] ?? '响应牌'}</b></div>}
     </div><strong>{text}</strong>
     {!!base?.nullification_count && <small className="nullification-status">无懈×{base.nullification_count} · 当前{base.cancelled ? '锦囊失效' : '锦囊有效'}</small>}
@@ -327,6 +328,11 @@ export function GamePage() {
   const selectedTargets = activeSelection.targets
   const selectedOption = activeSelection.option
   const [hint, setHint] = useState('')
+  useEffect(() => {
+    if (!hint) return
+    const timer = window.setTimeout(() => setHint(''), 1200)
+    return () => window.clearTimeout(timer)
+  }, [hint, request?.request_id])
   const requestRef = useRef(request?.request_id)
   requestRef.current = request?.request_id
   const selectionKeyRef = useRef(selectionKey)
@@ -479,7 +485,9 @@ export function GamePage() {
   const aoe = combat && ['trick.savage_assault', 'trick.archery_attack'].includes(combat.definition_id) ? combat : null
   const aoeState = (id: string) => !aoe?.target_ids.includes(id) ? undefined : aoe.resolved_target_ids?.includes(id) ? 'resolved' : aoe.current_target_id === id ? 'current' : 'pending'
 
+  const temporaryPanel = projection.shared_cards.length > 0 || (!!request && request.request_type === 'choose_card' && !!request.subject_player_id && otherCardChoices.length > 0)
   return <main className="game-page table-background">
+    {temporaryPanel && <TemporaryInteractionPanel projection={projection} request={request} seatId={state.seatId} connected={state.connection === 'connected'} processing={!!state.decisionProcessing} selected={selectedCards} canConfirm={canConfirm} onSelect={toggleCard} onConfirm={confirm} onPass={() => submitImmediate({ pass: true })} requestControls={request && request.request_type !== 'choose_card' ? <DecisionPrompt request={request} projection={projection} canConfirm={canConfirm} processing={!!state.decisionProcessing} summary={summary} onConfirm={confirm} onCancel={() => setSelectedCards([])} onPass={() => submitImmediate({ pass: true })} onPassRoot={() => submitImmediate({ pass: true, scope: 'root_trick' })} onBoolean={submitImmediate} onOption={submitImmediate} /> : undefined} />}
     <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><label>对局速度 <select aria-label="对局速度" value={gameSpeed} onChange={(event) => { const value = event.target.value as GameSpeed; setGameSpeed(value); actions.setPresentationSpeed?.(value); localStorage.setItem('sanguosha.web.speed', value) }}><option value="slow">慢</option><option value="normal">正常</option><option value="fast">快</option></select></label><label className="vfx-quality-control">画质 <select aria-label="战斗特效画质" value={vfxQuality} onChange={(event) => { const value = event.target.value as VfxQuality; setVfxQuality(value); saveVfxQuality(value) }}><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></label><button onClick={actions.returnHome}>离开牌局</button></div></header>
     <section className={'game-board' + (projection.players.length === 8 ? ' eight-seats' : '')}>
       <CombatVFXLayer players={projection.players} targets={selectedTargets} mode={beamMode} events={visibleEvents} quality={vfxQuality} />
@@ -491,8 +499,8 @@ export function GamePage() {
         const message = '【' + String(e.skill_name ?? cardNames[String(e.definition_id)] ?? e.card_name ?? '技能') + '】 ' + name(e.source_id) + (targets.length ? ' → ' + targets.map(name).join('、') : '')
         return <div key={String(e.event_id ?? i)} title={message}>{message}</div>
       })}</aside>
-      <SharedCards cards={projection.shared_cards} selected={selectedCards} eligible={eligibleCards} onSelect={toggleCard} />
-      {otherCardChoices.length > 0 && <section className="shared-card-pool" aria-label="可选目标牌">
+      {!temporaryPanel && <SharedCards cards={projection.shared_cards} selected={selectedCards} eligible={eligibleCards} onSelect={toggleCard} />}
+      {!temporaryPanel && otherCardChoices.length > 0 && <section className="shared-card-pool" aria-label="可选目标牌">
         <p>选择目标的一张牌</p><div>{otherCardChoices.map((id) =>
           <button key={id} className={'brush-button compact' + (selectedCards.includes(id) ? ' selected' : '')}
             onClick={() => toggleCard(id)}>{id.startsWith('hidden-hand:') ? '暗置手牌 ' + id.split(':')[1] : publicCards.find((card) => card.card_id === id)?.name ?? id}</button>)}</div>
@@ -509,7 +517,7 @@ export function GamePage() {
         <div>{projection.discard_top ? <div className="discard-top"><HandCard card={projection.discard_top} selected={false} eligible={false} onClick={() => undefined} /></div> : <span className="table-discard" aria-hidden="true" />}<small>弃牌 {projection.discard_count}</small></div>
       </div>
       <div className="self-area">
-        {request && <DecisionPrompt request={request} projection={projection} canConfirm={canConfirm} processing={!!state.decisionProcessing} summary={summary} onConfirm={confirm} onCancel={() => updateSelection((current) => current.targets.length ? { ...current, targets: [] } : { ...current, cards: [], option: '' })} onPass={() => submitImmediate({ pass: true })} onPassRoot={() => submitImmediate({ pass: true, scope: 'root_trick' })} onBoolean={submitImmediate} onOption={submitImmediate} />}
+        {request && !temporaryPanel && <DecisionPrompt request={request} projection={projection} canConfirm={canConfirm} processing={!!state.decisionProcessing} summary={summary} onConfirm={confirm} onCancel={() => updateSelection((current) => current.targets.length ? { ...current, targets: [] } : { ...current, cards: [], option: '' })} onPass={() => submitImmediate({ pass: true })} onPassRoot={() => submitImmediate({ pass: true, scope: 'root_trick' })} onBoolean={submitImmediate} onOption={submitImmediate} />}
         <PlayerPanel player={self} phase={projection.current_phase} aoeState={aoeState(self.player_id)} position="self" selected={false} selectable={false} responding={responseId === self.player_id} waiting={waiting?.player_id === self.player_id ? waiting : undefined} thinking={thinkingId === self.player_id} eventKind={eventTargetIds.includes(self.player_id) || eventActorId === self.player_id ? eventKind : undefined} eventActor={eventActorId === self.player_id} eventTarget={latestEvent?.presentation_phase === 'target' && eventTargetIds.includes(self.player_id)} eventCue={latestEvent} godCue={godCues[self.player_id]} vfxQuality={vfxQuality} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
         <SkillBar player={self} general={state.generals[self.character_id]} skillNames={Object.fromEntries(Object.values(state.generals).flatMap((general) => general.skills.map((skill) => [skill.id, skill.name])))} request={request} chosen={selectedOption} onUnavailable={() => setHint('此技能当前不可使用')} onChoose={(option) => { if (state.decisionProcessing) return; setHint(''); setSelectedOption(selectedOption === option ? '' : option); if (request?.request_type === 'respond_with_card') setSelectedCards([]) }} />
         <div className="hand" aria-label="手牌区">{projection.hand.map((card) => <HandCard key={card.card_id} card={card} selected={selectedCards.includes(card.card_id)} eligible={cardEligible(card.card_id)} onClick={() => toggleCard(card.card_id)} />)}</div>

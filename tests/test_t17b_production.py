@@ -28,7 +28,7 @@ def test_production_76_registry_catalog_and_locked_11():
         assert row['implemented'] and row['playable']
         if row['id'] in ids:
             assert row['pack']=='yj2011' and row['skills']
-            assert row['portrait']==f"/assets/generals/{row['kingdom']}/{row['id']}.png"
+            assert row['portrait'].rsplit('.', 1)[0] == f"/assets/generals/{row['kingdom']}/{row['id']}"
             assert (Path(__file__).resolve().parents[1] / row['portrait'].lstrip('/')).is_file()
             c=registry.characters[row['id']]
             assert c.metadata['implemented'] and c.metadata['playable'] and not c.metadata['development_only']

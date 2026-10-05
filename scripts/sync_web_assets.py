@@ -99,4 +99,9 @@ else:
         if stale.is_file() and stale not in expected:
             stale.unlink()
 
+manifest = json.loads((TARGET / 'manifest.json').read_text(encoding='utf-8'))
+missing = [value for value in manifest.values() if not (TARGET / value).is_file()]
+if missing:
+    raise ValueError(f'Missing registered web assets: {missing}')
+
 print(f"Web {'production' if PRODUCTION else 'development'} assets synchronized: {TARGET}")

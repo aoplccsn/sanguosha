@@ -149,3 +149,23 @@ it('times out a stuck handshake, stops after six failures and allows explicit re
  connection.retry();expect(FakeSocket.instances).toHaveLength(7)
  connection.disconnect();vi.useRealTimers();vi.unstubAllGlobals()
 })
+
+
+it('waits for restored snapshot after authenticated welcome and bounds open-but-stale recovery', () => {
+ vi.useFakeTimers(); FakeSocket.instances=[]; vi.stubGlobal('WebSocket',FakeSocket)
+ const connection=new GameConnection();const statuses:string[]=[];connection.subscribeStatus(s=>statuses.push(s))
+ connection.openRoom('ABC234','JOIN_ROOM',{name:'玩家'})
+ let socket=FakeSocket.instances.at(-1)!;socket.readyState=1;socket.emit('open')
+ socket.emit('message',{data:JSON.stringify({type:'WELCOME',room_code:'ABC234',seat_id:'p1',reconnect_token:'token'})})
+ socket.close();vi.advanceTimersByTime(800)
+ socket=FakeSocket.instances.at(-1)!;socket.readyState=1;socket.emit('open')
+ expect(statuses.at(-1)).toBe('reconnecting')
+ socket.emit('message',{data:JSON.stringify({type:'WELCOME',room_code:'ABC234',seat_id:'p1',reconnect_token:'token'})})
+ expect(statuses.at(-1)).toBe('reconnecting')
+ socket.emit('message',{data:JSON.stringify({type:'PROJECTION_UPDATE',projection:{}})})
+ expect(statuses.at(-1)).toBe('connected')
+ socket.close()
+ for(let i=0;i<5;i++) { vi.advanceTimersByTime(8000);socket=FakeSocket.instances.at(-1)!; if(socket.readyState===0){socket.readyState=1;socket.emit('open')} vi.advanceTimersByTime(8000) }
+ expect(statuses.at(-1)).toBe('offline')
+ connection.disconnect();vi.useRealTimers();vi.unstubAllGlobals()
+})

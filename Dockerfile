@@ -2,7 +2,7 @@ FROM python:3.12-slim AS assets
 WORKDIR /build
 COPY assets ./assets
 COPY scripts/sync_web_assets.py ./scripts/
-RUN python scripts/sync_web_assets.py
+RUN pip install --no-cache-dir Pillow && python scripts/sync_web_assets.py --production
 
 FROM node:22-bookworm-slim AS frontend
 WORKDIR /build/web

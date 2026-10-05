@@ -1,0 +1,1 @@
+{"portraits": "76/76", "card_art": "43/43", "host": "http://127.0.0.1:8009", "status": "PASS"}

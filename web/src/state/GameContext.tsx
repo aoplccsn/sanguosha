@@ -83,7 +83,7 @@ function reducer(state: ClientState, action: Action): ClientState {
     case 'pending':
       return { ...state, pendingRequest: action.payload as PendingRequest, decisionProcessing: null, decisionAccepted: null,
         requestEpoch: state.pendingRequest?.request_id === (action.payload as PendingRequest).request_id ? state.requestEpoch : state.requestEpoch + 1,
-        notice: state.pendingRequest && state.pendingRequest.request_id !== (action.payload as PendingRequest).request_id ? '当前响应已更新' : state.notice }
+        notice: state.notice }
     case 'decision-result':
       return state.decisionProcessing === action.payload
         ? { ...state, pendingRequest: state.pendingRequest?.request_id === action.payload ? null : state.pendingRequest,
@@ -161,10 +161,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const timingRef = useRef(new Map<string, { click: number; sent: number; ack?: number; sample?: DecisionSample }>())
 
   useEffect(() => {
-    if (!state.notice || state.decisionProcessing || state.decisionAccepted) return
-    const timer = window.setTimeout(() => dispatch({ type: 'notice', payload: '' }), 2800)
+    if (!state.notice || state.decisionProcessing) return
+    const timer = window.setTimeout(() => dispatch({ type: 'notice', payload: '' }), 1200)
     return () => window.clearTimeout(timer)
-  }, [state.notice, state.decisionProcessing, state.decisionAccepted])
+  }, [state.notice, state.decisionProcessing])
 
   useEffect(() => {
     if (!state.decisionProcessing) return
@@ -183,10 +183,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         timingRef.current.clear()
       }
       if (status === 'offline') {
-        connection.disconnect()
         recovering.current = false
-        dispatch({ type: 'home' })
-        dispatch({ type: 'error', payload: '无法连接到房间' })
         const saved = localStorage.getItem(SESSION_KEY)
         if (saved) {
           try { dispatch({ type: 'resume-session', payload: JSON.parse(saved) as SessionRecord }) }
@@ -324,7 +321,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const friendly = friendlyError(String(message.message ?? ''))
         if (import.meta.env.DEV) console.debug('[game] submit rejected', friendly)
         dispatch({ type: 'decision-rejected', payload: /stale|expired|duplicate/i.test(String(message.message ?? '')) ? '当前响应已更新' : friendly })
-        if (!wasSubmitting) dispatch({ type: 'error', payload: friendly })
+        if (!wasSubmitting && !/stale|expired|duplicate/i.test(String(message.message ?? ''))) dispatch({ type: 'error', payload: friendly })
         if (friendly.includes('原对局已失效')) localStorage.removeItem(SESSION_KEY)
       }
     })

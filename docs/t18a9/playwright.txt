@@ -1,0 +1,19 @@
+
+Running 10 tests using 1 worker
+
+
+
+[1/10] [chromium] › web\e2e\t18a9-production.spec.ts:20:1 › 76 catalog portraits and every registered card art load over production HTTP
+[chromium] › web\e2e\t18a9-production.spec.ts:20:1 › 76 catalog portraits and every registered card art load over production HTTP
+production smoke: 76 portraits; 43 card arts
+
+[2/10] [chromium] › web\e2e\t18a9-production.spec.ts:33:2 › snatch hidden back and public equipment 1440
+[3/10] [chromium] › web\e2e\t18a9-production.spec.ts:33:2 › snatch hidden back and public equipment 390
+[4/10] [chromium] › web\e2e\t18a9-production.spec.ts:33:2 › snatch hidden back and public equipment 430
+[5/10] [chromium] › web\e2e\t18a9-production.spec.ts:52:1 › snatch publicly visible equipment is selected and obtained authoritatively
+[6/10] [chromium] › web\e2e\t18a9-production.spec.ts:57:1 › harvest has sequential authoritative selection, observer restriction and refresh recovery
+[7/10] [chromium] › web\e2e\t18a9-production.spec.ts:71:1 › compact slash remains click-through and recovered banner disappears
+[8/10] [chromium] › web\e2e\t18a9-production.spec.ts:86:1 › same-request snapshots never spam notices, rejection expires, failed reconnect is finite
+[9/10] [chromium] › web\e2e\t18a9-production.spec.ts:113:1 › dismantlement reuses the zone panel and discards selected equipment
+[10/10] [chromium] › web\e2e\t18a9-production.spec.ts:119:1 › harvest counter response stays actionable inside the temporary panel
+  10 passed (27.0s)

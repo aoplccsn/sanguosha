@@ -1,17 +1,15 @@
 import type { GeneralInfo } from './types'
-
-const imageExtension = import.meta.env.PROD ? '.webp' : '.png'
-
-export const defaultGeneralPortrait = `/assets/generals/default_general${imageExtension}`
-export const defaultCardImage = `/assets/cards/default_card${imageExtension}`
-
+import manifest from '../public/assets/manifest.json'
+const assets: Record<string, string> = manifest
+export const assetUrl = (key: string) => `/assets/${assets[key]}`
+export const defaultGeneralPortrait = assetUrl('default.general')
+export const defaultCardImage = assetUrl('default.card')
 export function generalPortrait(id: string, kingdom: string, catalog: Record<string, GeneralInfo>): string {
-  const portrait = catalog[id]?.portrait
-  return portrait
-    ? (import.meta.env.PROD ? portrait.replace(/\.png$/, '.webp') : portrait)
-    : `/assets/generals/${kingdom}/${id}${imageExtension}`
+  return assets['general.' + id] ? assetUrl('general.' + id)
+    : catalog[id]?.portrait ?? `/assets/generals/${kingdom}/${id}.png`
 }
-
 export function cardImage(path: string): string {
-  return `/assets/cards/${path}${imageExtension}`
+  const key = path.startsWith('basic/') ? 'basic.' + path.slice(6)
+    : path.replace(/^military\//, '').replace(/-v2$/, '')
+  return assetUrl(key)
 }

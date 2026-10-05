@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "pretest": "python ../scripts/sync_web_assets.py"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.4",

@@ -169,6 +169,8 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
 
     @app.get("/api/catalog/generals")
     async def general_catalog() -> list[dict[str, Any]]:
+        manifest_path = dist / "assets" / "manifest.json"
+        asset_manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.is_file() else {}
         skills = {str(skill.id): skill for skill in ALL_SKILL_CATALOGUE}
         return [
             {
@@ -179,7 +181,8 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                 "implemented": character.metadata.get("implemented", True),
                 "playable": character.metadata.get("playable", True),
                 "portrait_mode": character.metadata.get("portrait_mode", "static"),
-                "portrait": f"/assets/generals/{character.kingdom.value}/{character.id}.png",
+                "portrait": "/assets/" + asset_manifest.get("general." + str(character.id),
+                    f"generals/{character.kingdom.value}/{character.id}.png"),
                 "skills": [
                     {"id": str(skill_id), "name": skills[str(skill_id)].name,
                      "description": skills[str(skill_id)].description,
