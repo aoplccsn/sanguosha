@@ -1,0 +1,41 @@
+{
+  "elapsedMs": 4991,
+  "events": [
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-1-play-0:use:used",
+      "source_id": "p1",
+      "target_ids": [],
+      "definition_id": "trick.ex_nihilo",
+      "card_name": "无中生有",
+      "root_id": "a99aea3315cfee1eefac16cd",
+      "time": 1791210678615
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:be771e7a12767a10372b840f",
+      "source_id": "p2",
+      "complexity": "simple",
+      "thinking_ms": 4700,
+      "time": 1791210678615
+    },
+    {
+      "kind": "CardRespondedEvent",
+      "event_id": "frame-1-play-0:use:effect:window:1:counter:0:2:responded",
+      "base_action": {
+        "root_id": "a99aea3315cfee1eefac16cd",
+        "source_id": "p1",
+        "definition_id": "trick.ex_nihilo",
+        "card_name": "无中生有",
+        "target_ids": [],
+        "nullification_count": 1,
+        "cancelled": true
+      },
+      "source_id": "p2",
+      "response_number": 1,
+      "response_total": 1,
+      "definition_id": "trick.nullification",
+      "time": 1791210683349
+    }
+  ]
+}

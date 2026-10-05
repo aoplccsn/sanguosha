@@ -123,6 +123,7 @@ class MultiplayerRoom:
         self.ai_deadline: float | None = None
         self.presentation_deadline: float | None = None
         self._ai_wait_request: str | None = None
+        self.turn_visible_until: float | None = None
 
     def join(self, name: str, send: Send, *, token: str | None = None) -> tuple[PlayerId, str]:
         if token:
@@ -393,10 +394,12 @@ class MultiplayerRoom:
     def set_presentation_speed(self, pid: PlayerId, speed: str) -> None:
         if pid != self.host_id or speed not in ('slow', 'normal', 'fast'):
             raise RoomError('only the host can set a valid AI presentation speed')
-        previous = {'slow': 1.4, 'normal': 1, 'fast': .65}[self.presentation_speed]
-        factor = {'slow': 1.4, 'normal': 1, 'fast': .65}[speed]
+        previous = {'slow': 1.4, 'normal': 1, 'fast': .55}[self.presentation_speed]
+        factor = {'slow': 1.4, 'normal': 1, 'fast': .55}[speed]
         if self.ai_deadline is not None:
             self.ai_deadline = time.time() + max(0, self.ai_deadline - time.time()) * factor / previous
+        if self.turn_visible_until is not None:
+            self.turn_visible_until = time.time() + max(0, self.turn_visible_until - time.time()) * factor / previous
         if self.presentation_deadline is not None:
             self.presentation_deadline = time.time() + max(0, self.presentation_deadline - time.time()) * factor / previous
         self.presentation_speed = speed
@@ -405,6 +408,22 @@ class MultiplayerRoom:
 
     def pump(self, max_steps: int | None = None) -> None:
         if self.session is None:
+            return
+        request = self.session.engine.pending_request
+        # Forced passes must resolve before any presentation gate, including a
+        # human's existing root-trick preference. They are not new decisions.
+        while request is not None and request.request_type is RequestType.RESPOND_WITH_CARD and request.allow_pass:
+            root = self.session.nullification_window_id(request)
+            skipped = self.session.state.metadata.get('nullification_passes', {}).get(root, [])
+            if request.has_legal_response() and request.player_id not in skipped:
+                break
+            self.session.engine.submit_decision(Decision(request.request_id, request.player_id, PASS_RESPONSE))
+            self.session.clear_finished_nullification_windows()
+            request = self.session.engine.pending_request
+        if self.presentation_deadline is not None and request is not None and self.seats[request.player_id].controller is Controller.HUMAN:
+            if time.time() >= self.presentation_deadline:
+                self.presentation_deadline = None
+            self.network_decisions.dispatch(request)
             return
         if self.presentation_deadline is not None:
             if time.time() < self.presentation_deadline:
@@ -448,13 +467,14 @@ class MultiplayerRoom:
                             'ai_thinking', request.player_id, metadata={'complexity': complexity, 'thinking_ms': thinking_ms}))
                         if self.ai_presentation:
                             self._ai_wait_request = request.request_id
-                            self.ai_deadline = time.time() + thinking_ms / 1000 * {'slow': 1.4, 'normal': 1, 'fast': .65}[self.presentation_speed]
+                            self.ai_deadline = time.time() + thinking_ms / 1000 * {'slow': 1.4, 'normal': 1, 'fast': .55}[self.presentation_speed]
                             self._sync()
                             return
                     if self.ai_deadline is not None and time.time() < self.ai_deadline:
                         return
                 self._ai_wait_request = None
                 self.ai_deadline = None
+                self._ai.observe_public_events(self.session.state, self.session.events.events)
                 decision = self._ai.decide(self.session.state, request, response_context=self._combat_context())
                 cue_start = len(self.session.events.events)
                 self.session.engine.submit_decision(decision)
@@ -462,17 +482,32 @@ class MultiplayerRoom:
                 if self.ai_presentation:
                     # One maximum per accepted action; internal events never add sleeps.
                     events = self.session.events.events[cue_start:]
-                    dwell = max((2.3 if isinstance(e, CardUsedEvent) else
-                                 1.2 if isinstance(e, (CardRespondedEvent, VirtualResponseEvent)) else
-                                 1.5 if isinstance(e, Event) and e.event_type.startswith(('skill_', 'presentation_skill')) else
-                                 1.0 if isinstance(e, (DamageDealtEvent, HpRecoveredEvent)) else 0
+                    dwell = max(((3.5 if (e.virtual_definition_id or self.session.state.cards[e.card_id].definition_id).startswith('equipment.') else 4.5) if isinstance(e, CardUsedEvent) else
+                                 4.5 if isinstance(e, (CardRespondedEvent, VirtualResponseEvent)) else
+                                 5.0 if isinstance(e, Event) and e.event_type.startswith(('skill_', 'presentation_skill')) else
+                                 2.5 if isinstance(e, (DamageDealtEvent, HpRecoveredEvent)) else 0
                                  for e in events), default=0)
                     if dwell:
-                        self.presentation_deadline = time.time() + dwell * {'slow': 1.4, 'normal': 1, 'fast': .65}[self.presentation_speed]
+                        self.presentation_deadline = time.time() + dwell * {'slow': 1.4, 'normal': 1, 'fast': .55}[self.presentation_speed]
+                        pending = self.session.engine.pending_request
                         self._sync()
+                        # Dispatch an actionable human prompt now; forced passes
+                        # are consumed by the same gateway before dispatch.
+                        if pending is not None and self.seats[pending.player_id].controller is Controller.HUMAN:
+                            self.pump()
                         return
             else:
+                if self.ai_presentation and self.turn_visible_until is not None and time.time() < self.turn_visible_until:
+                    self.presentation_deadline = self.turn_visible_until
+                    self._sync()
+                    return
+                before = self.session.state.turn_number
                 self.session.step_auto()
+                if self.ai_presentation and self.session.state.turn_number != before:
+                    actor = self.session.state.current_player_id
+                    self.turn_visible_until = (time.time() + 5.5 * {'slow': 1.4, 'normal': 1, 'fast': .55}[self.presentation_speed]
+                                               if self.seats[actor].controller is Controller.AI else None)
+                    self._sync()
         self.phase = RoomPhase.FINISHED
         self._sync()
         self._broadcast_lobby()
@@ -519,6 +554,7 @@ class MultiplayerRoom:
 
     def _sync(self) -> None:
         assert self.session is not None
+        self._ai.observe_public_events(self.session.state, self.session.events.events)
         self._revision += 1
         request = self.session.engine.pending_request
         for seat in self.seats.values():
@@ -610,8 +646,15 @@ class MultiplayerRoom:
                     'response_to': (result['combat'] or {}).get('definition_id', ''),
                     'deadline': deadline,
                     'remaining_ms': max(0, int((deadline - time.time()) * 1000)),
-                    'total_ms': round(self._ai.thinking_profile(self.session.state, request)[1] * {'slow': 1.4, 'normal': 1, 'fast': .65}[self.presentation_speed]) if ai else round(self.timeout_seconds * 1000),
+                    'total_ms': round(self._ai.thinking_profile(self.session.state, request)[1] * {'slow': 1.4, 'normal': 1, 'fast': .55}[self.presentation_speed]) if ai else round(self.timeout_seconds * 1000),
                 }
+        elif self.turn_visible_until is not None and self.turn_visible_until > time.time():
+            actor = self.session.state.current_player_id
+            result['waiting'] = {'key': 'turn-observe:' + str(self.session.state.turn_number),
+                'player_id': str(actor), 'responding': False, 'thinking': True,
+                'required_definition_id': '', 'response_to': '', 'deadline': self.turn_visible_until,
+                'remaining_ms': max(0, round((self.turn_visible_until - time.time()) * 1000)),
+                'total_ms': round(5500 * {'slow': 1.4, 'normal': 1, 'fast': .55}[self.presentation_speed])}
         return result
 
     def _base_action(self, action_id):

@@ -178,6 +178,8 @@ class GameRoomDurableObject(DurableObject):
             deadlines.append(now_ms / 1000 + 0.001)
         if self.room.ai_deadline is not None:
             deadlines.append(self.room.ai_deadline)
+        if self.room.presentation_deadline is not None:
+            deadlines.append(self.room.presentation_deadline)
         if self.room.request_deadline is not None:
             deadlines.append(self.room.request_deadline)
         ttl_seconds = int(getattr(self.env, "ROOM_TTL_SECONDS", "7200"))

@@ -103,15 +103,15 @@ def test_thinking_profile_range_and_complexity():
     s = game(); ai = AIDecisionProvider('human')
     simple = request(RequestType.RESPOND_WITH_CARD, eligible_card_ids=('dodge',))
     complex = request(RequestType.CHOOSE_PLAYERS, allowed_player_ids=('p2', 'p3'), max_count=2)
-    assert 3500 <= ai.thinking_profile(s.state, simple)[1] <= 5000
-    assert 4500 <= ai.thinking_profile(s.state, complex)[1] <= 7000
+    assert 4000 <= ai.thinking_profile(s.state, simple)[1] <= 6000
+    assert 6000 <= ai.thinking_profile(s.state, complex)[1] <= 10000
 
 
 def test_speed_changes_only_ai_wait_not_human_deadline(monkeypatch):
     clock = [1000.0]; monkeypatch.setattr('sanguosha.multiplayer.room.time.time', lambda: clock[0])
     room = MultiplayerRoom(); room.host_id = 'p1'; room.ai_deadline = 1004; room.request_deadline = 1060
     room.set_presentation_speed('p1', 'fast')
-    assert room.ai_deadline == 1002.6 and room.request_deadline == 1060
+    assert room.ai_deadline == 1002.2 and room.request_deadline == 1060
     room.set_presentation_speed('p1', 'slow')
     assert room.ai_deadline == pytest.approx(1005.6) and room.request_deadline == 1060
 

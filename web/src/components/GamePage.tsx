@@ -17,7 +17,7 @@ const positions = ['north-west', 'north', 'north-east', 'east']
 const positionsEight = ['north-west', 'north', 'north-east',
   'east-upper', 'east-lower', 'west-lower', 'west-upper']
 const phaseNames: Record<string, string> = {
-  start: '开始', judgment: '判定', draw: '摸牌', play: '出牌', discard: '弃牌', finish: '结束',
+  '—': '回合观察', start: '开始', judgment: '判定', draw: '摸牌', play: '出牌', discard: '弃牌', finish: '结束',
 }
 
 function assetForCard(card: CardView) {
@@ -485,6 +485,12 @@ export function GamePage() {
       <CombatVFXLayer players={projection.players} targets={selectedTargets} mode={beamMode} events={visibleEvents} quality={vfxQuality} />
       {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} phase={projection.current_phase} aoeState={aoeState(player.player_id)} position={(projection.players.length === 8 ? positionsEight : positions)[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={responseId === player.player_id} waiting={waiting?.player_id === player.player_id ? waiting : undefined} thinking={thinkingId === player.player_id} eventKind={eventTargetIds.includes(player.player_id) || eventActorId === player.player_id ? eventKind : undefined} eventActor={eventActorId === player.player_id} eventTarget={latestEvent?.presentation_phase === 'target' && eventTargetIds.includes(player.player_id)} eventCue={latestEvent} godCue={godCues[player.player_id]} vfxQuality={vfxQuality} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
       <EventStage event={latestEvent} players={projection.players} combat={combat} />
+      <aside className="recent-actions" aria-label="最近动作"><small>最近动作</small>{state.publicEvents.filter(e => /^(CardUsedEvent|CardRespondedEvent|VirtualResponseEvent|SkillEvent|GodSkillEvent)$/.test(String(e.kind))).slice(-4).reverse().map((e, i) => {
+        const name = (id: unknown) => projection.players.find(p => p.player_id === id)?.character_name ?? String(id ?? '')
+        const targets = Array.isArray(e.target_ids) ? e.target_ids : (e.base_action as CombatContext | undefined)?.target_ids ?? []
+        const message = '【' + String(e.skill_name ?? cardNames[String(e.definition_id)] ?? e.card_name ?? '技能') + '】 ' + name(e.source_id) + (targets.length ? ' → ' + targets.map(name).join('、') : '')
+        return <div key={String(e.event_id ?? i)} title={message}>{message}</div>
+      })}</aside>
       <SharedCards cards={projection.shared_cards} selected={selectedCards} eligible={eligibleCards} onSelect={toggleCard} />
       {otherCardChoices.length > 0 && <section className="shared-card-pool" aria-label="可选目标牌">
         <p>选择目标的一张牌</p><div>{otherCardChoices.map((id) =>

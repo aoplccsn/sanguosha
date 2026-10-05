@@ -75,7 +75,7 @@ describe('GamePage', () => {
     const { container } = render(<GamePage />)
     expect(screen.getByText(text)).toBeInTheDocument()
     expect(container.querySelector(`[data-player-id="${actor}"]`)).toHaveClass('presenting-action')
-    if (target) expect(container.querySelector(`[data-player-id="${target}"]`)).not.toHaveClass('event-target')
+    if (target) expect(container.querySelector(`[data-player-id="${target}"]`)).toHaveClass('event-target')
   })
 
   it('selects a Slash target and submits card plus target with one final confirm', async () => {

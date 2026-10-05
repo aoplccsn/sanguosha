@@ -1,0 +1,31 @@
+{
+  "empty": 5.254,
+  "one": 14.146,
+  "three": 33.691,
+  "dodge": 4.965,
+  "nullification": 4.991,
+  "emptyEight": 39.364,
+  "rounds": {
+    "military-five": {
+      "elapsedSeconds": 393.266,
+      "lastTurn": 11,
+      "cycleSeconds": [
+        290.613,
+        102.942
+      ],
+      "usedCards": 20,
+      "pageErrors": []
+    },
+    "military-eight": {
+      "elapsedSeconds": 1173.105,
+      "lastTurn": 17,
+      "cycleSeconds": [
+        593.112,
+        579.688
+      ],
+      "usedCards": 47,
+      "pageErrors": []
+    }
+  },
+  "mirrorFiles": 93
+}

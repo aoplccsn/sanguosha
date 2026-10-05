@@ -1,0 +1,20 @@
+
+Running 4 tests using 3 workers
+
+
+(node:36884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:22156) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:24984) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/4] [chromium] › e2e\t18a8-flow.spec.ts:76:67 › mobile 390 semantic response and controls visible
+[2/4] [chromium] › e2e\t18a8-flow.spec.ts:76:67 › mobile 430 semantic response and controls visible
+[3/4] [chromium] › e2e\t18a8-flow.spec.ts:90:67 › eight-player mobile 390 keeps response and controls readable
+[4/4] [chromium] › e2e\t18a8-flow.spec.ts:90:67 › eight-player mobile 430 keeps response and controls readable
+  4 passed (35.5s)

@@ -1,0 +1,213 @@
+[WebServer] (node:23024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 35 tests using 3 workers
+
+
+(node:17228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:11692) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:4756) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/35] [chromium] › e2e\t18a8-flow.spec.ts:33:1 › B human Slash -> AI seat thinking then visible Dodge
+[2/35] [chromium] › e2e\t18a8-flow.spec.ts:13:1 › A AI Cao Cao Slash -> human Liu Bei Dodge, persistent turn and semantic responder
+[3/35] [chromium] › e2e\t18a8-flow.spec.ts:44:75 › C authoritative AOE fanout and ordered response
+[4/35] [chromium] › e2e\t18a8-flow.spec.ts:44:75 › D authoritative AOE fanout and ordered response
+[5/35] [chromium] › e2e\t18a8-flow.spec.ts:56:1 › E both counter commands and root card stay visible
+[6/35] [chromium] › e2e\t18a8-flow.spec.ts:66:1 › F counter and counter-counter retain original trick and final parity
+[7/35] [chromium] › e2e\t18a8-flow.spec.ts:76:67 › mobile 390 semantic response and controls visible
+[8/35] [chromium] › e2e\t18a8-flow.spec.ts:76:67 › mobile 430 semantic response and controls visible
+
+[WebServer] 22:29:48 [vite] ws proxy error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[WebServer] 22:29:48 [vite] ws proxy socket error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+
+[9/35] [chromium] › e2e\t18a8-flow.spec.ts:85:67 › eight-player mobile 390 keeps response and controls readable
+
+[WebServer] 22:29:48 [vite] ws proxy error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[WebServer] 22:29:48 [vite] ws proxy socket error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+
+[10/35] [chromium] › e2e\t18a8-flow.spec.ts:85:67 › eight-player mobile 430 keeps response and controls readable
+[11/35] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 1440 C does not overlap interaction
+[12/35] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 1440 D does not overlap interaction
+[13/35] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 1440 E does not overlap interaction
+[14/35] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 390 C does not overlap interaction
+[15/35] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 390 D does not overlap interaction
+[16/35] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 390 E does not overlap interaction
+[17/35] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 430 C does not overlap interaction
+[18/35] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 430 D does not overlap interaction
+[19/35] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 430 E does not overlap interaction
+[20/35] [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 1440 C does not overlap interaction
+[21/35] [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 1440 D does not overlap interaction
+[22/35] [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 1440 E does not overlap interaction
+  1) [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 1440 E does not overlap interaction 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      121 |  })
+      122 |  expect(boxes.width).toBeLessThanOrEqual(size.width>720?155:105)
+    > 123 |  expect(boxes.overlapButtons).toBe(false);expect(boxes.overlapSeats).toBe(false);expect(boxes.pointer).toBe('none')
+          |                                                                      ^
+      124 |  if(caseName==='E'){
+      125 |   await page.locator('.hand').getByRole('button',{name:/^无懈可击 /}).click();await page.getByRole('button',{name:'使用无懈',exact:true}).click()
+      126 |   await expect(page.locator('.response-card img')).toHaveAttribute('alt','无懈可击')
+        at C:\Sanguosha\web\e2e\t18a8-flow.spec.ts:123:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\t18a8-flow-eight-compact-1440-E-does-not-overlap-interaction-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\t18a8-flow-eight-compact-1440-E-does-not-overlap-interaction-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\t18a8-flow-eight-compact-1440-E-does-not-overlap-interaction-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\t18a8-flow-eight-compact-1440-E-does-not-overlap-interaction-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:25300) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[23/35] [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 390 C does not overlap interaction
+  2) [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 1440 C does not overlap interaction 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      121 |  })
+      122 |  expect(boxes.width).toBeLessThanOrEqual(size.width>720?155:105)
+    > 123 |  expect(boxes.overlapButtons).toBe(false);expect(boxes.overlapSeats).toBe(false);expect(boxes.pointer).toBe('none')
+          |                                                                      ^
+      124 |  if(caseName==='E'){
+      125 |   await page.locator('.hand').getByRole('button',{name:/^无懈可击 /}).click();await page.getByRole('button',{name:'使用无懈',exact:true}).click()
+      126 |   await expect(page.locator('.response-card img')).toHaveAttribute('alt','无懈可击')
+        at C:\Sanguosha\web\e2e\t18a8-flow.spec.ts:123:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\t18a8-flow-eight-compact-1440-C-does-not-overlap-interaction-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\t18a8-flow-eight-compact-1440-C-does-not-overlap-interaction-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\t18a8-flow-eight-compact-1440-C-does-not-overlap-interaction-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\t18a8-flow-eight-compact-1440-C-does-not-overlap-interaction-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  3) [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 1440 D does not overlap interaction 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      121 |  })
+      122 |  expect(boxes.width).toBeLessThanOrEqual(size.width>720?155:105)
+    > 123 |  expect(boxes.overlapButtons).toBe(false);expect(boxes.overlapSeats).toBe(false);expect(boxes.pointer).toBe('none')
+          |                                                                      ^
+      124 |  if(caseName==='E'){
+      125 |   await page.locator('.hand').getByRole('button',{name:/^无懈可击 /}).click();await page.getByRole('button',{name:'使用无懈',exact:true}).click()
+      126 |   await expect(page.locator('.response-card img')).toHaveAttribute('alt','无懈可击')
+        at C:\Sanguosha\web\e2e\t18a8-flow.spec.ts:123:70
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\t18a8-flow-eight-compact-1440-D-does-not-overlap-interaction-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\t18a8-flow-eight-compact-1440-D-does-not-overlap-interaction-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\t18a8-flow-eight-compact-1440-D-does-not-overlap-interaction-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\t18a8-flow-eight-compact-1440-D-does-not-overlap-interaction-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:21548) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+[24/35] [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 390 D does not overlap interaction
+
+(node:30512) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[25/35] [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 390 E does not overlap interaction
+[26/35] [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 430 C does not overlap interaction
+[27/35] [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 430 D does not overlap interaction
+[28/35] [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 430 E does not overlap interaction
+[29/35] [chromium] › e2e\t18a8-real-rounds.spec.ts:3:56 › military-eight real several turns presentation audit
+[30/35] [chromium] › e2e\t18a8-timing.spec.ts:12:62 › measured 0 action AI turn
+[31/35] [chromium] › e2e\t18a8-timing.spec.ts:12:62 › measured 1 action AI turn
+[32/35] [chromium] › e2e\t18a8-timing.spec.ts:12:62 › measured 3 action AI turn
+[33/35] [chromium] › e2e\t18a8-timing.spec.ts:23:1 › AI Dodge and its own reading window
+[34/35] [chromium] › e2e\t18a8-timing.spec.ts:33:1 › AI Nullification has a readable decision and response
+[35/35] [chromium] › e2e\t18a8-timing.spec.ts:44:1 › seven completely skipped AI turns remain distinct for a whole eight-seat round
+
+
+[WebServer] 22:36:04 [vite] ws proxy error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[WebServer] 22:36:04 [vite] ws proxy socket error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[WebServer] 22:36:27 [vite] ws proxy error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+
+
+[WebServer] 22:36:27 [vite] ws proxy socket error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+
+[WebServer] 22:37:03 [vite] ws proxy error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[WebServer] 22:37:03 [vite] ws proxy socket error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+
+[WebServer] 22:43:29 [vite] ws proxy error:
+
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[WebServer] 22:43:29 [vite] ws proxy socket error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+
+  Slow test file: [chromium] › e2e\t18a8-real-rounds.spec.ts (19.6m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  3 failed
+    [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 1440 C does not overlap interaction 
+    [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 1440 D does not overlap interaction 
+    [chromium] › e2e\t18a8-flow.spec.ts:113:162 › eight compact 1440 E does not overlap interaction 
+  32 passed (21.0m)

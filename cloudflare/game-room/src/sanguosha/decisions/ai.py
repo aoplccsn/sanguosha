@@ -22,19 +22,53 @@ class AIDecisionProvider:
                    for pid in request.allowed_player_ids)
         skill = skill or any(cid.startswith('virtual:') for cid in request.eligible_card_ids)
         if request.request_type is RequestType.YES_NO and candidates <= 1:
-            return 'simple', 2800
+            return 'simple', 4500
         if multi or skill or candidates > 8 or kill:
-            return 'complex', min(7000, 4500 + min(candidates, 16) * 100 + int(multi) * 350 + int(kill) * 400)
-        return 'ordinary', 3500 + min(candidates, 8) * 180
+            return 'complex', min(10000, 6500 + min(candidates, 16) * 100 + int(multi) * 350 + int(kill) * 400)
+        if request.request_type is RequestType.RESPOND_WITH_CARD and candidates <= 3:
+            return 'simple', 4500 + candidates * 200
+        return 'ordinary', 5000 + min(candidates, 8) * 200
+
+    def observe_public_events(self, state, events):
+        """Small public attitude ledger; persisted with the match, no hidden cards."""
+        from sanguosha.engine.events import CardUsedEvent, DamageDealtEvent, HpRecoveredEvent
+        ledger = state.metadata.setdefault('public_attitude', {})
+        start = state.metadata.get('public_attitude_event_count', 0)
+        for event in events[start:]:
+            source, targets, change = None, (), 0
+            if isinstance(event, (DamageDealtEvent, HpRecoveredEvent)):
+                source, targets = event.source_id, (event.target_id,)
+                change = event.amount * (2 if isinstance(event, HpRecoveredEvent) else -2)
+            elif isinstance(event, CardUsedEvent):
+                definition = event.virtual_definition_id or state.cards[event.card_id].definition_id
+                if definition in ('trick.dismantlement', 'trick.snatch', 'trick.duel',
+                                  'basic.slash', 'basic.fire_slash', 'basic.thunder_slash'):
+                    source, targets, change = event.player_id, event.target_ids, -1
+            if source:
+                relation = ledger.setdefault(str(source), {})
+                for target in targets:
+                    if target != source:
+                        relation[str(target)] = max(-6, min(6, relation.get(str(target), 0) + change))
+        state.metadata['public_attitude_event_count'] = len(events)
 
     def _priority(self, state: GameState, actor: PlayerId, target: PlayerId) -> int:
         role = state.players[actor].identity
         known_lord = target in state.revealed_identities and state.players[target].identity is Identity.LORD
         public_hostility = int(state.metadata.get('public_hostility_to_lord', {}).get(target, 0))
+        ledger = state.metadata.get('public_attitude', {})
+        lord = next((pid for pid in state.revealed_identities if state.players[pid].identity is Identity.LORD), None)
+        to_lord = ledger.get(str(target), {}).get(str(lord), 0)
+        to_self = ledger.get(str(target), {}).get(str(actor), 0)
+        if target in state.revealed_identities and not known_lord:
+            revealed = state.players[target].identity
+            if role is Identity.REBEL:
+                return -100 if revealed is Identity.REBEL else 80
+            if role in (Identity.LOYALIST, Identity.LORD):
+                return -100 if revealed is Identity.LOYALIST else 80
         if role is Identity.REBEL:
-            return 100 if known_lord else -20
+            return 100 if known_lord else -20 + 15 * to_lord - 5 * to_self
         if role in (Identity.LOYALIST, Identity.LORD):
-            return -100 if known_lord else 20 + 20 * min(public_hostility, 3)
+            return -100 if known_lord else 20 + 20 * min(public_hostility, 3) - 15 * to_lord - 5 * to_self
         # Hidden roles are unknown to the AI. The renegade conserves the lord
         # until only the two of them remain, using only public seat information.
         living = sum(player.is_alive for player in state.players.values())
@@ -234,7 +268,7 @@ class AIDecisionProvider:
                 slash = [choice for choice in usable if canonical_definition(state, skill_registry, player_id, state.cards[CardInstanceId(choice[4:])].definition_id) in ('basic.slash','basic.fire_slash','basic.thunder_slash')]
             enemies = [pid for pid in state.seat_order if pid != player_id and state.players[pid].is_alive and self._priority(state, player_id, pid) > 0]
             lord = next((pid for pid in state.seat_order
-                         if state.players[pid].is_alive and state.players[pid].identity is Identity.LORD), None)
+                         if pid in state.revealed_identities and state.players[pid].is_alive and state.players[pid].identity is Identity.LORD), None)
             if peach and state.players[player_id].hp < state.players[player_id].max_hp:
                 value = peach[0]
             elif ('skill:luanwu' in request.choices and state.players[player_id].hp > 1
@@ -384,7 +418,7 @@ class AIDecisionProvider:
                     keep.get(state.cards[cid].definition_id, 0), str(cid)))
             elif '黄天' in request.prompt:
                 lord = next((pid for pid in state.seat_order
-                             if state.players[pid].is_alive and state.players[pid].identity is Identity.LORD), None)
+                             if pid in state.revealed_identities and state.players[pid].is_alive and state.players[pid].identity is Identity.LORD), None)
                 dodges = [cid for cid in request.eligible_card_ids
                           if state.cards[cid].definition_id == DODGE_ID]
                 lightning = [cid for cid in request.eligible_card_ids

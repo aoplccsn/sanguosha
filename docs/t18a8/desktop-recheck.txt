@@ -1,0 +1,19 @@
+
+Running 3 tests using 3 workers
+
+
+
+(node:35744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17920) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:36272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/3] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 1440 E does not overlap interaction
+[2/3] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 1440 D does not overlap interaction
+[3/3] [chromium] › e2e\t18a8-flow.spec.ts:95:162 › compact 1440 C does not overlap interaction
+  3 passed (12.0s)

@@ -1,0 +1,3665 @@
+{
+  "elapsedMs": 393266,
+  "events": [
+    {
+      "kind": "TurnStartedEvent",
+      "event_id": "turn-1:start",
+      "player_id": "p1",
+      "turn_number": 1,
+      "receivedAt": 1791209001023
+    },
+    {
+      "kind": "DiscardEvent",
+      "event_id": "a8ee3ffa9f9e6fc696c7e73c",
+      "player_id": "p1",
+      "count": 1,
+      "receivedAt": 1791209001755
+    },
+    {
+      "kind": "TurnEndedEvent",
+      "event_id": "turn-1:end",
+      "player_id": "p1",
+      "turn_number": 1,
+      "receivedAt": 1791209001755
+    },
+    {
+      "kind": "TurnStartedEvent",
+      "event_id": "turn-2:start",
+      "player_id": "p2",
+      "turn_number": 2,
+      "receivedAt": 1791209001755
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:f93e39dfcc4275af13224b8a",
+      "source_id": "p2",
+      "complexity": "ordinary",
+      "thinking_ms": 6200,
+      "receivedAt": 1791209001755
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-14-play-0:use:used",
+      "source_id": "p2",
+      "target_ids": [],
+      "definition_id": "equipment.armor.eight_trigrams",
+      "card_name": "八卦阵",
+      "root_id": "98f5a91a2db48e781699786e",
+      "receivedAt": 1791209008000
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-14-play-0:use:resolved",
+      "root_id": "98f5a91a2db48e781699786e",
+      "receivedAt": 1791209008000
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:29ea57a4d15c1716efcd1198",
+      "source_id": "p2",
+      "complexity": "ordinary",
+      "thinking_ms": 6000,
+      "receivedAt": 1791209011542
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:526ffad6d9c37571cfd76265",
+      "source_id": "p2",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209017552
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-14-play-1:use:used",
+      "source_id": "p2",
+      "target_ids": [
+        "p1"
+      ],
+      "definition_id": "basic.slash",
+      "card_name": "杀",
+      "root_id": "934dba7bc36ca71786172972",
+      "receivedAt": 1791209023001
+    },
+    {
+      "kind": "DamageDealtEvent",
+      "event_id": "frame-14-play-1:use:effect:target:1:damage:dealt",
+      "source_id": "p2",
+      "target_id": "p1",
+      "amount": 1,
+      "receivedAt": 1791209027536
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-14-play-1:use:resolved",
+      "root_id": "934dba7bc36ca71786172972",
+      "receivedAt": 1791209027536
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:59619a2eca835c46b8b469f5",
+      "source_id": "p2",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209027536
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:6406ff0e3df1ecd097b054f3",
+      "source_id": "p2",
+      "complexity": "complex",
+      "thinking_ms": 7350,
+      "receivedAt": 1791209032966
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-14-play-2:use:used",
+      "source_id": "p2",
+      "target_ids": [
+        "p1"
+      ],
+      "definition_id": "trick.iron_chain",
+      "card_name": "铁索连环",
+      "root_id": "e906cc24c6236cfd8a62e179",
+      "receivedAt": 1791209040336
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:598165bd22cd607278cc8cac",
+      "source_id": "p4",
+      "complexity": "simple",
+      "thinking_ms": 4700,
+      "receivedAt": 1791209044889
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-14-play-2:use:resolved",
+      "root_id": "e906cc24c6236cfd8a62e179",
+      "receivedAt": 1791209049603
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:648f28cef9e0648f56e8b0dd",
+      "source_id": "p2",
+      "complexity": "ordinary",
+      "thinking_ms": 5200,
+      "receivedAt": 1791209049603
+    },
+    {
+      "kind": "TurnEndedEvent",
+      "event_id": "turn-2:end",
+      "player_id": "p2",
+      "turn_number": 2,
+      "receivedAt": 1791209054859
+    },
+    {
+      "kind": "TurnStartedEvent",
+      "event_id": "turn-3:start",
+      "player_id": "p3",
+      "turn_number": 3,
+      "receivedAt": 1791209054863
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:71cf3070ca267c3aec792cf9",
+      "source_id": "p3",
+      "complexity": "ordinary",
+      "thinking_ms": 6200,
+      "receivedAt": 1791209054863
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:d794244602386cf6701f232f",
+      "source_id": "p3",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209061099
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-38-play-0:use:used",
+      "source_id": "p3",
+      "target_ids": [
+        "p4"
+      ],
+      "definition_id": "basic.slash",
+      "card_name": "杀",
+      "root_id": "78db50484a2a90b129b23d4b",
+      "receivedAt": 1791209066558
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:d098c3b93dc640c86a6fa505",
+      "source_id": "p4",
+      "complexity": "simple",
+      "thinking_ms": 4700,
+      "receivedAt": 1791209071070
+    },
+    {
+      "kind": "CardRespondedEvent",
+      "event_id": "frame-38-play-0:use:effect:target:1:response:responded",
+      "base_action": {
+        "root_id": "78db50484a2a90b129b23d4b",
+        "source_id": "p3",
+        "definition_id": "basic.slash",
+        "card_name": "杀",
+        "target_ids": [
+          "p4"
+        ]
+      },
+      "source_id": "p4",
+      "response_number": 1,
+      "response_total": 1,
+      "definition_id": "basic.dodge",
+      "receivedAt": 1791209075793
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-38-play-0:use:resolved",
+      "root_id": "78db50484a2a90b129b23d4b",
+      "receivedAt": 1791209075793
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:1d39aa81eae20b519487be70",
+      "source_id": "p3",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209080319
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:1831bfce42bf176078660fbf",
+      "source_id": "p3",
+      "complexity": "complex",
+      "thinking_ms": 7350,
+      "receivedAt": 1791209085780
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-38-play-1:use:used",
+      "source_id": "p3",
+      "target_ids": [
+        "p1"
+      ],
+      "definition_id": "trick.iron_chain",
+      "card_name": "铁索连环",
+      "root_id": "e40007f06c403b919a36381d",
+      "receivedAt": 1791209093152
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:67806a0063fdf2a90eb04232",
+      "source_id": "p4",
+      "complexity": "simple",
+      "thinking_ms": 4700,
+      "receivedAt": 1791209097649
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-38-play-1:use:resolved",
+      "root_id": "e40007f06c403b919a36381d",
+      "receivedAt": 1791209102414
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:8b35aa9af848202ebe493722",
+      "source_id": "p3",
+      "complexity": "ordinary",
+      "thinking_ms": 5200,
+      "receivedAt": 1791209102414
+    },
+    {
+      "kind": "TurnEndedEvent",
+      "event_id": "turn-3:end",
+      "player_id": "p3",
+      "turn_number": 3,
+      "receivedAt": 1791209107665
+    },
+    {
+      "kind": "TurnStartedEvent",
+      "event_id": "turn-4:start",
+      "player_id": "p4",
+      "turn_number": 4,
+      "receivedAt": 1791209107665
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:9ef363f6bfb89ba73c8512d4",
+      "source_id": "p4",
+      "complexity": "ordinary",
+      "thinking_ms": 5800,
+      "receivedAt": 1791209107665
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:694fb97b905c1c0e3faa864f",
+      "source_id": "p4",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209113498
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-60-play-0:use:used",
+      "source_id": "p4",
+      "target_ids": [
+        "p3"
+      ],
+      "definition_id": "trick.snatch",
+      "card_name": "顺手牵羊",
+      "root_id": "a5dcf1973e0f68737de34232",
+      "receivedAt": 1791209118926
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:eada9e7ee07096ae2b401ec8",
+      "source_id": "p4",
+      "complexity": "simple",
+      "thinking_ms": 4700,
+      "receivedAt": 1791209123486
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:1a7ffeffad270ea9a6fe665e",
+      "source_id": "p4",
+      "complexity": "ordinary",
+      "thinking_ms": 5800,
+      "receivedAt": 1791209128233
+    },
+    {
+      "kind": "DiscardEvent",
+      "event_id": "901b8858570ad00cb392bc76",
+      "player_id": "p4",
+      "count": 1,
+      "receivedAt": 1791209134055
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-60-play-0:use:resolved",
+      "root_id": "a5dcf1973e0f68737de34232",
+      "receivedAt": 1791209134055
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:bdfa5fff6913330792f9494e",
+      "source_id": "p4",
+      "complexity": "ordinary",
+      "thinking_ms": 5800,
+      "receivedAt": 1791209134055
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-60-play-1:use:used",
+      "source_id": "p4",
+      "target_ids": [],
+      "definition_id": "equipment.armor.vine",
+      "card_name": "藤甲",
+      "root_id": "111950e078d5751dd25bb03c",
+      "receivedAt": 1791209139870
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-60-play-1:use:resolved",
+      "root_id": "111950e078d5751dd25bb03c",
+      "receivedAt": 1791209139874
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:3dd2ce500da1c51de80466cd",
+      "source_id": "p4",
+      "complexity": "ordinary",
+      "thinking_ms": 5600,
+      "receivedAt": 1791209143387
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-60-play-2:use:used",
+      "source_id": "p4",
+      "target_ids": [],
+      "definition_id": "equipment.weapon.green_dragon_blade",
+      "card_name": "青龙偃月刀",
+      "root_id": "95d3f63cd349a0a912b8c385",
+      "receivedAt": 1791209149037
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-60-play-2:use:resolved",
+      "root_id": "95d3f63cd349a0a912b8c385",
+      "receivedAt": 1791209149037
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:a47f67b98800a790a0f70680",
+      "source_id": "p4",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209152548
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:974bd163e7945a98ba74fe68",
+      "source_id": "p4",
+      "complexity": "ordinary",
+      "thinking_ms": 5800,
+      "receivedAt": 1791209157996
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-60-play-3:use:used",
+      "source_id": "p4",
+      "target_ids": [
+        "p2"
+      ],
+      "definition_id": "basic.slash",
+      "card_name": "杀",
+      "root_id": "0bfd25e5717a2ee38868738f",
+      "receivedAt": 1791209163814
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:c5351e9845d808f993f5e3f0",
+      "source_id": "p2",
+      "complexity": "simple",
+      "thinking_ms": 4500,
+      "receivedAt": 1791209168373
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:738ef039950f6451a30dda50",
+      "source_id": "p2",
+      "complexity": "simple",
+      "thinking_ms": 4500,
+      "receivedAt": 1791209172898
+    },
+    {
+      "kind": "JudgmentEvent",
+      "event_id": "frame-60-play-3:use:effect:target:1:judgment:after",
+      "source_id": "p2",
+      "matched": true,
+      "receivedAt": 1791209177412
+    },
+    {
+      "kind": "VirtualResponseEvent",
+      "event_id": "frame-60-play-3:use:effect:target:1:armor-dodge",
+      "base_action": {
+        "root_id": "0bfd25e5717a2ee38868738f",
+        "source_id": "p4",
+        "definition_id": "basic.slash",
+        "card_name": "杀",
+        "target_ids": [
+          "p2"
+        ]
+      },
+      "source_id": "p2",
+      "response_number": 1,
+      "response_total": 1,
+      "definition_id": "basic.dodge",
+      "receivedAt": 1791209177412
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-60-play-3:use:resolved",
+      "root_id": "0bfd25e5717a2ee38868738f",
+      "receivedAt": 1791209177412
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:3713b8514b3c6981484386f5",
+      "source_id": "p4",
+      "complexity": "ordinary",
+      "thinking_ms": 5200,
+      "receivedAt": 1791209181953
+    },
+    {
+      "kind": "TurnEndedEvent",
+      "event_id": "turn-4:end",
+      "player_id": "p4",
+      "turn_number": 4,
+      "receivedAt": 1791209187160
+    },
+    {
+      "kind": "TurnStartedEvent",
+      "event_id": "turn-5:start",
+      "player_id": "p5",
+      "turn_number": 5,
+      "receivedAt": 1791209187160
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:d26f2d639576d7aa9c0a3af6",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 6400,
+      "receivedAt": 1791209187160
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:97b0d0b8c4d0dc172e2ef4ca",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209193597
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-85-play-0:use:used",
+      "source_id": "p5",
+      "target_ids": [
+        "p4"
+      ],
+      "definition_id": "trick.snatch",
+      "card_name": "顺手牵羊",
+      "root_id": "4bf5324476652eaacd8917ea",
+      "receivedAt": 1791209199031
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:a5028f3121e7bac4bfc21fab",
+      "source_id": "p4",
+      "complexity": "simple",
+      "thinking_ms": 4700,
+      "receivedAt": 1791209203582
+    },
+    {
+      "kind": "CardRespondedEvent",
+      "event_id": "frame-85-play-0:use:effect:window:1:counter:0:5:responded",
+      "base_action": {
+        "root_id": "4bf5324476652eaacd8917ea",
+        "source_id": "p5",
+        "definition_id": "trick.snatch",
+        "card_name": "顺手牵羊",
+        "target_ids": [
+          "p4"
+        ],
+        "nullification_count": 1,
+        "cancelled": true
+      },
+      "source_id": "p4",
+      "response_number": 1,
+      "response_total": 1,
+      "definition_id": "trick.nullification",
+      "receivedAt": 1791209208339
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-85-play-0:use:resolved",
+      "root_id": "4bf5324476652eaacd8917ea",
+      "receivedAt": 1791209212851
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:0ad56d9be728bcb67b0193e3",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 6200,
+      "receivedAt": 1791209212852
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:7cefcd84c8cf840fce483876",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 5800,
+      "receivedAt": 1791209219092
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-85-play-1:use:used",
+      "source_id": "p5",
+      "target_ids": [
+        "p2"
+      ],
+      "definition_id": "trick.dismantlement",
+      "card_name": "过河拆桥",
+      "root_id": "4d5ffd2175cfee9f58a5a474",
+      "receivedAt": 1791209224910
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:540210b8a40434987a3b37a4",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 6000,
+      "receivedAt": 1791209229432
+    },
+    {
+      "kind": "DiscardEvent",
+      "event_id": "2fdf7c8c9c7e2a067ddc7a95",
+      "player_id": "p5",
+      "count": 1,
+      "receivedAt": 1791209235467
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-85-play-1:use:resolved",
+      "root_id": "4d5ffd2175cfee9f58a5a474",
+      "receivedAt": 1791209235467
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:0d0c93f3ea2236a5e404b9b2",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 6000,
+      "receivedAt": 1791209235467
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-85-play-2:use:used",
+      "source_id": "p5",
+      "target_ids": [],
+      "definition_id": "basic.wine",
+      "card_name": "酒",
+      "root_id": "67f0f65a5197d33d4ff47a0a",
+      "receivedAt": 1791209241481
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-85-play-2:use:resolved",
+      "root_id": "67f0f65a5197d33d4ff47a0a",
+      "receivedAt": 1791209241481
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:d071942959ed9f0ac8df1e87",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 5800,
+      "receivedAt": 1791209246026
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-85-play-3:use:used",
+      "source_id": "p5",
+      "target_ids": [],
+      "definition_id": "equipment.horse.hualiu",
+      "card_name": "骅骝",
+      "root_id": "0c241e4a6fce46ccc4f0d535",
+      "receivedAt": 1791209251884
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-85-play-3:use:resolved",
+      "root_id": "0c241e4a6fce46ccc4f0d535",
+      "receivedAt": 1791209251890
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:b695f1e62705fd5f0ea3cd46",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 5600,
+      "receivedAt": 1791209255407
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:feb064983e49293f1970a11d",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209261038
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-85-play-4:use:used",
+      "source_id": "p5",
+      "target_ids": [
+        "p4"
+      ],
+      "definition_id": "basic.slash",
+      "card_name": "杀",
+      "root_id": "d5fa2ebc6e5cfef8bc2b5ac2",
+      "receivedAt": 1791209266476
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-85-play-4:use:resolved",
+      "root_id": "d5fa2ebc6e5cfef8bc2b5ac2",
+      "receivedAt": 1791209266476
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:19e6e29895f62c53d22d673b",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209271023
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:75bee619a7581b8bcd355158",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209276444
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-85-play-5:use:used",
+      "source_id": "p5",
+      "target_ids": [
+        "p4"
+      ],
+      "definition_id": "delayed.supply_shortage",
+      "card_name": "兵粮寸断",
+      "root_id": "171e782551f1b4bc75180fa6",
+      "receivedAt": 1791209281855
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-85-play-5:use:resolved",
+      "root_id": "171e782551f1b4bc75180fa6",
+      "receivedAt": 1791209281860
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:9b0cba35190b5a26cdb285b2",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 5200,
+      "receivedAt": 1791209286384
+    },
+    {
+      "kind": "TurnEndedEvent",
+      "event_id": "turn-5:end",
+      "player_id": "p5",
+      "turn_number": 5,
+      "receivedAt": 1791209291630
+    },
+    {
+      "kind": "TurnStartedEvent",
+      "event_id": "turn-6:start",
+      "player_id": "p1",
+      "turn_number": 6,
+      "receivedAt": 1791209291636
+    },
+    {
+      "kind": "DiscardEvent",
+      "event_id": "16c4952293cfe24a360a0653",
+      "player_id": "p1",
+      "count": 3,
+      "receivedAt": 1791209291978
+    },
+    {
+      "kind": "TurnEndedEvent",
+      "event_id": "turn-6:end",
+      "player_id": "p1",
+      "turn_number": 6,
+      "receivedAt": 1791209291978
+    },
+    {
+      "kind": "TurnStartedEvent",
+      "event_id": "turn-7:start",
+      "player_id": "p2",
+      "turn_number": 7,
+      "receivedAt": 1791209291978
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:0b4ecdcfe728fac75072d35f",
+      "source_id": "p2",
+      "complexity": "ordinary",
+      "thinking_ms": 5800,
+      "receivedAt": 1791209291979
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:567820461a07e9907aeb8e74",
+      "source_id": "p2",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209297817
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-132-play-0:use:used",
+      "source_id": "p2",
+      "target_ids": [
+        "p1"
+      ],
+      "definition_id": "basic.slash",
+      "card_name": "杀",
+      "root_id": "0472527ff4875e36e081d4ad",
+      "receivedAt": 1791209303260
+    },
+    {
+      "kind": "DamageDealtEvent",
+      "event_id": "frame-132-play-0:use:effect:target:1:damage:dealt",
+      "source_id": "p2",
+      "target_id": "p1",
+      "amount": 1,
+      "receivedAt": 1791209307817
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-132-play-0:use:resolved",
+      "root_id": "0472527ff4875e36e081d4ad",
+      "receivedAt": 1791209307822
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:65a22b49d73f03781fd835f0",
+      "source_id": "p2",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209307822
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:db5dec021c181a31df3ead37",
+      "source_id": "p2",
+      "complexity": "ordinary",
+      "thinking_ms": 5800,
+      "receivedAt": 1791209313273
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-132-play-1:use:used",
+      "source_id": "p2",
+      "target_ids": [
+        "p1"
+      ],
+      "definition_id": "trick.fire_attack",
+      "card_name": "火攻",
+      "root_id": "afca89889a6971ef1af81f49",
+      "receivedAt": 1791209319077
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:6f21030d79b52523da66fe36",
+      "source_id": "p2",
+      "complexity": "simple",
+      "thinking_ms": 4900,
+      "receivedAt": 1791209323785
+    },
+    {
+      "kind": "DiscardEvent",
+      "event_id": "987fbee5c0a21a9903f26279",
+      "player_id": "p2",
+      "count": 1,
+      "receivedAt": 1791209328723
+    },
+    {
+      "kind": "DamageDealtEvent",
+      "event_id": "frame-132-play-1:use:effect:effect:1:fire:dealt",
+      "source_id": "p2",
+      "target_id": "p1",
+      "amount": 1,
+      "receivedAt": 1791209328723
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-132-play-1:use:resolved",
+      "root_id": "afca89889a6971ef1af81f49",
+      "receivedAt": 1791209328723
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:5e5700fb5642e68780117f44",
+      "source_id": "p2",
+      "complexity": "ordinary",
+      "thinking_ms": 5200,
+      "receivedAt": 1791209331232
+    },
+    {
+      "kind": "TurnEndedEvent",
+      "event_id": "turn-7:end",
+      "player_id": "p2",
+      "turn_number": 7,
+      "receivedAt": 1791209336486
+    },
+    {
+      "kind": "TurnStartedEvent",
+      "event_id": "turn-8:start",
+      "player_id": "p3",
+      "turn_number": 8,
+      "receivedAt": 1791209336490
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:ded2c7446e7fd68c167e0316",
+      "source_id": "p3",
+      "complexity": "ordinary",
+      "thinking_ms": 5800,
+      "receivedAt": 1791209336490
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-155-play-0:use:used",
+      "source_id": "p3",
+      "target_ids": [],
+      "definition_id": "equipment.horse.dayuan",
+      "card_name": "大宛",
+      "root_id": "77bdc1b3c4e9322fec60b969",
+      "receivedAt": 1791209342299
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-155-play-0:use:resolved",
+      "root_id": "77bdc1b3c4e9322fec60b969",
+      "receivedAt": 1791209342299
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:14f7c00eb4a65f6cb64c18ff",
+      "source_id": "p3",
+      "complexity": "ordinary",
+      "thinking_ms": 5600,
+      "receivedAt": 1791209345852
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:9b528c91d33cbb41a81daa5b",
+      "source_id": "p3",
+      "complexity": "ordinary",
+      "thinking_ms": 5600,
+      "receivedAt": 1791209351465
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-155-play-1:use:used",
+      "source_id": "p3",
+      "target_ids": [
+        "p1"
+      ],
+      "definition_id": "basic.slash",
+      "card_name": "杀",
+      "root_id": "a39f9a1497629fd4f12ed754",
+      "receivedAt": 1791209357103
+    },
+    {
+      "kind": "DamageDealtEvent",
+      "event_id": "frame-155-play-1:use:effect:target:1:damage:dealt",
+      "source_id": "p3",
+      "target_id": "p1",
+      "amount": 1,
+      "receivedAt": 1791209361656
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-155-play-1:use:resolved",
+      "root_id": "a39f9a1497629fd4f12ed754",
+      "receivedAt": 1791209361656
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:73ae0be771001447057ce8ee",
+      "source_id": "p3",
+      "complexity": "ordinary",
+      "thinking_ms": 5200,
+      "receivedAt": 1791209361656
+    },
+    {
+      "kind": "TurnEndedEvent",
+      "event_id": "turn-8:end",
+      "player_id": "p3",
+      "turn_number": 8,
+      "receivedAt": 1791209366911
+    },
+    {
+      "kind": "TurnStartedEvent",
+      "event_id": "turn-9:start",
+      "player_id": "p4",
+      "turn_number": 9,
+      "receivedAt": 1791209366911
+    },
+    {
+      "kind": "JudgmentEvent",
+      "event_id": "turn-9:phase:2:judgment:delayed:1:judgment:after",
+      "source_id": "p4",
+      "matched": false,
+      "receivedAt": 1791209366911
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:152880ad5a8ed3ba75256fc9",
+      "source_id": "p4",
+      "complexity": "ordinary",
+      "thinking_ms": 5200,
+      "receivedAt": 1791209366911
+    },
+    {
+      "kind": "TurnEndedEvent",
+      "event_id": "turn-9:end",
+      "player_id": "p4",
+      "turn_number": 9,
+      "receivedAt": 1791209372162
+    },
+    {
+      "kind": "TurnStartedEvent",
+      "event_id": "turn-10:start",
+      "player_id": "p5",
+      "turn_number": 10,
+      "receivedAt": 1791209372471
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:3c3606e3674889eb9def99c8",
+      "source_id": "p5",
+      "complexity": "complex",
+      "thinking_ms": 6800,
+      "receivedAt": 1791209372471
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:05210b032e9a13ba5ff2f0ac",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 5400,
+      "receivedAt": 1791209379328
+    },
+    {
+      "kind": "CardUsedEvent",
+      "event_id": "frame-185-play-0:use:used",
+      "source_id": "p5",
+      "target_ids": [
+        "p4"
+      ],
+      "definition_id": "basic.slash",
+      "card_name": "杀",
+      "root_id": "e31cb1e4014b6e55c1821744",
+      "receivedAt": 1791209384772
+    },
+    {
+      "kind": "CardResolvedEvent",
+      "event_id": "frame-185-play-0:use:resolved",
+      "root_id": "e31cb1e4014b6e55c1821744",
+      "receivedAt": 1791209384772
+    },
+    {
+      "kind": "AIThinkingEvent",
+      "event_id": "thinking:68345da8dc46d2db2b0f6836",
+      "source_id": "p5",
+      "complexity": "ordinary",
+      "thinking_ms": 5200,
+      "receivedAt": 1791209389333
+    },
+    {
+      "kind": "TurnEndedEvent",
+      "event_id": "turn-10:end",
+      "player_id": "p5",
+      "turn_number": 10,
+      "receivedAt": 1791209394578
+    },
+    {
+      "kind": "TurnStartedEvent",
+      "event_id": "turn-11:start",
+      "player_id": "p1",
+      "turn_number": 11,
+      "receivedAt": 1791209394578
+    }
+  ],
+  "observations": [
+    {
+      "time": 1286.699999988079,
+      "hud": "第 1 回合弃牌牌堆 138弃牌 0对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self active",
+          "timer": "60.0s"
+        }
+      ]
+    },
+    {
+      "time": 1592.5999999642372,
+      "hud": "第 2 回合出牌牌堆 136弃牌 1对局速度 慢正常快画质 高中低离开牌局",
+      "action": "吕布 弃牌",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking",
+          "timer": "6.2s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 6099.899999976158,
+      "hud": "第 2 回合出牌牌堆 136弃牌 1对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking",
+          "timer": "1.7s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 7824.599999964237,
+      "hud": "第 2 回合出牌牌堆 136弃牌 1对局速度 慢正常快画质 高中低离开牌局",
+      "action": "八卦阵郭嘉 使用【八卦阵】",
+      "stage": "reveal",
+      "card": "八卦阵",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active presenting-action"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 11288.899999976158,
+      "hud": "第 2 回合出牌牌堆 136弃牌 1对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking",
+          "timer": "6.0s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 22787,
+      "hud": "第 2 回合出牌牌堆 136弃牌 1对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀郭嘉 → 吕布",
+      "stage": "target",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active presenting-action"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self responding event-target",
+          "timer": "响应【杀】请出【闪】60.0s"
+        }
+      ]
+    },
+    {
+      "time": 27290.69999998808,
+      "hud": "第 2 回合出牌牌堆 136弃牌 2对局速度 慢正常快画质 高中低离开牌局",
+      "action": "郭嘉 对 吕布 造成 1 点伤害",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking damage-flash",
+          "timer": "5.4s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self damage-flash"
+        }
+      ]
+    },
+    {
+      "time": 29889.5,
+      "hud": "第 2 回合出牌牌堆 136弃牌 2对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking",
+          "timer": "2.9s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 40088,
+      "hud": "第 2 回合出牌牌堆 136弃牌 2对局速度 慢正常快画质 高中低离开牌局",
+      "action": "铁索连环郭嘉 → 吕布",
+      "stage": "target",
+      "card": "铁索连环",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active presenting-action"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self event-target"
+        }
+      ]
+    },
+    {
+      "time": 44591.39999997616,
+      "hud": "第 2 回合出牌牌堆 136弃牌 2对局速度 慢正常快画质 高中低离开牌局",
+      "action": "铁索连环郭嘉 → 吕布",
+      "stage": "result",
+      "card": "铁索连环",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 44687.09999996424,
+      "hud": "第 2 回合出牌牌堆 136弃牌 2对局速度 慢正常快画质 高中低离开牌局",
+      "action": "铁索连环郭嘉 → 吕布",
+      "stage": "result",
+      "card": "铁索连环",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east responding thinking",
+          "timer": "响应【铁索连环】可使用【无懈可击】思考中 ···4.7s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 49399.09999996424,
+      "hud": "第 2 回合出牌牌堆 136弃牌 3对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking",
+          "timer": "5.2s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self chained"
+        }
+      ]
+    },
+    {
+      "time": 54691,
+      "hud": "第 3 回合出牌牌堆 134弃牌 3对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active thinking",
+          "timer": "6.2s"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self chained"
+        }
+      ]
+    },
+    {
+      "time": 66324.39999997616,
+      "hud": "第 3 回合出牌牌堆 134弃牌 3对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀神赵云 → 神司马懿",
+      "stage": "result",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self chained"
+        }
+      ]
+    },
+    {
+      "time": 66390.80000001192,
+      "hud": "第 3 回合出牌牌堆 134弃牌 3对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀神赵云 → 神司马懿",
+      "stage": "target",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active presenting-action"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east event-target"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self chained"
+        }
+      ]
+    },
+    {
+      "time": 70889.5,
+      "hud": "第 3 回合出牌牌堆 134弃牌 3对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀神赵云 → 神司马懿",
+      "stage": "result",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east responding thinking",
+          "timer": "响应【杀】请出【闪】思考中 ···4.7s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self chained"
+        }
+      ]
+    },
+    {
+      "time": 75588.30000001192,
+      "hud": "第 3 回合出牌牌堆 134弃牌 5对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀闪神赵云 → 神司马懿",
+      "stage": "response",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east presenting-action"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self chained"
+        }
+      ]
+    },
+    {
+      "time": 80097.30000001192,
+      "hud": "第 3 回合出牌牌堆 134弃牌 5对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active thinking",
+          "timer": "5.4s"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self chained"
+        }
+      ]
+    },
+    {
+      "time": 92996.39999997616,
+      "hud": "第 3 回合出牌牌堆 134弃牌 5对局速度 慢正常快画质 高中低离开牌局",
+      "action": "铁索连环神赵云 → 吕布",
+      "stage": "target",
+      "card": "铁索连环",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active presenting-action"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self chained event-target"
+        }
+      ]
+    },
+    {
+      "time": 97497.30000001192,
+      "hud": "第 3 回合出牌牌堆 134弃牌 5对局速度 慢正常快画质 高中低离开牌局",
+      "action": "铁索连环神赵云 → 吕布",
+      "stage": "result",
+      "card": "铁索连环",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east responding thinking",
+          "timer": "响应【铁索连环】可使用【无懈可击】思考中 ···4.7s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self chained"
+        }
+      ]
+    },
+    {
+      "time": 102195.30000001192,
+      "hud": "第 3 回合出牌牌堆 134弃牌 6对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active thinking",
+          "timer": "5.2s"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 107487.09999996424,
+      "hud": "第 4 回合出牌牌堆 132弃牌 6对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active thinking",
+          "timer": "5.8s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 118704.89999997616,
+      "hud": "第 4 回合出牌牌堆 132弃牌 6对局速度 慢正常快画质 高中低离开牌局",
+      "action": "顺手牵羊神司马懿 → 神赵云",
+      "stage": "target",
+      "card": "顺手牵羊",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north event-target"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active presenting-action"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 123286.5,
+      "hud": "第 4 回合出牌牌堆 132弃牌 6对局速度 慢正常快画质 高中低离开牌局",
+      "action": "顺手牵羊神司马懿 → 神赵云",
+      "stage": "result",
+      "card": "顺手牵羊",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active responding thinking",
+          "timer": "响应【顺手牵羊】可使用【无懈可击】思考中 ···4.7s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 127995.80000001192,
+      "hud": "第 4 回合出牌牌堆 132弃牌 6对局速度 慢正常快画质 高中低离开牌局",
+      "action": "顺手牵羊神司马懿 → 神赵云",
+      "stage": "result",
+      "card": "顺手牵羊",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active thinking",
+          "timer": "5.8s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 133894.39999997616,
+      "hud": "第 4 回合出牌牌堆 132弃牌 7对局速度 慢正常快画质 高中低离开牌局",
+      "action": "神司马懿 弃牌",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active thinking",
+          "timer": "5.8s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 138394.89999997616,
+      "hud": "第 4 回合出牌牌堆 132弃牌 7对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active thinking",
+          "timer": "1.3s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 139695.69999998808,
+      "hud": "第 4 回合出牌牌堆 132弃牌 7对局速度 慢正常快画质 高中低离开牌局",
+      "action": "藤甲神司马懿 使用【藤甲】",
+      "stage": "reveal",
+      "card": "藤甲",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active presenting-action"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 143193.59999996424,
+      "hud": "第 4 回合出牌牌堆 132弃牌 7对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active thinking",
+          "timer": "5.6s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 148786.09999996424,
+      "hud": "第 4 回合出牌牌堆 132弃牌 7对局速度 慢正常快画质 高中低离开牌局",
+      "action": "青龙偃月刀神司马懿 使用【青龙偃月刀】",
+      "stage": "reveal",
+      "card": "青龙偃月刀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active presenting-action"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 152293.09999996424,
+      "hud": "第 4 回合出牌牌堆 132弃牌 7对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active thinking",
+          "timer": "5.4s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 163594.39999997616,
+      "hud": "第 4 回合出牌牌堆 132弃牌 7对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀神司马懿 → 郭嘉",
+      "stage": "target",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west event-target"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active presenting-action"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 168093.80000001192,
+      "hud": "第 4 回合出牌牌堆 132弃牌 7对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀神司马懿 → 郭嘉",
+      "stage": "result",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 168187.30000001192,
+      "hud": "第 4 回合出牌牌堆 132弃牌 7对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀神司马懿 → 郭嘉",
+      "stage": "result",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west responding thinking",
+          "timer": "响应【杀】请作出选择思考中 ···4.5s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 172692.80000001192,
+      "hud": "第 4 回合出牌牌堆 131弃牌 7对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀神司马懿 → 郭嘉",
+      "stage": "result",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west responding thinking",
+          "timer": "响应【杀】请作出选择思考中 ···4.5s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 177193.09999996424,
+      "hud": "第 4 回合出牌牌堆 131弃牌 8对局速度 慢正常快画质 高中低离开牌局",
+      "action": "郭嘉 · 判定命中",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 179686.89999997616,
+      "hud": "第 4 回合出牌牌堆 131弃牌 8对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀闪神司马懿 → 郭嘉",
+      "stage": "response",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west presenting-action"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 181797.89999997616,
+      "hud": "第 4 回合出牌牌堆 131弃牌 8对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀闪神司马懿 → 郭嘉",
+      "stage": "response",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west presenting-action"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active thinking",
+          "timer": "5.2s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 184188.59999996424,
+      "hud": "第 4 回合出牌牌堆 131弃牌 8对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active thinking",
+          "timer": "2.8s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 186987.19999998808,
+      "hud": "第 5 回合出牌牌堆 129弃牌 8对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active thinking",
+          "timer": "6.4s"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 198805.69999998808,
+      "hud": "第 5 回合出牌牌堆 129弃牌 8对局速度 慢正常快画质 高中低离开牌局",
+      "action": "顺手牵羊赵云 → 神司马懿",
+      "stage": "target",
+      "card": "顺手牵羊",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east event-target"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active presenting-action"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 203288.19999998808,
+      "hud": "第 5 回合出牌牌堆 129弃牌 8对局速度 慢正常快画质 高中低离开牌局",
+      "action": "顺手牵羊赵云 → 神司马懿",
+      "stage": "result",
+      "card": "顺手牵羊",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 203393.09999996424,
+      "hud": "第 5 回合出牌牌堆 129弃牌 8对局速度 慢正常快画质 高中低离开牌局",
+      "action": "顺手牵羊赵云 → 神司马懿",
+      "stage": "result",
+      "card": "顺手牵羊",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east responding thinking",
+          "timer": "响应【顺手牵羊】可使用【无懈可击】思考中 ···4.7s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 208092.09999996424,
+      "hud": "第 5 回合出牌牌堆 129弃牌 9对局速度 慢正常快画质 高中低离开牌局",
+      "action": "顺手牵羊无懈可击神司马懿【无懈可击】 → 【顺手牵羊】无懈×1 · 当前锦囊失效",
+      "stage": "response",
+      "card": "顺手牵羊",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east presenting-action"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 212692.39999997616,
+      "hud": "第 5 回合出牌牌堆 129弃牌 10对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active thinking",
+          "timer": "6.2s"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 224695.09999996424,
+      "hud": "第 5 回合出牌牌堆 129弃牌 10对局速度 慢正常快画质 高中低离开牌局",
+      "action": "过河拆桥赵云 → 郭嘉",
+      "stage": "target",
+      "card": "过河拆桥",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west event-target"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active presenting-action"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 229191.19999998808,
+      "hud": "第 5 回合出牌牌堆 129弃牌 10对局速度 慢正常快画质 高中低离开牌局",
+      "action": "过河拆桥赵云 → 郭嘉",
+      "stage": "result",
+      "card": "过河拆桥",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active thinking",
+          "timer": "6.0s"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 235290,
+      "hud": "第 5 回合出牌牌堆 129弃牌 12对局速度 慢正常快画质 高中低离开牌局",
+      "action": "赵云 弃牌",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active thinking",
+          "timer": "6.0s"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 239788.5,
+      "hud": "第 5 回合出牌牌堆 129弃牌 12对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active thinking",
+          "timer": "1.5s"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 241289.30000001192,
+      "hud": "第 5 回合出牌牌堆 129弃牌 13对局速度 慢正常快画质 高中低离开牌局",
+      "action": "酒赵云 使用【酒】",
+      "stage": "reveal",
+      "card": "酒",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active presenting-action"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 245790.89999997616,
+      "hud": "第 5 回合出牌牌堆 129弃牌 13对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active thinking",
+          "timer": "5.8s"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 251687.5,
+      "hud": "第 5 回合出牌牌堆 129弃牌 13对局速度 慢正常快画质 高中低离开牌局",
+      "action": "骅骝赵云 使用【骅骝】",
+      "stage": "reveal",
+      "card": "骅骝",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active presenting-action"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 255187.5,
+      "hud": "第 5 回合出牌牌堆 129弃牌 13对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active thinking",
+          "timer": "5.6s"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 266287.09999996424,
+      "hud": "第 5 回合出牌牌堆 129弃牌 14对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀赵云 对 神司马懿 使用【杀】",
+      "stage": "target",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east event-target"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active presenting-action"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 270790.5,
+      "hud": "第 5 回合出牌牌堆 129弃牌 14对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active thinking",
+          "timer": "5.4s"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 281686.5,
+      "hud": "第 5 回合出牌牌堆 129弃牌 14对局速度 慢正常快画质 高中低离开牌局",
+      "action": "兵粮寸断赵云 对 神司马懿 使用【兵粮寸断】",
+      "stage": "target",
+      "card": "兵粮寸断",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east event-target"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active presenting-action"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 286190,
+      "hud": "第 5 回合出牌牌堆 129弃牌 14对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active thinking",
+          "timer": "5.2s"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 291389.89999997616,
+      "hud": "第 6 回合出牌牌堆 127弃牌 14对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self active",
+          "timer": "60.0s"
+        }
+      ]
+    },
+    {
+      "time": 291488.3000000119,
+      "hud": "第 6 回合弃牌牌堆 127弃牌 14对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self active",
+          "timer": "60.0s"
+        }
+      ]
+    },
+    {
+      "time": 291789,
+      "hud": "第 7 回合出牌牌堆 125弃牌 17对局速度 慢正常快画质 高中低离开牌局",
+      "action": "吕布 弃牌",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking",
+          "timer": "5.8s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 296286.59999996424,
+      "hud": "第 7 回合出牌牌堆 125弃牌 17对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking",
+          "timer": "1.3s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 303089.5,
+      "hud": "第 7 回合出牌牌堆 125弃牌 17对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀郭嘉 → 吕布",
+      "stage": "target",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active presenting-action"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self responding event-target",
+          "timer": "响应【杀】请出【闪】60.0s"
+        }
+      ]
+    },
+    {
+      "time": 307588.6999999881,
+      "hud": "第 7 回合出牌牌堆 125弃牌 18对局速度 慢正常快画质 高中低离开牌局",
+      "action": "郭嘉 对 吕布 造成 1 点伤害",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking damage-flash",
+          "timer": "5.4s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self damage-flash"
+        }
+      ]
+    },
+    {
+      "time": 310086.1999999881,
+      "hud": "第 7 回合出牌牌堆 125弃牌 18对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking",
+          "timer": "2.9s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 318887.59999996424,
+      "hud": "第 7 回合出牌牌堆 125弃牌 18对局速度 慢正常快画质 高中低离开牌局",
+      "action": "火攻郭嘉 → 吕布",
+      "stage": "target",
+      "card": "火攻",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active presenting-action"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self event-target"
+        }
+      ]
+    },
+    {
+      "time": 323387.5,
+      "hud": "第 7 回合出牌牌堆 125弃牌 18对局速度 慢正常快画质 高中低离开牌局",
+      "action": "火攻郭嘉 → 吕布",
+      "stage": "target",
+      "card": "火攻",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active presenting-action"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self responding event-target",
+          "timer": "响应【火攻】请作出选择60.0s"
+        }
+      ]
+    },
+    {
+      "time": 323587.59999996424,
+      "hud": "第 7 回合出牌牌堆 125弃牌 18对局速度 慢正常快画质 高中低离开牌局",
+      "action": "火攻郭嘉 → 吕布",
+      "stage": "target",
+      "card": "火攻",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active responding thinking presenting-action",
+          "timer": "响应【火攻】请作出选择思考中 ···4.9s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self event-target"
+        }
+      ]
+    },
+    {
+      "time": 327887.39999997616,
+      "hud": "第 7 回合出牌牌堆 125弃牌 18对局速度 慢正常快画质 高中低离开牌局",
+      "action": "火攻郭嘉 → 吕布",
+      "stage": "result",
+      "card": "火攻",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active responding thinking",
+          "timer": "响应【火攻】请作出选择思考中 ···0.6s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 328487.39999997616,
+      "hud": "第 7 回合出牌牌堆 125弃牌 20对局速度 慢正常快画质 高中低离开牌局",
+      "action": "郭嘉 弃牌",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 330990.59999996424,
+      "hud": "第 7 回合出牌牌堆 125弃牌 20对局速度 慢正常快画质 高中低离开牌局",
+      "action": "郭嘉 弃牌",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking",
+          "timer": "5.2s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 332991.1999999881,
+      "hud": "第 7 回合出牌牌堆 125弃牌 20对局速度 慢正常快画质 高中低离开牌局",
+      "action": "郭嘉 对 吕布 造成 1 点伤害",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking damage-flash",
+          "timer": "3.2s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self damage-flash"
+        }
+      ]
+    },
+    {
+      "time": 335491.5,
+      "hud": "第 7 回合出牌牌堆 125弃牌 20对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west active thinking",
+          "timer": "0.7s"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 336297.39999997616,
+      "hud": "第 8 回合出牌牌堆 123弃牌 20对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active thinking",
+          "timer": "5.8s"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 342086.8000000119,
+      "hud": "第 8 回合出牌牌堆 123弃牌 20对局速度 慢正常快画质 高中低离开牌局",
+      "action": "大宛神赵云 使用【大宛】",
+      "stage": "reveal",
+      "card": "大宛",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active presenting-action"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 345587.89999997616,
+      "hud": "第 8 回合出牌牌堆 123弃牌 20对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 345686.1999999881,
+      "hud": "第 8 回合出牌牌堆 123弃牌 20对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active thinking",
+          "timer": "5.6s"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 356886.6999999881,
+      "hud": "第 8 回合出牌牌堆 123弃牌 20对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀神赵云 → 吕布",
+      "stage": "target",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active presenting-action"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self responding event-target",
+          "timer": "响应【杀】请出【闪】60.0s"
+        }
+      ]
+    },
+    {
+      "time": 361387,
+      "hud": "第 8 回合出牌牌堆 123弃牌 20对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀神赵云 → 吕布",
+      "stage": "result",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self responding",
+          "timer": "响应【杀】请出【闪】55.5s"
+        }
+      ]
+    },
+    {
+      "time": 361487.89999997616,
+      "hud": "第 8 回合出牌牌堆 123弃牌 21对局速度 慢正常快画质 高中低离开牌局",
+      "action": "神赵云 对 吕布 造成 1 点伤害",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active thinking damage-flash",
+          "timer": "5.2s"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self damage-flash"
+        }
+      ]
+    },
+    {
+      "time": 363987,
+      "hud": "第 8 回合出牌牌堆 123弃牌 21对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north active thinking",
+          "timer": "2.7s"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 366687.6999999881,
+      "hud": "第 9 回合出牌牌堆 122弃牌 23对局速度 慢正常快画质 高中低离开牌局",
+      "action": "神司马懿 · 判定未命中",
+      "stage": "result",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active thinking",
+          "timer": "5.2s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 369186.39999997616,
+      "hud": "第 9 回合出牌牌堆 122弃牌 23对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active thinking",
+          "timer": "2.7s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 371989.09999996424,
+      "hud": "第 9 回合回合观察牌堆 122弃牌 23对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east active thinking",
+          "timer": "0.2s"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 372299.39999997616,
+      "hud": "第 10 回合出牌牌堆 120弃牌 23对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active thinking",
+          "timer": "6.8s"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 384587.1999999881,
+      "hud": "第 10 回合出牌牌堆 120弃牌 24对局速度 慢正常快画质 高中低离开牌局",
+      "action": "杀赵云 对 神司马懿 使用【杀】",
+      "stage": "target",
+      "card": "杀",
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east event-target"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active presenting-action"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 389086.5,
+      "hud": "第 10 回合出牌牌堆 120弃牌 24对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east active thinking",
+          "timer": "5.2s"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self"
+        }
+      ]
+    },
+    {
+      "time": 394404.09999996424,
+      "hud": "第 11 回合出牌牌堆 118弃牌 24对局速度 慢正常快画质 高中低离开牌局",
+      "action": "",
+      "stage": null,
+      "seats": [
+        {
+          "id": "p2",
+          "classes": "player-panel player-north-west"
+        },
+        {
+          "id": "p3",
+          "classes": "player-panel player-north"
+        },
+        {
+          "id": "p4",
+          "classes": "player-panel player-north-east"
+        },
+        {
+          "id": "p5",
+          "classes": "player-panel player-east"
+        },
+        {
+          "id": "p1",
+          "classes": "player-panel player-self active",
+          "timer": "60.0s"
+        }
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "id": "frame-6-play-0",
+      "type": "choose_option",
+      "player": "p1"
+    },
+    {
+      "id": "frame-6-play-0",
+      "type": "choose_option",
+      "player": "p1"
+    },
+    {
+      "id": "frame-6-play-0",
+      "type": "choose_option",
+      "player": "p1"
+    },
+    {
+      "id": "turn-1:phase:5:discard:discard",
+      "type": "choose_cards",
+      "player": "p1"
+    },
+    {
+      "id": "frame-14-play-1:use:effect:target:1:response:request",
+      "type": "respond_with_card",
+      "player": "p1"
+    },
+    {
+      "id": "frame-14-play-1:use:effect:target:1:response:request",
+      "type": "respond_with_card",
+      "player": "p1"
+    },
+    {
+      "id": "frame-124-play-0",
+      "type": "choose_option",
+      "player": "p1"
+    },
+    {
+      "id": "turn-6:phase:5:discard:discard",
+      "type": "choose_cards",
+      "player": "p1"
+    },
+    {
+      "id": "frame-132-play-0:use:effect:target:1:response:request",
+      "type": "respond_with_card",
+      "player": "p1"
+    },
+    {
+      "id": "frame-132-play-0:use:effect:target:1:response:request",
+      "type": "respond_with_card",
+      "player": "p1"
+    },
+    {
+      "id": "frame-132-play-1:use:effect:effect:1:request:1",
+      "type": "choose_card",
+      "player": "p1"
+    },
+    {
+      "id": "frame-155-play-1:use:effect:target:1:response:request",
+      "type": "respond_with_card",
+      "player": "p1"
+    },
+    {
+      "id": "frame-155-play-1:use:effect:target:1:response:request",
+      "type": "respond_with_card",
+      "player": "p1"
+    },
+    {
+      "id": "frame-196-play-0",
+      "type": "choose_option",
+      "player": "p1"
+    }
+  ],
+  "errors": []
+}
