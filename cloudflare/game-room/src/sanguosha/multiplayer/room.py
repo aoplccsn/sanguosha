@@ -606,6 +606,8 @@ class MultiplayerRoom:
             reverse = {card_id: alias for alias, card_id in aliases.items()}
             payload['eligible_card_ids'] = [reverse.get(card_id, card_id)
                                             for card_id in request.eligible_card_ids]
+            payload['choice_labels'] = {reverse.get(card_id,card_id):label
+                for card_id,label in payload['choice_labels'].items()}
         return payload
 
     def _resolve_hidden_choice(self, request: PendingRequest, decision: Decision) -> Decision:

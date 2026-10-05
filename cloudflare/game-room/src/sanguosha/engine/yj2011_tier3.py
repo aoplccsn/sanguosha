@@ -40,6 +40,8 @@ def scoped_target(state, source, target):
 def record_slash_use(state, source, targets):
     if not targets or not all(scoped_target(state, source, target) for target in targets):
         state.play_usage.record('basic.slash')
+        return True
+    return False
 
 
 def protected(state, target):
@@ -47,6 +49,7 @@ def protected(state, target):
 
 
 def clear_turn(state):
+    state.metadata.pop('longyin_ignored_events',None)
     for player in state.players.values():
         for key in tuple(player.marks):
             if key.startswith('yj_xianzhen:') or key in ('yj_zhichi', 'yj_xianzhen_loss'):
@@ -97,7 +100,7 @@ class AuthorizedVirtualUseHandler:
                 raise InvalidCardUse('authorized virtual Slash is unavailable')
             frame.step_index = 1
             self.recorder.record(CardUsedEvent(a.action_id + ':used', a.player_id,
-                a.action_id, a.target_ids, 'basic.slash'))
+                a.action_id, a.target_ids, 'basic.slash', virtual_card=a.virtual_card))
             return StepResult.push(SlashSequence(a.action_id + ':slash', a.player_id,
                 a.action_id, a.target_ids, a.virtual_card))
         return StepResult.complete(frame.child_result)

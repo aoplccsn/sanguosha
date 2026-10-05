@@ -91,12 +91,13 @@ def test_paiyi_draw_then_compare_and_once(target):
     with pytest.raises(InvalidCardUse): s.engine.start_action(YJ2012Action('again','p1','paiyi'))
 
 
-def test_quan_owner_only_faces_other_public_count():
-    s=setup('zhong_hui'); power(s,2)
+def test_quan_public_faces_match_owner_and_preserve_count():
+    s=setup('zhong_hui');power(s,2)
     mine=project_for_human(s.state,s.definitions,'p1',s.character_names)
     other=project_for_human(s.state,s.definitions,'p2',s.character_names)
     assert len(mine.players[0].special_piles['quan'])==2
-    assert all(c.card_id.startswith('hidden:') for c in other.players[0].special_piles['quan'])
+    assert other.players[0].special_piles['quan']==mine.players[0].special_piles['quan']
+    assert all(c.suit and c.rank and not c.card_id.startswith('hidden:') for c in other.players[0].special_piles['quan'])
 
 
 @pytest.mark.parametrize('mode,count',[('default',2),('jiang',3),('chi',1)])
@@ -314,3 +315,12 @@ def test_shiyong_virtual_uses_virtual_definition_and_color(color,wine,expected):
     virtual=VirtualCard('basic.slash',(c,),None,color)
     s.engine.start_action(MilitaryDamageAction('hurt','p2','p1',1,card_id=c,card_kind='slash',wine_enhanced=wine,virtual_card=virtual))
     assert s.state.players['p1'].max_hp==4-int(expected)
+
+
+@pytest.mark.parametrize('wine,suit',[(False,Suit.HEART),(True,Suit.SPADE)])
+def test_shiyong_chain_retains_slash_and_wine_provenance(wine,suit):
+    from sanguosha.model.enums import DamageNature
+    s=setup('hua_xiong');s.state.players['p1'].chained=s.state.players['p2'].chained=True
+    c=put(s,'basic.fire_slash','p3');s.state.cards[c]=replace(s.state.cards[c],suit=suit)
+    s.engine.start_action(MilitaryDamageAction('fire','p3','p2',1,DamageNature.FIRE,c,card_kind='slash',wine_enhanced=wine))
+    assert s.state.players['p1'].max_hp==3

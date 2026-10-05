@@ -40,8 +40,24 @@ def test_duodao_after_slash_cost_and_weapon_obtain_restore(wanted):
     assert s.engine.pending_request is None
 
 @pytest.mark.parametrize('kind,weapon',[('duel',True),('slash',False)])
-def test_duodao_non_slash_or_no_weapon_has_no_offer(kind,weapon):
+def test_duodao_non_slash_no_offer_and_no_weapon_optional_decline(kind,weapon):
     s=setup('cao_zhang');s.state.players['p1'].character_id='yj2013_pan_zhang_ma_zhong'
     if weapon:put(s,'equipment.weapon.serpent_spear','p2',ZoneType.EQUIPMENT,EquipmentSlot.WEAPON)
     c=put(s,'basic.slash','p2');s.engine.start_action(MilitaryDamageAction('hurt','p2','p1',1,card_id=c,card_kind=kind))
+    if kind=='slash':
+        assert s.engine.pending_request is not None;answer(s,False)
     assert s.engine.pending_request is None
+
+
+def test_anjian_redirected_damage_has_no_extra_bonus():
+    s=setup('cao_zhang');s.state.players['p1'].character_id='yj2013_pan_zhang_ma_zhong'
+    c=put(s,'basic.slash');hp=s.state.players['p3'].hp
+    s.engine.start_action(MilitaryDamageAction('damage','p1','p3',1,card_id=c,card_kind='slash',redirected=True))
+    finish(s);assert s.state.players['p3'].hp==hp-1
+
+
+def test_duodao_may_pay_cost_without_source_weapon():
+    s=setup('cao_zhang');s.state.players['p1'].character_id='yj2013_pan_zhang_ma_zhong'
+    c=put(s,'basic.slash','p2');s.engine.start_action(MilitaryDamageAction('hurt','p2','p1',1,card_id=c,card_kind='slash'))
+    answer(s,True);cost=s.engine.pending_request.eligible_card_ids[0];answer(s,cost)
+    assert cost in s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE)) and s.engine.pending_request is None

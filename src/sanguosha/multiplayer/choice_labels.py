@@ -2,10 +2,14 @@
 
 from sanguosha.content.characters.standard import ALL_GENERAL_POOL, ALL_SKILL_CATALOGUE
 from sanguosha.model.zones import ZoneType
+from sanguosha.content.characters.remaining import REMAINING_DEV_GENERALS, REMAINING_DEV_SKILLS
 
-GENERAL_NAMES = {str(item.id): item.name for item in ALL_GENERAL_POOL}
-SKILL_NAMES = {str(item.id): item.name for item in ALL_SKILL_CATALOGUE}
+GENERAL_NAMES = {str(item.id): item.name for item in (*ALL_GENERAL_POOL,*REMAINING_DEV_GENERALS)}
+SKILL_NAMES = {str(item.id): item.name for item in (*ALL_SKILL_CATALOGUE,*REMAINING_DEV_SKILLS)}
 CHOICE_NAMES = {
+    'default':'正常摸牌', 'jiang':'多摸一张，本回合不能用或打出杀',
+    'chi':'少摸一张，杀无距离限制且可多用一次',
+    'continue':'继续选牌', 'finish':'结束选牌',
     'end_play_phase': '结束出牌', 'draw': '摸牌', 'discard': '弃牌',
     'draw_then_discard': '先摸牌，再弃牌', 'discard_then_draw': '先弃牌，再摸牌',
     'draw_x_discard_one': '摸 X 张，弃一张', 'draw_one_discard_x': '摸一张，弃 X 张',
@@ -75,5 +79,5 @@ def choice_labels(room, request):
                 pass
         return f'选项 {index + 1}'
     values = tuple(dict.fromkeys((*request.choices,
-                  *(value for value in request.eligible_card_ids if value.startswith('virtual:')))))
+                  *request.eligible_card_ids)))
     return {value: label(value, index) for index, value in enumerate(values)}

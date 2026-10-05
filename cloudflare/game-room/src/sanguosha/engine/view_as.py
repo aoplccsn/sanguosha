@@ -1,6 +1,7 @@
 """Spear activation uses two hand costs and the normal shared Slash counter."""
 from dataclasses import dataclass
 from .actions import Action,StepResult
+from .events import CardUsedEvent
 from .card_use import LegalPlayActionProvider
 from .card_rules import InvalidCardUse
 from .card_moves import CardMove,CardMoveReason
@@ -66,7 +67,8 @@ class UseSpearHandler:
             virtual=VirtualCard.spear(state,materials,effective_suit)
             self.moves.move(state,CardMove(a.action_id+':processing',materials,hand,ZoneRef(ZoneType.PROCESSING),CardMoveReason.USE,a.player_id))
             from .yj2011_tier3 import record_slash_use
-            record_slash_use(state, a.player_id, (target,))
+            counted=record_slash_use(state, a.player_id, (target,))
+            self.moves.recorder.record(CardUsedEvent(a.action_id+':used',a.player_id,materials[0],(target,),'basic.slash',counted,virtual))
             f.step_index=3
             return StepResult.push(SlashSequence(a.action_id+':slash',a.player_id,materials[0],(target,),virtual))
         remaining=tuple(cid for cid in materials if cid in state.cards_in(ZoneRef(ZoneType.PROCESSING)))

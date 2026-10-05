@@ -651,15 +651,16 @@ class LonghunUseHandler:
             frame.decision = None
             if not self.available(state, actor, action.definition_id, action.material_ids):
                 raise InvalidCardUse('龙魂材料已失效')
+            counted=False
             if action.definition_id == 'basic.fire_slash':
                 self.slash_rule.validate_targets(state, actor, (target,))
-                record_slash_use(state, actor, (target,))
+                counted=record_slash_use(state, actor, (target,))
             frame.local['target'] = target
             self.moves.move(state, CardMove(action.action_id + ':processing',
                 action.material_ids, hand, processing, CardMoveReason.USE,
                 actor, action.action_id))
             self.recorder.record(CardUsedEvent(action.action_id + ':used', actor,
-                action.material_ids[0], (target,), action.definition_id))
+                action.material_ids[0], (target,), action.definition_id,slash_counted=counted))
             frame.step_index = 2
             if action.definition_id == 'basic.peach':
                 return StepResult.push(RecoverAction(

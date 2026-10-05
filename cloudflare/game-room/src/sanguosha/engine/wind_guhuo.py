@@ -153,9 +153,10 @@ class GuhuoHandler:
             return StepResult.complete(virtual)
         rule = self.rules.get(declared)
         targets = tuple(filter(None, frame.local.get('targets', '').split('|')))
+        slash_counted=getattr(rule,'usage_key',declared)=='basic.slash'
         state.play_usage.record(getattr(rule, 'usage_key', declared))
         self.events.record(CardUsedEvent(action.action_id + ':used', action.player_id,
-                                         card_id, targets, declared))
+                                         card_id, targets, declared,slash_counted=slash_counted))
         if declared in ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash'):
             effect = SlashSequence(action.action_id + ':effect', action.player_id, card_id,
                 targets, VirtualCard(declared, (card_id,),

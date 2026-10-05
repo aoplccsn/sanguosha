@@ -5,12 +5,17 @@ from .deck import DrawCardsAction
 from .events import CardUsedEvent, TurnStartedEvent
 from .requests import RequestType
 from .yj2011_tier3 import YJSkillHandler
+from sanguosha.model.virtual_card import VirtualCard
 
 @dataclass(frozen=True, slots=True)
 class YJ2013Action(Action):
     player_id: str
     skill: str
     opponent_id: str | None = None
+    card_id: str | None = None
+    event_id: str = ''
+    slash_counted: bool = False
+    virtual_card: VirtualCard | None = None
 
 def cards_used_this_turn(events, player_id):
     count = 0
@@ -24,9 +29,188 @@ def cards_used_this_turn(events, player_id):
 class YJ2013Handler(YJSkillHandler):
     def step(self, state, frame):
         action = frame.action
+        if action.skill=='junxing' and frame.step_index==0:
+            self.validate_active(state,action)
         if not state.players[action.player_id].is_alive or not self.skills.has(state, action.player_id, action.skill):
             return StepResult.complete()
         return super().step(state,frame)
+
+    def longyin(self,state,f):
+        from sanguosha.model.enums import Phase,Color
+        from sanguosha.model.zones import ZoneRef,ZoneType
+        from .military_equipment import discardable
+        from .card_moves import CardMoveReason
+        from .suits import effective_color
+        a=f.action;pid=a.player_id;source=a.opponent_id
+        if state.current_phase is not Phase.PLAY:return StepResult.complete()
+        if f.step_index==0:
+            if not discardable(state,pid):return StepResult.complete()
+            f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【龙吟】是否弃一张牌令此杀不计次数？红色杀可摸一张牌',subject_player_id=source)
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted or not discardable(state,pid):return StepResult.complete()
+            f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_CARD,'【龙吟】选择弃牌成本',eligible_card_ids=discardable(state,pid))
+        if f.step_index==2:
+            cost,f.decision=f.decision,None
+            color=a.virtual_card.color if a.virtual_card else effective_color(state,a.card_id,source) if a.card_id in state.cards else None
+            self.transfer(state,a,(cost,),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD)
+            ignored=state.metadata.setdefault('longyin_ignored_events',[])
+            usage=state.play_usage
+            if a.event_id not in ignored:
+                ignored.append(a.event_id)
+                if a.slash_counted and usage is not None and usage.player_id==source:
+                    usage.counts['basic.slash']=max(0,usage.count('basic.slash')-1)
+            f.step_index=3
+            if color is Color.RED:return StepResult.push(DrawCardsAction(a.action_id+':draw',pid,1))
+        return StepResult.complete()
+
+    def category(self,state,cid):
+        from sanguosha.model.enums import CardCategory
+        c=self.definitions.get(state.cards[cid].definition_id).category
+        return CardCategory.TRICK if c is CardCategory.DELAYED_TRICK else c
+
+    def junxing(self,state,f):
+        from sanguosha.model.zones import ZoneRef,ZoneType
+        from .yj2011_tier3 import hand
+        from .card_moves import CardMoveReason
+        from .card_rules import InvalidCardUse
+        from .turnover import TurnoverAction
+        a=f.action;pid=a.player_id
+        if f.step_index==0:
+            self.validate_active(state,a)
+            if not hand(state,pid):raise InvalidCardUse('junxing requires hand cost')
+            f.step_index=1
+            return self.ask(f,RequestType.CHOOSE_CARDS,'【峻刑】选择弃置的手牌',eligible_card_ids=hand(state,pid),min_count=1,max_count=len(hand(state,pid)))
+        if f.step_index==1:
+            costs,f.decision=tuple(f.decision),None
+            f.local['costs']=costs;f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_PLAYER,'【峻刑】选择其他角色',allowed_player_ids=tuple(q for q in state.seat_order if q!=pid and state.players[q].is_alive))
+        if f.step_index==2:
+            target,f.decision=f.decision,None;costs=f.local['costs']
+            self.validate_active(state,a)
+            if not costs or any(c not in hand(state,pid) for c in costs):raise InvalidCardUse('junxing cost became unavailable')
+            f.local.update(target=target,types=tuple(set(self.category(state,c) for c in costs)))
+            state.play_usage.record('skill.junxing')
+            self.transfer(state,a,costs,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD)
+            f.step_index=3
+            return StepResult.continue_()
+        target=f.local['target']
+        if not state.players[target].is_alive:return StepResult.complete()
+        if f.step_index==3:
+            eligible=tuple(c for c in hand(state,target) if self.category(state,c) not in f.local['types'])
+            f.step_index=4
+            if eligible:return self.ask(f,RequestType.CHOOSE_CARDS,'【峻刑】弃一张不同类别手牌，或翻面摸牌',player=target,eligible_card_ids=eligible,min_count=0,max_count=1,subject_player_id=pid)
+            f.decision=()
+        if f.step_index==4:
+            cards,f.decision=tuple(f.decision),None
+            if cards:
+                self.transfer(state,a,cards,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,actor=target)
+                return StepResult.complete()
+            f.step_index=5
+            return StepResult.push(TurnoverAction(a.action_id+':turnover',target))
+        if f.step_index==5:
+            f.step_index=6
+            return StepResult.push(DrawCardsAction(a.action_id+':draw',target,len(f.local['costs'])))
+        return StepResult.complete()
+
+    def yuce(self,state,f):
+        from sanguosha.model.zones import ZoneRef,ZoneType
+        from .yj2011_tier3 import hand
+        from .card_moves import CardMoveReason
+        from .events import Event
+        from .recovery import RecoverAction
+        a=f.action;pid=a.player_id;source=a.opponent_id
+        if f.step_index==0:
+            if not hand(state,pid):return StepResult.complete()
+            f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【御策】是否展示一张手牌？')
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted or not hand(state,pid):return StepResult.complete()
+            f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_CARD,'【御策】选择展示的手牌',eligible_card_ids=hand(state,pid))
+        if f.step_index==2:
+            card,f.decision=f.decision,None
+            self.moves.recorder.record(Event(a.action_id+':reveal','card_revealed',pid,metadata={'card_id':card}))
+            category=self.category(state,card);f.step_index=3
+            eligible=tuple(c for c in hand(state,source) if self.category(state,c)!=category) if source in state.players and state.players[source].is_alive else ()
+            if eligible:return self.ask(f,RequestType.CHOOSE_CARDS,'【御策】弃一张不同类别手牌，或令受伤角色回复',player=source,eligible_card_ids=eligible,min_count=0,max_count=1,subject_player_id=pid)
+            f.decision=()
+        if f.step_index==3:
+            cards,f.decision=tuple(f.decision),None;f.step_index=4
+            if cards:
+                self.transfer(state,a,cards,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,actor=source)
+                return StepResult.complete()
+            return StepResult.push(RecoverAction(a.action_id+':recover',pid,pid,1))
+        return StepResult.complete()
+
+    def renxin(self,state,f):
+        from sanguosha.model.enums import EquipmentSlot
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        from .card_moves import CardMoveReason
+        from .military_equipment import discardable
+        from .turnover import TurnoverAction
+        a=f.action;pid=a.player_id;target=a.opponent_id
+        def costs():
+            return tuple(c for c in discardable(state,pid) if self.definitions.get(state.cards[c].definition_id).equipment_slot is not None)
+        if target not in state.players or not state.players[target].is_alive or state.players[target].hp!=1:
+            return StepResult.complete(False)
+        if f.step_index==0:
+            if target==pid or not costs():return StepResult.complete(False)
+            f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【仁心】是否保护体力为一的其他角色？',subject_player_id=target)
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted or not costs():return StepResult.complete(False)
+            f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_CARD,'【仁心】弃置一张装备牌',eligible_card_ids=costs())
+        if f.step_index==2:
+            cost,f.decision=f.decision,None
+            if cost not in costs():raise ValueError('renxin cost became unavailable')
+            self.transfer(state,a,(cost,),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD)
+            f.step_index=3
+            return StepResult.push(TurnoverAction(a.action_id+':turnover',pid))
+        return StepResult.complete(True)
+
+    def chengxiang(self,state,f):
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        from .deck import RevealTopCardsAction
+        from .card_moves import CardMoveReason
+        a=f.action;pid=a.player_id
+        if f.step_index==0:
+            f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【称象】是否亮出四张牌并获得点数和不超过十三的牌？')
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted:return StepResult.complete()
+            f.step_index=2
+            return StepResult.push(RevealTopCardsAction(a.action_id+':reveal',pid,4))
+        if f.step_index==2:
+            f.local['revealed']=tuple(f.child_result);f.local['selected']=();f.step_index=3
+        if f.step_index==4:
+            card,f.decision=f.decision,None
+            f.local['selected']=(*f.local['selected'],card);f.cursor+=1;f.step_index=5
+        if f.step_index==6:
+            choice,f.decision=f.decision,None
+            f.step_index=3 if choice=='continue' else 7
+        selected=f.local['selected'];remaining=13-sum(state.cards[c].rank for c in selected)
+        eligible=tuple(c for c in f.local['revealed'] if c not in selected and state.cards[c].rank<=remaining)
+        if f.step_index==3:
+            if eligible:
+                f.step_index=4
+                return self.ask(f,RequestType.CHOOSE_CARD,'【称象】选择一张点数合法的牌',eligible_card_ids=eligible)
+            f.step_index=7
+        if f.step_index==5:
+            if eligible:
+                f.step_index=6
+                return self.ask(f,RequestType.CHOOSE_OPTION,'【称象】继续选牌或结束',choices=('continue','finish'))
+            f.step_index=7
+        if selected:self.transfer(state,a,selected,ZoneRef(ZoneType.HAND,pid))
+        rest=tuple(c for c in f.local['revealed'] if c not in selected)
+        if rest:self.transfer(state,a,rest,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM)
+        return StepResult.complete()
 
     def juece(self,state,f):
         from sanguosha.model.zones import ZoneRef, ZoneType
@@ -60,12 +244,12 @@ class YJ2013Handler(YJSkillHandler):
             return state.cards_in(ZoneRef(ZoneType.EQUIPMENT,source,EquipmentSlot.WEAPON)) if source in state.players and state.players[source].is_alive else ()
         if f.step_index==0:
             costs=discardable(state,pid)
-            if not costs or not weapon(): return StepResult.complete()
+            if not costs: return StepResult.complete()
             f.step_index=1
-            return self.ask(f,RequestType.YES_NO,'【夺刀】是否弃一张牌获得伤害来源的武器？')
+            return self.ask(f,RequestType.YES_NO,'【夺刀】是否弃一张牌获得伤害来源的武器？',subject_player_id=source)
         if f.step_index==1:
             wanted,f.decision=f.decision is True,None
-            if not wanted or not weapon(): return StepResult.complete()
+            if not wanted or not discardable(state,pid): return StepResult.complete()
             f.step_index=2
             return self.ask(f,RequestType.CHOOSE_CARD,'【夺刀】选择弃牌成本',eligible_card_ids=discardable(state,pid))
         if f.step_index==2:
@@ -91,15 +275,56 @@ class YJ2013Handler(YJSkillHandler):
                 return StepResult.push(DrawCardsAction(action.action_id + ':draw', action.player_id, 2))
         return StepResult.complete()
 
+@dataclass(frozen=True,slots=True)
+class LongyinWindow(Action):
+    player_id: str
+    event: CardUsedEvent
+    owners: tuple[str,...]
+
+class LongyinWindowHandler:
+    def step(self,state,f):
+        a=f.action;e=a.event
+        if f.cursor>=len(a.owners):return StepResult.complete()
+        owner=a.owners[f.cursor];f.cursor+=1
+        if not state.players[owner].is_alive:return StepResult.continue_()
+        return StepResult.push(YJ2013Action(a.action_id+':'+owner,owner,'longyin',e.player_id,e.card_id,
+            e.event_id,e.slash_counted,e.virtual_card))
+
 def register(registry, skills, moves, definitions, deck):
     registry.register(YJ2013Action, YJ2013Handler(skills, moves, definitions, deck))
+    registry.register(LongyinWindow,LongyinWindowHandler())
 
 
 def damage_reaction(state,frame,skills):
     a=frame.action
+    if (frame.step_index==1 and not frame.local.get('yj2013_yuce') and skills is not None
+            and state.players[a.target_id].is_alive and skills.has(state,a.target_id,'yuce')):
+        frame.local['yj2013_yuce']=True
+        return StepResult.push(YJ2013Action(a.action_id+':yuce',a.target_id,'yuce',a.source_id))
+    if (frame.step_index==1 and not frame.local.get('yj2013_chengxiang') and skills is not None
+            and state.players[a.target_id].is_alive and skills.has(state,a.target_id,'chengxiang')):
+        frame.local['yj2013_chengxiang']=True
+        return StepResult.push(YJ2013Action(a.action_id+':chengxiang',a.target_id,'chengxiang'))
     if (frame.step_index==1 and not frame.local.get('yj2013_duodao') and skills is not None
             and state.players[a.target_id].is_alive and getattr(a,'card_kind','')=='slash'
             and skills.has(state,a.target_id,'duodao')):
         frame.local['yj2013_duodao']=True
         return StepResult.push(YJ2013Action(a.action_id+':duodao',a.target_id,'duodao',a.source_id))
     return None
+
+
+def play_options(state,pid,skills):
+    from .yj2011_tier3 import hand
+    return ['skill:junxing'] if (skills.has(state,pid,'junxing') and state.play_usage is not None
+        and not state.play_usage.count('skill.junxing') and hand(state,pid)
+        and any(q!=pid and state.players[q].is_alive for q in state.seat_order)) else []
+
+
+def event_reactions(state,event,skills):
+    from sanguosha.model.enums import Phase
+    if (not isinstance(event,CardUsedEvent) or state.current_phase is not Phase.PLAY
+            or state.current_player_id!=event.player_id):return ()
+    definition=event.virtual_definition_id or (state.cards[event.card_id].definition_id if event.card_id in state.cards else '')
+    if definition not in ('basic.slash','basic.fire_slash','basic.thunder_slash'):return ()
+    owners=tuple(q for q in state.seat_order if state.players[q].is_alive and skills.has(state,q,'longyin'))
+    return (LongyinWindow(event.event_id+':longyin-window',event.player_id,event,owners),) if owners else ()

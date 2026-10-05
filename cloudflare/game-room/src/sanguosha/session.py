@@ -127,8 +127,9 @@ class GameSession:
         for index, pid in enumerate(ids):
             character = characters[index] if characters else None
             maximum = character.max_hp + (mode.lord_hp_bonus if identities[index] is Identity.LORD and characters else 0) if character else 4
+            initial=(character.metadata.get('initial_hp',character.max_hp) + (maximum-character.max_hp)) if character else maximum
             players[pid] = PlayerState(pid, index, character.id if character else CharacterId(f'blank-{index+1}'),
-                                       identities[index], maximum, maximum)
+                                       identities[index], initial, maximum)
         state = GameState(
             "classic-military" if military else "t5-basic-identity", players=players, seat_order=ids,
             cards=card_instances, zones={draw_zone.ref: draw_zone},
@@ -218,7 +219,7 @@ class GameSession:
                 registry.register(RendeAction, RendeHandler(moves))
                 registry.register(ZhihengAction, ZhihengHandler(moves))
                 registry.register(WushengUse, WushengUseHandler(skills,moves,slash_rule))
-                registry.register(JijiangUse, JijiangUseHandler(skills,slash_rule))
+                registry.register(JijiangUse, JijiangUseHandler(skills,slash_rule,events))
                 registry.register(AllianceResponse, AllianceResponseHandler(skills))
                 registry.register(KurouAction, KurouHandler(skills))
                 registry.register(QingnangAction, QingnangHandler(skills, moves))

@@ -69,6 +69,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
   const portrait = portraitState(player, selected, selectable, responding)
   const buqu = player.special_piles?.buqu ?? []
   const field = player.special_piles?.tian ?? []
+  const power = player.special_piles?.quan ?? []
   const committed = Object.entries(player.special_piles ?? {})
     .filter(([key]) => key.startsWith('committed:'))
     .flatMap(([, cards]) => cards)
@@ -111,6 +112,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
           不屈 {buqu.length} · {buqu.map((card) => card.suit + card.rank).join(' ')}
         </span>}
         {field.length > 0 && <span className="zone-token" title={'田：' + field.map((card) => card.suit + card.rank).join(' ')}>田 {field.length}</span>}
+        {power.length > 0 && <span className="zone-token" title={'权：' + power.map(card => card.suit ? card.name + ' ' + card.suit + card.rank : '背面牌').join(' ')}>权 {power.length}</span>}
         {player.active_transformation && <span className="zone-token">化身 {state.generals[player.active_transformation]?.name ?? '已选择武将'}</span>}
         {!!player.transformation_pool?.length && <span className="zone-token">化身池 {player.transformation_pool.length}</span>}
         {committed.map((card) => <span key={card.card_id} className="zone-token judgment-token"
@@ -503,7 +505,7 @@ export function GamePage() {
       {!temporaryPanel && otherCardChoices.length > 0 && <section className="shared-card-pool" aria-label="可选目标牌">
         <p>选择目标的一张牌</p><div>{otherCardChoices.map((id) =>
           <button key={id} className={'brush-button compact' + (selectedCards.includes(id) ? ' selected' : '')}
-            onClick={() => toggleCard(id)}>{id.startsWith('hidden-hand:') ? '暗置手牌 ' + id.split(':')[1] : publicCards.find((card) => card.card_id === id)?.name ?? id}</button>)}</div>
+            onClick={() => toggleCard(id)}>{id.startsWith('hidden-hand:') ? '暗置手牌 ' + id.split(':')[1] : request?.choice_labels?.[id] ?? publicCards.find((card) => card.card_id === id)?.name ?? '可选牌'}</button>)}</div>
       </section>}
       {request?.player_id === self.player_id && projection.players.filter((player) => !!player.revealed_hand?.length).map((player) =>
         <section key={player.player_id} className="shared-card-pool" aria-label="攻心查看手牌">

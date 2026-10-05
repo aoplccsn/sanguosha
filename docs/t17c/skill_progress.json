@@ -162,14 +162,14 @@
     {
       "general_id": "yj2013_cao_chong",
       "skill_id": "chengxiang",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
     {
       "general_id": "yj2013_cao_chong",
       "skill_id": "renxin",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
@@ -183,21 +183,21 @@
     {
       "general_id": "yj2013_man_chong",
       "skill_id": "junxing",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
     {
       "general_id": "yj2013_man_chong",
       "skill_id": "yuce",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
     {
       "general_id": "yj2013_guan_ping",
       "skill_id": "longyin",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },

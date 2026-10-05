@@ -135,6 +135,16 @@ describe('GamePage', () => {
     expect(screen.getByText('化身池 2')).toBeInTheDocument()
   })
 
+  it('shows power pile count without exposing hidden card faces', () => {
+    ;(players[0] as any).special_piles = { quan: [
+      { card_id: 'hidden:quan:0', name: 'UNKNOWN', suit: '', rank: '' },
+      { card_id: 'hidden:quan:1', name: 'UNKNOWN', suit: '', rank: '' },
+    ] }
+    render(<GamePage />)
+    expect(screen.getByText('权 2')).toBeInTheDocument()
+    expect(screen.queryByText('UNKNOWN')).not.toBeInTheDocument()
+  })
+
   it('requires confirm after selecting a response card', async () => {
     request = { request_id: 'r1', player_id: 'p1', request_type: 'respond_with_card', prompt: '请打出闪', choices: [], allowed_player_ids: [], required_definition_id: 'basic.dodge', eligible_card_ids: ['slash-1'], allow_pass: true, min_count: 1, max_count: 1, subject_player_id: 'p2', remaining_ms: 30000 }
     render(<GamePage />)

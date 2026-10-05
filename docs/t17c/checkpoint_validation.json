@@ -1,11 +1,11 @@
 {
   "status": "IN_PROGRESS",
   "python": {
-    "passed": 1159,
-    "seconds": 119.16
+    "passed": 1197,
+    "seconds": 121.12
   },
   "vitest": {
-    "passed": 86,
+    "passed": 87,
     "files": 15
   },
   "typescript": "PASS",
@@ -16,5 +16,11 @@
   "final_ai_60_games": "NOT_RUN",
   "final_playwright": "NOT_RUN",
   "final_pyside": "NOT_RUN",
-  "deployment": "NOT_PERFORMED"
+  "deployment": "NOT_PERFORMED",
+  "new_asset_http": {
+    "portraits": 27,
+    "video_variants": 8,
+    "range_requests": "PASS"
+  },
+  "prototype_skills": 26
 }

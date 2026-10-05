@@ -73,4 +73,5 @@ class SkillType(StrEnum):
     LOCKED = "locked"
     VIEW_AS = "view_as"
     LIMITED = "limited"
+    AWAKENING = "awakening"
     RULE_MODIFIER = "rule_modifier"

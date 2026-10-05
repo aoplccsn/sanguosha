@@ -1,0 +1,18 @@
+{
+  "revision": "e8768851bd8054db9fd1b63cd6f1feca813590d7",
+  "authority": "COMMUNITY_ARCHIVE_PRIMARY_OFFICIAL_UNVERIFIED",
+  "files": {
+    "yjcm.cpp": "f3d841e5d964096d3f9dfc76ee731aae1ae76639e4ffc9d6a575aff18d0068ab",
+    "yjcm2012.cpp": "4201945fa47162ac6987de35f4482ad22462b34838dee89af9138c41d4abbc4d",
+    "yjcm2013.cpp": "e95319d7dcc81faf2cdb04d71fb1a2c52113dc1aee6855c063bd98afebc0ae0c",
+    "serverplayer.h": "11eecd175472d134b50d17e01fa9cc7e0b1683ae65fe1085e6f89fa17f675261"
+  },
+  "resolved": {
+    "qice": "setCanRecast(false) in targetFilter/targetFixed/targetsFeasible",
+    "quan": "Quanji addToPile(power, card_id) uses serverplayer.h default open=true",
+    "shiyong": "Damaged checks Slash and red/drank without chain/transfer exclusion",
+    "anjian": "DamageCaused excludes chain and transfer, then checks reversed attack range",
+    "duodao": "May discard after Slash damage even when no source weapon exists",
+    "longyin": "CardUsed source must be in its own Play phase; m_addHistory removed only once"
+  }
+}

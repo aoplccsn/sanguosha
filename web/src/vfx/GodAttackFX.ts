@@ -7,6 +7,10 @@ export const GOD_ATTACK_COLORS: Record<string, string> = {
   forest_god_lvbu: '#e04139',
   mountain_god_zhaoyun: '#bce9f2',
   mountain_god_simayi: '#a774d9',
+  shadow_god_liubei: '#5bb88a',
+  shadow_god_luxun: '#eb9c3d',
+  thunder_god_ganning: '#dfbf76',
+  thunder_god_zhangliao: '#7bced1',
 }
 
 export function godAttackColor(characterId: string, definition: string): string | null {

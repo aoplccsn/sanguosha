@@ -133,14 +133,15 @@ def project_for_human(
                                             *player.granted_skills,
                                             *((player.transformation_skill,) if player.transformation_skill else ()))))
             if player.character_id in skills.characters else (),
-            player.face_up, dict(player.marks),
+            player.face_up, {key:(1 if key in ('yj_gongqi','yj_zishou') else value)
+                             for key,value in player.marks.items() if key!='quan'},
             {ref.special_key: tuple(
                 card_view(cid) if ((not ref.special_key.startswith('committed:')
-                    and ref.special_key not in ('star', 'quan'))
+                    and ref.special_key != 'star')
                     or pid == human_id
                     or state.metadata.get('revealed_committed', {}).get(cid))
-                else CardView('hidden:' + ref.special_key, '未知扣置牌', '', '')
-                for cid in zone.card_ids)
+                else CardView('hidden:' + ref.special_key + ':' + str(index), '未知扣置牌', '', '')
+                for index,cid in enumerate(zone.card_ids))
              for ref, zone in state.zones.items()
              if ref.zone_type is ZoneType.SPECIAL and ref.player_id == pid and zone.card_ids},
             player.active_transformation or "",

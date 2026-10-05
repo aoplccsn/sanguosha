@@ -435,7 +435,7 @@ def damage_reaction(state,f,skills):
             virtual=getattr(a,'virtual_card',None)
             definition=(virtual.definition_id if virtual else state.cards[a.card_id].definition_id
                         if a.card_id in state.cards else '')
-            if (getattr(a,'card_kind','') != 'slash' or getattr(a,'propagated',False)
+            if (getattr(a,'card_kind','') != 'slash'
                     or definition not in ('basic.slash','basic.fire_slash','basic.thunder_slash')): continue
             color=virtual.color if virtual else effective_color(state,a.card_id,a.source_id)
             if color is not Color.RED and not getattr(a,'wine_enhanced',False): continue

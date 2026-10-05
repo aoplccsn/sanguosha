@@ -7,6 +7,7 @@ from sanguosha.model.enums import Phase
 from sanguosha.model.enums import Identity
 from sanguosha.model.ids import CardInstanceId, PlayerId
 from sanguosha.model.zones import ZoneRef, ZoneType
+from sanguosha.model.virtual_card import VirtualCard
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,6 +72,8 @@ class CardUsedEvent:
     card_id: CardInstanceId
     target_ids: tuple[PlayerId, ...]
     virtual_definition_id: str = ''
+    slash_counted: bool = False
+    virtual_card: VirtualCard | None = None
 
 
 @dataclass(frozen=True, slots=True)

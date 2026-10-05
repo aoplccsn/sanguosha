@@ -67,20 +67,21 @@ class UseCardActionHandler:
             f"{action.action_id}:to-processing", (action.card_id,), hand, processing,
             CardMoveReason.USE, action.user_id, action.action_id,
         ))
+        slash_counted = False
         if not action.forced:
             usage = state.play_usage
             assert usage is not None
             from .yj2011_tier3 import record_slash_use
             usage_key = getattr(rule, 'usage_key', state.cards[action.card_id].definition_id)
             if usage_key == 'basic.slash':
-                record_slash_use(state, action.user_id, targets)
+                slash_counted = record_slash_use(state, action.user_id, targets)
             else:
                 usage.record(usage_key)
         from .yj2011_tier3 import canonical_definition
         physical = state.cards[action.card_id].definition_id
         canonical = canonical_definition(state, self.skills, action.user_id, physical)
         self.recorder.record(CardUsedEvent(f"{action.action_id}:used", action.user_id, action.card_id, targets,
-            canonical if canonical != physical else ''))
+            canonical if canonical != physical else '', slash_counted=slash_counted))
         if (any(state.players[pid].identity is Identity.LORD for pid in targets)
                 and str(state.cards[action.card_id].definition_id) in
                 ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash',

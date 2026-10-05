@@ -94,6 +94,15 @@ class MilitaryDamageHandler(DamageActionHandler):
                         RequestType.YES_NO, '是否发动【天香】弃红桃手牌转移伤害？',
                         action.action_id, frame.frame_id,
                         choices=(f'damage:{action.amount}',), subject_player_id=action.source_id))
+            if self.skills is not None and target.hp == 1:
+                owners=tuple(q for q in state.seat_order if q!=action.target_id and state.players[q].is_alive
+                    and self.skills.has(state,q,'renxin'))
+                index=frame.local.get('renxin_cursor',0)
+                if index<len(owners):
+                    frame.local['renxin_cursor']=index+1
+                    frame.step_index=31
+                    from .yj2013 import YJ2013Action
+                    return StepResult.push(YJ2013Action(action.action_id+':renxin:'+owners[index],owners[index],'renxin',action.target_id))
             amount = action.amount
             if (action.nature is DamageNature.FIRE
                     and any(key.startswith('wind:') for key in target.marks)):
@@ -106,6 +115,7 @@ class MilitaryDamageHandler(DamageActionHandler):
                 amount += 1
             if (self.skills is not None and action.source_id is not None
                     and action.source_id != action.target_id and not getattr(action, 'propagated', False)
+                    and not getattr(action,'redirected',False)
                     and getattr(action,'card_kind','') == 'slash'
                     and self.skills.has(state,action.source_id,'anjian')
                     and not self.distance.can_reach_with_slash(state,action.target_id,action.source_id)):
@@ -156,6 +166,13 @@ class MilitaryDamageHandler(DamageActionHandler):
             if target.hp <= 0:
                 self.recorder.record(DyingRequiredEvent(action.action_id + ':dying', action.target_id, target.hp))
                 return StepResult.push(DyingAction(action.action_id + ':rescue', action.target_id, action.source_id))
+            return StepResult.continue_()
+        if frame.step_index == 31:
+            if frame.child_result is True:
+                self.recorder.record(Event(action.action_id+':renxin-prevented','damage_prevented',action.target_id,
+                    metadata={'skill_id':'renxin'}))
+                return StepResult.complete(0)
+            frame.step_index=0
             return StepResult.continue_()
         if frame.step_index == 9:
             wanted = frame.decision is True
@@ -374,7 +391,8 @@ class MilitaryDamageHandler(DamageActionHandler):
         return StepResult.push(MilitaryDamageAction(
             f'{action.action_id}:chain:{frame.cursor}', action.source_id, pid,
             int(frame.local['amount']), action.nature, action.card_id, action.related_action_id,
-            propagated=True))
+            propagated=True, card_kind=getattr(action,'card_kind',''),
+            wine_enhanced=getattr(action,'wine_enhanced',False), virtual_card=getattr(action,'virtual_card',None)))
 
 @dataclass(frozen=True, slots=True)
 class WineAction(Action):

@@ -792,9 +792,9 @@ class LongdanUseHandler:
                 hand, ZoneRef(ZoneType.PROCESSING), CardMoveReason.USE,
                 action.player_id, action.action_id))
             from .yj2011_tier3 import record_slash_use
-            record_slash_use(state, action.player_id, (target,))
+            counted=record_slash_use(state, action.player_id, (target,))
             self.recorder.record(CardUsedEvent(action.action_id + ':used', action.player_id,
-                action.material_id, (target,), 'basic.slash'))
+                action.material_id, (target,), 'basic.slash',counted,virtual))
             frame.step_index = 2
             return StepResult.push(SlashSequence(action.action_id + ':slash', action.player_id,
                 action.material_id, (target,), virtual))
@@ -1070,7 +1070,8 @@ class WushengUseHandler:
                 ZoneRef(ZoneType.HAND,action.player_id), ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.USE, action.player_id))
             from .yj2011_tier3 import record_slash_use
-            record_slash_use(state, action.player_id, (target,))
+            counted=record_slash_use(state, action.player_id, (target,))
+            self.moves.recorder.record(CardUsedEvent(action.action_id+':used',action.player_id,action.material_id,(target,),'basic.slash',counted,virtual))
             frame.step_index = 2
             return StepResult.push(SlashSequence(action.action_id+':slash', action.player_id,
                 action.material_id, (target,), virtual))
@@ -1086,8 +1087,8 @@ class JijiangUse(Action):
 
 
 class JijiangUseHandler:
-    def __init__(self, skills, slash_rule):
-        self.skills, self.slash_rule = skills, slash_rule
+    def __init__(self, skills, slash_rule, recorder=None):
+        self.skills, self.slash_rule, self.recorder = skills, slash_rule, recorder
 
     def step(self, state, frame):
         action = frame.action
@@ -1115,7 +1116,10 @@ class JijiangUseHandler:
                 return StepResult.complete()
             material=result.material_ids[0] if isinstance(result,VirtualCard) else result
             from .yj2011_tier3 import record_slash_use
-            record_slash_use(state, action.player_id, (frame.local['target'],))
+            counted=record_slash_use(state, action.player_id, (frame.local['target'],))
+            if self.recorder is not None:
+                virtual=result if isinstance(result,VirtualCard) else VirtualCard('basic.slash',(material,),effective_suit(state,material,action.player_id),effective_color(state,material,action.player_id))
+                self.recorder.record(CardUsedEvent(action.action_id+':used',action.player_id,material,(frame.local['target'],),'basic.slash',counted,virtual))
             frame.step_index=3
             return StepResult.push(MilitaryStrike(action.action_id+':strike',action.player_id,
                 frame.local['target'],material,'basic.dodge',virtual_card=result if isinstance(result,VirtualCard) else None))
@@ -1136,6 +1140,8 @@ class SkillPlayOptions:
         extra = play_options(state, pid, self.skills)
         from .yj2012 import play_options as yj2012_play_options
         extra.extend(yj2012_play_options(state, pid, self.skills))
+        from .yj2013 import play_options as yj2013_play_options
+        extra.extend(yj2013_play_options(state,pid,self.skills))
         hand = state.cards_in(ZoneRef(ZoneType.HAND,pid))
         materials = tuple(cid for ref, zone in state.zones.items()
                           if ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
@@ -1293,6 +1299,9 @@ class SkillPlayOptions:
         if option in ('skill:jiushi', 'skill:xinzhan', 'skill:ganlu', 'skill:mingce', 'skill:xianzhen'):
             from .yj2011_tier3 import YJSkillAction
             return YJSkillAction(aid + ':yj2011', pid, option.split(':')[1])
+        if option=='skill:junxing':
+            from .yj2013 import YJ2013Action
+            return YJ2013Action(aid+':junxing',pid,'junxing')
         if option in ('skill:paiyi', 'skill:anxu', 'skill:gongqi', 'skill:jiefan', 'skill:qice'):
             from .yj2012 import YJ2012Action
             return YJ2012Action(aid + ':yj2012', pid, option.split(':')[1])

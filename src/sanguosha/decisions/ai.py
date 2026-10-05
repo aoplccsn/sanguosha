@@ -203,6 +203,22 @@ class AIDecisionProvider:
                     return Decision(request.request_id, player_id, PASS_RESPONSE)
         if request.request_type is RequestType.YES_NO and '【精策】' in request.prompt:
             return Decision(request.request_id, player_id, True)
+        if '【称象】' in request.prompt:
+            if request.request_type is RequestType.YES_NO:
+                return Decision(request.request_id,player_id,True)
+            if request.request_type is RequestType.CHOOSE_OPTION:
+                return Decision(request.request_id,player_id,'continue')
+            if request.request_type is RequestType.CHOOSE_CARD:
+                value=max(request.eligible_card_ids,key=lambda c:
+                    {'basic.peach':9,'basic.dodge':6,'trick.nullification':7}.get(state.cards[c].definition_id,4)/state.cards[c].rank)
+                return Decision(request.request_id,player_id,value)
+        if '【仁心】' in request.prompt:
+            if request.request_type is RequestType.YES_NO:
+                target=request.subject_player_id
+                value=target in state.players and self._priority(state,player_id,target)<0
+                return Decision(request.request_id,player_id,value)
+            if request.request_type is RequestType.CHOOSE_CARD:
+                return Decision(request.request_id,player_id,request.eligible_card_ids[0])
         if '【绝策】' in request.prompt:
             if request.request_type is RequestType.YES_NO:
                 from sanguosha.engine.yj2011_tier3 import hand
@@ -214,11 +230,18 @@ class AIDecisionProvider:
                 return Decision(request.request_id,player_id,value)
         if '【夺刀】' in request.prompt:
             if request.request_type is RequestType.YES_NO:
-                return Decision(request.request_id, player_id, True)
+                from sanguosha.model.enums import EquipmentSlot
+                source=request.subject_player_id
+                value=source in state.players and bool(state.cards_in(ZoneRef(ZoneType.EQUIPMENT,source,EquipmentSlot.WEAPON)))
+                return Decision(request.request_id, player_id, value)
             if request.request_type is RequestType.CHOOSE_CARD:
                 value=min(request.eligible_card_ids,key=lambda c:
                     {'basic.peach':9,'basic.dodge':6,'trick.nullification':7}.get(state.cards[c].definition_id,2))
                 return Decision(request.request_id,player_id,value)
+        from .yj2013 import decide as decide_yj2013
+        yj2013_decision=decide_yj2013(self,state,request)
+        if yj2013_decision is not None:
+            return yj2013_decision
         from .yj2012 import decide as decide_yj2012
         yj2012_decision = decide_yj2012(self, state, request)
         if yj2012_decision is not None:
