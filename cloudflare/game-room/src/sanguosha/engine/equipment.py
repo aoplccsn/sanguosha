@@ -29,6 +29,8 @@ class EquipCardHandler:
         assert isinstance(action, EquipCardAction)
         definition = self.definitions.get(state.cards[action.card_id].definition_id)
         slot = definition.equipment_slot
+        if slot in state.players[action.player_id].abolished_equipment_slots:
+            raise InvalidCardUse("equipment slot is abolished")
         if slot is None:
             raise InvalidCardUse("card has no equipment slot")
         processing = ZoneRef(ZoneType.PROCESSING)
@@ -51,8 +53,10 @@ class EquipCardHandler:
 class EquipmentRule:
     requires_target_selection = False
 
+    def __init__(self,slot=None):self.slot=slot
+
     def can_use(self, state: GameState, user_id: PlayerId) -> bool:
-        return True
+        return self.slot not in state.players[user_id].abolished_equipment_slots
 
     def target_candidates(self, state: GameState, user_id: PlayerId) -> tuple[PlayerId, ...]:
         return ()
@@ -78,4 +82,4 @@ def register_equipment_rules(definitions: CardDefinitionRegistry, rules: CardRul
     for definition_id in ids:
         if definitions.get(definition_id).equipment_slot is None:
             raise InvalidCardUse(f"invalid equipment slot for {definition_id}")
-        rules.register(definition_id, EquipmentRule())
+        rules.register(definition_id, EquipmentRule(definitions.get(definition_id).equipment_slot))

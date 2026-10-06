@@ -91,4 +91,8 @@ class PindianHandler:
         cards=tuple(c for c in (frame.local['source_card'],frame.local['opponent_card']) if c in state.cards_in(processing))
         if cards:
             self.moves.move(state,CardMove(action.action_id+':discard',cards,processing,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,action.source_id))
+        source_rank=state.cards[frame.local['source_card']].rank;opponent_rank=state.cards[frame.local['opponent_card']].rank
+        winner=action.source_id if source_rank>opponent_rank else action.opponent_id if opponent_rank>source_rank else ''
+        loser=action.opponent_id if source_rank>opponent_rank else action.source_id if opponent_rank>source_rank else ''
+        self.events.record(Event(action.action_id+':resolved','pindian_resolved',action.source_id,(action.opponent_id,),metadata={'winner_id':winner,'loser_id':loser,'source_rank':source_rank,'opponent_rank':opponent_rank}))
         return StepResult.complete(frame.local['source_win'])

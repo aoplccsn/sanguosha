@@ -45,6 +45,8 @@ def choice_labels(room, request):
         return f'{definition.name}（{suit}{card.rank}）'
 
     def label(value, index):
+        if ('【夺锐】' in request.prompt or '【止啼】' in request.prompt) and value in ('weapon','armor','offensive_horse','defensive_horse'):
+            return {'weapon':'武器栏','armor':'防具栏','offensive_horse':'进攻马栏','defensive_horse':'防御马栏'}[value]
         if value in CHOICE_NAMES:
             return CHOICE_NAMES[value]
         if value in GENERAL_NAMES:

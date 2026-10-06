@@ -38,6 +38,13 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
+  it('renders abolished equipment slots from authoritative projection', () => {
+    ;(players[1] as any).abolished_equipment_slots=['weapon','armor']
+    render(<GamePage />)
+    expect(screen.getByText('已废除 武器栏')).toBeInTheDocument()
+    expect(screen.getByText('已废除 防具栏')).toBeInTheDocument()
+    delete (players[1] as any).abolished_equipment_slots
+  })
   it('shows public counter cards in the Xiansi modal and requires exactly two', async () => {
     ;(players[1] as any).special_piles = {counter:[
       {...card,card_id:'counter-1'},

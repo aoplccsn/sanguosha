@@ -55,6 +55,56 @@ def clear_camp(state,holder):
 
 
 class RemainingGodHandler(YJSkillHandler):
+    def duorui(self,state,f):
+        from sanguosha.model.enums import EquipmentSlot
+        from .skill_leases import leases,begin_lease
+        from .zhangliao import borrowable
+        a=f.action;pid=a.player_id;target=a.opponent_id;p=state.players[pid]
+        if target not in state.players or not state.players[target].is_alive or pid==target or pid in leases(state):return StepResult.complete()
+        eligible=borrowable(state,target,self.skills)
+        if not eligible:return StepResult.complete()
+        if f.step_index==0:
+            if state.current_player_id!=pid or state.current_phase is not Phase.PLAY:return StepResult.complete()
+            f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【夺锐】是否废除一个装备栏并借用该角色的技能？',subject_player_id=target)
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted:return StepResult.complete()
+            slots=tuple(slot.value for slot in EquipmentSlot if slot not in p.abolished_equipment_slots)
+            f.step_index=2
+            if slots:return self.ask(f,RequestType.CHOOSE_OPTION,'【夺锐】选择废除的装备栏',choices=slots)
+            f.decision=None
+        if f.step_index==2:
+            choice,f.decision=f.decision,None
+            if choice is not None:
+                slot=EquipmentSlot(choice);p.abolished_equipment_slots.add(slot)
+                cards=state.cards_in(ZoneRef(ZoneType.EQUIPMENT,pid,slot))
+                if cards:self.transfer(state,a,cards,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD)
+                self.moves.recorder.record(Event(a.action_id+':abolished','equipment_slot_abolished',pid,metadata={'slot':slot.value}))
+            f.step_index=3
+            return StepResult.continue_()
+        if f.step_index==3:
+            f.step_index=4
+            return self.ask(f,RequestType.CHOOSE_OPTION,'【夺锐】选择借用的技能',choices=eligible,subject_player_id=target)
+        skill,f.decision=f.decision,None
+        if skill in eligible:
+            begin_lease(state,pid,target,skill)
+            self.moves.recorder.record(Event(a.action_id+':borrowed','skill_borrowed',pid,(target,),metadata={'skill_id':skill}))
+        return StepResult.complete()
+
+    def zhiti_restore(self,state,f):
+        from sanguosha.model.enums import EquipmentSlot
+        a=f.action;pid=a.player_id;p=state.players[pid]
+        slots=tuple(slot.value for slot in EquipmentSlot if slot in p.abolished_equipment_slots)
+        if not slots:return StepResult.complete()
+        if f.step_index==0:
+            f.step_index=1
+            return self.ask(f,RequestType.CHOOSE_OPTION,'【止啼】选择恢复一个装备栏',choices=slots)
+        choice,f.decision=f.decision,None
+        p.abolished_equipment_slots.discard(EquipmentSlot(choice))
+        self.moves.recorder.record(Event(a.action_id+':restored','equipment_slot_restored',pid,metadata={'slot':choice}))
+        return StepResult.complete()
+
     def longnu(self,state,f):
         from .hp import LoseHpAction,LoseMaxHpAction
         from .deck import DrawCardsAction
@@ -101,7 +151,7 @@ class RemainingGodHandler(YJSkillHandler):
         if a.skill=='poxi' and (not state.players[a.player_id].is_alive or not self.skills.has(state,a.player_id,'poxi')):
             state.metadata.pop('poxi_reveal',None)
             return StepResult.complete()
-        if not self.skills.has(state,a.player_id,'jieying_ganning' if a.skill in ('camptransfer','campend') else a.skill):
+        if not self.skills.has(state,a.player_id,'jieying_ganning' if a.skill in ('camptransfer','campend') else 'zhiti' if a.skill=='zhiti_restore' else a.skill):
             if a.skill=='zhanhuo' and f.step_index==0:raise InvalidCardUse('角色不具有绽火')
             return StepResult.complete()
         return super().step(state,f)

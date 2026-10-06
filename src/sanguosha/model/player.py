@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 
-from .enums import Identity, PlayerStatus
+from .enums import Identity, PlayerStatus, EquipmentSlot
 from .ids import CharacterId, PlayerId
 
 
@@ -20,6 +20,7 @@ class PlayerState:
     marks: dict[str, int] = field(default_factory=dict)
     disabled_skills: set[str] = field(default_factory=set)
     granted_skills: dict[str, str] = field(default_factory=dict)
+    abolished_equipment_slots: set[EquipmentSlot] = field(default_factory=set)
     transformation_pool: list[str] = field(default_factory=list)
     active_transformation: str | None = None
     transformation_skill: str | None = None

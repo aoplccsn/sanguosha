@@ -66,6 +66,7 @@ class PlayerView:
     active_transformation: str = ""
     transformation_pool: tuple[str, ...] = ()
     revealed_hand: tuple[CardView, ...] = ()
+    abolished_equipment_slots: tuple[str,...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -85,6 +86,7 @@ def project_for_human(
     state: GameState, definitions: CardDefinitionRegistry,
     human_id: PlayerId, character_names: dict[PlayerId, str],
 ) -> TableView:
+    from sanguosha.engine.skill_leases import suppressed
     def card_view(cid, equipment_slot="", judgment=False):
         card=state.cards[cid]
         definition_id=(state.metadata.get('virtual_delayed_cards', {}).get(cid, card.definition_id)
@@ -129,7 +131,7 @@ def project_for_human(
             tuple(skills.skills[sid].name + (" · 已用" if sid == 'zhiheng' and state.play_usage and state.play_usage.player_id == pid
                                          and state.play_usage.count('skill.zhiheng') else "") +
                   (" · 主公技" if skills.skills[sid].metadata.get('lord') else "") +
-                  (" · 已失去" if sid in player.disabled_skills else "")
+                  (" · 已失去" if sid in player.disabled_skills or suppressed(state,pid,sid) else "")
                   for sid in dict.fromkeys((*skills.characters[player.character_id].skill_ids,
                                             *player.granted_skills,
                                             *((player.transformation_skill,) if player.transformation_skill else ()))))
@@ -149,6 +151,7 @@ def project_for_human(
             tuple(player.transformation_pool) if pid == human_id else (),
             tuple(card_view(cid) for cid in state.cards_in(ZoneRef(ZoneType.HAND, pid)))
             if pid!=human_id and can_view_hand(state,human_id,pid) else (),
+            tuple(sorted(slot.value for slot in player.abolished_equipment_slots)),
         ))
     hand = tuple(card_view(card_id) for card_id in state.cards_in(ZoneRef(ZoneType.HAND, human_id)))
     discard = state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))

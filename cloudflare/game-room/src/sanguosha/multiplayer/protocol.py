@@ -81,6 +81,7 @@ def deserialize_projection(payload: dict[str, Any]) -> TableView:
                              "skill_labels": tuple(raw["skill_labels"]),
                              "transformation_pool": tuple(raw.get("transformation_pool", ())),
                              "revealed_hand": tuple(card(x) for x in raw.get("revealed_hand", ())),
+                             "abolished_equipment_slots": tuple(raw.get("abolished_equipment_slots", ())),
                              "special_piles": {key: tuple(card(x) for x in cards)
                                                for key, cards in raw.get("special_piles", {}).items()}})
 

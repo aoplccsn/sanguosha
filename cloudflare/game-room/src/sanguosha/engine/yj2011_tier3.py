@@ -350,7 +350,9 @@ class YJSkillHandler:
         living = tuple(q for q in state.seat_order if state.players[q].is_alive)
         lost = max(0, state.players[pid].max_hp - state.players[pid].hp)
         return tuple((a, b) for i, a in enumerate(living) for b in living[i+1:]
-                     if abs(len(equipped_cards(state, a)) - len(equipped_cards(state, b))) <= lost)
+                     if abs(len(equipped_cards(state, a)) - len(equipped_cards(state, b))) <= lost
+                     and not any(locate(state,c).equipment_slot in state.players[b].abolished_equipment_slots for c in equipped_cards(state,a))
+                     and not any(locate(state,c).equipment_slot in state.players[a].abolished_equipment_slots for c in equipped_cards(state,b)))
 
     def ganlu(self, state, f):
         a = f.action

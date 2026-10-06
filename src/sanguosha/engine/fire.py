@@ -513,8 +513,9 @@ class LuanjiHandler:
 
 
 class FireHandLimit:
-    def __init__(self, base, skills):
+    def __init__(self, base, skills,definitions=None):
         self.base, self.skills = base, skills
+        self.definitions=definitions
 
     def __call__(self, state, player_id):
         value = self.base(state, player_id)
@@ -530,6 +531,8 @@ class FireHandLimit:
         from .chaining import jieying_hand_bonus
         value += jieying_hand_bonus(state,player_id,self.skills)
         value -= int(state.players[player_id].marks.get('poxi_hand_limit')==state.turn_number)
+        from .zhangliao import hand_penalty
+        value -= hand_penalty(state,player_id,self.skills,self.definitions)
         return max(0,value)
 
 

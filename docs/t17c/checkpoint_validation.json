@@ -1,11 +1,11 @@
 {
   "status": "IN_PROGRESS",
   "python": {
-    "passed": 1326,
-    "seconds": 268.46
+    "passed": 1342,
+    "seconds": 335.26
   },
   "vitest": {
-    "passed": 90,
+    "passed": 91,
     "files": 15
   },
   "typescript": "PASS",
@@ -22,5 +22,6 @@
     "video_variants": 8,
     "range_requests": "PASS"
   },
-  "prototype_skills": 44
+  "prototype_skills": 46,
+  "projection_roundtrip_followup": "PASS"
 }

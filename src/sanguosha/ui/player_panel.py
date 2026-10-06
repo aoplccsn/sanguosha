@@ -128,9 +128,13 @@ class PlayerPanel(QPushButton):
         committed = tuple(card for key, cards in view.special_piles.items()
                           if key.startswith('committed:') for card in cards)
         committed_text = ("\n蛊惑扣牌：" + "、".join(card.name for card in committed)) if committed else ""
+        abolished_names={'weapon':'武器栏','armor':'防具栏','offensive_horse':'进攻马栏','defensive_horse':'防御马栏'}
+        abolished_text=("\n已废除："+"、".join(abolished_names[slot] for slot in view.abolished_equipment_slots)) if view.abolished_equipment_slots else ""
+        counters=view.special_piles.get('counter',())
+        counter_text=("\n逆："+"、".join(card.name+card.suit+card.rank for card in counters)) if counters else ""
         self.setToolTip("装备：" + ("、".join(c.name for c in view.equipment) or "无") +
                         "\n判定：" + ("、".join(c.name for c in view.judgments) or "无") +
-                        f"\n当前攻击范围：{view.attack_range}" + distance_text + buqu_text + committed_text)
+                        f"\n当前攻击范围：{view.attack_range}" + distance_text + buqu_text + committed_text + abolished_text + counter_text)
         self.setEnabled(not choosing_target or targetable)
         self.setCursor(Qt.PointingHandCursor if targetable else Qt.ArrowCursor)
         self.update()
@@ -248,13 +252,14 @@ class PlayerPanel(QPushButton):
         equipment = self._equipped_slots()
         cell = rw/4
         for i, (slot, card) in enumerate(equipment.items()):
+            abolished={'武':'weapon','甲':'armor','+马':'defensive_horse','-马':'offensive_horse'}[slot] in v.abolished_equipment_slots
             box = QRectF(x+i*cell, 98, cell-2, 21)
-            p.setBrush(QColor("#e2d0ab" if card else "#b3a084"))
+            p.setBrush(QColor("#8e6963" if abolished else "#e2d0ab" if card else "#b3a084"))
             p.setPen(QPen(QColor("#8a6c48"), 1))
             p.drawRoundedRect(box, 2, 2)
             p.setPen(QColor("#3b3027" if card else "#756653"))
             p.setFont(QFont("Microsoft YaHei UI", 7, QFont.Bold if card else QFont.Normal))
-            p.drawText(box, Qt.AlignCenter, card.name[:3] if card else slot)
+            p.drawText(box, Qt.AlignCenter, "废"+slot if abolished else card.name[:3] if card else slot)
         p.setPen(QColor("#624b34"))
         if v.judgments:
             step = min(31, (rw*.72)/max(1, len(v.judgments)))

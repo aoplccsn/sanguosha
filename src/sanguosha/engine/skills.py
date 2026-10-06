@@ -38,6 +38,8 @@ class SkillRegistry:
         player = state.players[player_id]
         if skill_id in player.disabled_skills:
             return False
+        from .skill_leases import suppressed
+        if suppressed(state,player_id,skill_id):return False
         character = self.characters.get(player.character_id)
         transformed = (skill_id == player.transformation_skill
                        and player.active_transformation in player.transformation_pool

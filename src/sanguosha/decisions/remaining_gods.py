@@ -6,6 +6,22 @@ from sanguosha.engine.yj2011_tier3 import hand
 def decide(provider,state,r):
     pid=r.player_id;kind=r.request_type
     def enemy(q):return provider._priority(state,pid,q)>0
+    if '【夺锐】' in r.prompt:
+        if kind is RequestType.YES_NO:value=enemy(r.subject_player_id)
+        elif kind is RequestType.CHOOSE_OPTION:
+            slots=('defensive_horse','offensive_horse','armor','weapon')
+            if any(q in slots for q in r.choices):
+                from sanguosha.model.enums import EquipmentSlot
+                from sanguosha.model.zones import ZoneRef,ZoneType
+                value=min(r.choices,key=lambda slot:(bool(state.cards_in(ZoneRef(ZoneType.EQUIPMENT,pid,EquipmentSlot(slot)))),slots.index(slot)))
+            else:
+                rating={'paoxiao':8,'wushuang':8,'yingzi':7,'jizhi':7,'wusheng':6,'longdan':6,'yiji':6,'jianxiong':5}
+                value=max(r.choices,key=lambda skill:rating.get(skill,3))
+        else:return None
+        r.validate(value);return Decision(r.request_id,pid,value)
+    if '【止啼】' in r.prompt and kind is RequestType.CHOOSE_OPTION:
+        value=next((slot for slot in ('weapon','armor','defensive_horse','offensive_horse') if slot in r.choices),r.choices[0])
+        r.validate(value);return Decision(r.request_id,pid,value)
     if '【结营】' in r.prompt and kind is RequestType.CHOOSE_PLAYER:
         value=max(r.allowed_player_ids,key=lambda q:(enemy(q),-state.players[q].hp))
         r.validate(value);return Decision(r.request_id,pid,value)

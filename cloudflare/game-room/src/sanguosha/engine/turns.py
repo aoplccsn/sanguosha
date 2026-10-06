@@ -109,6 +109,8 @@ class TurnActionHandler:
             clear_grants(state,action.player_id)
             from .yj2011_tier3 import clear_turn
             clear_turn(state)
+            from .skill_leases import expire_target
+            expire_target(state,action.player_id)
             state.current_phase = None
             self.recorder.record(TurnEndedEvent(f"{action.action_id}:end", action.player_id, state.turn_number))
             return StepResult.complete()

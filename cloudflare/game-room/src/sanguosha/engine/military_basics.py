@@ -390,6 +390,9 @@ class MilitaryDamageHandler(DamageActionHandler):
         reaction = yj2012_damage_reaction(state, frame, self.skills)
         if reaction is not None:
             return reaction
+        from .zhangliao import damage_reaction as zhangliao_damage_reaction
+        god_reaction=zhangliao_damage_reaction(state,frame,self.skills,self.distance.definitions)
+        if god_reaction is not None:return StepResult.push(god_reaction)
         chain = str(frame.local['chain']).split('|') if frame.local['chain'] else []
         if state.status is GameStatus.FINISHED or frame.cursor >= len(chain):
             return StepResult.complete(int(frame.local['amount']))

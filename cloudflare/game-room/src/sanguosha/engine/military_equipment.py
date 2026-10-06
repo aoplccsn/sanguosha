@@ -52,6 +52,8 @@ class MilitaryMoveService(CardMoveService):
             from sanguosha.model.enums import Color
             from .mountain import JiangAction, XinshengAction, BeigeAction
             for event in new_events:
+                from .zhangliao import event_reactions as zhangliao_event_reactions
+                self.reactions.extend(zhangliao_event_reactions(state,event,self.skills,getattr(self,'definitions',None)))
                 from .yj2013 import event_reactions as yj2013_event_reactions
                 self.reactions.extend(yj2013_event_reactions(state,event,self.skills))
                 from .yj2011 import event_reactions

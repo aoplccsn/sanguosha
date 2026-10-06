@@ -95,6 +95,7 @@ export interface PlayerView {
   face_up?: boolean
   marks?: Record<string, number>
   special_piles?: Record<string, CardView[]>
+  abolished_equipment_slots?: ('weapon'|'armor'|'offensive_horse'|'defensive_horse')[]
   active_transformation?: string
   transformation_pool?: string[]
   revealed_hand?: CardView[]

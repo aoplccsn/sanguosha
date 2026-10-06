@@ -562,11 +562,11 @@ class ZhijianHandler:
     def materials(self, state, actor):
         return tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, actor))
                      if self.definitions.get(state.cards[cid].definition_id).category
-                     is CardCategory.EQUIPMENT)
+                     is CardCategory.EQUIPMENT and self.targets(state,actor,cid))
 
-    def targets(self, state, actor):
+    def targets(self, state, actor,card=None):
         return tuple(pid for pid in state.seat_order
-                     if pid != actor and state.players[pid].is_alive)
+                     if pid != actor and state.players[pid].is_alive and (card is None or self.definitions.get(state.cards[card].definition_id).equipment_slot not in state.players[pid].abolished_equipment_slots))
 
     def available(self, state, actor):
         return (self.skills.has(state, actor, 'zhijian')
@@ -594,12 +594,12 @@ class ZhijianHandler:
             return StepResult.ask(PendingRequest(
                 frame.action.action_id + ':target', actor, RequestType.CHOOSE_PLAYER,
                 '直谏：选择装备的其他角色', frame.action.action_id, frame.frame_id,
-                allowed_player_ids=self.targets(state, actor)))
+                allowed_player_ids=self.targets(state, actor,card_id)))
         if frame.step_index == 2:
             target = frame.decision
             frame.decision = None
             card_id = frame.local['equipment']
-            if target not in self.targets(state, actor) or card_id not in self.materials(state, actor):
+            if target not in self.targets(state, actor,card_id) or card_id not in self.materials(state, actor):
                 raise InvalidCardUse('直谏目标或装备已不可用')
             slot = self.definitions.get(state.cards[card_id].definition_id).equipment_slot
             destination = ZoneRef(ZoneType.EQUIPMENT, target, slot)

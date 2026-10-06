@@ -81,6 +81,8 @@ class CardMoveService:
                 if len(ids) > 1 or any(cid not in state.cards or
                         sum(z.card_ids.count(cid) for z in state.zones.values()) != 1 for cid in ids):
                     raise InvalidCardMove("invalid equipment location")
+            if (bc and slot in state.players[a].abolished_equipment_slots) or (ac and slot in state.players[b].abolished_equipment_slots):
+                raise InvalidCardMove('exchange into an abolished slot')
             final[ar], final[br] = list(bc), list(ac)
             for source, dest, ids in ((ar, br, ac), (br, ar, bc)):
                 if ids:
@@ -134,6 +136,8 @@ class CardMoveService:
                 raise InvalidCardMove("card has no unique current location")
         destination = state.zones.get(move.to_zone)
         dest_ids = list(destination.card_ids) if destination is not None else []
+        if move.to_zone.zone_type is ZoneType.EQUIPMENT and move.to_zone.equipment_slot in state.players[move.to_zone.player_id].abolished_equipment_slots:
+            raise InvalidCardMove('equipment slot is abolished')
         if move.to_zone.zone_type is ZoneType.EQUIPMENT and len(dest_ids) + len(ids) > 1:
             raise InvalidCardMove("equipment slot capacity exceeded")
         if any(card_id in dest_ids for card_id in ids):

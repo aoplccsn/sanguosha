@@ -113,6 +113,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
           不屈 {buqu.length} · {buqu.map((card) => card.suit + card.rank).join(' ')}
         </span>}
         {field.length > 0 && <span className="zone-token" title={'田：' + field.map((card) => card.suit + card.rank).join(' ')}>田 {field.length}</span>}
+        {player.abolished_equipment_slots?.map(slot=><span key={slot} className="zone-token">已废除 {{weapon:'武器栏',armor:'防具栏',offensive_horse:'进攻马栏',defensive_horse:'防御马栏'}[slot] ?? slot}</span>)}
         {counters.length > 0 && <span className="zone-token" title={'逆：' + counters.map(card=>card.name+' '+card.suit+card.rank).join(' ')}>逆 {counters.length}</span>}
         {power.length > 0 && <span className="zone-token" title={'权：' + power.map(card => card.suit ? card.name + ' ' + card.suit + card.rank : '背面牌').join(' ')}>权 {power.length}</span>}
         {player.active_transformation && <span className="zone-token">化身 {state.generals[player.active_transformation]?.name ?? '已选择武将'}</span>}

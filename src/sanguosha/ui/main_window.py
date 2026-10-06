@@ -746,8 +746,13 @@ class MainWindow(QMainWindow):
             prompt = request.prompt + f"：已选 {count}/{request.min_count} 张。"
             ordered = tuple(card_id for card_id in request.eligible_card_ids if str(card_id) in self._selected_cards)
             verb = '确认选择' if '仁德' in request.prompt or '制衡' in request.prompt else '确认弃置'
-            actions.append((f"{verb} {count}/{request.min_count}", ordered,
-                            request.min_count <= count <= request.max_count))
+            from sanguosha.engine.errors import InvalidDecision
+            try:
+                request.validate(ordered)
+                selection_valid=True
+            except InvalidDecision:
+                selection_valid=False
+            actions.append((f"{verb} {count}/{request.min_count}", ordered,selection_valid))
             owned_hand={str(c.card_id) for c in view.hand}
             for cid in request.eligible_card_ids:
                 if str(cid) not in owned_hand:
@@ -773,7 +778,7 @@ class MainWindow(QMainWindow):
             prompt = request.prompt
         self.decision.render(prompt, actions)
         public={str(card.card_id):card for card in (*view.shared_cards,
-            *(card for player in view.players for card in (*player.equipment,*player.judgments)))}
+            *(card for player in view.players for card in (*player.equipment,*player.judgments,*player.revealed_hand,*(card for key,cards in player.special_piles.items() if key!='star' and not key.startswith('committed:') for card in cards))))}
         for button,(_,value,_) in zip(self.decision.buttons,actions):
             cid=value[1] if isinstance(value,tuple) and len(value)==2 and value[0]=='ui.toggle_card' else value
             card=public.get(cid) if isinstance(cid,str) else None
@@ -784,6 +789,6 @@ class MainWindow(QMainWindow):
                 button.hide()
 
     def _public_card_label(self,cid,view):
-        public=(*view.shared_cards,*(card for player in view.players for card in (*player.equipment,*player.judgments)))
+        public=(*view.shared_cards,*(card for player in view.players for card in (*player.equipment,*player.judgments,*player.revealed_hand,*(card for key,cards in player.special_piles.items() if key!='star' and not key.startswith('committed:') for card in cards))))
         card=next((card for card in public if str(card.card_id)==str(cid)),None)
         return f'{card.name} {card.suit}{card.rank}' if card else '目标背面手牌'

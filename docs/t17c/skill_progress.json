@@ -344,14 +344,14 @@
     {
       "general_id": "thunder_god_zhangliao",
       "skill_id": "duorui",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
     {
       "general_id": "thunder_god_zhangliao",
       "skill_id": "zhiti",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     }

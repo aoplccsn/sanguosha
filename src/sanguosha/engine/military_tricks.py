@@ -322,6 +322,7 @@ class TargetTrickHandler:
                 f.local.pop('duel_second',None)
                 who=str(f.local['who'])
                 source=(a.target_id if who == a.source_id else a.source_id) if d == 'trick.duel' else a.source_id
+                if d == 'trick.duel':f.local['duel_winner']=source;f.local['duel_loser']=who
                 if d == 'trick.savage_assault':
                     from .forest import savage_damage_source
                     source = savage_damage_source(state, a.source_id, self.skills)
@@ -345,6 +346,9 @@ class TargetTrickHandler:
                 cards=state.cards_in(ref)
                 if cards:
                     self.move(state,a,cards[0],ZoneRef(ZoneType.HAND,a.source_id))
+        if d == 'trick.duel' and f.step_index==3 and f.local.get('duel_winner'):
+            from .events import Event
+            self.moves.recorder.record(Event(a.action_id+':duel-resolved','duel_resolved',a.source_id,(a.target_id,),metadata={'winner_id':f.local['duel_winner'],'loser_id':f.local['duel_loser']}))
         return StepResult.complete()
 
 @dataclass(frozen=True,slots=True)

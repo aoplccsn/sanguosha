@@ -166,6 +166,7 @@ class GameSession:
         # Initialization moves are historical facts, not pending skill windows.
         state.metadata['reaction_event_cursor'] = len(events.events)
         definitions = CardDefinitionRegistry()
+        moves.definitions=definitions
         card_rules = CardRuleRegistry()
         register_basic_cards(definitions, card_rules)
         validator = CardUseValidator(definitions, card_rules, TargetValidator(), skills)
@@ -332,7 +333,7 @@ class GameSession:
                 registry.register(DyingAction, DyingActionHandler(events, skills,
                     FirstDyingOffer(NiepanOffer(skills), BuquOffer(skills))))
                 bodies.register(Phase.DISCARD, DiscardPhaseBody(moves, skills, events,
-                    FireHandLimit(WindHandLimit(), skills)))
+                    FireHandLimit(WindHandLimit(), skills,definitions)))
             registry.register(UseSpear,UseSpearHandler(provider,moves))
             if skills is not None:
                 from sanguosha.engine.fuhun import UseFuhun, UseFuhunHandler

@@ -44,12 +44,13 @@ def grant_after_damage(state, action, skills):
     player=state.players[source]
     native=skills.characters.get(player.character_id)
     for skill in ('wusheng','paoxiao'):
-        if skill not in player.granted_skills and (native is None or skill not in native.skill_ids):
-            player.granted_skills[skill]='fuhun:'+str(state.turn_number)
+        if native is None or skill not in native.skill_ids:
+            from .skill_grants import add_grant
+            add_grant(state,source,skill,'fuhun:'+str(state.turn_number))
 
 
 def clear_grants(state,pid):
-    player=state.players[pid]
+    from .skill_grants import grant_sources,remove_grant
     for skill in ('wusheng','paoxiao'):
-        if player.granted_skills.get(skill,'').startswith('fuhun:'):
-            del player.granted_skills[skill]
+        for source in grant_sources(state,pid,skill):
+            if source.startswith('fuhun:'):remove_grant(state,pid,skill,source)
