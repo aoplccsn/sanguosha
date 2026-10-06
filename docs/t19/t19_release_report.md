@@ -24,4 +24,12 @@
 
 ## 发布
 
-GitHub、GHCR与部署结果在完成后记录。Sealos目标保持 sanguosha-cn、北京、1副本、8000及既有域名/环境变量/SECRET_KEY。当前没有 kubeconfig，浏览器落在signin且页面控制多次超时；未改动生产应用。公网T19验收尚未执行。
+代码checkpoint：0c904fe42345222598948e15025f28fb2397a09e，提交名 T19 overpowered generals and dynamic portraits，GitHub push成功。
+
+GHCR生产工作流37538412659 SUCCESS；匿名registry读取完整SHA标签HTTP200：ghcr.io/aoplccsn/sanguosha-cn:0c904fe42345222598948e15025f28fb2397a09e，digest sha256:f8ce7a57828a70b8efc90b24699894c5402ff23e30ef47c9aa32a057de75664c。本报告后续提交同样触发完整HEAD SHA生产构建，最终交付摘要以最后核实的SHA标签为准。
+
+额外必要最终检查：六将+draft+Worker共43 PASS；真实生产服务器两浏览器WebSocket开局1 PASS。
+
+唯一剩余外部阻塞：Sealos部署登录不可用。公网health HTTP200/status ok，但catalogue为76，将此结果明确记为旧部署，不能算T19公网通过。Sealos目标保持 sanguosha-cn、北京、1副本、8000及既有域名/环境变量/SECRET_KEY。当前没有 kubeconfig，浏览器落在signin且页面控制多次超时；未改动生产应用。公网T19验收尚未执行。
+
+最短用户动作：登录 https://bja.sealos.run 北京现有账号，再继续本任务；无需改规则、重跑开发或重新准备美术。只更新 sanguosha-cn 的已核实SHA镜像，保持现有配置，然后执行T19公网smoke。
