@@ -1,0 +1,171 @@
+[
+  {
+    "id": "mobile_god_lusu",
+    "status": "prepared_not_integrated",
+    "source_file": "god_lusu_idle.mp4",
+    "source_sha256": "e94062b58de53ebac161ed20a7846ed0b5f94ffbcc985bf64b32699e7273e6af",
+    "source_unchanged": true,
+    "variants": [
+      {
+        "kind": "detail",
+        "path": "docs/t19/prepared_portraits/mobile_god_lusu.detail.mp4",
+        "sha256": "efd8f92c20f09f58f391405d5bd236971cdf5c6407dcffd64451a1fb29f899d2",
+        "bytes": 3150344,
+        "resolution": [
+          720,
+          1280
+        ],
+        "fps": "24/1",
+        "duration": "10.000000",
+        "faststart": true,
+        "audio": false,
+        "crf": 20
+      },
+      {
+        "kind": "panel",
+        "path": "docs/t19/prepared_portraits/mobile_god_lusu.panel.mp4",
+        "sha256": "1358d11755e07c39f3ca47c0cc1a99a50caf757d0dc432a1ef1bbf18f57d57dc",
+        "bytes": 1528577,
+        "resolution": [
+          360,
+          640
+        ],
+        "fps": "24/1",
+        "duration": "10.000000",
+        "faststart": true,
+        "audio": false,
+        "crf": 18
+      }
+    ],
+    "poster": "docs/t19/prepared_portraits/mobile_god_lusu.png",
+    "poster_sha256": "3893f19dfa1686d9484c0697f83bd0fd3b6ef89d71c4810d579bbb02e344310c"
+  },
+  {
+    "id": "mobile_god_taishici",
+    "status": "prepared_not_integrated",
+    "source_file": "god_taishici_idle.mp4",
+    "source_sha256": "4dff7942d736fd2c2f8132e5330e9dde0310093f37b6b4fa809d47c846afdc21",
+    "source_unchanged": true,
+    "variants": [
+      {
+        "kind": "detail",
+        "path": "docs/t19/prepared_portraits/mobile_god_taishici.detail.mp4",
+        "sha256": "5e4cc6d11a5efb67432ee9eef4c2b6c2b9f948bfb6cd9f0621b4980b06deeaab",
+        "bytes": 5023326,
+        "resolution": [
+          720,
+          1280
+        ],
+        "fps": "24/1",
+        "duration": "10.000000",
+        "faststart": true,
+        "audio": false,
+        "crf": 20
+      },
+      {
+        "kind": "panel",
+        "path": "docs/t19/prepared_portraits/mobile_god_taishici.panel.mp4",
+        "sha256": "7c967299fa0ff3d77bc0b81fd3afd55fe1728ea00ff16870409fa6e67b351b12",
+        "bytes": 2400298,
+        "resolution": [
+          360,
+          640
+        ],
+        "fps": "24/1",
+        "duration": "10.000000",
+        "faststart": true,
+        "audio": false,
+        "crf": 18
+      }
+    ],
+    "poster": "docs/t19/prepared_portraits/mobile_god_taishici.png",
+    "poster_sha256": "531a7c622c5cf7b3e9b2a4e09f2f40ca04470d8e887a35eb1d5032ba58ded2eb"
+  },
+  {
+    "id": "mobile_god_sunce",
+    "status": "prepared_not_integrated",
+    "source_file": "god_sunce_idle.mp4",
+    "source_sha256": "84b416fa1a76231c32fc3dceaa43d17c19c1425ec5488dc66eeca757f89d79a1",
+    "source_unchanged": true,
+    "variants": [
+      {
+        "kind": "detail",
+        "path": "docs/t19/prepared_portraits/mobile_god_sunce.detail.mp4",
+        "sha256": "5182d25fccee0828a617e2f6a58acd7ec0ef2f5dd568b4606a770e8ea723c7d7",
+        "bytes": 5950811,
+        "resolution": [
+          720,
+          1280
+        ],
+        "fps": "24/1",
+        "duration": "10.000000",
+        "faststart": true,
+        "audio": false,
+        "crf": 20
+      },
+      {
+        "kind": "panel",
+        "path": "docs/t19/prepared_portraits/mobile_god_sunce.panel.mp4",
+        "sha256": "307670e4fd3d554a81f545a1ca03cec45ddbf9c67a0701481941cd924b9ac732",
+        "bytes": 2909614,
+        "resolution": [
+          360,
+          640
+        ],
+        "fps": "24/1",
+        "duration": "10.000000",
+        "faststart": true,
+        "audio": false,
+        "crf": 18
+      }
+    ],
+    "poster": "docs/t19/prepared_portraits/mobile_god_sunce.png",
+    "poster_sha256": "857e017c7138ed024f7ab17451aada6d35936ae90c92cf64e3d31409617a7ab6"
+  },
+  {
+    "id": "mobile_god_guojia",
+    "status": "missing_master",
+    "expected_file": "god_guojia_idle.mp4"
+  },
+  {
+    "id": "mobile_god_xunyu",
+    "status": "prepared_not_integrated",
+    "source_file": "god_xunyu_idle.mp4",
+    "source_sha256": "e3e1bfdd8d24ce22a1745edc849613feb127d053de16367367948b5b4e0059b3",
+    "source_unchanged": true,
+    "variants": [
+      {
+        "kind": "detail",
+        "path": "docs/t19/prepared_portraits/mobile_god_xunyu.detail.mp4",
+        "sha256": "0782ea7a6b2bd06b98377b30c360c8cd750f536c20686e017081145f0dc3f158",
+        "bytes": 3442633,
+        "resolution": [
+          720,
+          1280
+        ],
+        "fps": "24/1",
+        "duration": "10.000000",
+        "faststart": true,
+        "audio": false,
+        "crf": 20
+      },
+      {
+        "kind": "panel",
+        "path": "docs/t19/prepared_portraits/mobile_god_xunyu.panel.mp4",
+        "sha256": "b6e6680872a7a0cea60182511247db124af98a3ce346447ddcf7ae731b1bc960",
+        "bytes": 1749131,
+        "resolution": [
+          360,
+          640
+        ],
+        "fps": "24/1",
+        "duration": "10.000000",
+        "faststart": true,
+        "audio": false,
+        "crf": 18
+      }
+    ],
+    "poster": "docs/t19/prepared_portraits/mobile_god_xunyu.png",
+    "poster_sha256": "13fff14facc5d984038ea26c41cf5a690a8388995cb8cc063d8d5535094488da"
+  }
+]
