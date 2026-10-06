@@ -239,7 +239,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/judgment.py",
-      "测试文件": "tests/test_t12_forest.py; tests/test_t18a11_judgment.py；judgment_targeted.log 325 passed；tests/test_t18a11_judgment.py inactive/gain_on_match；judgment_finish_targeted.log 157 passed；其余时机待核; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "tests/test_t12_forest.py; tests/test_t18a11_judgment.py；judgment_targeted.log 325 passed；tests/test_t18a11_judgment.py inactive/gain_on_match；judgment_finish_targeted.log 157 passed；其余时机待核; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Same-owner multiple retrial skill choice order remains unverified.",
       "审计状态": "BLOCKED"
     },
     {
@@ -263,7 +263,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Judgment dependency checked; full damage trigger, cost and death boundaries remain unverified.",
       "审计状态": "BLOCKED"
     },
     {
@@ -335,7 +335,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/judgment.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; tests/test_t18a11_judgment.py；judgment_targeted.log 325 passed；tests/test_t18a11_judgment.py inactive/gain_on_match；judgment_finish_targeted.log 157 passed；其余时机待核; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; tests/test_t18a11_judgment.py；judgment_targeted.log 325 passed；tests/test_t18a11_judgment.py inactive/gain_on_match；judgment_finish_targeted.log 157 passed；其余时机待核; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Same-owner FinishJudge ordering with Tuntian/Songwei/Luoshen remains unverified.",
       "审计状态": "BLOCKED"
     },
     {
@@ -383,7 +383,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Repeated Start/FinishJudge ordering with Tiandu remains unverified.",
       "审计状态": "BLOCKED"
     },
     {
@@ -455,7 +455,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t13_mountain.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "tests/test_t13_mountain.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Indirect draw-top dependency only; full reorder/phase skill audit outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -551,7 +551,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Shared judgment dependency checked; target-confirmation and response restriction closure outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -983,7 +983,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/wind.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Indirect judgment-phase skip dependency; complete phase/target/cost audit outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -1085,26 +1085,26 @@
     {
       "general_id": "wind_xiao_qiao",
       "武将名": "小乔",
-      "版本": "经典身份局现有版本；细项仍待独立核对",
+      "版本": "Classic locked Hongyan: own spade cards treated as hearts; no modern hand-only/draw variant",
       "skill_id": "hongyan",
       "技能名": "红颜",
       "技能类型": "locked",
-      "规则来源": "docs/t17/sources.md；旧包待逐技能补来源",
-      "当前项目锁定版本": "经典身份局现有版本；细项仍待独立核对",
-      "关键触发时机": "未完成独立规则核对",
-      "发动条件": "未完成独立规则核对",
-      "成本": "未完成独立规则核对",
-      "目标": "未完成独立规则核对",
-      "效果": "当前原创描述（不是规则核验结论）：锁定技。你的黑桃牌视为红桃牌。",
-      "次数限制": "未完成独立规则核对",
-      "持续时间": "未完成独立规则核对",
-      "清理时点": "未完成独立规则核对",
-      "隐藏信息": "未完成独立规则核对",
-      "AI支持": "100场AI压力通过；未等同逐技能策略核验",
-      "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
-      "当前实现文件": "src/sanguosha/engine/suits.py",
-      "测试文件": "tests/test_t17c_qianxi.py; tests/test_t17c_qice.py",
-      "审计状态": "BLOCKED"
+      "规则来源": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/wind.cpp; Hongyan FilterSkill; pinned SHA256/excerpt in judgment_system_sources.json; project classic catalogue",
+      "当前项目锁定版本": "Classic Hongyan: your spades are hearts",
+      "关键触发时机": "Continuous contextual face interpretation, including final judgment for judged player",
+      "发动条件": "Effective Hongyan on the owner/context player; physical suit spade",
+      "成本": "None; locked modifier",
+      "目标": "Owner cards / judgments of that owner; retrial material legality still uses retrial actor",
+      "效果": "Effective heart/red; preserve physical suit, rank and definition. Final public judgment and AI preference use judged-player context (R50).",
+      "次数限制": "No usage limit",
+      "持续时间": "While effective; re-evaluated by contextual suit service",
+      "清理时点": "No physical mutation or stored suit mark; disable/ownership/context change stops interpretation",
+      "隐藏信息": "Does not reveal hidden hand; reveal/retrial/final judgment card is public with frozen effective suit/color",
+      "AI支持": "Shared effective suit/color; Guidao better-material context regression (R50); no new broad AI run",
+      "reconnect要求": "Physical identity survives snapshot; contextual owned-face restoration and initial/replaced/final public history tested",
+      "当前实现文件": "src/sanguosha/engine/suits.py; engine/judgment.py; multiplayer/room.py",
+      "测试文件": "tests/test_t17c_qianxi.py; tests/test_t17c_qice.py; Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed",
+      "审计状态": "FIXED"
     },
     {
       "general_id": "wind_zhou_tai",
@@ -1151,7 +1151,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Final suit/rank dependency checked; full response timing and damage combinations remain unverified.",
       "审计状态": "BLOCKED"
     },
     {
@@ -1175,7 +1175,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/judgment.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; tests/test_t18a11_judgment.py；judgment_targeted.log 325 passed；tests/test_t18a11_judgment.py inactive/gain_on_match；judgment_finish_targeted.log 157 passed；其余时机待核; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; tests/test_t18a11_judgment.py；judgment_targeted.log 325 passed；tests/test_t18a11_judgment.py inactive/gain_on_match；judgment_finish_targeted.log 157 passed；其余时机待核; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Same-owner multiple retrial skill choice order remains unverified.",
       "审计状态": "BLOCKED"
     },
     {
@@ -1199,7 +1199,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/wind_lord.py",
-      "测试文件": "tests/test_t12_wind.py",
+      "测试文件": "tests/test_t12_wind.py; Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Indirect supplied-response dependency; full lord donation lifecycle outside this batch.",
       "审计状态": "BLOCKED"
     },
     {
@@ -1271,7 +1271,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/death.py; src/sanguosha/engine/military_equipment.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Shared judgment dependency checked; death-skill targeting and terminal exception closure outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -1463,7 +1463,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/fire.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Shared judgment evidence does not close virtual response/quota/armor suppression combinations.",
       "审计状态": "BLOCKED"
     },
     {
@@ -1607,7 +1607,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/fire.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/wind.py",
-      "测试文件": "未定位直接引用；需追踪行为用例；共享用牌/响应修复证据tests/test_t18a11_view_as_system.py及279相关回归；剩余边界见view_as_system_audit.md，继续BLOCKED; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例；共享用牌/响应修复证据tests/test_t18a11_view_as_system.py及279相关回归；剩余边界见view_as_system_audit.md，继续BLOCKED; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Judgment dependency checked; phase replacement and Duel ViewAs closure remain outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -1847,7 +1847,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/forest.py; src/sanguosha/engine/judgment.py",
-      "测试文件": "tests/test_t12_forest.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "tests/test_t12_forest.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: FinishJudge now precedes default cleanup, but same-owner ordering with Tiandu remains unverified.",
       "审计状态": "BLOCKED"
     },
     {
@@ -1871,7 +1871,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/forest.py; src/sanguosha/engine/military_tricks.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t12_forest.py；共享用牌/响应修复证据tests/test_t18a11_view_as_system.py及279相关回归；剩余边界见view_as_system_audit.md，继续BLOCKED; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "tests/test_t12_forest.py；共享用牌/响应修复证据tests/test_t18a11_view_as_system.py及279相关回归；剩余边界见view_as_system_audit.md，继续BLOCKED; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Supply Shortage shared resolution checked; complete ViewAs material, range and placement audit outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -2207,7 +2207,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/forest.py; src/sanguosha/engine/military_basics.py",
-      "测试文件": "tests/test_t12_forest.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "tests/test_t12_forest.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Shared black/spade judgment evidence does not close all lord recovery and damage timing boundaries.",
       "审计状态": "BLOCKED"
     },
     {
@@ -2375,7 +2375,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/wind.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Delayed-card relocation dependency only; full phase replacement and moving-target legality audit outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -2399,7 +2399,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/distance.py; src/sanguosha/engine/military_equipment.py; src/sanguosha/engine/mountain.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Same-owner FinishJudge priority/choice with Tiandu remains unverified; field distance is outside this batch.",
       "审计状态": "BLOCKED"
     },
     {
@@ -2423,7 +2423,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/wind.py",
-      "测试文件": "tests/test_t13_mountain.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "tests/test_t13_mountain.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Field-count dependency only; awakening qualification/lifetime audit outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -2567,7 +2567,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t13_mountain.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "tests/test_t13_mountain.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Indirect draw-top dependency only; full reorder/phase skill audit outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -2687,7 +2687,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/phases.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Final judgment SYSTEM move must not be conflated with discard-phase cost; full discard-phase audit outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -2759,7 +2759,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_equipment.py; src/sanguosha/engine/mountain.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Shared final suit semantics checked; discard cost, four effects and damage timing require full source closure.",
       "审计状态": "BLOCKED"
     },
     {
@@ -2807,7 +2807,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/fire.py; src/sanguosha/engine/phases.py",
-      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Judgment/draw-phase adjacency is indirect; full locked version/draw boundary audit outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -2999,7 +2999,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2011_tier3.py",
-      "测试文件": "tests/test_t17b_complete.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "tests/test_t17b_complete.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Field judgment no longer creates false discard window; complete movement-type and multiple-event qualification outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -3647,7 +3647,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t17c_qianxi.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "tests/test_t17c_qianxi.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Judgment/retrial material color restriction tested; phase and limitation lifetime closure outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -4559,7 +4559,7 @@
       "AI支持": "未完成独立规则核对",
       "reconnect要求": "未完成独立规则核对",
       "当前实现文件": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t13_mountain.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "tests/test_t13_mountain.py; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Field destination now authoritative; full special-pile ViewAs target/material/consumption audit outstanding.",
       "审计状态": "BLOCKED"
     },
     {
@@ -4583,7 +4583,7 @@
       "AI支持": "未完成独立规则核对",
       "reconnect要求": "未完成独立规则核对",
       "当前实现文件": "src/sanguosha/engine/card_use.py; src/sanguosha/engine/gods.py; src/sanguosha/engine/judgment.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/zhangliao.py",
-      "测试文件": "tests/test_t13_gods.py; tests/test_t18a11_judgment.py；judgment_targeted.log 325 passed; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS)",
+      "测试文件": "tests/test_t13_gods.py; tests/test_t18a11_judgment.py；judgment_targeted.log 325 passed; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; CardMove dependency audit: card_move_system_audit.md (partial dependency evidence; not automatic PASS); Judgment dependency: judgment_system_audit.md; test_t18a11_judgment_system.py; 299 targeted Python / 46 scoped Web passed; retained BLOCKED: Same-owner retrial choice order and other Jilue branches remain unverified.",
       "审计状态": "BLOCKED"
     },
     {

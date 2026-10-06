@@ -1,0 +1,62 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_ test_delayed_removed_or_dead_target_cannot_start_counter_or_judgment[dead] __
+
+condition = 'dead'
+
+    @pytest.mark.parametrize('condition',['dead','moved'])
+    def test_delayed_removed_or_dead_target_cannot_start_counter_or_judgment(condition):
+     from sanguosha.engine.military_tricks import ResolveDelayed
+     from sanguosha.engine.card_moves import CardMove,CardMoveReason
+     from sanguosha.model.enums import PlayerStatus
+     s=game();cid=put(s,'delayed.indulgence','p1',ZoneType.JUDGMENT)
+     if condition=='dead':s.state.players['p1'].status=PlayerStatus.DEAD
+     else:s.engine.reaction_provider.__self__.move(s.state,CardMove('audit-away',(cid,),ZoneRef(ZoneType.JUDGMENT,'p1'),ZoneRef(ZoneType.HAND,'p2'),CardMoveReason.SYSTEM))
+     before=len(s.events.events)
+     s.engine.start_action(ResolveDelayed('audit-stale-delayed','p1',cid))
+>    assert s.engine.pending_request is None
+E    AssertionError: assert PendingRequest(request_id='audit-stale-delayed:window:counter:0:2:request', player_id='p2', request_type=<RequestType...., subject_player_id='p1', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E     +  where PendingRequest(request_id='audit-stale-delayed:window:counter:0:2:request', player_id='p2', request_type=<RequestType...., subject_player_id='p1', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000019F654930E0>.pending_request
+E     +    where <sanguosha.engine.engine.GameEngine object at 0x0000019F654930E0> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000019F654930E0>, events=<sanguosha.engine.events....FD0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000019F651B0830>).engine
+
+tests\test_t18a11_judgment_system.py:68: AssertionError
+_ test_delayed_removed_or_dead_target_cannot_start_counter_or_judgment[moved] _
+
+condition = 'moved'
+
+    @pytest.mark.parametrize('condition',['dead','moved'])
+    def test_delayed_removed_or_dead_target_cannot_start_counter_or_judgment(condition):
+     from sanguosha.engine.military_tricks import ResolveDelayed
+     from sanguosha.engine.card_moves import CardMove,CardMoveReason
+     from sanguosha.model.enums import PlayerStatus
+     s=game();cid=put(s,'delayed.indulgence','p1',ZoneType.JUDGMENT)
+     if condition=='dead':s.state.players['p1'].status=PlayerStatus.DEAD
+     else:s.engine.reaction_provider.__self__.move(s.state,CardMove('audit-away',(cid,),ZoneRef(ZoneType.JUDGMENT,'p1'),ZoneRef(ZoneType.HAND,'p2'),CardMoveReason.SYSTEM))
+     before=len(s.events.events)
+     s.engine.start_action(ResolveDelayed('audit-stale-delayed','p1',cid))
+>    assert s.engine.pending_request is None
+E    AssertionError: assert PendingRequest(request_id='audit-stale-delayed:window:counter:0:1:request', player_id='p1', request_type=<RequestType...., subject_player_id='p1', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E     +  where PendingRequest(request_id='audit-stale-delayed:window:counter:0:1:request', player_id='p1', request_type=<RequestType...., subject_player_id='p1', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000019F655C42D0>.pending_request
+E     +    where <sanguosha.engine.engine.GameEngine object at 0x0000019F655C42D0> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000019F655C42D0>, events=<sanguosha.engine.events....1D0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000019F654E9090>).engine
+
+tests\test_t18a11_judgment_system.py:68: AssertionError
+________ test_reconnect_retains_revealed_judgment_before_first_retrial ________
+
+    def test_reconnect_retains_revealed_judgment_before_first_retrial():
+     from sanguosha.multiplayer.room import MultiplayerRoom
+     from sanguosha.projection import project_for_human
+     s=game();s.state.players['p2'].granted_skills['guicai']='audit'
+     top=s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+     s.engine.start_action(JudgmentAction('audit-reveal-restore','p1',JudgmentPattern()))
+     s=restore(s);room=MultiplayerRoom();room.session=s
+     wire=room._named_projection(project_for_human(s.state,s.definitions,'p3',{}),'p3')
+>    assert any(e['kind']=='JudgmentRevealedEvent' for e in wire['public_card_history'])
+E    assert False
+E     +  where False = any(<generator object test_reconnect_retains_revealed_judgment_before_first_retrial.<locals>.<genexpr> at 0x0000019F655DDFF0>)
+
+tests\test_t18a11_judgment_system.py:80: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_judgment_system.py::test_delayed_removed_or_dead_target_cannot_start_counter_or_judgment[dead]
+FAILED tests/test_t18a11_judgment_system.py::test_delayed_removed_or_dead_target_cannot_start_counter_or_judgment[moved]
+FAILED tests/test_t18a11_judgment_system.py::test_reconnect_retains_revealed_judgment_before_first_retrial
+3 failed, 5 deselected in 0.33s

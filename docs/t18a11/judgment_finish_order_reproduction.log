@@ -1,0 +1,19 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_finish_judgment_skill_runs_before_default_discard_and_luoying ______
+
+    def test_finish_judgment_skill_runs_before_default_discard_and_luoying():
+     from sanguosha.model.enums import Identity
+     s=game();s.state.players['p1'].identity=Identity.LORD;s.state.players['p1'].granted_skills['songwei']='audit';s.state.players['p3'].granted_skills['luoying']='audit'
+     cid=s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0];s.state.cards[cid]=replace(s.state.cards[cid],suit=Suit.CLUB)
+     s.engine.start_action(JudgmentAction('audit-finish-before-clean','p2',JudgmentPattern()))
+>    assert s.engine.pending_request.player_id=='p2' and s.engine.pending_request.request_id.endswith(':songwei:offer')
+E    AssertionError: assert ('p3' == 'p2'
+E      
+E      - p2
+E      + p3)
+
+tests\test_t18a11_judgment_system.py:182: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_judgment_system.py::test_finish_judgment_skill_runs_before_default_discard_and_luoying
+1 failed, 25 deselected in 0.30s

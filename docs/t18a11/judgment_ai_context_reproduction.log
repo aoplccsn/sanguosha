@@ -1,0 +1,19 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+______ test_guidao_ai_preferred_material_is_evaluated_for_judged_player _______
+
+    def test_guidao_ai_preferred_material_is_evaluated_for_judged_player():
+     s=game();s.state.players['p1'].granted_skills['hongyan']='audit';s.state.players['p2'].granted_skills['guidao']='audit'
+     cid=put(s,'basic.slash','p2');s.state.cards[cid]=replace(s.state.cards[cid],suit=Suit.SPADE)
+     top=s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0];s.state.cards[top]=replace(s.state.cards[top],suit=Suit.CLUB)
+     s.engine.start_action(JudgmentAction('audit-guidao-context','p1',JudgmentPattern(suit=Suit.HEART)))
+>    assert 'better:'+cid in s.engine.pending_request.choices
+E    AssertionError: assert ('better:' + 'std-club-04-2') in ('current:0',)
+E     +  where ('current:0',) = PendingRequest(request_id='audit-guidao-context:guidao:p2', player_id='p2', request_type=<RequestType.YES_NO: 'yes_no'..., subject_player_id='p1', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()).choices
+E     +    where PendingRequest(request_id='audit-guidao-context:guidao:p2', player_id='p2', request_type=<RequestType.YES_NO: 'yes_no'..., subject_player_id='p1', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x000001D78AC93230>.pending_request
+E     +      where <sanguosha.engine.engine.GameEngine object at 0x000001D78AC93230> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000001D78AC93230>, events=<sanguosha.engine.events....D30>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000001D78A940440>).engine
+
+tests\test_t18a11_judgment_system.py:173: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_judgment_system.py::test_guidao_ai_preferred_material_is_evaluated_for_judged_player
+1 failed, 24 deselected in 0.30s

@@ -1,0 +1,90 @@
+FFFFF                                                                    [100%]
+================================== FAILURES ===================================
+____ test_successful_field_judgment_never_enters_discard_or_luoying_window ____
+
+    def test_successful_field_judgment_never_enters_discard_or_luoying_window():
+     from sanguosha.engine.mountain import TuntianAction,field_zone
+     s=game();s.state.players['p2'].granted_skills['tuntian']='audit';s.state.players['p3'].granted_skills['luoying']='audit'
+     top=s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0];s.state.cards[top]=replace(s.state.cards[top],suit=Suit.CLUB)
+     s.engine.start_action(TuntianAction('audit-field-final','p2'));answer(s,True)
+>    assert s.engine.pending_request is None
+E    AssertionError: assert PendingRequest(request_id='audit-field-final:judgment:after:luoying:p3:request:1:0', player_id='p3', request_type=<Req..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E     +  where PendingRequest(request_id='audit-field-final:judgment:after:luoying:p3:request:1:0', player_id='p3', request_type=<Req..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000013CD4C8F230>.pending_request
+E     +    where <sanguosha.engine.engine.GameEngine object at 0x0000013CD4C8F230> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000013CD4C8F230>, events=<sanguosha.engine.events....E40>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000013CD499D550>).engine
+
+tests\test_t18a11_judgment_system.py:24: AssertionError
+_____ test_public_final_judgment_uses_judged_players_effective_suit_color _____
+
+    def test_public_final_judgment_uses_judged_players_effective_suit_color():
+     from sanguosha.multiplayer.room import MultiplayerRoom
+     s=game();s.state.players['p2'].granted_skills.update(hongyan='audit',tiandu='audit')
+     top=s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0];s.state.cards[top]=replace(s.state.cards[top],suit=Suit.SPADE,rank=7)
+     s.engine.start_action(JudgmentAction('audit-public-suit','p2',JudgmentPattern(suit=Suit.HEART)))
+     room=MultiplayerRoom();room.session=s
+     reveal=next(e for e in s.events.events if getattr(e,'event_type','')=='judgment_card_revealed')
+     public=room._public_event(reveal)
+>    assert public['cards'][0]['suit']=='\u2665' and public['effective_color']=='red'
+E    AssertionError: assert ('\u2660' == '\u2665'
+E      
+E      - \u2665
+E      + \u2660)
+
+tests\test_t18a11_judgment_system.py:38: AssertionError
+_ test_delayed_public_result_names_specific_rule_consequence[delayed.indulgence-spade-skip_play] _
+
+definition = 'delayed.indulgence', suit = <Suit.SPADE: 'spade'>
+outcome = 'skip_play'
+
+    @pytest.mark.parametrize('definition,suit,outcome',[('delayed.indulgence',Suit.SPADE,'skip_play'),('delayed.supply_shortage',Suit.HEART,'skip_draw'),('delayed.lightning',Suit.HEART,'transfer')])
+    def test_delayed_public_result_names_specific_rule_consequence(definition,suit,outcome):
+     from sanguosha.engine.military_tricks import ResolveDelayed
+     from sanguosha.multiplayer.room import MultiplayerRoom
+     s=game();cid=put(s,definition,'p1',ZoneType.JUDGMENT)
+     top=s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0];s.state.cards[top]=replace(s.state.cards[top],suit=suit)
+     s.engine.start_action(ResolveDelayed('audit-delayed-result','p1',cid));finish(s)
+>    result=next(e for e in s.events.events if getattr(e,'event_type','')=='delayed_result')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    StopIteration
+
+tests\test_t18a11_judgment_system.py:52: StopIteration
+_ test_delayed_public_result_names_specific_rule_consequence[delayed.supply_shortage-heart-skip_draw] _
+
+definition = 'delayed.supply_shortage', suit = <Suit.HEART: 'heart'>
+outcome = 'skip_draw'
+
+    @pytest.mark.parametrize('definition,suit,outcome',[('delayed.indulgence',Suit.SPADE,'skip_play'),('delayed.supply_shortage',Suit.HEART,'skip_draw'),('delayed.lightning',Suit.HEART,'transfer')])
+    def test_delayed_public_result_names_specific_rule_consequence(definition,suit,outcome):
+     from sanguosha.engine.military_tricks import ResolveDelayed
+     from sanguosha.multiplayer.room import MultiplayerRoom
+     s=game();cid=put(s,definition,'p1',ZoneType.JUDGMENT)
+     top=s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0];s.state.cards[top]=replace(s.state.cards[top],suit=suit)
+     s.engine.start_action(ResolveDelayed('audit-delayed-result','p1',cid));finish(s)
+>    result=next(e for e in s.events.events if getattr(e,'event_type','')=='delayed_result')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    StopIteration
+
+tests\test_t18a11_judgment_system.py:52: StopIteration
+_ test_delayed_public_result_names_specific_rule_consequence[delayed.lightning-heart-transfer] _
+
+definition = 'delayed.lightning', suit = <Suit.HEART: 'heart'>
+outcome = 'transfer'
+
+    @pytest.mark.parametrize('definition,suit,outcome',[('delayed.indulgence',Suit.SPADE,'skip_play'),('delayed.supply_shortage',Suit.HEART,'skip_draw'),('delayed.lightning',Suit.HEART,'transfer')])
+    def test_delayed_public_result_names_specific_rule_consequence(definition,suit,outcome):
+     from sanguosha.engine.military_tricks import ResolveDelayed
+     from sanguosha.multiplayer.room import MultiplayerRoom
+     s=game();cid=put(s,definition,'p1',ZoneType.JUDGMENT)
+     top=s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0];s.state.cards[top]=replace(s.state.cards[top],suit=suit)
+     s.engine.start_action(ResolveDelayed('audit-delayed-result','p1',cid));finish(s)
+>    result=next(e for e in s.events.events if getattr(e,'event_type','')=='delayed_result')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    StopIteration
+
+tests\test_t18a11_judgment_system.py:52: StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_judgment_system.py::test_successful_field_judgment_never_enters_discard_or_luoying_window
+FAILED tests/test_t18a11_judgment_system.py::test_public_final_judgment_uses_judged_players_effective_suit_color
+FAILED tests/test_t18a11_judgment_system.py::test_delayed_public_result_names_specific_rule_consequence[delayed.indulgence-spade-skip_play]
+FAILED tests/test_t18a11_judgment_system.py::test_delayed_public_result_names_specific_rule_consequence[delayed.supply_shortage-heart-skip_draw]
+FAILED tests/test_t18a11_judgment_system.py::test_delayed_public_result_names_specific_rule_consequence[delayed.lightning-heart-transfer]
+5 failed in 0.32s

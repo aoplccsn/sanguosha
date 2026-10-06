@@ -1,0 +1,2 @@
+Four Hongyan equipment cases initially failed in fixture construction: ZoneRef requires EquipmentSlot.WEAPON. No engine action was reached. Corrected slot and registered crossbow definition; not a product defect. No failure test deleted.
+Lightning restore fixture initially asserted FinishJudge before declining legitimate nullification requests. Explicitly pass the earlier counter windows; not a product bug.

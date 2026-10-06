@@ -110,3 +110,16 @@ CardMove / special-pile batch; code 8d449b4:
 | R48 | Xingshang eligible areas | Judgment cards gained with hand/equipment | Hand + equipment only; judgment/private pile remains death cleanup | Shared movement / area eligibility root | card_move_inherit_reproduction.log; 354 related + 2 AI + 3 privacy passed | 8d449b4 |
 
 Four additional real baseline product roots, cumulative 50. Two separate contract improvements (H01 multizone obtain prevalidation on constructed corrupt state; C01 Xingshang acquisition summary) are not added to baseline defect count. Version differences and fixture errors recorded separately in card_move_system_audit.md. Closed Quanji/Xingshang FIXED; {'BLOCKED': 169, 'FIXED': 19, 'PASS': 4}. No full/final gates or RC approval.
+
+
+Judgment / delayed batch; code b9558ef, coverage checkpoint 07d6bcb:
+
+| R49 | Successful judgment destination | Tuntian enters discard/Luoying before field | Shared inverted pattern and success_destination route processing directly to field, preserve independent destination after Tiandu decline | Real baseline product bug | judgment_system_reproduction.log; judgment_system_audit.md; 299 targeted Python / 46 scoped Web | 07d6bcb |
+| R50 | Final contextual face | Hongyan public spade vs heart result; Guidao AI uses actor context | Freeze final judged-player suit/color; public reveal/retrial/final and AI preference use correct context | Real baseline product bug, two manifestations of same semantic root | judgment_system_reproduction.log; judgment_ai_context_reproduction.log | 07d6bcb |
+| R51 | Delayed consequence presentation | No Chinese outcome; final match text overwritten; AI retrial no dedicated dwell | Public delayed_result, Web/desktop final face/result and scoped AI dwell | Real product presentation gap | 3 outcome reproductions; scoped GamePage/pacing/desktop tests | 07d6bcb |
+| R52 | Public reconnect lifecycle | Initial/replaced judgment and delayed result absent from history | Preserve reveal/retrial/final/transfer public history | Real baseline reconnect gap | judgment_restore_reproduction.log; Tiandu and transfer restore tests | 07d6bcb |
+| R53 | FinishJudge vs cleanup | Luoying before Songwei after default discard | Offer FinishJudge Songwei before shared disposition; restore saved destination | Real baseline product bug; multiple FinishJudge ordering still BLOCKED | judgment_finish_order_reproduction.log | 07d6bcb |
+
+Five additional real baseline roots, cumulative **55** (previous 50). H02 stale ResolveDelayed rejection is a defensive contract: dead/moved entry tests directly construct an invalid action, without proof of a natural reachable baseline bug; not included in R49-R53. A lethal-lightning cleanup regression introduced by the new guard was reproduced and repaired during development; not added to baseline count. Fixture and version differences are separately classified in judgment_system_audit.md and judgment_fixture_notes.md.
+
+Scope 28 dependent rows / 27 unique skills. Closed Hongyan FIXED; newly closed PASS 0. Current matrix **168 BLOCKED / 20 FIXED / 4 PASS**. Shared proof does not close same-owner retrial/FinishJudge ordering; remaining clauses explicitly listed per dependency. 299 related Python and 46 scoped Web passed. No full pytest, Huashen 795 or final gates; no RC issued.

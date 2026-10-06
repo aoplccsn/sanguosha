@@ -1,0 +1,198 @@
+[
+  {
+    "general_id": "simayi",
+    "skill_id": "guicai",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Same-owner multiple retrial skill choice order remains unverified."
+  },
+  {
+    "general_id": "xiahou_dun",
+    "skill_id": "ganglie",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Judgment dependency checked; full damage trigger, cost and death boundaries remain unverified."
+  },
+  {
+    "general_id": "guojia",
+    "skill_id": "tiandu",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Same-owner FinishJudge ordering with Tuntian/Songwei/Luoshen remains unverified."
+  },
+  {
+    "general_id": "zhenji",
+    "skill_id": "luoshen",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Repeated Start/FinishJudge ordering with Tiandu remains unverified."
+  },
+  {
+    "general_id": "zhugeliang",
+    "skill_id": "guanxing",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Indirect draw-top dependency only; full reorder/phase skill audit outstanding."
+  },
+  {
+    "general_id": "machao",
+    "skill_id": "tieqi",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared judgment dependency checked; target-confirmation and response restriction closure outstanding."
+  },
+  {
+    "general_id": "wind_xiahou_yuan",
+    "skill_id": "shensu",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Indirect judgment-phase skip dependency; complete phase/target/cost audit outstanding."
+  },
+  {
+    "general_id": "wind_xiao_qiao",
+    "skill_id": "hongyan",
+    "entry_status": "BLOCKED",
+    "exit_status": "FIXED",
+    "remaining": "Closed contextual suit and public judgment semantics"
+  },
+  {
+    "general_id": "wind_zhang_jiao",
+    "skill_id": "leiji",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Final suit/rank dependency checked; full response timing and damage combinations remain unverified."
+  },
+  {
+    "general_id": "wind_zhang_jiao",
+    "skill_id": "guidao",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Same-owner multiple retrial skill choice order remains unverified."
+  },
+  {
+    "general_id": "wind_zhang_jiao",
+    "skill_id": "huangtian",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Indirect supplied-response dependency; full lord donation lifecycle outside this batch."
+  },
+  {
+    "general_id": "wind_god_guanyu",
+    "skill_id": "wuhun",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared judgment dependency checked; death-skill targeting and terminal exception closure outstanding."
+  },
+  {
+    "general_id": "fire_wolong",
+    "skill_id": "bazhen",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared judgment evidence does not close virtual response/quota/armor suppression combinations."
+  },
+  {
+    "general_id": "fire_yan_liang_wen_chou",
+    "skill_id": "shuangxiong",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Judgment dependency checked; phase replacement and Duel ViewAs closure remain outstanding."
+  },
+  {
+    "general_id": "forest_caopi",
+    "skill_id": "songwei",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "FinishJudge now precedes default cleanup, but same-owner ordering with Tiandu remains unverified."
+  },
+  {
+    "general_id": "forest_xuhuang",
+    "skill_id": "duanliang",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Supply Shortage shared resolution checked; complete ViewAs material, range and placement audit outstanding."
+  },
+  {
+    "general_id": "forest_dong_zhuo",
+    "skill_id": "baonue",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared black/spade judgment evidence does not close all lord recovery and damage timing boundaries."
+  },
+  {
+    "general_id": "mountain_zhang_he",
+    "skill_id": "qiaobian",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Delayed-card relocation dependency only; full phase replacement and moving-target legality audit outstanding."
+  },
+  {
+    "general_id": "mountain_deng_ai",
+    "skill_id": "tuntian",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Same-owner FinishJudge priority/choice with Tiandu remains unverified; field distance is outside this batch."
+  },
+  {
+    "general_id": "mountain_deng_ai",
+    "skill_id": "zaoxian",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Field-count dependency only; awakening qualification/lifetime audit outstanding."
+  },
+  {
+    "general_id": "mountain_jiang_wei",
+    "skill_id": "guanxing",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Indirect draw-top dependency only; full reorder/phase skill audit outstanding."
+  },
+  {
+    "general_id": "mountain_zhang_zhaozhang",
+    "skill_id": "guzheng",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Final judgment SYSTEM move must not be conflated with discard-phase cost; full discard-phase audit outstanding."
+  },
+  {
+    "general_id": "mountain_cai_wenji",
+    "skill_id": "beige",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared final suit semantics checked; discard cost, four effects and damage timing require full source closure."
+  },
+  {
+    "general_id": "mountain_god_zhaoyun",
+    "skill_id": "juejing",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Judgment/draw-phase adjacency is indirect; full locked version/draw boundary audit outstanding."
+  },
+  {
+    "general_id": "yj2011_cao_zhi",
+    "skill_id": "luoying",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Field judgment no longer creates false discard window; complete movement-type and multiple-event qualification outstanding."
+  },
+  {
+    "general_id": "yj2012_ma_dai",
+    "skill_id": "qianxi",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Judgment/retrial material color restriction tested; phase and limitation lifetime closure outstanding."
+  },
+  {
+    "general_id": "动态授予/附属",
+    "skill_id": "jixi",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Field destination now authoritative; full special-pile ViewAs target/material/consumption audit outstanding."
+  },
+  {
+    "general_id": "动态授予/附属",
+    "skill_id": "jilue",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Same-owner retrial choice order and other Jilue branches remain unverified."
+  }
+]
