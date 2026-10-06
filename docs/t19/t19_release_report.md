@@ -9,7 +9,7 @@
 - 超标位概率 0.25，每次十选至多一名；太史慈/孙策/司马/郭嘉/荀彧权重 10/8/7/6/4，集中配置 general_draft.py，Pregame 和 Room 共用 authoritative RNG。
 - 鲁肃普通池、metadata 显式允许化身；超标五将禁止化身；基础化身池 91，生产算法动态推导。
 - 动态鲁肃、太史慈、孙策、荀彧接入 panel/detail/选将与 manifest；复用既有司马视频。总动态17套。未修改用户 master，未生成美术。
-- 神郭嘉缺失 god_guojia_idle.mp4，暂用既有郭嘉静态画作 fallback。PySide 本环境没有 QtMultimedia，沿用静态 poster；Web 视频已实测播放。奇正相生暂用卡牌通用图 fallback。
+- 神郭嘉缺失 god_guojia_idle.mp4，暂用既有郭嘉静态画作 fallback。PySide已补齐PlayerPanel、GeneralDetail和选将的原生循环视频，安装项目gui extra所需的官方PySide6-Addons后实测五将各收到20–25帧；郭嘉静态回退。没有Multimedia的精简安装继续静态回退。Web视频已实测播放。奇正相生暂用卡牌通用图 fallback。
 
 ## 验收
 
@@ -33,3 +33,5 @@ GHCR生产工作流37538412659 SUCCESS；匿名registry读取完整SHA标签HTTP
 唯一剩余外部阻塞：Sealos部署登录不可用。公网health HTTP200/status ok，但catalogue为76，将此结果明确记为旧部署，不能算T19公网通过。Sealos目标保持 sanguosha-cn、北京、1副本、8000及既有域名/环境变量/SECRET_KEY。当前没有 kubeconfig，浏览器落在signin且页面控制多次超时；未改动生产应用。公网T19验收尚未执行。
 
 最短用户动作：登录 https://bja.sealos.run 北京现有账号，再继续本任务；无需改规则、重跑开发或重新准备美术。只更新 sanguosha-cn 的已核实SHA镜像，保持现有配置，然后执行T19公网smoke。
+
+后续完成审查补齐：原生视频按同一manifest加载、无音频、隐藏时暂停；实际帧证据 pyside_video_smoke.json。Native详情势力显示使用当前Projection。

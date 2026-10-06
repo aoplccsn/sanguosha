@@ -11,6 +11,7 @@ from sanguosha.engine.requests import Decision
 from sanguosha.pregame import Pregame, SetupStage
 from sanguosha.projection import IDENTITY_LABELS
 from .resources import RESOURCES
+from .idle_portrait import IdlePortrait
 from .timing import PREGAME_GENERAL_TIMEOUT_MS
 
 
@@ -36,6 +37,9 @@ class GeneralChoiceCard(QPushButton):
         portrait.setPixmap(RESOURCES.general_portrait(str(character.id), character.name).scaled(125, 133, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
         portrait.setAlignment(Qt.AlignCenter)
         portrait.setAttribute(Qt.WA_TransparentForMouseEvents)
+        self._idle = IdlePortrait(portrait)
+        self._idle.changed.connect(lambda: portrait.setPixmap(self._idle.pixmap.scaledToHeight(133, Qt.SmoothTransformation)))
+        self._idle.set_general(str(character.id))
         layout.addWidget(portrait)
         title = QLabel(f'{character.name}  {FACTIONS[character.kingdom.value]}  {character.max_hp} 体力')
         title.setAlignment(Qt.AlignCenter)

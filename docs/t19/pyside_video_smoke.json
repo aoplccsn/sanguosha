@@ -1,0 +1,32 @@
+[
+  {
+    "id": "mobile_god_lusu",
+    "frames": 20,
+    "fallback": false
+  },
+  {
+    "id": "mobile_god_taishici",
+    "frames": 25,
+    "fallback": false
+  },
+  {
+    "id": "mobile_god_sunce",
+    "frames": 25,
+    "fallback": false
+  },
+  {
+    "id": "mountain_god_simayi",
+    "frames": 25,
+    "fallback": false
+  },
+  {
+    "id": "mobile_god_guojia",
+    "frames": 0,
+    "fallback": true
+  },
+  {
+    "id": "mobile_god_xunyu",
+    "frames": 25,
+    "fallback": false
+  }
+]

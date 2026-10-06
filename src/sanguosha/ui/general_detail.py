@@ -7,6 +7,7 @@ from sanguosha.model.enums import Identity, SkillType
 from sanguosha.content.characters.classic import SKILLS as IMPLEMENTED_SKILLS
 from sanguosha.projection import PlayerView
 from .resources import RESOURCES
+from .idle_portrait import IdlePortrait
 
 
 TYPE_LABELS = {
@@ -68,8 +69,11 @@ class GeneralDetailPanel(QDialog):
         portrait = QLabel()
         portrait.setPixmap(RESOURCES.general_portrait(str(character.id), character.name).scaledToHeight(260, Qt.SmoothTransformation))
         portrait.setAlignment(Qt.AlignCenter)
+        self._idle = IdlePortrait(portrait)
+        self._idle.changed.connect(lambda: portrait.setPixmap(self._idle.pixmap.scaledToHeight(260, Qt.SmoothTransformation)))
+        self._idle.set_general(str(character.id))
         layout.addWidget(portrait)
-        faction = {'wei': '魏', 'shu': '蜀', 'wu': '吴', 'qun': '群'}[character.kingdom.value]
+        faction = view.faction or {'wei': '魏', 'shu': '蜀', 'wu': '吴', 'qun': '群'}[character.kingdom.value]
         layout.addWidget(QLabel(f'{character.name}  ·  {faction}  ·  体力 {view.hp}/{view.max_hp}'))
         for sid in character.skill_ids:
             skill = skills[sid]

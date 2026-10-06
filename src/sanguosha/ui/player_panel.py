@@ -4,6 +4,7 @@ from PySide6.QtGui import QColor, QFont, QLinearGradient, QPainter, QPainterPath
 from PySide6.QtWidgets import QPushButton
 from sanguosha.projection import PlayerView
 from .resources import RESOURCES
+from .idle_portrait import IdlePortrait
 from .theme import Theme
 from .equipment_preview import EquipmentPreview
 from .card_widget import equipment_label
@@ -17,6 +18,8 @@ class PlayerPanel(QPushButton):
         super().__init__()
         self.player_id = player_id
         self.view: PlayerView | None = None
+        self._idle = IdlePortrait(self, panel=True)
+        self._idle.changed.connect(self.update)
         self.targetable = self.selected_target = False
         self.attack_role: str | None = None
         self.pending_responder = False
@@ -117,6 +120,7 @@ class PlayerPanel(QPushButton):
             else:
                 self.turn_glow = 0
         self.view = view
+        self._idle.set_general(view.character_id)
         self.targetable = targetable
         self.selected_target = selected_target
         self.attack_role = "attacker" if attacker else "defender" if defender else None
@@ -183,7 +187,7 @@ class PlayerPanel(QPushButton):
         clip = QPainterPath()
         clip.addRoundedRect(art, 3, 3)
         p.setClipPath(clip)
-        portrait = RESOURCES.general_portrait(v.character_id, v.character_name)
+        portrait = self._idle.pixmap or RESOURCES.general_portrait(v.character_id, v.character_name)
         portrait_box = art.toRect()
         scaled = portrait.scaled(portrait_box.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
         crop_x = (scaled.width() - portrait_box.width()) // 2
