@@ -101,3 +101,16 @@ it('public reveals and discards survive fast snapshots and human requests, dedup
  act(()=>vi.advanceTimersByTime(2000))
  expect(result.current).toBeNull()
 })
+
+it('keeps final retrial and delayed outcome visible before an actionable human prompt', () => {
+  vi.useFakeTimers()
+  const judged: PublicEvent = {kind:'JudgmentRevealedEvent',event_id:'final-retrial'}
+  const outcome: PublicEvent = {kind:'DelayedResultEvent',event_id:'delayed-outcome',message:'skip'}
+  expect(eventDuration(outcome,'fast')).toBeGreaterThan(0)
+  const {result,rerender}=renderHook(({items,human}:{items:PublicEvent[],human?:string})=>usePresentation(items,'normal',human),{initialProps:{items:[judged,outcome],human:'next-request' as string|undefined}})
+  expect(result.current?.event_id).toBe('final-retrial')
+  act(()=>vi.advanceTimersByTime(eventDuration(judged,'normal')))
+  expect(result.current?.event_id).toBe('delayed-outcome')
+  rerender({items:[judged,outcome],human:'next-request'})
+  expect(result.current?.event_id).toBe('delayed-outcome')
+})

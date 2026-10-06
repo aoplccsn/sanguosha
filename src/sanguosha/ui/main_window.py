@@ -178,6 +178,9 @@ class MainWindow(QMainWindow):
         if not self._closed and not self._tick_scheduled:
             self._tick_scheduled = True
             delay = 0 if os.environ.get("PYTEST_CURRENT_TEST") or os.environ.get("SANGUOSHA_FAST_AI") else NORMAL_AI_DELAY_MS
+            if delay:
+                delay = max(delay, getattr(self, "_judgment_dwell_ms", 0))
+            self._judgment_dwell_ms = 0
             self._tick_timer.start(delay)
 
     def closeEvent(self, event) -> None:
@@ -599,13 +602,24 @@ class MainWindow(QMainWindow):
                     self.table.play_public_event("重铸", str(definition_id))
             elif isinstance(event, CardMovedEvent) and event.reason == "discard":
                 self.table.play_public_event(f"弃置 {len(event.card_ids)} 张牌", "card_back")
-            if getattr(event, "event_type", None) == "judgment_result":
+            event_type = getattr(event, "event_type", None)
+            if event_type in ("judgment_card_revealed", "judgment_card_replaced", "judgment_result", "delayed_result"):
+                self._judgment_dwell_ms = 2500
+            if event_type in ("judgment_card_revealed", "judgment_card_replaced", "judgment_result"):
                 card_id = event.metadata.get("card_id")
                 if card_id in session.state.cards:
-                    definition_id = session.state.cards[card_id].definition_id
-                    self.table.play_judgment(
-                        session.definitions.get(definition_id).name,
-                        str(definition_id), bool(event.metadata.get("matched")))
+                    card = session.state.cards[card_id]
+                    definition_id = card.definition_id
+                    suit = event.metadata.get("effective_suit", card.suit.value)
+                    symbol = {"spade": "\u2660", "heart": "\u2665", "club": "\u2663", "diamond": "\u2666"}.get(suit, suit)
+                    face = f"{symbol}{card.rank} {session.definitions.get(definition_id).name}"
+                    if event_type == "judgment_result":
+                        self.table.play_judgment(face, str(definition_id), bool(event.metadata.get("matched")))
+                    else:
+                        label = "\u6539\u5224" if event_type == "judgment_card_replaced" else "\u5224\u5b9a\u7ffb\u724c"
+                        self.table.play_public_event(f"{label}\uff1a{face}", str(definition_id))
+            elif event_type == "delayed_result":
+                self.table.play_public_event(event.metadata["message"], event.metadata["definition_id"])
         self._seen_events = len(session.events.events)
 
     def _attack_context(self) -> tuple[str, str] | None:

@@ -21,7 +21,7 @@ export function eventDuration(event: PublicEvent | null, speed: GameSpeed) {
   if (kind === 'EffectTargetEvent') return Math.round(700 * factor)
   if (/Skill|Guhuo/.test(kind)) return Math.round(config.skill * (1 + Math.min(3, Number(event?.level ?? 0)) * .04))
   if (/^(BeforeDamage|AfterDamage|Phase|CardResolved)/.test(kind)) return 0
-  if (/DamageDealt|Recovered|Judgment|Skill|Dying|Died|Death/.test(kind)) return Math.round(config.impact * (1 + Math.min(3, Math.max(0, Number(event?.amount ?? 1) - 1)) * .08))
+  if (/DamageDealt|Recovered|Judgment|DelayedResult|Skill|Dying|Died|Death/.test(kind)) return Math.round(config.impact * (1 + Math.min(3, Math.max(0, Number(event?.amount ?? 1) - 1)) * .08))
   if (/TurnStarted|TurnEnded/.test(kind)) return config.turn
   if (kind === 'CardUsedEvent' && String(event?.definition_id ?? '').startsWith('equipment.')) return Math.round(3500 * (speed === 'slow' ? 1.4 : speed === 'fast' ? .55 : 1))
   if (/CardUsed|TrickTargetsDeclared/.test(kind)) return config.key

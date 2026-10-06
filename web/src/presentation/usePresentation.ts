@@ -8,7 +8,7 @@ export function usePresentation(events: PublicEvent[], speed: GameSpeed, humanRe
   const queue = useRef<PublicEvent[]>([])
   const seen = useRef(new Set<string | PublicEvent>())
   const identity = (event: PublicEvent) => typeof event.event_id === 'string' ? event.event_id : event
-  const essential = (event: PublicEvent) => /^(CardRevealedEvent|DiscardEvent|JudgmentEvent|JudgmentRevealedEvent|FireAttackResultEvent|EffectTargetEvent|ChainPropagationEvent)$/.test(String(event.kind))
+  const essential = (event: PublicEvent) => /^(CardRevealedEvent|DiscardEvent|JudgmentEvent|JudgmentRevealedEvent|DelayedResultEvent|FireAttackResultEvent|EffectTargetEvent|ChainPropagationEvent)$/.test(String(event.kind))
   const timer = useRef<number | undefined>(undefined)
   const previousHuman = useRef<string | undefined>(undefined)
   const speedRef = useRef(speed)

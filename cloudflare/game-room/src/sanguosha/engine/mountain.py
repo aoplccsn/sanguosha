@@ -59,14 +59,9 @@ class TuntianHandler:
             frame.step_index = 2
             return StepResult.push(JudgmentAction(
                 action.action_id + ':judgment', player_id,
-                JudgmentPattern(), return_card_id=True))
+                JudgmentPattern(suit=Suit.HEART, inverted=True), return_card_id=True,
+                success_destination=field_zone(player_id)))
         if frame.step_index == 2:
-            card_id = frame.child_result
-            if (card_id is not None and effective_suit(state, card_id, player_id) is not Suit.HEART
-                    and card_id in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))):
-                self.moves.move(state, CardMove(
-                    action.action_id + ':field', (card_id,), ZoneRef(ZoneType.DISCARD_PILE),
-                    field_zone(player_id), CardMoveReason.SYSTEM, player_id, action.action_id))
             return StepResult.complete()
         raise InvalidCardUse('屯田状态无效')
 

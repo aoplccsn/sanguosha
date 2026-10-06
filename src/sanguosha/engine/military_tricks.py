@@ -407,8 +407,30 @@ class DelayedHandler:
         self.moves=moves
         self.definitions=definitions
         self.skills=skills
+    def _result(self, f, outcome, target_id=None):
+        a = f.action
+        messages = {
+            'skip_play': '\u3010\u4e50\u4e0d\u601d\u8700\u3011\u5224\u5b9a\u975e\u7ea2\u6843\uff1a\u8df3\u8fc7\u51fa\u724c\u9636\u6bb5',
+            'skip_draw': '\u3010\u5175\u7cae\u5bf8\u65ad\u3011\u5224\u5b9a\u975e\u6885\u82b1\uff1a\u8df3\u8fc7\u6478\u724c\u9636\u6bb5',
+            'safe': '\u5ef6\u65f6\u9526\u56ca\u5224\u5b9a\u901a\u8fc7\uff1a\u4e0d\u8df3\u8fc7\u9636\u6bb5',
+            'lightning_hit': '\u3010\u95ea\u7535\u3011\u5224\u5b9a\u9ed1\u6843 2\u20139\uff1a3\u70b9\u96f7\u7535\u4f24\u5bb3',
+            'transfer': '\u3010\u95ea\u7535\u3011\u672a\u751f\u6548\uff1a\u4f20\u9012\u81f3\u4e0b\u4e00\u5408\u6cd5\u89d2\u8272',
+            'discard': '\u3010\u95ea\u7535\u3011\u65e0\u5408\u6cd5\u4e0b\u4e00\u76ee\u6807\uff1a\u7f6e\u5165\u5f03\u724c\u5806',
+            'nullified': '\u5ef6\u65f6\u9526\u56ca\u88ab\u65e0\u61c8\u53ef\u51fb\u62b5\u6d88',
+        }
+        self.moves.recorder.record(Event(a.action_id+':result','delayed_result',a.player_id,
+            metadata={'definition_id': f.local['definition'], 'outcome': outcome,
+                      'target_id': target_id or '', 'message': messages[outcome]}))
+
     def step(self,state,f):
         a=f.action
+        if not state.players[a.player_id].is_alive:
+            if f.step_index in (0,1):
+                return StepResult.complete()
+            # Preserve table cleanup after lethal lightning; no new effect or transfer.
+            f.step_index = 4
+        if f.step_index in (0,1) and a.card_id not in state.cards_in(ZoneRef(ZoneType.JUDGMENT,a.player_id)):
+            return StepResult.complete()
         d=f.local.get('definition',delayed_definition(state, a.card_id))
         if f.step_index == 0:
             f.local['definition']=d
@@ -421,6 +443,7 @@ class DelayedHandler:
         if f.step_index == 1:
             if f.child_result:
                 f.local['cancelled']=True
+                if d != 'delayed.lightning':self._result(f,'nullified')
                 f.step_index=3
             else:
                 self.moves.move(state,CardMove(a.action_id+':table',(a.card_id,),
@@ -435,9 +458,13 @@ class DelayedHandler:
             f.step_index=3
             if d == 'delayed.lightning' and f.child_result:
                 f.step_index=4
+                self._result(f,'lightning_hit')
                 return StepResult.push(MilitaryDamageAction(a.action_id+':lightning',None,a.player_id,3,DamageNature.THUNDER,a.card_id))
             if d != 'delayed.lightning' and not f.child_result:
-                state.players[a.player_id].marks['skip_play' if d == 'delayed.indulgence' else 'skip_draw']=1
+                outcome='skip_play' if d == 'delayed.indulgence' else 'skip_draw'
+                state.players[a.player_id].marks[outcome]=1
+                self._result(f,outcome)
+            elif d != 'delayed.lightning':self._result(f,'safe')
         if f.step_index == 4:
             if a.card_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
                 self.moves.move(state,CardMove(a.action_id+':discard',(a.card_id,),
@@ -459,6 +486,8 @@ class DelayedHandler:
                                         for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid)))):
                         dest=ZoneRef(ZoneType.JUDGMENT,pid)
                         break
+            if d == 'delayed.lightning':
+                self._result(f,'transfer' if dest.zone_type is ZoneType.JUDGMENT else 'discard',dest.player_id)
             self.moves.move(state,CardMove(a.action_id+':move',(a.card_id,),source,dest,CardMoveReason.SYSTEM))
             if dest.zone_type is ZoneType.JUDGMENT and f.local.get('virtual_delayed'):
                 state.metadata.setdefault('virtual_delayed_cards',{})[a.card_id]=d

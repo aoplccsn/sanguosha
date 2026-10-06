@@ -22,12 +22,14 @@ class JudgmentPattern:
     suit: Suit | None = None
     color: Color | None = None
     ranks: frozenset[int] | None = None
+    inverted: bool = False
 
     def matches(self, state: GameState, card_id: CardInstanceId, owner_id=None) -> bool:
         card = state.cards[card_id]
-        return ((self.suit is None or effective_suit(state, card_id, owner_id) is self.suit)
+        matched = ((self.suit is None or effective_suit(state, card_id, owner_id) is self.suit)
                 and (self.color is None or effective_color(state, card_id, owner_id) is self.color)
                 and (self.ranks is None or card.rank in self.ranks))
+        return not matched if self.inverted else matched
 
 
 @dataclass(frozen=True, slots=True)
@@ -36,6 +38,7 @@ class JudgmentAction(Action):
     pattern: JudgmentPattern
     gain_on_match: bool = False
     return_card_id: bool = False
+    success_destination: ZoneRef | None = None
 
 
 class JudgmentHandler:
@@ -56,12 +59,7 @@ class JudgmentHandler:
 
     def _finish(self, state, frame, card_id, destination):
         action = frame.action
-        self.moves.move(state, CardMove(f"{action.action_id}:after-move", (card_id,),
-                                        ZoneRef(ZoneType.PROCESSING), destination,
-                                        CardMoveReason.SYSTEM, action.player_id, action.action_id))
-        self.recorder.record(Event(f"{action.action_id}:after", "after_judgment", action.player_id,
-                                   metadata={"card_id": str(card_id), "matched": bool(frame.local["matched"])}))
-        if (self.skills is not None and state.players[action.player_id].is_alive
+        if (not frame.local.get('songwei_finished') and self.skills is not None and state.players[action.player_id].is_alive
                 and self.skills.faction(state, action.player_id) is Kingdom.WEI
                 and effective_color(state, card_id, action.player_id) is Color.BLACK):
             lord = next((pid for pid in state.seat_order if pid != action.player_id
@@ -69,17 +67,25 @@ class JudgmentHandler:
                          and self.skills.has(state, pid, 'songwei')), None)
             if lord is not None:
                 from .forest import SongweiAction
+                frame.local['finish_destination'] = destination
                 frame.step_index = 8
                 return StepResult.push(SongweiAction(action.action_id + ':songwei',
                                                      action.player_id, lord))
+        self.moves.move(state, CardMove(f"{action.action_id}:after-move", (card_id,),
+                                        ZoneRef(ZoneType.PROCESSING), destination,
+                                        CardMoveReason.SYSTEM, action.player_id, action.action_id))
+        self.recorder.record(Event(f"{action.action_id}:after", "after_judgment", action.player_id,
+                                   metadata={"card_id": str(card_id), "matched": bool(frame.local["matched"]),
+                                             **frame.local.get("final_face", {})}))
         return StepResult.complete(str(card_id) if action.return_card_id else bool(frame.local["matched"]))
 
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
         assert isinstance(action, JudgmentAction)
         if frame.step_index == 8:
-            return StepResult.complete(str(frame.local['card_id']) if action.return_card_id
-                                       else bool(frame.local['matched']))
+            frame.local['songwei_finished'] = True
+            return self._finish(state, frame, CardInstanceId(str(frame.local['card_id'])),
+                                frame.local['finish_destination'])
         draw = ZoneRef(ZoneType.DRAW_PILE)
         processing = ZoneRef(ZoneType.PROCESSING)
         if frame.step_index == 0:
@@ -94,7 +100,9 @@ class JudgmentHandler:
                                             CardMoveReason.SYSTEM, action.player_id, action.action_id))
             frame.local["card_id"] = str(card_id)
             self.recorder.record(Event(f"{action.action_id}:revealed", "judgment_card_revealed",
-                                       action.player_id, metadata={"card_id": str(card_id)}))
+                                       action.player_id, metadata={"card_id": str(card_id), "judged_player_id": action.player_id,
+                                                 "effective_suit": effective_suit(state, card_id, action.player_id).value,
+                                                 "effective_color": effective_color(state, card_id, action.player_id).value}))
             frame.step_index = 1
             return StepResult.continue_()
         card_id = CardInstanceId(str(frame.local["card_id"]))
@@ -142,7 +150,10 @@ class JudgmentHandler:
                 actor, action.action_id))
             frame.local['card_id'] = str(material)
             self.recorder.record(Event(f'{action.action_id}:replaced:{actor}', 'judgment_card_replaced', actor,
-                metadata={'old_card_id': str(card_id), 'card_id': str(material)}))
+                metadata={'old_card_id': str(card_id), 'card_id': str(material),
+                          'judged_player_id': action.player_id,
+                          'effective_suit': effective_suit(state, material, action.player_id).value,
+                          'effective_color': effective_color(state, material, action.player_id).value}))
             frame.step_index = 1
             return StepResult.continue_()
         if frame.step_index == 6:
@@ -177,7 +188,10 @@ class JudgmentHandler:
             frame.local['card_id'] = str(material)
             self.recorder.record(Event(f'{action.action_id}:guidao-replaced:{actor}',
                 'judgment_card_replaced', actor,
-                metadata={'old_card_id': str(card_id), 'card_id': str(material)}))
+                metadata={'old_card_id': str(card_id), 'card_id': str(material),
+                          'judged_player_id': action.player_id,
+                          'effective_suit': effective_suit(state, material, action.player_id).value,
+                          'effective_color': effective_color(state, material, action.player_id).value}))
             frame.step_index = 1
             return StepResult.continue_()
         if frame.step_index == 1:
@@ -232,12 +246,12 @@ class JudgmentHandler:
                             current_suit = effective_suit(state, card_id, action.player_id)
                             current_match = action.pattern.matches(state, card_id, action.player_id)
                             preferred = tuple(str(cid) for cid in candidates
-                                              if (effective_suit(state, cid, actor) is Suit.SPADE
+                                              if (effective_suit(state, cid, action.player_id) is Suit.SPADE
                                                   and current_suit is not Suit.SPADE
-                                                  or effective_suit(state, cid, actor) is Suit.CLUB
+                                                  or effective_suit(state, cid, action.player_id) is Suit.CLUB
                                                   and current_suit not in (Suit.SPADE, Suit.CLUB))
                                               if leiji) if leiji else tuple(str(cid) for cid in candidates
-                                                  if action.pattern.matches(state, cid, actor) != current_match)
+                                                  if action.pattern.matches(state, cid, action.player_id) != current_match)
                             frame.local['guidao_preferred'] = '|'.join(preferred)
                             frame.step_index = 6
                             return StepResult.ask(PendingRequest(f'{action.action_id}:guidao:{actor}', actor,
@@ -249,8 +263,11 @@ class JudgmentHandler:
                                 subject_player_id=action.player_id))
             matched = action.pattern.matches(state, card_id, action.player_id)
             frame.local["matched"] = matched
+            frame.local["final_face"] = {"judged_player_id": action.player_id,
+                "effective_suit": effective_suit(state, card_id, action.player_id).value,
+                "effective_color": effective_color(state, card_id, action.player_id).value}
             self.recorder.record(Event(f"{action.action_id}:result", "judgment_result",
-                                       action.player_id, metadata={"card_id": str(card_id), "matched": matched}))
+                                       action.player_id, metadata={"card_id": str(card_id), "matched": matched, **frame.local.get("final_face", {})}))
             frame.step_index = 2
             return StepResult.continue_()
         if (frame.step_index == 2 and self.skills is not None
@@ -260,11 +277,15 @@ class JudgmentHandler:
             return StepResult.ask(PendingRequest(f'{action.action_id}:tiandu', action.player_id,
                 RequestType.YES_NO, '自己的判定牌结算后，是否发动【天妒】获得之？',
                 action.action_id, frame.frame_id))
+        if frame.step_index == 2 and action.success_destination is not None and frame.local['matched']:
+            return self._finish(state, frame, card_id, action.success_destination)
         if frame.step_index == 2 and action.gain_on_match and frame.local['matched']:
             return self._finish(state, frame, card_id, ZoneRef(ZoneType.HAND, action.player_id))
         if frame.step_index == 3:
             obtain = frame.decision is True or (action.gain_on_match and frame.local['matched'])
             frame.decision = None
             return self._finish(state, frame, card_id,
-                                ZoneRef(ZoneType.HAND, action.player_id) if obtain else ZoneRef(ZoneType.DISCARD_PILE))
+                                ZoneRef(ZoneType.HAND, action.player_id) if obtain else
+                                action.success_destination if action.success_destination is not None and frame.local['matched']
+                                else ZoneRef(ZoneType.DISCARD_PILE))
         return self._finish(state, frame, card_id, ZoneRef(ZoneType.DISCARD_PILE))

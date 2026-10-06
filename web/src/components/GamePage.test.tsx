@@ -39,6 +39,17 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
+  it('retains final judgment outcome while showing its public card', () => {
+    publicEvents=[{kind:'JudgmentEvent',event_id:'judge-result',source_id:'p1',matched:false,cards:[card]}]
+    render(<GamePage />)
+    expect(screen.getByText(/\u5224\u5b9a\u672a\u901a\u8fc7/)).toBeInTheDocument()
+  })
+  it('shows the delayed trick consequence in Chinese', () => {
+    publicEvents=[{kind:'DelayedResultEvent',event_id:'delayed-result',source_id:'p1',message:'\u3010\u4e50\u4e0d\u601d\u8700\u3011\u5224\u5b9a\u975e\u7ea2\u6843\uff1a\u8df3\u8fc7\u51fa\u724c\u9636\u6bb5'}]
+    render(<GamePage />)
+    expect(screen.getByText(/\u8df3\u8fc7\u51fa\u724c\u9636\u6bb5/)).toBeInTheDocument()
+  })
+
   it('labels a recast face as 重铸 in the public presentation', () => {
     publicEvents=[{kind:'DiscardEvent',event_id:'recast-public',player_id:'p1',reason:'recast',cards:[{...card,name:'铁索连环',definition_id:'trick.iron_chain'}]}]
     render(<GamePage />)

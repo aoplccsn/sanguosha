@@ -305,7 +305,8 @@ function EventStage({ event, players, combat }: { event?: PublicEvent; players: 
   const top = isResponse ? {source_id: String(event.source_id), definition_id: String(event.definition_id)} : base?.top_response
   const publicCards = Array.isArray(event.cards) ? event.cards as CardView[] : []
   const showCard = !!definition && !publicCards.length
-  if (publicCards.length) text = name(event.player_id ?? event.source_id) + (kind==='DiscardEvent' ? (event.reason==='recast' ? ' 重铸：' : ' 弃置：') : kind.includes('Judgment') ? ' 判定：' : ' 展示：')
+  if (publicCards.length) text = name(event.player_id ?? event.source_id) + (kind==='DiscardEvent' ? (event.reason==='recast' ? ' 重铸：' : ' 弃置：') : kind.includes('Judgment') ? (event.matched === true ? ' 判定通过：' : event.matched === false ? ' 判定未通过：' : ' 判定：') : ' 展示：')
+  if (kind==='DelayedResultEvent') text=name(event.source_id)+' · '+String(event.message ?? '延时锦囊结算')
   if (kind==='FireAttackResultEvent') text = event.stage==='no_match' ? name(event.source_id)+'没有可弃置的 '+({heart:'♥',spade:'♠',club:'♣',diamond:'♦'}[String(event.suit)] ?? '')+' 手牌' : '【火攻】未造成伤害'
   if (kind==='ChainPropagationEvent') text=name(event.source_id)+' → 连环传播 → '+name(event.target_id)
   if (kind==='EffectTargetEvent') text = '【' + (cardNames[String(event.definition_id)] ?? '锦囊') + '】当前结算：' + name(event.target_id)
@@ -552,7 +553,7 @@ export function GamePage() {
         const targets = Array.isArray(e.target_ids) ? e.target_ids : (e.base_action as CombatContext | undefined)?.target_ids ?? []
         const message = '【' + String(e.skill_name ?? cardNames[String(e.definition_id)] ?? e.card_name ?? '技能') + '】 ' + name(e.source_id) + (targets.length ? ' → ' + targets.map(name).join('、') : '')
         return <div key={String(e.event_id ?? i)} title={message}>{message}</div>
-      })}{projection.public_card_history?.length ? <details className="public-card-history"><summary>公开牌记录</summary>{projection.public_card_history.map((event,index)=><div key={index}>{projection.players.find(p=>p.player_id===(event.player_id ?? event.source_id))?.character_name} · {event.kind==='DiscardEvent' ? (event.reason==='recast' ? '重铸' : '弃置') : event.kind==='JudgmentEvent' ? '判定' : '展示'}：{(event.cards as CardView[] ?? []).map(c=>c.suit+c.rank+' '+c.name).join('、')}</div>)}</details> : null}</aside>
+      })}{projection.public_card_history?.length ? <details className="public-card-history"><summary>公开牌记录</summary>{projection.public_card_history.map((event,index)=><div key={index}>{projection.players.find(p=>p.player_id===(event.player_id ?? event.source_id))?.character_name} · {event.kind==='DiscardEvent' ? (event.reason==='recast' ? '重铸' : '弃置') : event.kind==='JudgmentEvent' ? '判定' : '展示'}：{event.kind==='DelayedResultEvent' ? String(event.message ?? '') : (event.cards as CardView[] ?? []).map(c=>c.suit+c.rank+' '+c.name).join('、')}</div>)}</details> : null}</aside>
       {!temporaryPanel && <SharedCards cards={projection.shared_cards} selected={selectedCards} eligible={eligibleCards} onSelect={toggleCard} />}
       {!temporaryPanel && otherCardChoices.length > 0 && <section className="shared-card-pool" aria-label="可选目标牌">
         <p>选择目标的一张牌</p><div>{otherCardChoices.map((id) =>

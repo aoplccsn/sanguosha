@@ -498,7 +498,7 @@ class MultiplayerRoom:
                     dwell = max(((3.5 if (e.virtual_definition_id or self.session.state.cards[e.card_id].definition_id).startswith('equipment.') else 4.5) if isinstance(e, CardUsedEvent) else
                                  4.5 if isinstance(e, (CardRespondedEvent, VirtualResponseEvent)) else
                                  5.0 if isinstance(e, Event) and e.event_type.startswith(('skill_', 'presentation_skill')) else
-                                 2.5 if isinstance(e, (DamageDealtEvent, HpRecoveredEvent)) else 0
+                                 2.5 if isinstance(e, (DamageDealtEvent, HpRecoveredEvent)) or isinstance(e,Event) and e.event_type in ('judgment_card_revealed','judgment_card_replaced','after_judgment','delayed_result') else 0
                                  for e in events), default=0)
                     if dwell:
                         self.presentation_deadline = time.time() + dwell * {'slow': 1.4, 'normal': 1, 'fast': .55}[self.presentation_speed]
@@ -668,7 +668,7 @@ class MultiplayerRoom:
         from sanguosha.engine.military_tricks import TargetTrick
         fire=next((f for f in reversed(self.session.engine.stack.snapshot()) if isinstance(f.action,TargetTrick) and f.action.definition_id=='trick.fire_attack' and f.local.get('revealed_card_id')),None)
         result['public_reveal'] = dict(kind='CardRevealedEvent',event_id=fire.action.action_id+':revealed',source_id=str(fire.action.target_id),target_id=str(fire.action.source_id),cards=[self._public_card(fire.local['revealed_card_id'])],reason='fire_attack') if fire else None
-        result['public_card_history'] = [public for event in self.session.events.events[-80:] if isinstance(event,CardMovedEvent) and event.to_zone.zone_type is ZoneType.DISCARD_PILE and event.reason in ('discard','recast') or isinstance(event,Event) and event.event_type in ('card_revealed','after_judgment') if (public:=self._public_event(event)) is not None][-12:]
+        result['public_card_history'] = [public for event in self.session.events.events[-80:] if isinstance(event,CardMovedEvent) and event.to_zone.zone_type is ZoneType.DISCARD_PILE and event.reason in ('discard','recast') or isinstance(event,Event) and event.event_type in ('card_revealed','judgment_card_revealed','judgment_card_replaced','after_judgment','delayed_result') if (public:=self._public_event(event)) is not None][-12:]
         result['waiting'] = None
         if request is not None:
             ai = self.seats[request.player_id].controller is Controller.AI
@@ -822,7 +822,15 @@ class MultiplayerRoom:
             result.update(kind='CardRevealedEvent', source_id=str(event.source_id),
                           definition_id=str(card.definition_id), card_name=self.session.definitions.get(card.definition_id).name,
                           suit=card.suit.value, rank=card.rank, skill_id=event.metadata.get('skill_id', ''), cards=[self._public_card(event.metadata['card_id'])], reason=event.metadata.get('reason','reveal'))
-            if event.event_type.startswith('judgment_card'): result['kind']='JudgmentRevealedEvent'
+            if event.event_type.startswith('judgment_card'):
+                from sanguosha.projection import SUIT_SYMBOLS
+                from sanguosha.model.enums import Suit
+                result['kind']='JudgmentRevealedEvent'
+                result.update({key:event.metadata[key] for key in ('effective_suit','effective_color','judged_player_id') if key in event.metadata})
+                if 'effective_suit' in event.metadata:
+                    result['cards'][0]['suit']=SUIT_SYMBOLS[Suit(event.metadata['effective_suit'])]
+        elif isinstance(event,Event) and event.event_type=='delayed_result':
+            result.update(kind='DelayedResultEvent',source_id=str(event.source_id),**event.metadata)
         elif isinstance(event,Event) and event.event_type=='chain_propagation':
             result.update(kind='ChainPropagationEvent',source_id=str(event.source_id),target_id=str(event.target_ids[0]),nature=event.metadata['nature'])
         elif isinstance(event,Event) and event.event_type=='effect_target':
@@ -832,7 +840,12 @@ class MultiplayerRoom:
         elif isinstance(event, Event) and event.event_type == 'after_judgment':
             result.update(kind='JudgmentEvent', source_id=str(event.source_id or ''),
                           matched=bool(event.metadata.get('matched', False)))
-            if self.session and event.metadata.get('card_id') in self.session.state.cards: result['cards']=[self._public_card(event.metadata['card_id'])]
+            if self.session and event.metadata.get('card_id') in self.session.state.cards:
+                from sanguosha.projection import SUIT_SYMBOLS
+                from sanguosha.model.enums import Suit
+                result['cards']=[self._public_card(event.metadata['card_id'])]
+                result.update({key:event.metadata[key] for key in ('effective_suit','effective_color','judged_player_id') if key in event.metadata})
+                if 'effective_suit' in event.metadata:result['cards'][0]['suit']=SUIT_SYMBOLS[Suit(event.metadata['effective_suit'])]
         elif isinstance(event, Event) and (event.event_type.startswith('skill_') or event.event_type == 'presentation_skill'):
             from sanguosha.content.characters.standard import ALL_SKILL_CATALOGUE
             skill_id = str(event.metadata['skill_id']) if event.event_type == 'presentation_skill' else event.event_type.removeprefix('skill_')
