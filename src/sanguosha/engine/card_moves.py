@@ -42,6 +42,10 @@ class CardMoveService:
 
     def cleanup_terminal(self, state):
         """Discard transient public cards after terminal stack cancellation."""
+        from .yj2011_tier3 import clear_turn
+        clear_turn(state)
+        for player in state.players.values():
+            player.marks.pop('nightmare', None)
         refs = tuple(ref for ref in state.zones if ref.zone_type is ZoneType.PROCESSING
                      or ref.zone_type is ZoneType.SPECIAL and ref.player_id is None)
         for index, ref in enumerate(refs):
@@ -49,6 +53,18 @@ class CardMoveService:
             if cards:
                 self.move(state, CardMove('gameover-cleanup:' + str(state.turn_number) + ':' + str(index),
                     cards, ref, ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.SYSTEM))
+
+    def move_owned_materials(self, state, card_ids, owner_id, destination, reason, action_id):
+        """Pay one virtual card from the owner's hand and equipment areas."""
+        groups = {}
+        for cid in card_ids:
+            source = next(ref for ref, zone in state.zones.items()
+                          if ref.player_id == owner_id and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
+                          and cid in zone.card_ids)
+            groups.setdefault(source, []).append(cid)
+        for index, (source, ids) in enumerate(groups.items()):
+            self.move(state, CardMove(action_id + ':materials:' + str(index), tuple(ids),
+                source, destination, reason, owner_id, action_id))
 
     def obtain_cards(self, state, card_ids, recipient_id, actor_id, acquisition_id):
         """One acquisition can draw from several zones of the same card owner."""

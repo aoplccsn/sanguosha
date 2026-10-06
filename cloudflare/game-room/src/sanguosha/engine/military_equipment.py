@@ -91,7 +91,8 @@ class MilitaryMoveService(CardMoveService):
                 from .yj2011_tier3 import reactions
                 self.reactions.extend(reactions(state, event, self.skills))
                 if isinstance(event, AfterDamageEvent):
-                    if (event.source_id is not None and state.players[event.target_id].is_alive
+                    if (event.source_id is not None and event.source_id != event.target_id
+                            and state.players[event.target_id].is_alive
                             and self.skills.has(state, event.target_id, 'wuhun')):
                         source = state.players[event.source_id]
                         source.marks['nightmare'] = source.marks.get('nightmare', 0) + event.amount

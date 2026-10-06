@@ -204,7 +204,7 @@ class MilitaryDamageHandler(DamageActionHandler):
                 state.metadata.setdefault("lihuo_hits",{})[str(action.source_id)+":"+virtual.material_ids[0]]=True
             self.recorder.record(DamageDealtEvent(action.action_id + ':dealt', action.source_id, action.target_id, amount, target.hp))
             from .god_lvbu import grant_rage_on_damage
-            grant_rage_on_damage(state, action.source_id, action.target_id, amount)
+            grant_rage_on_damage(state, action.source_id, action.target_id, amount, self.skills)
             self.recorder.record(AfterDamageEvent(action.action_id + ':after', action.source_id,
                                                   action.target_id, amount,
                                                   getattr(action, 'card_kind', '')))
@@ -1306,9 +1306,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             virtual = VirtualCard(transformed, materials,
                 effective_suit(state, materials[0], action.player_id),
                 effective_color(state, materials[0], action.player_id))
-            self._move_response(state,action, CardMove(action.action_id + ':longhun-processing', materials,
-                ZoneRef(ZoneType.HAND, action.player_id), ZoneRef(ZoneType.PROCESSING),
-                CardMoveReason.RESPONSE, action.player_id))
+            self.moves.move_owned_materials(state, materials, action.player_id, ZoneRef(ZoneType.PROCESSING),
+                CardMoveReason.USE if action.use_card else CardMoveReason.RESPONSE, action.action_id)
             self._record_material_response(action, action.action_id + ':longhun-responded', materials[0], str(transformed))
             self._move_response(state,action, CardMove(action.action_id + ':longhun-discard', materials,
                 ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),

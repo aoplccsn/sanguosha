@@ -76,6 +76,11 @@ def test_counter_chain_parity_changes_real_duel_effect(count):
 def test_wine_only_saves_its_dying_owner():
     s=game(); wine=put(s,'basic.wine','p2'); s.state.players['p2'].hp=0
     s.engine.start_action(DyingAction('dying','p2','p1'))
+    assert s.engine.pending_request.player_id == 'p1'
+    from sanguosha.engine.requests import Decision
+    r = s.engine.pending_request
+    s.engine.submit_decision(Decision(r.request_id, r.player_id, PASS_RESPONSE))
+    assert s.engine.pending_request.player_id == 'p2'
     assert wine in s.engine.pending_request.eligible_card_ids
     run(s,lambda r:wine if wine in r.eligible_card_ids else PASS_RESPONSE)
     assert s.state.players['p2'].hp==1 and s.state.players['p2'].is_alive

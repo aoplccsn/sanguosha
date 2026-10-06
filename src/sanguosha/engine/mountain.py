@@ -561,7 +561,8 @@ class ZhijianHandler:
 
     def targets(self, state, actor,card=None):
         return tuple(pid for pid in state.seat_order
-                     if pid != actor and state.players[pid].is_alive and (card is None or self.definitions.get(state.cards[card].definition_id).equipment_slot not in state.players[pid].abolished_equipment_slots))
+                     if pid != actor and state.players[pid].is_alive and (card is None or self.definitions.get(state.cards[card].definition_id).equipment_slot not in state.players[pid].abolished_equipment_slots
+                     and not state.cards_in(ZoneRef(ZoneType.EQUIPMENT, pid, self.definitions.get(state.cards[card].definition_id).equipment_slot))))
 
     def available(self, state, actor):
         return (self.skills.has(state, actor, 'zhijian')
@@ -598,16 +599,10 @@ class ZhijianHandler:
                 raise InvalidCardUse('直谏目标或装备已不可用')
             slot = self.definitions.get(state.cards[card_id].definition_id).equipment_slot
             destination = ZoneRef(ZoneType.EQUIPMENT, target, slot)
-            old = state.cards_in(destination)
-            if old:
-                self.moves.move(state, CardMove(
-                    frame.action.action_id + ':replace', old, destination,
-                    ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD,
-                    actor, frame.action.action_id))
             self.moves.move(state, CardMove(
                 frame.action.action_id + ':equip', (card_id,),
                 ZoneRef(ZoneType.HAND, actor), destination,
-                CardMoveReason.USE, actor, frame.action.action_id))
+                CardMoveReason.SYSTEM, actor, frame.action.action_id))
             frame.step_index = 3
             return StepResult.push(DrawCardsAction(
                 frame.action.action_id + ':draw', actor, 1))

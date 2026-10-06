@@ -87,6 +87,12 @@ class TurnActionHandler:
         # A player who dies during a phase must not continue the rest of the turn.
         if (frame.cursor == len(action.phases) or state.status is GameStatus.FINISHED
                 or not state.players[action.player_id].is_alive):
+            if (state.players[action.player_id].marks.pop('fangquan_pending', 0)
+                    and state.status is not GameStatus.FINISHED
+                    and state.players[action.player_id].is_alive
+                    and self.skills is not None and self.skills.has(state, action.player_id, 'fangquan')):
+                from .mountain import FangquanEndAction
+                return StepResult.push(FangquanEndAction(action.action_id + ':fangquan-end', action.player_id))
             if self.skills is not None and state.status is not GameStatus.FINISHED:
                 eligible = next((pid for pid in state.seat_order
                     if state.players[pid].is_alive
@@ -134,7 +140,8 @@ class TurnActionHandler:
             self.recorder.record(TurnEndedEvent(f"{action.action_id}:end", action.player_id, state.turn_number))
             return StepResult.complete()
         phase = action.phases[frame.cursor]
-        if self.before_phase is not None and frame.local.get('before_phase_cursor') != frame.cursor:
+        already_skipped = phase in action.skipped_phases or state.players[action.player_id].marks.get('skip_' + phase.value, 0)
+        if not already_skipped and self.before_phase is not None and frame.local.get('before_phase_cursor') != frame.cursor:
             frame.local['before_phase_cursor'] = frame.cursor
             offer = self.before_phase(state, action.player_id, phase,
                                       f'{action.action_id}:before:{frame.cursor}')

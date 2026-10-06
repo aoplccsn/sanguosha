@@ -24,6 +24,13 @@ from .suits import effective_color, effective_suit
 from .events import CardUsedEvent
 
 
+
+def wushen_applies(state, skills, actor, card_id):
+    return (skills is not None and card_id is not None and skills.has(state, actor, 'wushen')
+            and (card_id in state.cards_in(ZoneRef(ZoneType.HAND, actor))
+                 or card_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)))
+            and effective_suit(state, card_id, actor) is Suit.HEART)
+
 @dataclass(frozen=True, slots=True)
 class WushenUse(Action):
     player_id: str
@@ -41,10 +48,13 @@ class WushenHandler:
                      if effective_suit(state, cid, player_id) is Suit.HEART)
 
     def targets(self, state, player_id):
-        return tuple(pid for pid in state.seat_order
-                     if pid != player_id and state.players[pid].is_alive
-                     and not (self.skills.has(state, pid, 'kongcheng')
-                              and not state.cards_in(ZoneRef(ZoneType.HAND, pid))))
+        from .fuhuanghou import target_allowed
+        from .military_basics import slash_target_allowed
+        if not self.slash_rule.can_use(state, player_id):
+            return ()
+        return tuple(pid for pid in state.seat_order if pid != player_id
+                     and state.players[pid].is_alive and target_allowed(state, player_id, pid)
+                     and slash_target_allowed(state, player_id, pid, self.skills))
 
     def available(self, state, player_id, material_id=None):
         limit = self.slash_rule.usage_limit(state, player_id)
@@ -144,7 +154,9 @@ class WuhunDeathHandler:
                 JudgmentPattern(), return_card_id=True))
         if frame.step_index == 3:
             card_id = frame.child_result
-            if state.cards[card_id].definition_id == 'basic.peach':
+            if state.cards[card_id].definition_id in ('basic.peach', 'trick.god_salvation'):
+                for player in state.players.values():
+                    player.marks.pop('nightmare', None)
                 return StepResult.complete()
             target = frame.local['target']
             if state.players[target].is_alive:
@@ -152,6 +164,9 @@ class WuhunDeathHandler:
                 frame.step_index = 4
                 return StepResult.push(DeathAction(
                     action.action_id + ':death', target, None))
+        if frame.step_index == 4:
+            for player in state.players.values():
+                player.marks.pop('nightmare', None)
         return StepResult.complete()
 
 
@@ -370,23 +385,23 @@ class YeyanHandler:
 
     def targets(self, state, actor):
         return tuple(pid for pid in state.seat_order
-                     if pid != actor and state.players[pid].is_alive)
+                     if state.players[pid].is_alive)
 
     def suit_costs(self, state, actor):
-        cards = discardable_cards(state, actor)
+        cards = tuple(cid for cid in discardable_cards(state, actor)
+                      if cid in state.cards_in(ZoneRef(ZoneType.HAND, actor)))
         return {suit: tuple(cid for cid in cards
                             if effective_suit(state, cid, actor) is suit)
                 for suit in (Suit.HEART, Suit.DIAMOND, Suit.CLUB, Suit.SPADE)}
 
     def available(self, state, actor):
         targets = self.targets(state, actor)
-        can_great = all(self.suit_costs(state, actor).values())
         return (self.skills.has(state, actor, 'yeyan')
                 and state.current_player_id == actor
                 and state.current_phase is Phase.PLAY
                 and state.play_usage is not None
                 and not state.players[actor].marks.get('yeyan_used')
-                and bool(targets) and (len(targets) >= 3 or can_great))
+                and bool(targets))
 
     def step(self, state, frame):
         actor = frame.action.player_id
@@ -394,7 +409,7 @@ class YeyanHandler:
             if not self.available(state, actor):
                 raise InvalidCardUse('业炎当前不可用')
             frame.step_index = 1
-            modes = (('small',) if len(self.targets(state, actor)) >= 3 else ())
+            modes = ('small',)
             if all(self.suit_costs(state, actor).values()):
                 modes += ('great',)
             return StepResult.ask(PendingRequest(
@@ -407,14 +422,12 @@ class YeyanHandler:
             frame.local['mode'] = mode
             if mode == 'small':
                 targets = self.targets(state, actor)
-                if len(targets) < 3:
-                    raise InvalidCardUse('小业炎需要三名目标')
                 frame.step_index = 2
                 return StepResult.ask(PendingRequest(
                     frame.action.action_id + ':small-targets', actor,
-                    RequestType.CHOOSE_PLAYERS, '小业炎：选择三名目标，各造成一点火焰伤害',
+                    RequestType.CHOOSE_PLAYERS, '小业炎：选择一至三名角色，各造成一点火焰伤害',
                     frame.action.action_id, frame.frame_id,
-                    allowed_player_ids=targets, min_count=3, max_count=3))
+                    allowed_player_ids=targets, min_count=1, max_count=min(3, len(targets))))
             if mode != 'great' or not all(self.suit_costs(state, actor).values()):
                 raise InvalidCardUse('大业炎花色代价不足')
             frame.step_index = 3
@@ -426,7 +439,7 @@ class YeyanHandler:
         if frame.step_index == 2:
             targets = tuple(frame.decision)
             frame.decision = None
-            if len(set(targets)) != 3 or any(pid not in self.targets(state, actor) for pid in targets):
+            if not 1 <= len(targets) <= 3 or len(set(targets)) != len(targets) or any(pid not in self.targets(state, actor) for pid in targets):
                 raise InvalidCardUse('小业炎目标不合法')
             frame.local['damage_targets'] = targets
             frame.step_index = 8
@@ -597,8 +610,9 @@ LONGHUN_SUIT = {
 def longhun_materials(state, actor, definition_id):
     suit = LONGHUN_SUIT[definition_id]
     required = max(1, state.players[actor].hp)
-    cards = tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, actor))
-                  if effective_suit(state, cid, actor) is suit)
+    cards = tuple(cid for ref, zone in state.zones.items()
+                  if ref.player_id == actor and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
+                  for cid in zone.card_ids if effective_suit(state, cid, actor) is suit)
     return tuple(combinations(cards, required))
 
 
@@ -618,6 +632,20 @@ class LonghunUseHandler:
         self.skills, self.moves, self.recorder, self.slash_rule = (
             skills, moves, recorder, slash_rule)
 
+    def targets(self, state, actor, materials):
+        from dataclasses import replace
+        from sanguosha.model.zones import CardZone
+        from .card_moves import CardMoveService
+        from .events import EventRecorder
+        preview = replace(state, zones={ref: CardZone(ref, list(zone.card_ids))
+                                       for ref, zone in state.zones.items()})
+        CardMoveService(EventRecorder()).move_owned_materials(preview, materials, actor,
+            ZoneRef(ZoneType.PROCESSING), CardMoveReason.USE, 'longhun-target-preview')
+        limit = self.slash_rule.usage_limit(preview, actor)
+        if not self.slash_rule.can_use(preview, actor) or (limit is not None and preview.play_usage.count('basic.slash') >= limit):
+            return ()
+        return self.slash_rule.target_candidates(preview, actor)
+
     def available(self, state, actor, definition_id, materials):
         if (not self.skills.has(state, actor, 'longhun')
                 or state.current_player_id != actor
@@ -631,7 +659,7 @@ class LonghunUseHandler:
             return False
         limit = self.slash_rule.usage_limit(state, actor)
         return ((limit is None or state.play_usage.count('basic.slash') < limit)
-                and bool(self.slash_rule.target_candidates(state, actor)))
+                and bool(self.targets(state, actor, materials)))
 
     def step(self, state, frame):
         action = frame.action
@@ -649,7 +677,7 @@ class LonghunUseHandler:
                 return StepResult.ask(PendingRequest(
                     action.action_id + ':target', actor, RequestType.CHOOSE_PLAYER,
                     '龙魂：选择火杀目标', action.action_id, frame.frame_id,
-                    allowed_player_ids=self.slash_rule.target_candidates(state, actor)))
+                    allowed_player_ids=self.targets(state, actor, action.material_ids)))
             frame.step_index = 1
             frame.local['target'] = actor
         if frame.step_index == 1:
@@ -659,12 +687,12 @@ class LonghunUseHandler:
                 raise InvalidCardUse('龙魂材料已失效')
             counted=False
             if action.definition_id == 'basic.fire_slash':
-                self.slash_rule.validate_targets(state, actor, (target,))
+                if target not in self.targets(state, actor, action.material_ids):
+                    raise InvalidCardUse('龙魂目标不合法')
                 counted=record_slash_use(state, actor, (target,))
             frame.local['target'] = target
-            self.moves.move(state, CardMove(action.action_id + ':processing',
-                action.material_ids, hand, processing, CardMoveReason.USE,
-                actor, action.action_id))
+            self.moves.move_owned_materials(state, action.material_ids, actor, processing,
+                CardMoveReason.USE, action.action_id)
             self.recorder.record(CardUsedEvent(action.action_id + ':used', actor,
                 action.material_ids[0], (target,), action.definition_id,slash_counted=counted))
             frame.step_index = 2
@@ -755,9 +783,9 @@ class StarWeatherHandler:
         if frame.step_index == 0:
             available = []
             if state.cards_in(stars):
-                if not frame.local.get('wind_used'):
+                if not frame.local.get('wind_used') and self.skills.has(state, actor, 'kuangfeng'):
                     available.append('wind')
-                if not frame.local.get('fog_used'):
+                if not frame.local.get('fog_used') and self.skills.has(state, actor, 'dawu'):
                     available.append('fog')
             if not available:
                 return StepResult.complete()

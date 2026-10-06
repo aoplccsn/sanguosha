@@ -58,7 +58,12 @@ def test_zhenlie_no_source_cards_still_cancels():
 def test_zhenlie_dying_rescued_then_discard_and_cancel():
     s=wang();s.state.players['p1'].hp=1;peach=put(s,'basic.peach','p1');card=put(s,'basic.slash','p2')
     s.engine.start_action(UseCardAction('slash','p2',card,('p1',)));answer(s,True)
-    assert s.engine.pending_request.required_definition_id=='basic.peach';s=restore(s);answer(s,peach)
+    assert s.engine.pending_request.required_definition_id=='basic.peach'
+    for pid in ('p2', 'p3', 'p4', 'p5'):
+        assert s.engine.pending_request.player_id == pid
+        answer(s, PASS_RESPONSE)
+    assert s.engine.pending_request.player_id == 'p1'
+    s=restore(s);answer(s,peach)
     assert s.engine.pending_request.request_type is RequestType.CHOOSE_CARD
     s=restore(s);answer(s,s.engine.pending_request.eligible_card_ids[0]);finish(s)
     assert s.state.players['p1'].is_alive and s.state.players['p1'].hp==1

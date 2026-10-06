@@ -78,7 +78,8 @@ class UseCardActionHandler:
             from sanguosha.model.virtual_card import VirtualCard
             from .suits import effective_suit,effective_color
             from dataclasses import replace
-            virtual=VirtualCard(canonical,(action.card_id,),effective_suit(state,action.card_id,action.user_id),effective_color(state,action.card_id,action.user_id),'longnu' if canonical in ('basic.fire_slash','basic.thunder_slash') else 'jinjiu')
+            virtual=VirtualCard(canonical,(action.card_id,),effective_suit(state,action.card_id,action.user_id),effective_color(state,action.card_id,action.user_id),'longnu' if canonical in ('basic.fire_slash','basic.thunder_slash') else
+                'wushen' if self.skills.has(state, action.user_id, 'wushen') else 'jinjiu')
             if isinstance(effect,SlashSequence):effect=replace(effect,virtual_card=virtual)
         recast = canonical == 'trick.iron_chain' and not targets
         hand = ZoneRef(ZoneType.HAND, action.user_id)

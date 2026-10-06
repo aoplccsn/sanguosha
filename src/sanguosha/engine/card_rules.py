@@ -62,6 +62,12 @@ class CardUseValidator:
         self.targets = targets
         self.skills = skills
 
+    def _slash_modifiers(self, state, user_id, card_id):
+        from .longnu import modifiers
+        from .gods import wushen_applies
+        ignore_distance, unlimited = modifiers(state, self.skills, user_id, card_id)
+        return ignore_distance or wushen_applies(state, self.skills, user_id, card_id), unlimited
+
     def rule_for(self, state: GameState, card_id: CardInstanceId, user_id=None) -> CardRule:
         try:
             definition_id = state.cards[card_id].definition_id
@@ -89,7 +95,7 @@ class CardUseValidator:
         rule = self.rule_for(state, card_id, user_id)
         candidates = rule.target_candidates(state, user_id)
         from .longnu import modifiers
-        ignore_distance,unlimited=modifiers(state,self.skills,user_id,card_id)
+        ignore_distance,unlimited=self._slash_modifiers(state,user_id,card_id)
         if getattr(rule,'usage_key',None)=='basic.slash' and (ignore_distance or unlimited) and rule.can_use(state,user_id):
             from .distance import DistanceSystem
             from .yj2011_tier3 import scoped_target,hand
@@ -117,7 +123,7 @@ class CardUseValidator:
         if targets and getattr(rule, 'definition', None) == 'trick.iron_chain':
             self.validate_card(state, user_id, card_id)
         from .longnu import modifiers
-        ignore_distance,unlimited=modifiers(state,self.skills,user_id,card_id)
+        ignore_distance,unlimited=self._slash_modifiers(state,user_id,card_id)
         if getattr(rule,'usage_key',None)=='basic.slash' and (ignore_distance or unlimited):
             low,high=rule.target_bounds(state,user_id,card_id)
             if not low<=len(targets)<=high or len(set(targets))!=len(targets):raise InvalidCardUse('invalid Slash targets')

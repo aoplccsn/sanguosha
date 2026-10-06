@@ -459,22 +459,19 @@ def test_zhiba_pindian_claims_cards_when_lord_does_not_win():
     assert state.play_usage.count('skill.zhiba') == 1
 
 
-def test_zhijian_replaces_equipment_and_draws():
+def test_zhijian_places_in_empty_equipment_slot_and_draws():
     session = GameSession.new_game(military=True, five_generals=True)
     state = session.state
     state.players['p1'].character_id = 'mountain_zhang_zhaozhang'
     state.current_player_id = 'p1'
     state.current_phase = Phase.PLAY
     new = put(session, 'equipment.weapon.serpent_spear', 'p1')
-    old = put(session, 'equipment.weapon.qinggang_sword', 'p2',
-              ZoneType.EQUIPMENT, EquipmentSlot.WEAPON)
     hand_before = len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1')))
     session.engine.start_action(ZhijianAction('zhijian', 'p1'))
     for choice in (new, 'p2'):
         request = session.engine.pending_request
         session.engine.submit_decision(Decision(request.request_id, request.player_id, choice))
     assert new in state.cards_in(ZoneRef(ZoneType.EQUIPMENT, 'p2', EquipmentSlot.WEAPON))
-    assert old in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
     assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == hand_before
 
 

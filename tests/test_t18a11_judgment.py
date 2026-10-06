@@ -230,6 +230,6 @@ def test_declining_tiandu_does_not_cancel_independent_gain_on_match():
     top=s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
     s.state.cards[top]=replace(s.state.cards[top],suit=Suit.SPADE)
     s.engine.start_action(JudgmentAction('audit-luoshen-tiandu','p1',JudgmentPattern(color=Color.BLACK),gain_on_match=True))
-    s=restore(s);answer(s,False)
+    s=restore(s);answer(s,'天妒');answer(s,False)
     assert s.engine.last_result is True
     assert top in s.state.cards_in(ZoneRef(ZoneType.HAND,'p1'))

@@ -62,6 +62,9 @@ def clear_turn(state):
 
 
 def canonical_definition(state, skills, pid, definition, card_id=None):
+    from .gods import wushen_applies
+    if wushen_applies(state, skills, pid, card_id):
+        return 'basic.slash'
     from .longnu import longnu_definition
     converted=longnu_definition(state,skills,pid,definition,card_id)
     return ('basic.slash' if converted == 'basic.wine' and skills is not None

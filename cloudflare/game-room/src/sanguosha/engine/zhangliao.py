@@ -5,7 +5,7 @@ from .distance import DistanceSystem
 from .events import Event
 
 # Frozen Noname unique/non-gainable skills and its explicit classic banned list.
-SPECIAL_EXCLUDED=frozenset(('buqu','songci','guhuo','huashen','qixing','kuangfeng','rage','shenfen','jilue'))
+SPECIAL_EXCLUDED=frozenset(('buqu','songci','guhuo','huashen','qixing','kuangfeng','kuangbao','shenfen','jilue'))
 
 
 def borrowable(state,target,skills):

@@ -111,6 +111,8 @@ def test_dying_peach_response_rescues_and_consumes_real_card():
     relocate(session, peach, hand(P2), "give-peach")
     session.state.players[P2].hp = 0
     session.engine.start_action(DyingAction("dying-p2", P2, P3))
+    assert session.engine.pending_request.player_id == P1
+    answer(session, PASS_RESPONSE)
     request = session.engine.pending_request
     assert request.player_id == P2 and peach in request.eligible_card_ids
     answer(session, peach)
@@ -127,6 +129,9 @@ def test_negative_hp_can_be_rescued_by_multiple_peaches():
         relocate(session, peach, hand(P2), f"give-peach-{index}")
     session.state.players[P2].hp = -1
     session.engine.start_action(DyingAction("deep-dying", P2, P3))
+    assert session.engine.pending_request.player_id == P1
+    answer(session, PASS_RESPONSE)
+    assert session.engine.pending_request.player_id == P2
     answer(session, peaches[0])
     assert session.state.players[P2].hp == 0
     assert session.engine.pending_request is not None

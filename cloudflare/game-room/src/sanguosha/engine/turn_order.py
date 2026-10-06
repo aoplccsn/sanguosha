@@ -26,10 +26,17 @@ def next_alive_player(state: GameState, current: PlayerId) -> PlayerId:
 def queue_extra_turn(state: GameState, player_id: PlayerId) -> None:
     if player_id not in state.players or not state.players[player_id].is_alive:
         raise InvalidTurn(f"player {player_id!r} cannot receive an extra turn")
-    state.extra_turn_queue.append(player_id)
+    # Extra turns created inside an extra turn resolve before older pending turns.
+    if state.extra_turn_anchor is not None:
+        index = state.metadata.get('extra_turn_pending_prefix', 0)
+        state.extra_turn_queue.insert(index, player_id)
+        state.metadata['extra_turn_pending_prefix'] = index + 1
+    else:
+        state.extra_turn_queue.append(player_id)
 
 
 def next_scheduled_player(state: GameState) -> PlayerId:
+    state.metadata.pop('extra_turn_pending_prefix', None)
     while state.extra_turn_queue:
         player_id = state.extra_turn_queue.pop(0)
         if state.players[player_id].is_alive:

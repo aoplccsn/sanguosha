@@ -19,10 +19,12 @@ GOD_LVBU = 'forest_god_lvbu'
 RAGE = 'rage'
 
 
-def grant_rage_on_damage(state, source_id, target_id, amount):
+def grant_rage_on_damage(state, source_id, target_id, amount, skills):
     """狂暴: each damage point grants a mark to Lu Bu as source or recipient."""
+    if skills is None:
+        return
     for pid in (source_id, target_id):
-        if pid is not None and state.players[pid].character_id == GOD_LVBU and state.players[pid].is_alive:
+        if pid is not None and skills.has(state, pid, 'kuangbao') and state.players[pid].is_alive:
             state.players[pid].marks[RAGE] = state.players[pid].marks.get(RAGE, 0) + amount
 
 

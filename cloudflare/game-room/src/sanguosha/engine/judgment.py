@@ -57,23 +57,77 @@ class JudgmentHandler:
                      if (not black or effective_color(state, cid, actor) is Color.BLACK)
                      and card_allowed(state, actor, (cid,)))
 
-    def _finish(self, state, frame, card_id, destination):
-        action = frame.action
-        if (not frame.local.get('songwei_finished') and self.skills is not None and state.players[action.player_id].is_alive
+    ORDER_NAMES = {'guicai': '鬼才', 'jilue': '极略', 'guidao': '鬼道',
+                   'tiandu': '天妒', 'tuntian': '屯田', 'luoshen': '洛神', 'songwei': '颂威'}
+
+    def _ordered_skill(self, frame, actor, candidates, window, resume_step):
+        chosen = frame.local.get('chosen_' + window)
+        if chosen is not None and chosen[0] == actor:
+            frame.local.pop('chosen_' + window)
+            if chosen[1] in candidates:
+                return chosen[1]
+        if len(candidates) < 2:
+            return candidates[0] if candidates else None
+        frame.local['order_window'] = window
+        frame.local['order_actor'] = actor
+        frame.step_index = resume_step
+        return StepResult.ask(PendingRequest(
+            f'{frame.action.action_id}:{window}-order:{actor}:{len(frame.local.get(window + "_offered", ()))}',
+            actor, RequestType.CHOOSE_OPTION, '选择先结算的技能',
+            frame.action.action_id, frame.frame_id,
+            choices=tuple(self.ORDER_NAMES[skill] for skill in candidates)))
+
+    def _songwei_lord(self, state, action, card_id):
+        if (self.skills is not None and state.players[action.player_id].is_alive
                 and self.skills.faction(state, action.player_id) is Kingdom.WEI
                 and effective_color(state, card_id, action.player_id) is Color.BLACK):
-            lord = next((pid for pid in state.seat_order if pid != action.player_id
+            return next((pid for pid in state.seat_order if pid != action.player_id
                          and state.players[pid].is_alive
                          and self.skills.has(state, pid, 'songwei')), None)
-            if lord is not None:
-                from .forest import SongweiAction
-                frame.local['finish_destination'] = destination
-                frame.step_index = 8
-                return StepResult.push(SongweiAction(action.action_id + ':songwei',
-                                                     action.player_id, lord))
-        self.moves.move(state, CardMove(f"{action.action_id}:after-move", (card_id,),
-                                        ZoneRef(ZoneType.PROCESSING), destination,
-                                        CardMoveReason.SYSTEM, action.player_id, action.action_id))
+        return None
+
+    def _finish_skills(self, state, frame, card_id):
+        action = frame.action
+        candidates = []
+        processing = ZoneRef(ZoneType.PROCESSING)
+        if state.players[action.player_id].is_alive and card_id in state.cards_in(processing):
+            if self.skills is not None and self.skills.has(state, action.player_id, 'tiandu'):
+                candidates.append('tiandu')
+            if frame.local['matched']:
+                if action.success_destination is not None:
+                    candidates.append('tuntian')
+                elif action.gain_on_match:
+                    candidates.append('luoshen')
+        lord = self._songwei_lord(state, action, card_id)
+        if lord is not None:
+            candidates.append('songwei')
+        candidates = tuple(s for s in candidates if s not in frame.local.get('finish_offered', ()))
+        selected = self._ordered_skill(frame, action.player_id, candidates, 'finish', 11)
+        if isinstance(selected, StepResult):
+            return selected
+        if selected is None:
+            return self._finish(state, frame, card_id, ZoneRef(ZoneType.DISCARD_PILE))
+        frame.local['finish_offered'] = (*frame.local.get('finish_offered', ()), selected)
+        if selected == 'tiandu':
+            frame.step_index = 3
+            return StepResult.ask(PendingRequest(f'{action.action_id}:tiandu', action.player_id,
+                RequestType.YES_NO, '自己的判定牌结算后，是否发动【天妒】获得之？',
+                action.action_id, frame.frame_id))
+        if selected == 'songwei':
+            from .forest import SongweiAction
+            frame.step_index = 8
+            return StepResult.push(SongweiAction(action.action_id + ':songwei', action.player_id, lord))
+        destination = action.success_destination if selected == 'tuntian' else ZoneRef(ZoneType.HAND, action.player_id)
+        self.moves.move(state, CardMove(f'{action.action_id}:finish-{selected}', (card_id,),
+            processing, destination, CardMoveReason.SYSTEM, action.player_id, action.action_id))
+        return StepResult.continue_()
+
+    def _finish(self, state, frame, card_id, destination):
+        action = frame.action
+        if card_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
+            self.moves.move(state, CardMove(f"{action.action_id}:after-move", (card_id,),
+                                            ZoneRef(ZoneType.PROCESSING), destination,
+                                            CardMoveReason.SYSTEM, action.player_id, action.action_id))
         self.recorder.record(Event(f"{action.action_id}:after", "after_judgment", action.player_id,
                                    metadata={"card_id": str(card_id), "matched": bool(frame.local["matched"]),
                                              **frame.local.get("final_face", {})}))
@@ -82,10 +136,13 @@ class JudgmentHandler:
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
         assert isinstance(action, JudgmentAction)
+        if frame.step_index in (10, 11):
+            selected = next(skill for skill, name in self.ORDER_NAMES.items() if name == frame.decision)
+            frame.local['chosen_' + frame.local['order_window']] = (frame.local['order_actor'], selected)
+            frame.decision = None
+            frame.step_index = 1 if frame.step_index == 10 else 2
         if frame.step_index == 8:
-            frame.local['songwei_finished'] = True
-            return self._finish(state, frame, CardInstanceId(str(frame.local['card_id'])),
-                                frame.local['finish_destination'])
+            frame.step_index = 2
         draw = ZoneRef(ZoneType.DRAW_PILE)
         processing = ZoneRef(ZoneType.PROCESSING)
         if frame.step_index == 0:
@@ -142,14 +199,14 @@ class JudgmentHandler:
             frame.decision = None
             if material not in self.retrial_cards(state, actor):
                 raise InvalidCardUse('retrial material is unavailable or prohibited')
-            self.moves.move(state, CardMove(f'{action.action_id}:guicai-old:{actor}', (card_id,),
+            self.moves.move(state, CardMove(f'{action.action_id}:{frame.local.get("guicai_skill", "guicai")}-old:{actor}', (card_id,),
                 processing, ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.SYSTEM,
                 actor, action.action_id))
-            self.moves.move(state, CardMove(f'{action.action_id}:guicai-new:{actor}', (material,),
+            self.moves.move(state, CardMove(f'{action.action_id}:{frame.local.get("guicai_skill", "guicai")}-new:{actor}', (material,),
                 ZoneRef(ZoneType.HAND, actor), processing, CardMoveReason.RESPONSE,
                 actor, action.action_id))
             frame.local['card_id'] = str(material)
-            self.recorder.record(Event(f'{action.action_id}:replaced:{actor}', 'judgment_card_replaced', actor,
+            self.recorder.record(Event(f'{action.action_id}:{frame.local.get("guicai_skill", "guicai")}-replaced:{actor}', 'judgment_card_replaced', actor,
                 metadata={'old_card_id': str(card_id), 'card_id': str(material),
                           'judged_player_id': action.player_id,
                           'effective_suit': effective_suit(state, material, action.player_id).value,
@@ -205,22 +262,20 @@ class JudgmentHandler:
                 for actor in order:
                     if not state.players[actor].is_alive:
                         continue
-                    for skill in ('guicai', 'jilue', 'guidao'):
+                    eligible = tuple(skill for skill in ('guicai', 'jilue', 'guidao')
+                        if actor + ':' + skill not in frame.local.get('retrial_offered', ())
+                        and self.skills.has(state, actor, skill)
+                        and self.retrial_cards(state, actor, black=skill == 'guidao')
+                        and (skill != 'jilue' or state.players[actor].marks.get('ren', 0) > 0))
+                    selected = self._ordered_skill(frame, actor, eligible, 'retrial', 10)
+                    if isinstance(selected, StepResult):
+                        return selected
+                    for skill in (selected,) if selected is not None else ():
                         key = actor + ':' + skill
-                        if key in frame.local.get('retrial_offered', ()):
-                            continue
                         frame.local['retrial_offered'] = (*frame.local.get('retrial_offered', ()), key)
-                        if not self.skills.has(state, actor, skill):
-                            continue
-                        hand = self.retrial_cards(state, actor)
-                        if skill in ('guicai', 'jilue') and not hand:
-                            continue
-                        if skill == 'jilue' and state.players[actor].marks.get('ren', 0) <= 0:
-                            continue
-                        if skill == 'guidao' and not self.retrial_cards(state, actor, black=True):
-                            continue
                         if skill == 'guicai':
                             frame.local['guicai_actor'] = str(actor)
+                            frame.local['guicai_skill'] = skill
                             current_match = action.pattern.matches(state, card_id, action.player_id)
                             preferred = tuple(str(cid) for cid in self.retrial_cards(state, actor)
                                               if action.pattern.matches(state, cid, action.player_id) != current_match)
@@ -233,6 +288,7 @@ class JudgmentHandler:
                                 subject_player_id=action.player_id))
                         elif skill == 'jilue':
                             frame.local['guicai_actor'] = str(actor)
+                            frame.local['guicai_skill'] = skill
                             frame.step_index = 9
                             return StepResult.ask(PendingRequest(
                                 f'{action.action_id}:jilue-guicai:{actor}', actor,
@@ -270,22 +326,12 @@ class JudgmentHandler:
                                        action.player_id, metadata={"card_id": str(card_id), "matched": matched, **frame.local.get("final_face", {})}))
             frame.step_index = 2
             return StepResult.continue_()
-        if (frame.step_index == 2 and self.skills is not None
-                and self.skills.has(state, action.player_id, 'tiandu')
-                and state.players[action.player_id].is_alive):
-            frame.step_index = 3
-            return StepResult.ask(PendingRequest(f'{action.action_id}:tiandu', action.player_id,
-                RequestType.YES_NO, '自己的判定牌结算后，是否发动【天妒】获得之？',
-                action.action_id, frame.frame_id))
-        if frame.step_index == 2 and action.success_destination is not None and frame.local['matched']:
-            return self._finish(state, frame, card_id, action.success_destination)
-        if frame.step_index == 2 and action.gain_on_match and frame.local['matched']:
-            return self._finish(state, frame, card_id, ZoneRef(ZoneType.HAND, action.player_id))
         if frame.step_index == 3:
-            obtain = frame.decision is True or (action.gain_on_match and frame.local['matched'])
+            if frame.decision is True and card_id in state.cards_in(processing) and state.players[action.player_id].is_alive:
+                self.moves.move(state, CardMove(action.action_id + ':finish-tiandu', (card_id,),
+                    processing, ZoneRef(ZoneType.HAND, action.player_id), CardMoveReason.SYSTEM,
+                    action.player_id, action.action_id))
             frame.decision = None
-            return self._finish(state, frame, card_id,
-                                ZoneRef(ZoneType.HAND, action.player_id) if obtain else
-                                action.success_destination if action.success_destination is not None and frame.local['matched']
-                                else ZoneRef(ZoneType.DISCARD_PILE))
-        return self._finish(state, frame, card_id, ZoneRef(ZoneType.DISCARD_PILE))
+            frame.step_index = 2
+            return StepResult.continue_()
+        return self._finish_skills(state, frame, card_id)
