@@ -1,0 +1,28 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+________ test_qicai_ignores_supply_shortage_distance_but_not_duplicate ________
+
+    def test_qicai_ignores_supply_shortage_distance_but_not_duplicate():
+     s=game();s.state.players['p1'].granted_skills['qicai']='audit'
+>    rule=s.rules.get('delayed.supply_shortage')
+          ^^^^^^^
+E    AttributeError: 'GameSession' object has no attribute 'rules'
+
+tests\test_t18a11_equipment_distance.py:90: AttributeError
+____ test_qiangxi_weapon_cost_preserves_independent_attack_range_modifier _____
+
+    def test_qiangxi_weapon_cost_preserves_independent_attack_range_modifier():
+     from sanguosha.engine.fire import QiangxiHandler
+     s=game();weapon=gear(s,'weapon.serpent_spear');s.state.players['p1'].marks['yj_gongqi']=s.state.turn_number
+     h=QiangxiHandler(s.skills,s.engine.reaction_provider.__self__,s.definitions)
+>    assert 'p3' in h.targets(s.state,'p1',weapon)
+E    AssertionError: assert 'p3' in ('p2', 'p5')
+E     +  where ('p2', 'p5') = targets(GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='caocao', ide...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None), 'p1', 'std-club-04-2')
+E     +    where targets = <sanguosha.engine.fire.QiangxiHandler object at 0x0000029375454690>.targets
+E     +    and   GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='caocao', ide...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x00000293754542D0>, events=<sanguosha.engine.events....090>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x00000293753891D0>).state
+
+tests\test_t18a11_equipment_distance.py:100: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_equipment_distance.py::test_qicai_ignores_supply_shortage_distance_but_not_duplicate
+FAILED tests/test_t18a11_equipment_distance.py::test_qiangxi_weapon_cost_preserves_independent_attack_range_modifier
+2 failed, 6 deselected in 0.33s

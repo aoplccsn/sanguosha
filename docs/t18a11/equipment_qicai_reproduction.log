@@ -1,0 +1,19 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+________ test_qicai_ignores_supply_shortage_distance_but_not_duplicate ________
+
+    def test_qicai_ignores_supply_shortage_distance_but_not_duplicate():
+     s=game();s.state.players['p1'].granted_skills['qicai']='audit'
+     from sanguosha.engine.military_tricks import MilitaryTrickRule
+     from sanguosha.engine.distance import DistanceSystem
+     rule=MilitaryTrickRule('delayed.supply_shortage',DistanceSystem(s.definitions),s.skills)
+>    assert 'p3' in rule.target_candidates(s.state,'p1')
+E    AssertionError: assert 'p3' in ('p2', 'p5')
+E     +  where ('p2', 'p5') = target_candidates(GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='caocao', ide...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None), 'p1')
+E     +    where target_candidates = <sanguosha.engine.military_tricks.MilitaryTrickRule object at 0x000001E851A74B90>.target_candidates
+E     +    and   GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='caocao', ide...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000001E851A2F0E0>, events=<sanguosha.engine.events....BE0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000001E8517402F0>).state
+
+tests\test_t18a11_equipment_distance.py:93: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_equipment_distance.py::test_qicai_ignores_supply_shortage_distance_but_not_duplicate
+1 failed, 7 deselected in 0.32s

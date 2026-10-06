@@ -1,0 +1,101 @@
+FFFFFF                                                                   [100%]
+================================== FAILURES ===================================
+_______ test_axe_does_not_offer_when_only_cost_is_itself_plus_one_card ________
+
+    def test_axe_does_not_offer_when_only_cost_is_itself_plus_one_card():
+     s=game();axe=gear(s,'weapon.rock_cleaving_axe');put(s,'basic.peach')
+     # Remove other owner hand cards to make the two-cost boundary exact.
+     hand=ZoneRef(ZoneType.HAND,'p1')
+     keep=s.state.cards_in(hand)[-1]
+     moves=s.engine.reaction_provider.__self__
+     rest=tuple(c for c in s.state.cards_in(hand) if c!=keep)
+     if rest:moves.move(s.state,CardMove('audit-empty',rest,hand,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM))
+     slash=put(s,'basic.slash','p3');dodge=put(s,'basic.dodge','p2')
+     s.engine.start_action(MilitaryStrike('audit-axe','p1','p2',slash,'basic.dodge'));answer(s,dodge)
+>    assert s.engine.pending_request is None
+E    AssertionError: assert PendingRequest(request_id='audit-axe:axe-option', player_id='p1', request_type=<RequestType.YES_NO: 'yes_no'>, prompt=..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E     +  where PendingRequest(request_id='audit-axe:axe-option', player_id='p1', request_type=<RequestType.YES_NO: 'yes_no'>, prompt=..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000016F1A8F70E0>.pending_request
+E     +    where <sanguosha.engine.engine.GameEngine object at 0x0000016F1A8F70E0> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000016F1A8F70E0>, events=<sanguosha.engine.events....BE0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000016F1A6302F0>).engine
+
+tests\test_t18a11_equipment_distance.py:31: AssertionError
+_________________ test_axe_cost_request_excludes_equipped_axe _________________
+
+    def test_axe_cost_request_excludes_equipped_axe():
+     s=game();axe=gear(s,'weapon.rock_cleaving_axe');slash=put(s,'basic.slash');dodge=put(s,'basic.dodge','p2')
+     s.engine.start_action(MilitaryStrike('audit-axe-material','p1','p2',slash,'basic.dodge'));answer(s,dodge);answer(s,True)
+>    assert axe not in s.engine.pending_request.eligible_card_ids
+E    AssertionError: assert 'std-club-04-2' not in ('std-diamond-13-2', 'mil-spade-11', 'mil-diamond-06', 'mil-diamond-09', 'std-heart-08-1', 'std-club-04-2')
+E     +  where ('std-diamond-13-2', 'mil-spade-11', 'mil-diamond-06', 'mil-diamond-09', 'std-heart-08-1', 'std-club-04-2') = PendingRequest(request_id='audit-axe-material:axe-cost', player_id='p1', request_type=<RequestType.CHOOSE_CARDS: 'choo..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()).eligible_card_ids
+E     +    where PendingRequest(request_id='audit-axe-material:axe-cost', player_id='p1', request_type=<RequestType.CHOOSE_CARDS: 'choo..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000016F1AA14690>.pending_request
+E     +      where <sanguosha.engine.engine.GameEngine object at 0x0000016F1AA14690> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000016F1AA14690>, events=<sanguosha.engine.events....450>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000016F1A951590>).engine
+
+tests\test_t18a11_equipment_distance.py:38: AssertionError
+_____________ test_kylin_choice_precedes_hp_and_damage_reactions ______________
+
+    def test_kylin_choice_precedes_hp_and_damage_reactions():
+     s=game();gear(s,'weapon.kylin_bow');gear(s,'horse.chitu','p2',EquipmentSlot.OFFENSIVE_HORSE)
+     slash=put(s,'basic.slash');hp=s.state.players['p2'].hp
+     s.engine.start_action(MilitaryStrike('audit-kylin','p1','p2',slash,'basic.dodge'));answer(s,s.engine.pending_request.timeout_value())
+     assert s.engine.pending_request.request_id.endswith(':kylin')
+>    assert s.state.players['p2'].hp==hp
+E    AssertionError: assert 3 == 4
+E     +  where 3 = PlayerState(player_id='p2', seat=1, character_id='caocao', identity=<Identity.LOYALIST: 'loyalist'>, hp=3, max_hp=4, s...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+
+tests\test_t18a11_equipment_distance.py:46: AssertionError
+_______________ test_kylin_lethal_hit_still_offers_before_death _______________
+
+    def test_kylin_lethal_hit_still_offers_before_death():
+     s=game();gear(s,'weapon.kylin_bow');gear(s,'horse.chitu','p2',EquipmentSlot.OFFENSIVE_HORSE)
+     slash=put(s,'basic.slash');s.state.players['p2'].hp=1
+     s.engine.start_action(MilitaryStrike('audit-kylin-lethal','p1','p2',slash,'basic.dodge'));answer(s,s.engine.pending_request.timeout_value())
+>    assert s.engine.pending_request.request_id.endswith(':kylin') and s.state.players['p2'].hp==1
+E    AssertionError: assert (False)
+E     +  where False = <built-in method endswith of str object at 0x0000016F1AA56BB0>(':kylin')
+E     +    where <built-in method endswith of str object at 0x0000016F1AA56BB0> = 'audit-kylin-lethal:damage:rescue:ask:0:1:p1:request'.endswith
+E     +      where 'audit-kylin-lethal:damage:rescue:ask:0:1:p1:request' = PendingRequest(request_id='audit-kylin-lethal:damage:rescue:ask:0:1:p1:request', player_id='p1', request_type=<Request..., subject_player_id='p2', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()).request_id
+E     +        where PendingRequest(request_id='audit-kylin-lethal:damage:rescue:ask:0:1:p1:request', player_id='p1', request_type=<Request..., subject_player_id='p2', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000016F1AA81BA0>.pending_request
+E     +          where <sanguosha.engine.engine.GameEngine object at 0x0000016F1AA81BA0> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000016F1AA81BA0>, events=<sanguosha.engine.events....6F0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000016F1A92F100>).engine
+
+tests\test_t18a11_equipment_distance.py:55: AssertionError
+________ test_ice_sword_selects_second_card_after_first_move_reactions ________
+
+    def test_ice_sword_selects_second_card_after_first_move_reactions():
+     s=game();s.state.players['p2'].granted_skills['xiaoji']='audit'
+     # Target has only armor; losing it draws two new cards before the second discard.
+     moves=s.engine.reaction_provider.__self__;hand=ZoneRef(ZoneType.HAND,'p2');cards=s.state.cards_in(hand)
+     if cards:moves.move(s.state,CardMove('audit-empty-target',cards,hand,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM))
+     armor=gear(s,'armor.vine','p2',EquipmentSlot.ARMOR)
+     s.engine.start_action(WeaponChoice('audit-ice','p1','p2','ice_sword'))
+>    assert s.engine.pending_request.request_type is RequestType.CHOOSE_CARD
+E    AssertionError: assert <RequestType.CHOOSE_CARDS: 'choose_cards'> is <RequestType.CHOOSE_CARD: 'choose_card'>
+E     +  where <RequestType.CHOOSE_CARDS: 'choose_cards'> = PendingRequest(request_id='audit-ice:cards', player_id='p1', request_type=<RequestType.CHOOSE_CARDS: 'choose_cards'>, ..., subject_player_id='p2', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()).request_type
+E     +    where PendingRequest(request_id='audit-ice:cards', player_id='p1', request_type=<RequestType.CHOOSE_CARDS: 'choose_cards'>, ..., subject_player_id='p2', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000016F1AA90FC0>.pending_request
+E     +      where <sanguosha.engine.engine.GameEngine object at 0x0000016F1AA90FC0> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000016F1AA90FC0>, events=<sanguosha.engine.events....410>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000016F1AA82780>).engine
+E     +  and   <RequestType.CHOOSE_CARD: 'choose_card'> = RequestType.CHOOSE_CARD
+
+tests\test_t18a11_equipment_distance.py:65: AssertionError
+___ test_equipment_replacement_waits_for_departure_reaction_before_install ____
+
+    def test_equipment_replacement_waits_for_departure_reaction_before_install():
+     s=game();s.state.players['p1'].granted_skills['xiaoji']='audit'
+     old=gear(s,'armor.vine',slot=EquipmentSlot.ARMOR);new=put(s,'equipment.armor.eight_trigrams')
+     s.engine.start_action(UseCardAction('audit-replace','p1',new))
+     assert s.engine.pending_request.request_type is RequestType.YES_NO
+>    assert not s.state.cards_in(ZoneRef(ZoneType.EQUIPMENT,'p1',EquipmentSlot.ARMOR))
+E    AssertionError: assert not ('std-heart-08-1',)
+E     +  where ('std-heart-08-1',) = cards_in(ZoneRef(zone_type=<ZoneType.EQUIPMENT: 'equipment'>, player_id='p1', equipment_slot=<EquipmentSlot.ARMOR: 'armor'>, special_key=None))
+E     +    where cards_in = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='caocao', ide...ment.armor.eight_trigrams': 1}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None).cards_in
+E     +      where GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='caocao', ide...ment.armor.eight_trigrams': 1}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000016F1AACDD90>, events=<sanguosha.engine.events....CE0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000016F1AA0F9B0>).state
+E     +    and   ZoneRef(zone_type=<ZoneType.EQUIPMENT: 'equipment'>, player_id='p1', equipment_slot=<EquipmentSlot.ARMOR: 'armor'>, special_key=None) = ZoneRef(<ZoneType.EQUIPMENT: 'equipment'>, 'p1', <EquipmentSlot.ARMOR: 'armor'>)
+E     +      where <ZoneType.EQUIPMENT: 'equipment'> = ZoneType.EQUIPMENT
+E     +      and   <EquipmentSlot.ARMOR: 'armor'> = EquipmentSlot.ARMOR
+
+tests\test_t18a11_equipment_distance.py:79: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_equipment_distance.py::test_axe_does_not_offer_when_only_cost_is_itself_plus_one_card
+FAILED tests/test_t18a11_equipment_distance.py::test_axe_cost_request_excludes_equipped_axe
+FAILED tests/test_t18a11_equipment_distance.py::test_kylin_choice_precedes_hp_and_damage_reactions
+FAILED tests/test_t18a11_equipment_distance.py::test_kylin_lethal_hit_still_offers_before_death
+FAILED tests/test_t18a11_equipment_distance.py::test_ice_sword_selects_second_card_after_first_move_reactions
+FAILED tests/test_t18a11_equipment_distance.py::test_equipment_replacement_waits_for_departure_reaction_before_install
+6 failed in 0.32s

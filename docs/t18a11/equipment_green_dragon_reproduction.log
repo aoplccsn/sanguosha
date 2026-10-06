@@ -1,0 +1,46 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ test_green_dragon_followup_is_use_with_materials_on_table_until_jianxiong[False] _
+
+virtual = False
+
+    @pytest.mark.parametrize('virtual',[False,True])
+    def test_green_dragon_followup_is_use_with_materials_on_table_until_jianxiong(virtual):
+     from sanguosha.engine.events import CardUsedEvent
+     s=game();gear(s,'weapon.green_dragon_blade');s.state.players['p2'].granted_skills['jianxiong']='audit'
+     first=put(s,'basic.slash');dodge=put(s,'basic.dodge','p2')
+     follow=put(s,'basic.peach' if virtual else 'basic.fire_slash');s.state.cards[follow]=replace(s.state.cards[follow],suit=Suit.HEART)
+     if virtual:s.state.players['p1'].granted_skills['wusheng']='audit'
+     s.engine.start_action(UseCardAction('audit-green-use','p1',first,('p2',)));answer(s,dodge)
+     answer(s,'virtual:wusheng:'+follow if virtual else follow)
+     answer(s,s.engine.pending_request.timeout_value())
+>    assert s.engine.pending_request is not None and s.engine.pending_request.request_id.endswith(':jianxiong')
+E    assert (None is not None)
+E     +  where None = <sanguosha.engine.engine.GameEngine object at 0x000001DF9C197620>.pending_request
+E     +    where <sanguosha.engine.engine.GameEngine object at 0x000001DF9C197620> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000001DF9C197620>, events=<sanguosha.engine.events....120>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000001DF99CE8830>).engine
+
+tests\test_t18a11_equipment_distance.py:297: AssertionError
+_ test_green_dragon_followup_is_use_with_materials_on_table_until_jianxiong[True] _
+
+virtual = True
+
+    @pytest.mark.parametrize('virtual',[False,True])
+    def test_green_dragon_followup_is_use_with_materials_on_table_until_jianxiong(virtual):
+     from sanguosha.engine.events import CardUsedEvent
+     s=game();gear(s,'weapon.green_dragon_blade');s.state.players['p2'].granted_skills['jianxiong']='audit'
+     first=put(s,'basic.slash');dodge=put(s,'basic.dodge','p2')
+     follow=put(s,'basic.peach' if virtual else 'basic.fire_slash');s.state.cards[follow]=replace(s.state.cards[follow],suit=Suit.HEART)
+     if virtual:s.state.players['p1'].granted_skills['wusheng']='audit'
+     s.engine.start_action(UseCardAction('audit-green-use','p1',first,('p2',)));answer(s,dodge)
+     answer(s,'virtual:wusheng:'+follow if virtual else follow)
+     answer(s,s.engine.pending_request.timeout_value())
+>    assert s.engine.pending_request is not None and s.engine.pending_request.request_id.endswith(':jianxiong')
+E    assert (None is not None)
+E     +  where None = <sanguosha.engine.engine.GameEngine object at 0x000001DF9C3087D0>.pending_request
+E     +    where <sanguosha.engine.engine.GameEngine object at 0x000001DF9C3087D0> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000001DF9C3087D0>, events=<sanguosha.engine.events....F70>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000001DF9C1DD6D0>).engine
+
+tests\test_t18a11_equipment_distance.py:297: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_equipment_distance.py::test_green_dragon_followup_is_use_with_materials_on_table_until_jianxiong[False]
+FAILED tests/test_t18a11_equipment_distance.py::test_green_dragon_followup_is_use_with_materials_on_table_until_jianxiong[True]
+2 failed, 40 deselected in 0.34s

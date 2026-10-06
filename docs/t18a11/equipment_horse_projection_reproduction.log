@@ -1,0 +1,36 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ test_hand_horse_projection_exposes_slot_for_signed_face[chitu-offensive_horse] _
+
+horse = 'chitu', slot = <EquipmentSlot.OFFENSIVE_HORSE: 'offensive_horse'>
+
+    @pytest.mark.parametrize('horse,slot', [('chitu',EquipmentSlot.OFFENSIVE_HORSE),('jueying',EquipmentSlot.DEFENSIVE_HORSE)])
+    def test_hand_horse_projection_exposes_slot_for_signed_face(horse,slot):
+     from sanguosha.projection import project_for_human
+     s=game();cid=put(s,'equipment.horse.'+horse)
+     card=next(c for c in project_for_human(s.state,s.definitions,'p1',{}).hand if c.card_id==cid)
+>    assert card.equipment_slot==slot.value
+E    AssertionError: assert '' == 'offensive_horse'
+E      
+E      - offensive_horse
+
+tests\test_t18a11_equipment_distance.py:126: AssertionError
+_ test_hand_horse_projection_exposes_slot_for_signed_face[jueying-defensive_horse] _
+
+horse = 'jueying', slot = <EquipmentSlot.DEFENSIVE_HORSE: 'defensive_horse'>
+
+    @pytest.mark.parametrize('horse,slot', [('chitu',EquipmentSlot.OFFENSIVE_HORSE),('jueying',EquipmentSlot.DEFENSIVE_HORSE)])
+    def test_hand_horse_projection_exposes_slot_for_signed_face(horse,slot):
+     from sanguosha.projection import project_for_human
+     s=game();cid=put(s,'equipment.horse.'+horse)
+     card=next(c for c in project_for_human(s.state,s.definitions,'p1',{}).hand if c.card_id==cid)
+>    assert card.equipment_slot==slot.value
+E    AssertionError: assert '' == 'defensive_horse'
+E      
+E      - defensive_horse
+
+tests\test_t18a11_equipment_distance.py:126: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_equipment_distance.py::test_hand_horse_projection_exposes_slot_for_signed_face[chitu-offensive_horse]
+FAILED tests/test_t18a11_equipment_distance.py::test_hand_horse_projection_exposes_slot_for_signed_face[jueying-defensive_horse]
+2 failed, 9 deselected in 0.30s

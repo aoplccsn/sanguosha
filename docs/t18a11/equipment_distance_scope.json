@@ -1,0 +1,401 @@
+[
+  {
+    "general_id": "guanyu",
+    "skill_id": "wusheng",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "zhaoyun",
+    "skill_id": "longdan",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "machao",
+    "skill_id": "mashu",
+    "entry_status": "BLOCKED",
+    "exit_status": "PASS",
+    "remaining": "Closed continuous modifier contract"
+  },
+  {
+    "general_id": "huangyueying",
+    "skill_id": "qicai",
+    "entry_status": "BLOCKED",
+    "exit_status": "FIXED",
+    "remaining": "Closed continuous modifier contract"
+  },
+  {
+    "general_id": "daqiao",
+    "skill_id": "liuli",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared post-cost geometry tested; full TargetSpecified/TargetConfirming combinations remain unverified."
+  },
+  {
+    "general_id": "luxun",
+    "skill_id": "lianying",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "sunshangxiang",
+    "skill_id": "xiaoji",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "wind_xiahou_yuan",
+    "skill_id": "shensu",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "wind_huang_zhong",
+    "skill_id": "liegong",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "wind_wei_yan",
+    "skill_id": "kuanggu",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "wind_zhang_jiao",
+    "skill_id": "guidao",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Equipment material movement checked; same-owner retrial order remains BLOCKED."
+  },
+  {
+    "general_id": "wind_god_guanyu",
+    "skill_id": "wushen",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "wind_god_guanyu",
+    "skill_id": "wuhun",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "fire_dian_wei",
+    "skill_id": "qiangxi",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Post-weapon-cost independent range fixed; full active cost/HP/damage/phase boundary closure remains unverified."
+  },
+  {
+    "general_id": "fire_xun_yu",
+    "skill_id": "quhu",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "fire_wolong",
+    "skill_id": "bazhen",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "fire_taishi_ci",
+    "skill_id": "tianyi",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "fire_pang_de",
+    "skill_id": "mashu",
+    "entry_status": "BLOCKED",
+    "exit_status": "PASS",
+    "remaining": "Closed continuous modifier contract"
+  },
+  {
+    "general_id": "forest_xuhuang",
+    "skill_id": "duanliang",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "forest_jia_xu",
+    "skill_id": "luanwu",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "forest_god_caocao",
+    "skill_id": "feiying",
+    "entry_status": "BLOCKED",
+    "exit_status": "PASS",
+    "remaining": "Closed continuous modifier contract"
+  },
+  {
+    "general_id": "forest_god_lvbu",
+    "skill_id": "wuwei",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "forest_god_lvbu",
+    "skill_id": "shenfen",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "mountain_zhang_he",
+    "skill_id": "qiaobian",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "mountain_deng_ai",
+    "skill_id": "tuntian",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Field movement and distance dependency checked; multiple FinishJudge ordering remains BLOCKED."
+  },
+  {
+    "general_id": "mountain_jiang_wei",
+    "skill_id": "tiaoxin",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "mountain_sunce",
+    "skill_id": "jiang",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "mountain_zhang_zhaozhang",
+    "skill_id": "zhijian",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "mountain_zuoci",
+    "skill_id": "xinsheng",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "mountain_cai_wenji",
+    "skill_id": "beige",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "mountain_god_zhaoyun",
+    "skill_id": "juejing",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "mountain_god_zhaoyun",
+    "skill_id": "longhun",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared response provider regression passes; full dynamic HP/material count and ownership lifecycle closure outstanding."
+  },
+  {
+    "general_id": "yj2011_yu_jin",
+    "skill_id": "yizhong",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2011_fa_zheng",
+    "skill_id": "xuanhuo",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2011_ling_tong",
+    "skill_id": "xuanfeng",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2011_wu_guotai",
+    "skill_id": "ganlu",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2011_chen_gong",
+    "skill_id": "mingce",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2011_gao_shun",
+    "skill_id": "xianzhen",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2012_cao_zhang",
+    "skill_id": "jiangchi",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2012_ma_dai",
+    "skill_id": "mashu",
+    "entry_status": "BLOCKED",
+    "exit_status": "PASS",
+    "remaining": "Closed continuous modifier contract"
+  },
+  {
+    "general_id": "yj2012_ma_dai",
+    "skill_id": "qianxi",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2012_han_dang",
+    "skill_id": "gongqi",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2012_han_dang",
+    "skill_id": "jiefan",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2013_cao_chong",
+    "skill_id": "renxin",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2013_jian_yong",
+    "skill_id": "qiaoshui",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2013_liu_feng",
+    "skill_id": "xiansi",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2013_pan_zhang_ma_zhong",
+    "skill_id": "duodao",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2013_yu_fan",
+    "skill_id": "zongxuan",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2013_yu_fan",
+    "skill_id": "zhiyan",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2013_zhu_ran",
+    "skill_id": "danshou",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2013_fu_huanghou",
+    "skill_id": "zhuikong",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "yj2013_fu_huanghou",
+    "skill_id": "qiuyuan",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "shadow_god_liubei",
+    "skill_id": "longnu",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "shadow_god_luxun",
+    "skill_id": "zhanhuo",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared equipment/cost/range dependency evidence only; full independent skill clauses outstanding."
+  },
+  {
+    "general_id": "thunder_god_zhangliao",
+    "skill_id": "duorui",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Four-slot cost, geometry, rejection, restore, source-scoped lease and death baseline regressions pass; complete native/compound borrowability and overlapping turn/death/source effects remain unverified."
+  },
+  {
+    "general_id": "thunder_god_zhangliao",
+    "skill_id": "zhiti",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Range-based hand penalty and three restore events have existing regressions; complete ordering with equipment departure and other simultaneous damage/pindian/duel triggers remains unverified."
+  },
+  {
+    "general_id": "动态授予/附属",
+    "skill_id": "jixi",
+    "entry_status": "BLOCKED",
+    "exit_status": "BLOCKED",
+    "remaining": "Shared distance after field cost checked in existing consumers; complete ViewAs/target and simultaneous trigger closure outstanding."
+  }
+]

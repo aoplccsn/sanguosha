@@ -1,0 +1,23 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_qinggang_target_binding_survives_weapon_stolen_by_first_target _____
+
+    def test_qinggang_target_binding_survives_weapon_stolen_by_first_target():
+     s=game();s.state.players['p1'].marks['slash_extra_targets']=1;s.state.players['p2'].granted_skills['fankui']='audit'
+     sword=gear(s,'weapon.qinggang_sword');gear(s,'armor.vine','p3',EquipmentSlot.ARMOR)
+     slash=put(s,'basic.slash');hp=s.state.players['p3'].hp
+     s.engine.start_action(UseCardAction('audit-qinggang-binding','p1',slash,('p2','p3')))
+     while s.engine.pending_request:
+      r=s.engine.pending_request
+      if r.request_id.endswith(':fankui'):answer(s,True)
+      elif r.request_id.endswith(':fankui-card'):answer(s,sword)
+      else:answer(s,r.timeout_value())
+     assert sword in s.state.cards_in(ZoneRef(ZoneType.HAND,'p2'))
+>    assert s.state.players['p3'].hp==hp-1
+E    AssertionError: assert 4 == (4 - 1)
+E     +  where 4 = PlayerState(player_id='p3', seat=2, character_id='caocao', identity=<Identity.REBEL: 'rebel'>, hp=4, max_hp=4, status=...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+
+tests\test_t18a11_equipment_distance.py:117: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_equipment_distance.py::test_qinggang_target_binding_survives_weapon_stolen_by_first_target
+1 failed, 8 deselected in 0.33s
