@@ -1,0 +1,44 @@
+
+Running 1 test using 1 worker
+
+
+
+(node:26532) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/1] [edge] › e2e\t18a11-audit.spec.ts:105:1 › real Iron Chain recast survives reconnect and skips Jizhi
+  1) [edge] › e2e\t18a11-audit.spec.ts:105:1 › real Iron Chain recast survives reconnect and skips Jizhi 
+
+    Error: expect(locator).not.toContainText(expected) failed
+
+    Locator: locator('.decision-prompt')
+    Expected substring: not "集智"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "not toContainText" locator('.decision-prompt') with timeout 5000ms
+      - waiting for locator('.decision-prompt')
+
+
+      110 |  await expect(page.locator('.event-stage')).toContainText('重铸：');
+      111 |  await expect(page.locator('.public-resolution-card')).toContainText('铁索连环');
+    > 112 |  await expect(page.locator('.decision-prompt')).not.toContainText('集智');
+          |                                                     ^
+      113 |  const state=await (await request.get('/audit/state/'+records[0].roomCode)).json();
+      114 |  expect(state.recasts).toBe(1);expect(state.used_iron_chains).toBe(0);
+      115 |  await page.screenshot({path:shot('iron-chain-recast'),fullPage:true});
+        at C:\Sanguosha\web\e2e\t18a11-audit.spec.ts:112:53
+
+    Error Context: test-results\t18a11\t18a11-audit-real-Iron-Cha-e277d-s-reconnect-and-skips-Jizhi-edge\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\t18a11\t18a11-audit-real-Iron-Cha-e277d-s-reconnect-and-skips-Jizhi-edge\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\t18a11\t18a11-audit-real-Iron-Cha-e277d-s-reconnect-and-skips-Jizhi-edge\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [edge] › e2e\t18a11-audit.spec.ts:105:1 › real Iron Chain recast survives reconnect and skips Jizhi 

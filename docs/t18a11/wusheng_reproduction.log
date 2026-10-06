@@ -1,0 +1,204 @@
+FFFFFF                                                                   [100%]
+================================== FAILURES ===================================
+_ test_red_equipment_is_a_real_wusheng_cost_for_use_and_response[False-False] _
+
+acquired = False, response = False
+
+    @pytest.mark.parametrize('acquired',[False,True])
+    @pytest.mark.parametrize('response',[False,True])
+    def test_red_equipment_is_a_real_wusheng_cost_for_use_and_response(acquired,response):
+        s=owner(acquired);cost=put(s,'equipment.armor.eight_trigrams','p1',ZoneType.EQUIPMENT,EquipmentSlot.ARMOR)
+        s.state.cards[cost]=replace(s.state.cards[cost],suit=Suit.HEART)
+        s=restore_session(snapshot_session(s))
+        if response:
+            s.engine.start_action(RespondWithCardAction('response','p1','basic.slash','external'))
+            r=s.engine.pending_request;assert 'virtual:wusheng:'+cost in r.eligible_card_ids
+            s.engine.submit_decision(Decision(r.request_id,r.player_id,'virtual:wusheng:'+cost))
+        else:
+>           s.engine.start_action(WushengUse('use','p1',cost));r=s.engine.pending_request
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_t18a11_wusheng.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\sanguosha\engine\engine.py:56: in start_action
+    return self.run_until_blocked()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+src\sanguosha\engine\engine.py:97: in run_until_blocked
+    outcome = self.registry.handler_for(frame.action).step(self.state, frame)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sanguosha.engine.skills.WushengUseHandler object at 0x0000025C1CED8690>
+state = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='guanyu', ide...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None)
+frame = ResolutionFrame(frame_id='frame-1', action=WushengUse(action_id='use', player_id='p1', material_id='std-club-04-2'), p...e, child_result=None, result=None, status=<FrameStatus.READY: 'ready'>, deferred_step=None, reaction_child_result=None)
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index == 0:
+            limit = self.slash_rule.usage_limit(state,action.player_id)
+            if (state.current_phase is not Phase.PLAY or state.current_player_id != action.player_id or
+                    action.material_id not in self.skills.red_slash_materials(state,action.player_id) or
+                    limit is not None and state.play_usage.count('basic.slash') >= limit):
+>               raise InvalidCardUse('��ʥ������')
+E               sanguosha.engine.card_rules.InvalidCardUse: ��ʥ������
+
+src\sanguosha\engine\skills.py:1081: InvalidCardUse
+_ test_red_equipment_is_a_real_wusheng_cost_for_use_and_response[False-True] __
+
+acquired = True, response = False
+
+    @pytest.mark.parametrize('acquired',[False,True])
+    @pytest.mark.parametrize('response',[False,True])
+    def test_red_equipment_is_a_real_wusheng_cost_for_use_and_response(acquired,response):
+        s=owner(acquired);cost=put(s,'equipment.armor.eight_trigrams','p1',ZoneType.EQUIPMENT,EquipmentSlot.ARMOR)
+        s.state.cards[cost]=replace(s.state.cards[cost],suit=Suit.HEART)
+        s=restore_session(snapshot_session(s))
+        if response:
+            s.engine.start_action(RespondWithCardAction('response','p1','basic.slash','external'))
+            r=s.engine.pending_request;assert 'virtual:wusheng:'+cost in r.eligible_card_ids
+            s.engine.submit_decision(Decision(r.request_id,r.player_id,'virtual:wusheng:'+cost))
+        else:
+>           s.engine.start_action(WushengUse('use','p1',cost));r=s.engine.pending_request
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_t18a11_wusheng.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\sanguosha\engine\engine.py:56: in start_action
+    return self.run_until_blocked()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+src\sanguosha\engine\engine.py:97: in run_until_blocked
+    outcome = self.registry.handler_for(frame.action).step(self.state, frame)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sanguosha.engine.skills.WushengUseHandler object at 0x0000025C1E0F2190>
+state = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='mountain_zuo...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None)
+frame = ResolutionFrame(frame_id='frame-1', action=WushengUse(action_id='use', player_id='p1', material_id='std-club-04-2'), p...e, child_result=None, result=None, status=<FrameStatus.READY: 'ready'>, deferred_step=None, reaction_child_result=None)
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index == 0:
+            limit = self.slash_rule.usage_limit(state,action.player_id)
+            if (state.current_phase is not Phase.PLAY or state.current_player_id != action.player_id or
+                    action.material_id not in self.skills.red_slash_materials(state,action.player_id) or
+                    limit is not None and state.play_usage.count('basic.slash') >= limit):
+>               raise InvalidCardUse('��ʥ������')
+E               sanguosha.engine.card_rules.InvalidCardUse: ��ʥ������
+
+src\sanguosha\engine\skills.py:1081: InvalidCardUse
+_ test_red_equipment_is_a_real_wusheng_cost_for_use_and_response[True-False] __
+
+acquired = False, response = True
+
+    @pytest.mark.parametrize('acquired',[False,True])
+    @pytest.mark.parametrize('response',[False,True])
+    def test_red_equipment_is_a_real_wusheng_cost_for_use_and_response(acquired,response):
+        s=owner(acquired);cost=put(s,'equipment.armor.eight_trigrams','p1',ZoneType.EQUIPMENT,EquipmentSlot.ARMOR)
+        s.state.cards[cost]=replace(s.state.cards[cost],suit=Suit.HEART)
+        s=restore_session(snapshot_session(s))
+        if response:
+            s.engine.start_action(RespondWithCardAction('response','p1','basic.slash','external'))
+>           r=s.engine.pending_request;assert 'virtual:wusheng:'+cost in r.eligible_card_ids
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: assert ('virtual:wusheng:' + 'std-club-04-2') in ('virtual:wusheng:std-diamond-13-2', 'virtual:wusheng:mil-diamond-06', 'virtual:wusheng:mil-diamond-09')
+E            +  where ('virtual:wusheng:std-diamond-13-2', 'virtual:wusheng:mil-diamond-06', 'virtual:wusheng:mil-diamond-09') = PendingRequest(request_id='response:request', player_id='p1', request_type=<RequestType.RESPOND_WITH_CARD: 'respond_wi..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()).eligible_card_ids
+
+tests\test_t18a11_wusheng.py:27: AssertionError
+__ test_red_equipment_is_a_real_wusheng_cost_for_use_and_response[True-True] __
+
+acquired = True, response = True
+
+    @pytest.mark.parametrize('acquired',[False,True])
+    @pytest.mark.parametrize('response',[False,True])
+    def test_red_equipment_is_a_real_wusheng_cost_for_use_and_response(acquired,response):
+        s=owner(acquired);cost=put(s,'equipment.armor.eight_trigrams','p1',ZoneType.EQUIPMENT,EquipmentSlot.ARMOR)
+        s.state.cards[cost]=replace(s.state.cards[cost],suit=Suit.HEART)
+        s=restore_session(snapshot_session(s))
+        if response:
+            s.engine.start_action(RespondWithCardAction('response','p1','basic.slash','external'))
+>           r=s.engine.pending_request;assert 'virtual:wusheng:'+cost in r.eligible_card_ids
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: assert ('virtual:wusheng:' + 'std-club-04-2') in ('virtual:wusheng:std-diamond-13-2', 'virtual:wusheng:mil-diamond-06', 'virtual:wusheng:mil-diamond-09')
+E            +  where ('virtual:wusheng:std-diamond-13-2', 'virtual:wusheng:mil-diamond-06', 'virtual:wusheng:mil-diamond-09') = PendingRequest(request_id='response:request', player_id='p1', request_type=<RequestType.RESPOND_WITH_CARD: 'respond_wi..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()).eligible_card_ids
+
+tests\test_t18a11_wusheng.py:27: AssertionError
+_ test_wusheng_cost_cannot_retain_consumed_weapon_or_horse_distance[weapon-equipment.weapon.green_dragon_blade] _
+
+slot = <EquipmentSlot.WEAPON: 'weapon'>
+definition = 'equipment.weapon.green_dragon_blade'
+
+    @pytest.mark.parametrize('slot,definition',[(EquipmentSlot.WEAPON,'equipment.weapon.green_dragon_blade'),(EquipmentSlot.OFFENSIVE_HORSE,'equipment.horse.chitu')])
+    def test_wusheng_cost_cannot_retain_consumed_weapon_or_horse_distance(slot,definition):
+        s=owner(True);cost=put(s,definition,'p1',ZoneType.EQUIPMENT,slot)
+        s.state.cards[cost]=replace(s.state.cards[cost],suit=Suit.HEART)
+>       s.engine.start_action(WushengUse('cost-distance','p1',cost))
+
+tests\test_t18a11_wusheng.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\sanguosha\engine\engine.py:56: in start_action
+    return self.run_until_blocked()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+src\sanguosha\engine\engine.py:97: in run_until_blocked
+    outcome = self.registry.handler_for(frame.action).step(self.state, frame)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sanguosha.engine.skills.WushengUseHandler object at 0x0000025C1CF2EF50>
+state = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='mountain_zuo...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None)
+frame = ResolutionFrame(frame_id='frame-1', action=WushengUse(action_id='cost-distance', player_id='p1', material_id='std-club...e, child_result=None, result=None, status=<FrameStatus.READY: 'ready'>, deferred_step=None, reaction_child_result=None)
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index == 0:
+            limit = self.slash_rule.usage_limit(state,action.player_id)
+            if (state.current_phase is not Phase.PLAY or state.current_player_id != action.player_id or
+                    action.material_id not in self.skills.red_slash_materials(state,action.player_id) or
+                    limit is not None and state.play_usage.count('basic.slash') >= limit):
+>               raise InvalidCardUse('��ʥ������')
+E               sanguosha.engine.card_rules.InvalidCardUse: ��ʥ������
+
+src\sanguosha\engine\skills.py:1081: InvalidCardUse
+_ test_wusheng_cost_cannot_retain_consumed_weapon_or_horse_distance[offensive_horse-equipment.horse.chitu] _
+
+slot = <EquipmentSlot.OFFENSIVE_HORSE: 'offensive_horse'>
+definition = 'equipment.horse.chitu'
+
+    @pytest.mark.parametrize('slot,definition',[(EquipmentSlot.WEAPON,'equipment.weapon.green_dragon_blade'),(EquipmentSlot.OFFENSIVE_HORSE,'equipment.horse.chitu')])
+    def test_wusheng_cost_cannot_retain_consumed_weapon_or_horse_distance(slot,definition):
+        s=owner(True);cost=put(s,definition,'p1',ZoneType.EQUIPMENT,slot)
+        s.state.cards[cost]=replace(s.state.cards[cost],suit=Suit.HEART)
+>       s.engine.start_action(WushengUse('cost-distance','p1',cost))
+
+tests\test_t18a11_wusheng.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\sanguosha\engine\engine.py:56: in start_action
+    return self.run_until_blocked()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+src\sanguosha\engine\engine.py:97: in run_until_blocked
+    outcome = self.registry.handler_for(frame.action).step(self.state, frame)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sanguosha.engine.skills.WushengUseHandler object at 0x0000025C1E043150>
+state = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='mountain_zuo...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None)
+frame = ResolutionFrame(frame_id='frame-1', action=WushengUse(action_id='cost-distance', player_id='p1', material_id='std-club...e, child_result=None, result=None, status=<FrameStatus.READY: 'ready'>, deferred_step=None, reaction_child_result=None)
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index == 0:
+            limit = self.slash_rule.usage_limit(state,action.player_id)
+            if (state.current_phase is not Phase.PLAY or state.current_player_id != action.player_id or
+                    action.material_id not in self.skills.red_slash_materials(state,action.player_id) or
+                    limit is not None and state.play_usage.count('basic.slash') >= limit):
+>               raise InvalidCardUse('��ʥ������')
+E               sanguosha.engine.card_rules.InvalidCardUse: ��ʥ������
+
+src\sanguosha\engine\skills.py:1081: InvalidCardUse
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_wusheng.py::test_red_equipment_is_a_real_wusheng_cost_for_use_and_response[False-False]
+FAILED tests/test_t18a11_wusheng.py::test_red_equipment_is_a_real_wusheng_cost_for_use_and_response[False-True]
+FAILED tests/test_t18a11_wusheng.py::test_red_equipment_is_a_real_wusheng_cost_for_use_and_response[True-False]
+FAILED tests/test_t18a11_wusheng.py::test_red_equipment_is_a_real_wusheng_cost_for_use_and_response[True-True]
+FAILED tests/test_t18a11_wusheng.py::test_wusheng_cost_cannot_retain_consumed_weapon_or_horse_distance[weapon-equipment.weapon.green_dragon_blade]
+FAILED tests/test_t18a11_wusheng.py::test_wusheng_cost_cannot_retain_consumed_weapon_or_horse_distance[offensive_horse-equipment.horse.chitu]
+6 failed in 0.38s

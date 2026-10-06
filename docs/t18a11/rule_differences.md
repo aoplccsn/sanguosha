@@ -1,0 +1,26 @@
+# T18A.11 differences
+
+基线573164f；代码修复checkpoint见final_release_audit.md。保留锁定经典版本，未升级现代规则。
+
+| ID | 武将/系统 | 当前基线行为 | 锁定规则/正确行为 | 影响 | 修复测试 | 修复commit |
+| --- | --- | --- | --- | --- | --- | --- |
+| R01 | 身份局主公误杀忠臣 | 共用死亡清理额外弃判定与特殊牌堆 | 处罚仅所有手牌及装备区牌；死者仍清全部区域 | 非法失去延时牌/权等牌堆 | test_t18a11_release.py penalty False/True | 本轮修复checkpoint |
+| R02 | 神陆逊摧克 | 杀死主公终局后继续询问追加群伤 | 终局不再开启效果窗口；来源死亡亦终止 | seed22011留下未完成请求 | test_t18a11_release.py cuike False/True | 本轮修复checkpoint |
+| R03 | 郭淮精策/阶段结束 | 出牌期间终局后仍进入阶段末精策 | 终局仅清阶段标记及结束事件，不询问新技能 | 随机合法动作留下终局request | test_t18a11_release.py jingce | 本轮修复checkpoint |
+| R04 | 左慈化身死亡清理 | 死亡后pool/active/skill仍存于快照 | 死亡技能完成后清除化身私密状态与临时技能 | 重连残留化身权限 | test_t18a11_huashen.py death | 本轮修复checkpoint |
+| I01 | Web重连座位旋转 | seatId未确认时-1索引造成重复对手节点 | fallback自位和旋转必须用相同合法索引 | 重复面板、React key冲突、移动桌错位 | GamePage.test.tsx never duplicates | 本轮修复checkpoint |
+
+| R05 | 关羽/左慈取得武圣 | 只允许红色手牌，成本区域写死手牌 | 红色手牌及装备可当杀使用/打出；耗武器/马后的距离重新计算 | 漏合法选择；需防止成本后距离错误 | test_t18a11_wusheng.py 6项 | 本轮修复checkpoint |
+| N01 | Windows Web入口 | Uvicorn0.54强制Proactor，浏览器断连回调WinError10054 | 单worker显式Selector工厂，旧Uvicorn策略兼容；非Windows默认auto | 断连产生未处理运行时异常日志 | test_t18a11_web_runtime.py 3项 + 41浏览器日志 | 本轮修复checkpoint |
+
+九项真实缺陷已复现并修复；六项规则结算/成本差异、一项死亡状态差异、一项Web交互差异、一项Windows运行时差异。未发现需要升级锁定版本的差异。独立规则审计尚未完成，不能据此声称全部差异仅九项。
+
+化身池补充规则按用户2026-10-06明确决定：103 - 12神 - 本人 = 90，减本局普通将和自己的已有化身。基线独立执行即90/90，没有65/76硬编码池问题。新测试初版213失败含夹具未注入registry，不计入产品缺陷。此次新增显式god元数据、未来registry条目测试，以及基于SkillType/特殊元数据的过滤防护，是规则明确化与防回归，不把合成未来技能用例算成现有规则bug。普通可见锁定技可化身，不套用夺锐禁借名单。
+
+布局：本地将从中央移到右下/底部；手牌12张的桌面截图重新验收。完整装备/判定独立分区与PySide视觉一致性仍未完成总验收，不作为全面布局PASS。
+
+测试夹具修正：既有WebSocket full-game smoke发送客人READY后马上跨另一连接发送START，未等待服务器确认，有时被正确拒绝“all guests must be ready”。现等待客人自身ready广播再START，不修改生产准备门禁。此项不计产品bug。
+
+| R06 | 姜维志继/左慈化身 | 目录展示的派生观星同时被识别为姜维初始拥有及化身可选 | 志继实际授予后姜维才拥有；姜维化身只直接选择挑衅，诸葛亮原生观星仍可选 | 提前发动技能、非法化身获取 | test_t18a11_huashen.py Jiangwei/future derived + 139 真实获取/重连条目 | 本轮修复checkpoint |
+
+| R07 | 铁索连环/连环重铸 | 重铸记录使用锦囊、触发集智/无谋/极略集智、计入精策并消耗巧说；弃牌原因错误；巧说/潜袭使用限制误禁重铸 | 零目标重铸独立RECAST原因，不产生CardUsed/CardResolved，不计用牌次数，仅公开重铸卡面后摸1；使用/打出限制仍允许重铸，指定目标仍禁止 | 额外摸牌/失血、次数与落英触发错误、漏合法操作 | test_t18a11_recast.py 10项 + 浏览器刷新/卡面/零集智窗口 + GamePage显示重铸 | 本轮修复checkpoint |

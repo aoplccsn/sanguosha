@@ -668,7 +668,7 @@ class MultiplayerRoom:
         from sanguosha.engine.military_tricks import TargetTrick
         fire=next((f for f in reversed(self.session.engine.stack.snapshot()) if isinstance(f.action,TargetTrick) and f.action.definition_id=='trick.fire_attack' and f.local.get('revealed_card_id')),None)
         result['public_reveal'] = dict(kind='CardRevealedEvent',event_id=fire.action.action_id+':revealed',source_id=str(fire.action.target_id),target_id=str(fire.action.source_id),cards=[self._public_card(fire.local['revealed_card_id'])],reason='fire_attack') if fire else None
-        result['public_card_history'] = [public for event in self.session.events.events[-80:] if isinstance(event,CardMovedEvent) and event.to_zone.zone_type is ZoneType.DISCARD_PILE and event.reason=='discard' or isinstance(event,Event) and event.event_type in ('card_revealed','after_judgment') if (public:=self._public_event(event)) is not None][-12:]
+        result['public_card_history'] = [public for event in self.session.events.events[-80:] if isinstance(event,CardMovedEvent) and event.to_zone.zone_type is ZoneType.DISCARD_PILE and event.reason in ('discard','recast') or isinstance(event,Event) and event.event_type in ('card_revealed','after_judgment') if (public:=self._public_event(event)) is not None][-12:]
         result['waiting'] = None
         if request is not None:
             ai = self.seats[request.player_id].controller is Controller.AI
@@ -809,12 +809,12 @@ class MultiplayerRoom:
             result.update(player_id=str(event.player_id), turn_number=event.turn_number)
         elif isinstance(event, DyingRequiredEvent):
             result.update(player_id=str(event.target_id))
-        elif isinstance(event, CardMovedEvent) and event.to_zone.zone_type is ZoneType.DISCARD_PILE and (event.reason == 'discard' or event.reason == 'system' and event.from_zone.zone_type in (ZoneType.HAND,ZoneType.EQUIPMENT,ZoneType.JUDGMENT,ZoneType.SPECIAL)):
+        elif isinstance(event, CardMovedEvent) and event.to_zone.zone_type is ZoneType.DISCARD_PILE and (event.reason in ('discard','recast') or event.reason == 'system' and event.from_zone.zone_type in (ZoneType.HAND,ZoneType.EQUIPMENT,ZoneType.JUDGMENT,ZoneType.SPECIAL)):
             # Public discard faces use anonymous IDs; hidden draws and moves stay private.
             from hashlib import sha256
             result.update(kind='DiscardEvent', event_id=sha256(event.event_id.encode()).hexdigest()[:24],
                           player_id=str(event.from_zone.player_id or event.actor_id or ''), source_id=str(event.actor_id or ''), count=len(event.card_ids),
-                          cards=[self._public_card(cid) for cid in event.card_ids if not self.session.state.metadata.get('concealed_discard_cards',{}).get(cid)] if self.session else [], reason='discard')
+                          cards=[self._public_card(cid) for cid in event.card_ids if not self.session.state.metadata.get('concealed_discard_cards',{}).get(cid)] if self.session else [], reason=event.reason if event.reason == 'recast' else 'discard')
         elif isinstance(event, Event) and event.event_type in ('card_revealed','judgment_card_revealed','judgment_card_replaced'):
             card = self.session.state.cards[event.metadata['card_id']]
             result.update(kind='CardRevealedEvent', source_id=str(event.source_id),

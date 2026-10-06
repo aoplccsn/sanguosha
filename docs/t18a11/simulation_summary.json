@@ -1,0 +1,19 @@
+{
+  "AI": {
+    "games": 100,
+    "coverage": 101,
+    "steps": 59874,
+    "snapshots": 185,
+    "timeout_fallback_checks": 56375,
+    "max_step_seconds": 0.0571
+  },
+  "random": {
+    "games": 100,
+    "coverage": 102,
+    "steps": 44244,
+    "snapshots": 125,
+    "timeout_fallback_checks": 40924,
+    "max_step_seconds": 0.028172
+  },
+  "combined_roster_coverage": 103
+}

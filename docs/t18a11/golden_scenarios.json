@@ -1,0 +1,202 @@
+[
+  {
+    "test": "tests/test_t6_military_basics.py::test_slash_variants_damage_and_share_phase_limit",
+    "scenario": "slash variants damage and share phase limit"
+  },
+  {
+    "test": "tests/test_t6_military_basics.py::test_wine_next_slash_bonus_consumed_and_phase_limit",
+    "scenario": "wine next slash bonus consumed and phase limit"
+  },
+  {
+    "test": "tests/test_t6_military_basics.py::test_wine_expires_at_finish",
+    "scenario": "wine expires at finish"
+  },
+  {
+    "test": "tests/test_t6_military_basics.py::test_slash_eight_trigrams_red_judgment_virtual_dodge",
+    "scenario": "slash eight trigrams red judgment virtual dodge"
+  },
+  {
+    "test": "tests/test_t6_military_basics.py::test_fire_chain_waits_for_peach_then_resumes_next_recipient",
+    "scenario": "fire chain waits for peach then resumes next recipient"
+  },
+  {
+    "test": "tests/test_t6_military_basics.py::test_normal_damage_does_not_propagate_or_unchain",
+    "scenario": "normal damage does not propagate or unchain"
+  },
+  {
+    "test": "tests/test_t6_military_basics.py::test_fire_slash_entire_chain_waits_for_rescue_before_next_target",
+    "scenario": "fire slash entire chain waits for rescue before next target"
+  },
+  {
+    "test": "tests/test_t6_military_basics.py::test_damage_armor_modifiers",
+    "scenario": "damage armor modifiers"
+  },
+  {
+    "test": "tests/test_t6_military_basics.py::test_qinggang_ignores_black_slash_armor",
+    "scenario": "qinggang ignores black slash armor"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_armor_slash_filters",
+    "scenario": "armor slash filters"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_fan_converts_to_fire_against_vine",
+    "scenario": "fan converts to fire against vine"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_ancient_blade_empty_hand_adds_damage",
+    "scenario": "ancient blade empty hand adds damage"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_double_sword_opponent_choice_draws_owner",
+    "scenario": "double sword opponent choice draws owner"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_ice_sword_replaces_damage_and_discards_two",
+    "scenario": "ice sword replaces damage and discards two"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_kylin_bow_discards_horse_after_damage",
+    "scenario": "kylin bow discards horse after damage"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_dodge_weapon_followup",
+    "scenario": "dodge weapon followup"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_halberd_last_card_hits_three_targets_and_consumes_wine_once",
+    "scenario": "halberd last card hits three targets and consumes wine once"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_spear_response_preserves_instance_count_and_color",
+    "scenario": "spear response preserves instance count and color"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_spear_active_uses_two_physical_costs_and_slash_counter",
+    "scenario": "spear active uses two physical costs and slash counter"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_silver_lion_loss_heals_through_equipment_replacement_reaction",
+    "scenario": "silver lion loss heals through equipment replacement reaction"
+  },
+  {
+    "test": "tests/test_t6_equipment_chains.py::test_eight_trigrams_responds_to_archery_window",
+    "scenario": "eight trigrams responds to archery window"
+  },
+  {
+    "test": "tests/test_t6_trick_chains.py::test_three_nullifications_leave_original_effect_cancelled",
+    "scenario": "three nullifications leave original effect cancelled"
+  },
+  {
+    "test": "tests/test_t6_trick_chains.py::test_duel_alternates_multiple_slash_responses_then_damage",
+    "scenario": "duel alternates multiple slash responses then damage"
+  },
+  {
+    "test": "tests/test_t6_trick_chains.py::test_savage_assault_resumes_after_dying_to_later_targets",
+    "scenario": "savage assault resumes after dying to later targets"
+  },
+  {
+    "test": "tests/test_t6_trick_chains.py::test_amazing_grace_five_real_cards_selected_from_shared_pool",
+    "scenario": "amazing grace five real cards selected from shared pool"
+  },
+  {
+    "test": "tests/test_t6_trick_chains.py::test_lightning_miss_moves_same_physical_instance_to_next_player",
+    "scenario": "lightning miss moves same physical instance to next player"
+  },
+  {
+    "test": "tests/test_t6_trick_chains.py::test_fire_attack_reveal_then_matching_suit_discard",
+    "scenario": "fire attack reveal then matching suit discard"
+  },
+  {
+    "test": "tests/test_t6_trick_chains.py::test_iron_chain_recast_draws_one_without_counter_window",
+    "scenario": "iron chain recast draws one without counter window"
+  },
+  {
+    "test": "tests/test_t6_remaining_effects.py::test_remove_real_opponent_card_to_correct_zone",
+    "scenario": "remove real opponent card to correct zone"
+  },
+  {
+    "test": "tests/test_t6_remaining_effects.py::test_ex_nihilo_draws_two_real_cards",
+    "scenario": "ex nihilo draws two real cards"
+  },
+  {
+    "test": "tests/test_t6_remaining_effects.py::test_god_salvation_heals_each_living_player_once",
+    "scenario": "god salvation heals each living player once"
+  },
+  {
+    "test": "tests/test_t6_remaining_effects.py::test_delayed_judgment_skips_actual_phase",
+    "scenario": "delayed judgment skips actual phase"
+  },
+  {
+    "test": "tests/test_t6_remaining_effects.py::test_lightning_hit_deals_three_thunder_and_discards_delayed_card",
+    "scenario": "lightning hit deals three thunder and discards delayed card"
+  },
+  {
+    "test": "tests/test_t6_remaining_effects.py::test_borrowed_sword_second_target_response_or_weapon_transfer",
+    "scenario": "borrowed sword second target response or weapon transfer"
+  },
+  {
+    "test": "tests/test_t6_remaining_effects.py::test_counter_chain_parity_changes_real_duel_effect",
+    "scenario": "counter chain parity changes real duel effect"
+  },
+  {
+    "test": "tests/test_t6_remaining_effects.py::test_wine_only_saves_its_dying_owner",
+    "scenario": "wine only saves its dying owner"
+  },
+  {
+    "test": "tests/test_t6_remaining_effects.py::test_judgment_recycles_real_discard_pile",
+    "scenario": "judgment recycles real discard pile"
+  },
+  {
+    "test": "tests/test_t6_remaining_effects.py::test_wine_expires_even_when_finish_phase_is_skipped",
+    "scenario": "wine expires even when finish phase is skipped"
+  },
+  {
+    "test": "tests/test_t18a11_release.py::test_lord_loyalist_penalty_preserves_judgment_and_special_piles",
+    "scenario": "lord loyalist penalty preserves judgment and special piles"
+  },
+  {
+    "test": "tests/test_t18a11_release.py::test_cuike_killing_lord_does_not_offer_burst_after_victory",
+    "scenario": "cuike killing lord does not offer burst after victory"
+  },
+  {
+    "test": "tests/test_t18a11_release.py::test_jingce_never_starts_a_new_phase_end_request_after_lord_death",
+    "scenario": "jingce never starts a new phase end request after lord death"
+  },
+  {
+    "test": "tests/test_t18a10_hardening.py::test_103_descriptions_are_complete_and_original",
+    "scenario": "103 descriptions are complete and original"
+  },
+  {
+    "test": "tests/test_t18a10_hardening.py::test_discard_becomes_public_only_after_move",
+    "scenario": "discard becomes public only after move"
+  },
+  {
+    "test": "tests/test_t18a10_hardening.py::test_fire_attack_reveal_snapshot_and_result",
+    "scenario": "fire attack reveal snapshot and result"
+  },
+  {
+    "test": "tests/test_t18a10_hardening.py::test_root_skip_scope",
+    "scenario": "root skip scope"
+  },
+  {
+    "test": "tests/test_t18a10_hardening.py::test_short_disconnect_and_token_takeover",
+    "scenario": "short disconnect and token takeover"
+  },
+  {
+    "test": "tests/test_t18a10_hardening.py::test_public_discard_reaches_every_viewer_and_reconnect_history",
+    "scenario": "public discard reaches every viewer and reconnect history"
+  },
+  {
+    "test": "tests/test_t18a10_hardening.py::test_grace_takeover_really_resolves_pending_then_token_returns",
+    "scenario": "grace takeover really resolves pending then token returns"
+  },
+  {
+    "test": "tests/test_t18a10_hardening.py::test_tcp_server_close_releases_connected_clients",
+    "scenario": "tcp server close releases connected clients"
+  },
+  {
+    "test": "tests/test_t17c_request_privacy.py::test_chengxiang_public_candidates_have_rank_labels_and_restore",
+    "scenario": "chengxiang public candidates have rank labels and restore"
+  }
+]

@@ -592,6 +592,11 @@ class MainWindow(QMainWindow):
                 source = next((p.name for p in view.players if p.player_id == event.from_zone.player_id), "玩家")
                 target = next((p.name for p in view.players if p.player_id == event.to_zone.player_id), "玩家")
                 self.table.play_public_event(f"判定牌转移 · {source} → {target}", str(definition_id))
+            elif (isinstance(event, CardMovedEvent) and event.reason == "recast"
+                  and event.to_zone.zone_type is ZoneType.DISCARD_PILE):
+                for cid in event.card_ids:
+                    definition_id = session.state.cards[cid].definition_id
+                    self.table.play_public_event("重铸", str(definition_id))
             elif isinstance(event, CardMovedEvent) and event.reason == "discard":
                 self.table.play_public_event(f"弃置 {len(event.card_ids)} 张牌", "card_back")
             if getattr(event, "event_type", None) == "judgment_result":

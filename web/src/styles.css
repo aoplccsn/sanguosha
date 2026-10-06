@@ -941,3 +941,16 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .public-card-history { pointer-events:auto; }
 .recent-actions .public-card-history div { display:block;width:100%;max-width:none;white-space:normal; }
 .public-card-history[open] { background:#1d201bea;padding:5px;max-height:180px;overflow:auto; }
+
+/* T18A.11: local controls stay at the bottom; the center is event space. */
+@media(min-width:721px) {
+ .game-board .self-area { height:220px; }
+ .game-board .player-self { left:auto;right:0;bottom:0;transform:none;width:150px;height:210px; }
+ .game-board .self-area .hand { left:0;right:170px;bottom:0;justify-content:flex-start; }
+ .game-board .self-area .skill-bar { left:0;bottom:155px;max-width:calc(100% - 170px); }
+ .game-board .self-area .decision-prompt { left:0;right:170px;bottom:205px;width:auto;max-width:none;min-width:0; }
+ .game-board .view-as-materials { bottom:185px; }
+}
+@media(max-width:720px) {
+ .game-board .self-area .player-self { grid-column:3; }
+}

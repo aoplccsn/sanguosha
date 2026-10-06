@@ -33,6 +33,8 @@ def describe_event(event: object, state: GameState, definitions: CardDefinitionR
     if isinstance(event, CardMovedEvent):
         if event.to_zone.zone_type is ZoneType.HAND and event.from_zone.zone_type is ZoneType.DRAW_PILE:
             return f"{name(event.to_zone.player_id)} 摸了 {len(event.card_ids)} 张牌。"
+        if event.reason == "recast" and event.to_zone.zone_type is ZoneType.DISCARD_PILE:
+            return f"{name(event.actor_id)} 重铸了 {len(event.card_ids)} 张牌。"
         if event.reason == "discard" or "cleanup" in event.event_id:
             return f"{name(event.actor_id)} 弃置了 {len(event.card_ids)} 张牌。"
     if isinstance(event, CardUsedEvent):

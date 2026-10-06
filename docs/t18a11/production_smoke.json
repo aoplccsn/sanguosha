@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "production_config_validation": true,
+  "fastapi_static_bundle": true,
+  "portraits": 103,
+  "card_art": 43,
+  "deployment": "NOT_PERFORMED"
+}

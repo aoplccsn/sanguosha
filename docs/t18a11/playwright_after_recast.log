@@ -1,0 +1,50 @@
+
+Running 42 tests using 1 worker
+
+
+
+(node:9144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/42] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-five 1440
+[2/42] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-five 390
+[3/42] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-five 430
+[4/42] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-eight 1440
+[5/42] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-eight 390
+[6/42] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-eight 430
+[7/42] [edge] › e2e\t18a11-audit.spec.ts:34:1 › real acquired Qixi cancellation then normal Peach
+[8/42] [edge] › e2e\t18a11-audit.spec.ts:40:44 › AI reveal and suit flow fire
+[9/42] [edge] › e2e\t18a11-audit.spec.ts:40:44 › AI reveal and suit flow fire_none
+[10/42] [edge] › e2e\t18a11-audit.spec.ts:47:1 › dismantlement hides hand until public discard
+[11/42] [edge] › e2e\t18a11-audit.spec.ts:50:1 › three discarded cards share one public presentation
+[12/42] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction savage
+[13/42] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction archery
+[14/42] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction counter_single
+[15/42] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction counter_group
+[16/42] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction harvest
+[17/42] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction takeover
+[18/42] [edge] › e2e\t18a11-audit.spec.ts:61:1 › 103 GeneralDetail descriptions and two missing generals
+[19/42] [edge] › e2e\t18a11-audit.spec.ts:73:54 › bottom controls 12 cards equipment and judgment military-five
+[20/42] [edge] › e2e\t18a11-audit.spec.ts:73:54 › bottom controls 12 cards equipment and judgment military-eight
+[21/42] [edge] › e2e\t18a11-audit.spec.ts:81:1 › snatch keeps hidden choice secret through refresh
+[22/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41000
+[23/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41001
+[24/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41002
+[25/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41003
+[26/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41004
+[27/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41005
+[28/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41006
+[29/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41007
+[30/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41008
+[31/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41009
+[32/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41000
+[33/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41001
+[34/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41002
+[35/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41003
+[36/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41004
+[37/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41005
+[38/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41006
+[39/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41007
+[40/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41008
+[41/42] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41009
+[42/42] [edge] › e2e\t18a11-audit.spec.ts:105:1 › real Iron Chain recast survives reconnect and skips Jizhi
+  42 passed (43.6s)

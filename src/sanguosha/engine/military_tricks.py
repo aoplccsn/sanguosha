@@ -163,7 +163,7 @@ class TrickHandler:
             if d == 'trick.iron_chain' and not a.targets:
                 # Recast is not a trick effect and has no counter window.
                 self.moves.move(state,CardMove(a.action_id+':recast',(a.card_id,),ZoneRef(ZoneType.PROCESSING),
-                    ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,a.source_id))
+                    ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.RECAST,a.source_id))
                 return StepResult.complete(self.deck.draw(state,a.source_id,1,a.action_id+':draw'))
             order=state.seat_order[state.seat_order.index(a.source_id):]+state.seat_order[:state.seat_order.index(a.source_id)]
             targets=a.targets

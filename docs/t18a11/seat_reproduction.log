@@ -1,0 +1,70 @@
+
+ RUN  v3.2.7 C:/Sanguosha/web
+
+stderr | src/components/GamePage.test.tsx > never duplicates opponents while reconnect seat confirmation is pending
+Encountered two children with the same key, `p2`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+Encountered two children with the same key, `p3`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+Encountered two children with the same key, `p4`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ ❯ src/components/GamePage.test.tsx (31 tests | 1 failed | 30 skipped) 52ms
+   ↓ GamePage > acquired Qixi deselect, cancel and normal play are independent contexts
+   ↓ GamePage > renders abolished equipment slots from authoritative projection
+   ↓ GamePage > renders private Zongxuan cards and submits the selected top-placement order
+   ↓ GamePage > shows public counter cards in the Xiansi modal and requires exactly two
+   ↓ GamePage > shows authorized Poxi hand faces and rejects four cards with duplicate suits
+   ↓ GamePage > permits declining Fencheng but rejects undersized nonempty card selections
+   ↓ GamePage > binds a public remote response timer to one seat and restores its server remaining fraction
+   ↓ GamePage > highlights only the real decision actor while thinking and clears for a human request
+   ↓ GamePage > names the actor and highlights action/target for { event_id: 'slash', kind: 'CardUsedEvent', source_id: 'p1', target_ids: [ 'p2' ], card_name: '杀' }
+   ↓ GamePage > names the actor and highlights action/target for { event_id: 'dodge', kind: 'CardRespondedEvent', source_id: 'p2', definition_id: 'basic.dodge' }
+   ↓ GamePage > names the actor and highlights action/target for { event_id: 'skill', kind: 'SkillEvent', source_id: 'p1', skill_name: '奸雄' }
+   ↓ GamePage > selects a Slash target and submits card plus target with one final confirm
+   ↓ GamePage > confirms equipment without requesting a character target
+   ↓ GamePage > shows Chinese labels for Yinghun branches while preserving machine values
+   ↓ GamePage > maps shared portrait state for turn, target, response and chain feedback
+   ↓ GamePage > renders the five-player table, hand and skill bar
+   ↓ GamePage > shows Mountain field and private transformation state
+   ↓ GamePage > shows power pile count without exposing hidden card faces
+   ↓ GamePage > requires confirm after selecting a response card
+   ↓ GamePage > offers Guhuo in a response window and submits the virtual choice
+   ↓ GamePage > submits Jiuchi wine from a hand card during self rescue
+   ↓ GamePage > lets a physical response replace a previously selected Guhuo option
+   ↓ GamePage > labels the two challenge decisions
+   ↓ GamePage > selects a target before submitting it
+   ↓ ResultOverlay > returns to home from the result screen
+   ↓ ResultOverlay > shows defeat when the server winning side differs from the player identity
+   ↓ T15 dynamic target interaction > selects immediately on the first portrait click with multiple dynamic panels
+   ↓ T18A.7 response semantics > keeps turn phase and binds response description, thinking and countdown to one seat
+   ↓ T18A.7 response semantics > submits distinct current-request and root-trick commands
+   ↓ renders the authoritative AOE targets, root trick and top counter without a second stack UI
+   × never duplicates opponents while reconnect seat confirmation is pending 51ms
+     → expected [ 'p2', 'p3', 'p4', 'p5', 'p2', …(2) ] to have a length of 4 but got 7
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/GamePage.test.tsx > never duplicates opponents while reconnect seat confirmation is pending
+AssertionError: expected [ 'p2', 'p3', 'p4', 'p5', 'p2', …(2) ] to have a length of 4 but got 7
+
+- Expected
++ Received
+
+- 4
++ 7
+
+ ❯ src/components/GamePage.test.tsx:398:14
+    396|  const view=render(<GamePage />)
+    397|  const ids=Array.from(view.container.querySelectorAll('.game-board > .…
+    398|  expect(ids).toHaveLength(players.length-1)
+       |              ^
+    399|  expect(new Set(ids).size).toBe(ids.length)
+    400|  seatId='p1';view.rerender(<GamePage />)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 30 skipped (31)
+   Start at  15:45:53
+   Duration  1.11s (transform 187ms, setup 129ms, collect 274ms, tests 52ms, environment 414ms, prepare 80ms)
+

@@ -1,0 +1,66 @@
+..FF                                                                     [100%]
+================================== FAILURES ===================================
+______ test_cuike_killing_lord_does_not_offer_burst_after_victory[False] ______
+
+reconnect = False
+
+    @pytest.mark.parametrize("reconnect", [False, True])
+    def test_cuike_killing_lord_does_not_offer_burst_after_victory(reconnect):
+        from test_t17c_god_luxun import luxun
+        from sanguosha.engine.remaining_gods import RemainingGodAction
+        from sanguosha.engine.requests import Decision, PASS_RESPONSE
+        from sanguosha.model.state import GameStatus
+        s=luxun()
+        s.state.players['p1'].identity=Identity.REBEL
+        s.state.players['p2'].identity=Identity.LORD
+        s.state.players['p2'].hp=1
+        s.state.players['p1'].marks['junlve']=7
+        s.engine.start_action(RemainingGodAction('kill-lord','p1','cuike'))
+        for value in (True,'p2'):
+            r=s.engine.pending_request
+            s.engine.submit_decision(Decision(r.request_id,r.player_id,value))
+        if reconnect:s=restore_session(snapshot_session(s))
+        while s.engine.pending_request and s.state.status is not GameStatus.FINISHED:
+            r=s.engine.pending_request
+            s.engine.submit_decision(Decision(r.request_id,r.player_id,PASS_RESPONSE))
+        assert s.state.status is GameStatus.FINISHED
+>       assert s.engine.pending_request is None
+E       AssertionError: assert PendingRequest(request_id='kill-lord:request:5:0', player_id='p1', request_type=<RequestType.YES_NO: 'yes_no'>, prompt..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E        +  where PendingRequest(request_id='kill-lord:request:5:0', player_id='p1', request_type=<RequestType.YES_NO: 'yes_no'>, prompt..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000027372818640>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x0000027372818640> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000027372818640>, events=<sanguosha.engine.events....E40>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x00000273725DF230>).engine
+
+tests\test_t18a11_release.py:50: AssertionError
+______ test_cuike_killing_lord_does_not_offer_burst_after_victory[True] _______
+
+reconnect = True
+
+    @pytest.mark.parametrize("reconnect", [False, True])
+    def test_cuike_killing_lord_does_not_offer_burst_after_victory(reconnect):
+        from test_t17c_god_luxun import luxun
+        from sanguosha.engine.remaining_gods import RemainingGodAction
+        from sanguosha.engine.requests import Decision, PASS_RESPONSE
+        from sanguosha.model.state import GameStatus
+        s=luxun()
+        s.state.players['p1'].identity=Identity.REBEL
+        s.state.players['p2'].identity=Identity.LORD
+        s.state.players['p2'].hp=1
+        s.state.players['p1'].marks['junlve']=7
+        s.engine.start_action(RemainingGodAction('kill-lord','p1','cuike'))
+        for value in (True,'p2'):
+            r=s.engine.pending_request
+            s.engine.submit_decision(Decision(r.request_id,r.player_id,value))
+        if reconnect:s=restore_session(snapshot_session(s))
+        while s.engine.pending_request and s.state.status is not GameStatus.FINISHED:
+            r=s.engine.pending_request
+            s.engine.submit_decision(Decision(r.request_id,r.player_id,PASS_RESPONSE))
+        assert s.state.status is GameStatus.FINISHED
+>       assert s.engine.pending_request is None
+E       AssertionError: assert PendingRequest(request_id='kill-lord:request:5:0', player_id='p1', request_type=<RequestType.YES_NO: 'yes_no'>, prompt..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E        +  where PendingRequest(request_id='kill-lord:request:5:0', player_id='p1', request_type=<RequestType.YES_NO: 'yes_no'>, prompt..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x000002737287D6D0>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x000002737287D6D0> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000002737287D6D0>, events=<sanguosha.engine.events....D90>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000002737287C5F0>).engine
+
+tests\test_t18a11_release.py:50: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_release.py::test_cuike_killing_lord_does_not_offer_burst_after_victory[False]
+FAILED tests/test_t18a11_release.py::test_cuike_killing_lord_does_not_offer_burst_after_victory[True]
+2 failed, 2 passed in 0.30s

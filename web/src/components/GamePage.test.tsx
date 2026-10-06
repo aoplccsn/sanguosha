@@ -7,6 +7,7 @@ vi.mock('../idlePortraits', () => ({ idlePortrait: (id: string) => id.includes('
 
 const submitDecision = vi.fn()
 const returnHome = vi.fn()
+let seatId = 'p1'
 let request: any
 let waiting: any = undefined
 let combat: any = undefined
@@ -23,7 +24,7 @@ const players = [
 vi.mock('../state/GameContext', () => ({
   useGame: () => ({
     state: {
-      seatId: 'p1',
+      seatId,
       connection: 'connected',
       decisionProcessing: null,
       projection: { waiting, combat, players, hand: [card, ...extraCards], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
@@ -38,6 +39,12 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
+  it('labels a recast face as 重铸 in the public presentation', () => {
+    publicEvents=[{kind:'DiscardEvent',event_id:'recast-public',player_id:'p1',reason:'recast',cards:[{...card,name:'铁索连环',definition_id:'trick.iron_chain'}]}]
+    render(<GamePage />)
+    expect(screen.getByText(/重铸：/)).toBeInTheDocument()
+    expect(screen.queryByText(/弃置：/)).not.toBeInTheDocument()
+  })
   it('acquired Qixi deselect, cancel and normal play are independent contexts', async()=>{
     const original={character_id:players[0].character_id,skill_labels:players[0].skill_labels}
     players[0].character_id='mountain_zuoci';players[0].skill_labels=['化身','奇袭']
@@ -388,4 +395,13 @@ it('renders the authoritative AOE targets, root trick and top counter without a 
   expect(container.querySelector('.response-card img')).toHaveAttribute('alt','无懈可击')
   expect(container.querySelector('.nullification-status')).toHaveTextContent('无懈×2 · 当前锦囊有效')
   combat=undefined;waiting=undefined
+})
+
+it('never duplicates opponents while reconnect seat confirmation is pending',()=>{
+ seatId='unconfirmed-seat'
+ const view=render(<GamePage />)
+ const ids=Array.from(view.container.querySelectorAll('.game-board > .player-panel')).map(n=>n.getAttribute('data-player-id'))
+ expect(ids).toHaveLength(players.length-1)
+ expect(new Set(ids).size).toBe(ids.length)
+ seatId='p1';view.rerender(<GamePage />)
 })

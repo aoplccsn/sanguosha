@@ -1,0 +1,25 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_huashen_death_clears_private_forms_and_active_skill_after_death_triggers _
+
+    def test_huashen_death_clears_private_forms_and_active_skill_after_death_triggers():
+        from test_t17c_first_batch import setup
+        from sanguosha.engine.death import DeathAction
+        from sanguosha.model.enums import Identity
+        from sanguosha.engine.requests import Decision
+        s=setup('cao_zhang')
+        p=s.state.players['p1'];p.character_id='mountain_zuoci';p.identity=Identity.REBEL
+        s.state.players['p2'].identity=Identity.LORD
+        p.transformation_pool=['ganning'];p.active_transformation='ganning';p.transformation_skill='qixi'
+        s.engine.start_action(DeathAction('zuoci-death','p1',None))
+        while s.engine.pending_request:
+            r=s.engine.pending_request;s.engine.submit_decision(Decision(r.request_id,r.player_id,r.timeout_value()))
+        s=restore_session(snapshot_session(s));p=s.state.players['p1']
+>       assert not p.transformation_pool and p.active_transformation is None and p.transformation_skill is None
+E       AssertionError: assert (not ['ganning'])
+E        +  where ['ganning'] = PlayerState(player_id='p1', seat=0, character_id='mountain_zuoci', identity=<Identity.REBEL: 'rebel'>, hp=4, max_hp=4,...d_equipment_slots=set(), transformation_pool=['ganning'], active_transformation='ganning', transformation_skill='qixi').transformation_pool
+
+tests\test_t18a11_huashen.py:95: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_huashen.py::test_huashen_death_clears_private_forms_and_active_skill_after_death_triggers
+1 failed, 340 deselected in 0.31s

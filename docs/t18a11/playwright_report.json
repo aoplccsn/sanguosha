@@ -1,0 +1,1766 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Sanguosha\\web\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config=playwright.t18a11.config.ts"
+    ],
+    "configFile": "C:\\Sanguosha\\web\\playwright.t18a11.config.ts",
+    "rootDir": "C:/Sanguosha/web/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Sanguosha/web/test-results/t18a11",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "edge",
+        "name": "edge",
+        "testDir": "C:/Sanguosha/web/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "t18a11-audit.spec.ts"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "line",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../docs/t18a11/playwright_report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "t18a11-audit.spec.ts",
+      "file": "t18a11-audit.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "seat order and nonoverlap military-five 1440",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1037,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:52:56.290Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-8b0db701ffec00cdb7df",
+          "file": "t18a11-audit.spec.ts",
+          "line": 23,
+          "column": 2
+        },
+        {
+          "title": "seat order and nonoverlap military-five 390",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 502,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:52:57.546Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-27c8aee05fe7050b5bfa",
+          "file": "t18a11-audit.spec.ts",
+          "line": 23,
+          "column": 2
+        },
+        {
+          "title": "seat order and nonoverlap military-five 430",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 507,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:52:58.055Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-ef5181777be75ae59049",
+          "file": "t18a11-audit.spec.ts",
+          "line": 23,
+          "column": 2
+        },
+        {
+          "title": "seat order and nonoverlap military-eight 1440",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 726,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:52:58.568Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-7aa91d1b1ecc9694e960",
+          "file": "t18a11-audit.spec.ts",
+          "line": 23,
+          "column": 2
+        },
+        {
+          "title": "seat order and nonoverlap military-eight 390",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 546,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:52:59.303Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-3821587746276aa5cf4f",
+          "file": "t18a11-audit.spec.ts",
+          "line": 23,
+          "column": 2
+        },
+        {
+          "title": "seat order and nonoverlap military-eight 430",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 561,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:52:59.856Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-bd17be367d72f9522864",
+          "file": "t18a11-audit.spec.ts",
+          "line": 23,
+          "column": 2
+        },
+        {
+          "title": "real acquired Qixi cancellation then normal Peach",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 882,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:00.423Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-7876e3d7fa1294afa4e1",
+          "file": "t18a11-audit.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "AI reveal and suit flow fire",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 718,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:01.312Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-9a69d178343c424fa616",
+          "file": "t18a11-audit.spec.ts",
+          "line": 40,
+          "column": 44
+        },
+        {
+          "title": "AI reveal and suit flow fire_none",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3952,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:02.038Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-551a3126f967d784420d",
+          "file": "t18a11-audit.spec.ts",
+          "line": 40,
+          "column": 44
+        },
+        {
+          "title": "dismantlement hides hand until public discard",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 701,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:06.001Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-8fdebee8c5d955ce1df3",
+          "file": "t18a11-audit.spec.ts",
+          "line": 47,
+          "column": 1
+        },
+        {
+          "title": "three discarded cards share one public presentation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 574,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:06.708Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-19d1cdd26c74e85c4371",
+          "file": "t18a11-audit.spec.ts",
+          "line": 50,
+          "column": 1
+        },
+        {
+          "title": "interaction savage",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 516,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:07.288Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-d6435e9af4eba96bf6c2",
+          "file": "t18a11-audit.spec.ts",
+          "line": 53,
+          "column": 98
+        },
+        {
+          "title": "interaction archery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 511,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:07.810Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-78b3e62e8427b0b02d7b",
+          "file": "t18a11-audit.spec.ts",
+          "line": 53,
+          "column": 98
+        },
+        {
+          "title": "interaction counter_single",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 496,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:08.327Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-d7f19680417e9991d0b7",
+          "file": "t18a11-audit.spec.ts",
+          "line": 53,
+          "column": 98
+        },
+        {
+          "title": "interaction counter_group",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 518,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:08.829Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-8852198a632e4e561ad4",
+          "file": "t18a11-audit.spec.ts",
+          "line": 53,
+          "column": 98
+        },
+        {
+          "title": "interaction harvest",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 502,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:09.354Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-75a754b7832b16cd823a",
+          "file": "t18a11-audit.spec.ts",
+          "line": 53,
+          "column": 98
+        },
+        {
+          "title": "interaction takeover",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 499,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:09.860Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-63d9c747f8cbcba7459e",
+          "file": "t18a11-audit.spec.ts",
+          "line": 53,
+          "column": 98
+        },
+        {
+          "title": "103 GeneralDetail descriptions and two missing generals",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13308,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:10.366Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-ed70c378966081c6b40e",
+          "file": "t18a11-audit.spec.ts",
+          "line": 61,
+          "column": 1
+        },
+        {
+          "title": "bottom controls 12 cards equipment and judgment military-five",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 703,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:23.681Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-e9f8daf77c3b44a7dbce",
+          "file": "t18a11-audit.spec.ts",
+          "line": 73,
+          "column": 54
+        },
+        {
+          "title": "bottom controls 12 cards equipment and judgment military-eight",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 728,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:24.390Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-f450488146891ccdf06c",
+          "file": "t18a11-audit.spec.ts",
+          "line": 73,
+          "column": 54
+        },
+        {
+          "title": "snatch keeps hidden choice secret through refresh",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 801,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:25.124Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-93c667e0821f0c026b22",
+          "file": "t18a11-audit.spec.ts",
+          "line": 81,
+          "column": 1
+        },
+        {
+          "title": "formal room draft military-five seed 41000",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 522,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:25.932Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-ded8d32d8107d255127f",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-five seed 41001",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 601,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:26.460Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-bfc7e10274222b711a0f",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-five seed 41002",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 640,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:27.067Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-ca0d5e36f8c39d03c74f",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-five seed 41003",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 580,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:27.715Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-3e720eae550a9740fcd7",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-five seed 41004",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 572,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:28.301Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-5fefebecf68c5dc33494",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-five seed 41005",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 551,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:28.879Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-581b5df3d86a2b099e3e",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-five seed 41006",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 703,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:29.435Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-b0e65e629cb3ce0f1298",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-five seed 41007",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 554,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:30.145Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-d0bf36371ae2cf40306e",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-five seed 41008",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 558,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:30.705Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-7bbadd288a8590efb9af",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-five seed 41009",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 604,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:31.269Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-6a1c461ed8d420a4789f",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-eight seed 41000",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 572,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:31.878Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-bc66aa1ebe814ff55352",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-eight seed 41001",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 664,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:32.456Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-d356aab93eb5cc5826cf",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-eight seed 41002",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 893,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:33.126Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-0248a81fa01ff2958a47",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-eight seed 41003",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 603,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:34.025Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-f651bced5c065c0314f9",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-eight seed 41004",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 550,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:34.636Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-666acd22f060d0535a54",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-eight seed 41005",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 616,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:35.197Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-d2b2093a1e471ac227a6",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-eight seed 41006",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 577,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:35.821Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-b8ecc3ca783841479325",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-eight seed 41007",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 589,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:36.408Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-6d0a800699cdaddac29e",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-eight seed 41008",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 562,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:37.005Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-a9bec45f2df3f892a752",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "formal room draft military-eight seed 41009",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 591,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:37.573Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-2fb0ddf2b9602bd4c55e",
+          "file": "t18a11-audit.spec.ts",
+          "line": 90,
+          "column": 75
+        },
+        {
+          "title": "real Iron Chain recast survives reconnect and skips Jizhi",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "edge",
+              "projectName": "edge",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 792,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T09:53:38.170Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-errors",
+                      "contentType": "application/json",
+                      "body": "W10="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "33b2bfcf40671244fc59-32d4470e5ff29d640a5a",
+          "file": "t18a11-audit.spec.ts",
+          "line": 105,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-06T09:52:55.857Z",
+    "duration": 43567.757999999994,
+    "expected": 42,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

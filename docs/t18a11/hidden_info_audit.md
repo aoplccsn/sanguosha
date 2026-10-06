@@ -1,0 +1,9 @@
+# T18A.11 hidden information audit — bounded evidence
+
+本次209项回归：103个正式武将×5/8人初始正式配置，对非观察者的隐藏手牌、牌堆、神诸葛亮星牌与committed区域扰动牌面、花色、点数、实体ID及顺序，同时交换未公开身份；MultiplayerRoom._named_projection完整JSON逐字保持不变。左慈未激活池替换后观察者载荷也不变。隐藏摸牌、获得、私密存牌事件不产生公开载荷。
+
+实际序列化路径：room._sync/_send_current按viewer调用Projection；PENDING_REQUEST只给owner；背面选择alias在_request_payload替换eligible/legal sets/choice labels，并在_submit还原；私看手牌只由can_view_hand在对应技能有效及grant期间授权。化身795专项逐项获取/切换/reconnect测试；本次报告只闭环基础状态与化身权限，未声称所有技能中途状态、拒绝消息、日志/重放和所有资源侧信道完成审计。
+
+权牌公开遵循T17C test_quan_public_faces_match_owner_and_preserve_count及后续验收；当前权区不能按早期Q07风险记录误改为隐藏。田、不屈、醇、陷嗣逆牌属于公开区；星和committed牌背对非所有者隐藏。公开可见牌可含公开实体ID，本测试仅要求隐藏区域ID不泄漏。
+
+状态：基础103将×2模式载荷PASS；全技能动态隐藏信息总审计BLOCKED。

@@ -417,10 +417,12 @@ class FireViewAsTrickHandler:
                 effective_color(state, action.material_id, player_id))
             self.moves.move(state, CardMove(action.action_id + ':processing',
                 (action.material_id,), ZoneRef(ZoneType.HAND, player_id),
-                ZoneRef(ZoneType.PROCESSING), CardMoveReason.USE, player_id, action.action_id))
-            state.play_usage.record(definition)
-            self.events.record(CardUsedEvent(action.action_id + ':used', player_id,
-                action.material_id, targets, virtual.definition_id))
+                ZoneRef(ZoneType.PROCESSING),
+                CardMoveReason.RECAST if not targets else CardMoveReason.USE, player_id, action.action_id))
+            if targets:
+                state.play_usage.record(definition)
+                self.events.record(CardUsedEvent(action.action_id + ':used', player_id,
+                    action.material_id, targets, virtual.definition_id))
             frame.step_index = 2
             return StepResult.push(TrickAction(action.action_id + ':trick', player_id,
                 action.material_id, definition, targets))

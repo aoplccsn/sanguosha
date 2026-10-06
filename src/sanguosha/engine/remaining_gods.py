@@ -226,6 +226,8 @@ class RemainingGodHandler(YJSkillHandler):
 
     def cuike(self,state,f):
         a=f.action;pid=a.player_id
+        if state.status.value == "finished" or not state.players[pid].is_alive:
+            return StepResult.complete()
         if f.step_index==0:
             f.step_index=1
             return self.ask(f,RequestType.YES_NO,'【摧克】是否对一名角色造成伤害，或横置并弃牌？')

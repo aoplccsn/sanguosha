@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from sanguosha.model.enums import CardCategory, Identity, Kingdom, Phase, Suit
+from sanguosha.model.enums import CardCategory, Identity, Kingdom, Phase, Suit, SkillType
 from sanguosha.model.zones import ZoneRef, ZoneType
 
 from .actions import Action, StepResult
@@ -683,22 +683,24 @@ class GuzhengHandler:
 def transformable_skills(skills, general_id):
     general = skills.characters[general_id]
     return tuple(skill_id for skill_id in general.skill_ids
-                 if skill_id in skills.skills
-                 and skills.skills[skill_id].skill_type.value != 'limited'
+                 if skill_id not in general.metadata.get('derived_skills', ())
+                 and skill_id in skills.skills
+                 and skills.skills[skill_id].skill_type not in (SkillType.LIMITED, SkillType.AWAKENING)
                  and not any(skills.skills[skill_id].metadata.get(flag)
-                             for flag in ('lord', 'limited', 'awakening'))
+                             for flag in ('lord', 'limited', 'awakening', 'hidden', 'hidden_skill',
+                                          'special', 'attached_lord'))
                  and skills.skills[skill_id].metadata.get('transferable') is not False)
 
 
 def draw_transformations(state, player_id, count, skills, rng):
     in_play = {player.character_id for player in state.players.values()}
-    held = {general_id for player in state.players.values()
-            for general_id in player.transformation_pool}
+    held = set(state.players[player_id].transformation_pool)
     eligible = [general.id for general in skills.characters.values()
                 if general.id not in in_play and general.id not in held
-                and general.metadata.get('playable', False)
-                and '_god_' not in general.id
-                and transformable_skills(skills, general.id)]
+                and general.metadata.get('playable', True)
+                and general.id != 'mountain_zuoci'
+                and not general.metadata.get('god', False)
+                and not general.metadata.get('development_only', False)]
     selected = []
     for _ in range(min(count, len(eligible))):
         general_id = rng.choice(eligible)

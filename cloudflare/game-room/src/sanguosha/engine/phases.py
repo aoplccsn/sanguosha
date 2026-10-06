@@ -152,6 +152,15 @@ class PhaseActionHandler:
             frame.step_index = 1
             return StepResult.continue_()
         if frame.step_index == 4:
+            # End the phase without opening fresh skill windows after victory.
+            if state.status is GameStatus.FINISHED:
+                if not frame.local.get('phase_end_recorded'):
+                    if action.phase is Phase.PLAY:
+                        state.players[action.player_id].marks.pop('longnu_form', None)
+                    self.recorder.record(PhaseEndedEvent(f"{action.action_id}:end", action.player_id, action.phase))
+                    state.current_phase = None
+                    frame.local['phase_end_recorded'] = True
+                return StepResult.complete()
             if (action.phase is Phase.DRAW and self.skills is not None
                     and not frame.local.get('juejing_drawn')
                     and self.skills.has(state, action.player_id, 'juejing')

@@ -1,0 +1,64 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+___ test_lord_loyalist_penalty_preserves_judgment_and_special_piles[False] ____
+
+reconnect = False
+
+    @pytest.mark.parametrize("reconnect", [False, True])
+    def test_lord_loyalist_penalty_preserves_judgment_and_special_piles(reconnect):
+        s = game()
+        s.state.players['p1'].identity = Identity.LORD
+        s.state.players['p2'].identity = Identity.LOYALIST
+        weapon = put(s, 'equipment.weapon.crossbow', 'p1', ZoneType.EQUIPMENT, EquipmentSlot.WEAPON)
+        delayed = put(s, 'trick.indulgence', 'p1', ZoneType.JUDGMENT)
+        special = put(s, 'basic.slash')
+        pile = ZoneRef(ZoneType.SPECIAL, 'p1', special_key='audit-private')
+        CardMoveService(s.events).move(s.state, CardMove('pile', (special,), ZoneRef(ZoneType.HAND, 'p1'), pile, CardMoveReason.SYSTEM))
+        if reconnect:
+            s = restore_session(snapshot_session(s))
+        s.engine.start_action(DeathAction('penalty', 'p2', 'p1'))
+        resolve(s)
+        assert not s.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
+        assert weapon in s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+>       assert delayed in s.state.cards_in(ZoneRef(ZoneType.JUDGMENT, 'p1'))
+E       AssertionError: assert 'std-heart-08-1' in ()
+E        +  where () = cards_in(ZoneRef(zone_type=<ZoneType.JUDGMENT: 'judgment'>, player_id='p1', equipment_slot=None, special_key=None))
+E        +    where cards_in = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='blank-1', id...turn_number=1, counts={}), revealed_identities={'p2', 'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None).cards_in
+E        +      where GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='blank-1', id...turn_number=1, counts={}), revealed_identities={'p2', 'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000013F3374B380>, events=<sanguosha.engine.events....None, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000013F33749E80>).state
+E        +    and   ZoneRef(zone_type=<ZoneType.JUDGMENT: 'judgment'>, player_id='p1', equipment_slot=None, special_key=None) = ZoneRef(<ZoneType.JUDGMENT: 'judgment'>, 'p1')
+E        +      where <ZoneType.JUDGMENT: 'judgment'> = ZoneType.JUDGMENT
+
+tests\test_t18a11_release.py:26: AssertionError
+____ test_lord_loyalist_penalty_preserves_judgment_and_special_piles[True] ____
+
+reconnect = True
+
+    @pytest.mark.parametrize("reconnect", [False, True])
+    def test_lord_loyalist_penalty_preserves_judgment_and_special_piles(reconnect):
+        s = game()
+        s.state.players['p1'].identity = Identity.LORD
+        s.state.players['p2'].identity = Identity.LOYALIST
+        weapon = put(s, 'equipment.weapon.crossbow', 'p1', ZoneType.EQUIPMENT, EquipmentSlot.WEAPON)
+        delayed = put(s, 'trick.indulgence', 'p1', ZoneType.JUDGMENT)
+        special = put(s, 'basic.slash')
+        pile = ZoneRef(ZoneType.SPECIAL, 'p1', special_key='audit-private')
+        CardMoveService(s.events).move(s.state, CardMove('pile', (special,), ZoneRef(ZoneType.HAND, 'p1'), pile, CardMoveReason.SYSTEM))
+        if reconnect:
+            s = restore_session(snapshot_session(s))
+        s.engine.start_action(DeathAction('penalty', 'p2', 'p1'))
+        resolve(s)
+        assert not s.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
+        assert weapon in s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+>       assert delayed in s.state.cards_in(ZoneRef(ZoneType.JUDGMENT, 'p1'))
+E       AssertionError: assert 'std-heart-08-1' in ()
+E        +  where () = cards_in(ZoneRef(zone_type=<ZoneType.JUDGMENT: 'judgment'>, player_id='p1', equipment_slot=None, special_key=None))
+E        +    where cards_in = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='blank-1', id...turn_number=1, counts={}), revealed_identities={'p2', 'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None).cards_in
+E        +      where GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='blank-1', id...turn_number=1, counts={}), revealed_identities={'p2', 'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000013F339C4050>, events=<sanguosha.engine.events....None, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000013F3396EFD0>).state
+E        +    and   ZoneRef(zone_type=<ZoneType.JUDGMENT: 'judgment'>, player_id='p1', equipment_slot=None, special_key=None) = ZoneRef(<ZoneType.JUDGMENT: 'judgment'>, 'p1')
+E        +      where <ZoneType.JUDGMENT: 'judgment'> = ZoneType.JUDGMENT
+
+tests\test_t18a11_release.py:26: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_release.py::test_lord_loyalist_penalty_preserves_judgment_and_special_piles[False]
+FAILED tests/test_t18a11_release.py::test_lord_loyalist_penalty_preserves_judgment_and_special_piles[True]
+2 failed in 0.24s

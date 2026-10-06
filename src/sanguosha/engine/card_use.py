@@ -39,7 +39,7 @@ class UseCardActionHandler:
 
     def _rule_for_action(self, state: GameState, action: UseCardAction):
         if not action.forced:
-            return self.validator.validate_card(state, action.user_id, action.card_id)
+            return self.validator.validate_card(state, action.user_id, action.card_id, recast=not action.target_ids)
         if (action.user_id not in state.players or not state.players[action.user_id].is_alive
                 or action.card_id not in state.cards_in(ZoneRef(ZoneType.HAND, action.user_id))):
             raise InvalidCardUse('forced-use card is unavailable')
@@ -60,7 +60,8 @@ class UseCardActionHandler:
         elif not rule.requires_target_selection or action.targets_confirmed:
             self.validator.validate_targets_for_card(rule, state, action.user_id,
                                                      action.card_id, ())
-        elif not self.validator.target_candidates(state, action.user_id, action.card_id):
+        elif (not self.validator.target_candidates(state, action.user_id, action.card_id)
+              and not (hasattr(rule, 'target_bounds') and rule.target_bounds(state, action.user_id, action.card_id)[0] == 0)):
             raise InvalidCardUse("no legal target")
 
     def _commit(self, state: GameState, action: UseCardAction, targets: tuple[PlayerId, ...]) -> StepResult:
@@ -79,12 +80,15 @@ class UseCardActionHandler:
             from dataclasses import replace
             virtual=VirtualCard(canonical,(action.card_id,),effective_suit(state,action.card_id,action.user_id),effective_color(state,action.card_id,action.user_id),'longnu' if canonical in ('basic.fire_slash','basic.thunder_slash') else 'jinjiu')
             if isinstance(effect,SlashSequence):effect=replace(effect,virtual_card=virtual)
+        recast = canonical == 'trick.iron_chain' and not targets
         hand = ZoneRef(ZoneType.HAND, action.user_id)
         processing = ZoneRef(ZoneType.PROCESSING)
         self.moves.move(state, CardMove(
             f"{action.action_id}:to-processing", (action.card_id,), hand, processing,
-            CardMoveReason.USE, action.user_id, action.action_id,
+            CardMoveReason.RECAST if recast else CardMoveReason.USE, action.user_id, action.action_id,
         ))
+        if recast:
+            return StepResult.push(effect)
         slash_counted = False
         if not action.forced:
             usage = state.play_usage
@@ -123,6 +127,9 @@ class UseCardActionHandler:
 
     def _commit_with_wumou(self, state, frame, action, targets):
         definition = self._definition(state,action)
+        if definition.id == 'trick.iron_chain' and not targets:
+            frame.local['recast'] = True
+            return self._commit(state, action, targets)
         if (self.skills is not None and self.skills.has(state, action.user_id, 'wumou')
                 and definition.category is CardCategory.TRICK):
             committed = self._commit(state, action, targets)
@@ -223,7 +230,8 @@ class UseCardActionHandler:
                             f'{action.action_id}:juxiang', (action.card_id,), discard,
                             ZoneRef(ZoneType.HAND, owner), CardMoveReason.SYSTEM,
                             owner, action.action_id))
-            self.recorder.record(CardResolvedEvent(f"{action.action_id}:resolved", action.user_id, action.card_id))
+            if not frame.local.get('recast'):
+                self.recorder.record(CardResolvedEvent(f"{action.action_id}:resolved", action.user_id, action.card_id))
             return StepResult.complete(frame.child_result)
         raise InvalidCardUse(f"invalid card use step {frame.step_index}")
 

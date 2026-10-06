@@ -1,0 +1,476 @@
+[
+  {
+    "id": "basic.slash",
+    "name": "杀",
+    "category": "basic",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "basic.dodge",
+    "name": "闪",
+    "category": "basic",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "basic.peach",
+    "name": "桃",
+    "category": "basic",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "basic.fire_slash",
+    "name": "火杀",
+    "category": "basic",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "basic.thunder_slash",
+    "name": "雷杀",
+    "category": "basic",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "basic.wine",
+    "name": "酒",
+    "category": "basic",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.dismantlement",
+    "name": "过河拆桥",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.snatch",
+    "name": "顺手牵羊",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.ex_nihilo",
+    "name": "无中生有",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.duel",
+    "name": "决斗",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.savage_assault",
+    "name": "南蛮入侵",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.archery_attack",
+    "name": "万箭齐发",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.god_salvation",
+    "name": "桃园结义",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.amazing_grace",
+    "name": "五谷丰登",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.borrowed_sword",
+    "name": "借刀杀人",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.nullification",
+    "name": "无懈可击",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.fire_attack",
+    "name": "火攻",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "trick.iron_chain",
+    "name": "铁索连环",
+    "category": "trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "delayed.indulgence",
+    "name": "乐不思蜀",
+    "category": "delayed_trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "delayed.lightning",
+    "name": "闪电",
+    "category": "delayed_trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "delayed.supply_shortage",
+    "name": "兵粮寸断",
+    "category": "delayed_trick",
+    "attack_range": null,
+    "equipment_slot": null,
+    "metadata": {},
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.weapon.crossbow",
+    "name": "诸葛连弩",
+    "category": "equipment",
+    "attack_range": 1,
+    "equipment_slot": "weapon",
+    "metadata": {
+      "effect_summary": "出牌阶段使用【杀】不受通常次数限制。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.weapon.double_sword",
+    "name": "雌雄双股剑",
+    "category": "equipment",
+    "attack_range": 2,
+    "equipment_slot": "weapon",
+    "metadata": {
+      "effect_summary": "对异性目标使用【杀】时，可令其弃一张手牌或令你摸一张牌。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.weapon.qinggang_sword",
+    "name": "青釭剑",
+    "category": "equipment",
+    "attack_range": 2,
+    "equipment_slot": "weapon",
+    "metadata": {
+      "effect_summary": "你的【杀】无视目标的防具。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.weapon.green_dragon_blade",
+    "name": "青龙偃月刀",
+    "category": "equipment",
+    "attack_range": 3,
+    "equipment_slot": "weapon",
+    "metadata": {
+      "effect_summary": "目标以【闪】抵消【杀】后，可对其继续出【杀】。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.weapon.serpent_spear",
+    "name": "丈八蛇矛",
+    "category": "equipment",
+    "attack_range": 3,
+    "equipment_slot": "weapon",
+    "metadata": {
+      "effect_summary": "可将两张手牌作为一张【杀】使用或打出。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.weapon.rock_cleaving_axe",
+    "name": "贯石斧",
+    "category": "equipment",
+    "attack_range": 3,
+    "equipment_slot": "weapon",
+    "metadata": {
+      "effect_summary": "【杀】被闪避时，可弃两张牌令其仍造成伤害。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.weapon.halberd",
+    "name": "方天画戟",
+    "category": "equipment",
+    "attack_range": 4,
+    "equipment_slot": "weapon",
+    "metadata": {
+      "effect_summary": "最后一张手牌为【杀】时，可额外指定目标。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.weapon.kylin_bow",
+    "name": "麒麟弓",
+    "category": "equipment",
+    "attack_range": 5,
+    "equipment_slot": "weapon",
+    "metadata": {
+      "effect_summary": "【杀】造成伤害时，可弃置目标的一张坐骑牌。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.weapon.ice_sword",
+    "name": "寒冰剑",
+    "category": "equipment",
+    "attack_range": 2,
+    "equipment_slot": "weapon",
+    "metadata": {
+      "effect_summary": "【杀】将造成伤害时，可改为弃置目标的牌。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.weapon.ancient_blade",
+    "name": "古锭刀",
+    "category": "equipment",
+    "attack_range": 2,
+    "equipment_slot": "weapon",
+    "metadata": {
+      "effect_summary": "【杀】对没有手牌的目标造成伤害时，伤害增加。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.weapon.vermilion_fan",
+    "name": "朱雀羽扇",
+    "category": "equipment",
+    "attack_range": 4,
+    "equipment_slot": "weapon",
+    "metadata": {
+      "effect_summary": "普通【杀】可视为火【杀】。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.armor.eight_trigrams",
+    "name": "八卦阵",
+    "category": "equipment",
+    "attack_range": null,
+    "equipment_slot": "armor",
+    "metadata": {
+      "effect_summary": "需要使用【闪】时，可判定并按结果视为提供【闪】。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.armor.renwang_shield",
+    "name": "仁王盾",
+    "category": "equipment",
+    "attack_range": null,
+    "equipment_slot": "armor",
+    "metadata": {
+      "effect_summary": "锁定技：黑色【杀】对你无效。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.armor.vine",
+    "name": "藤甲",
+    "category": "equipment",
+    "attack_range": null,
+    "equipment_slot": "armor",
+    "metadata": {
+      "effect_summary": "锁定技：部分锦囊和普通【杀】对你无效；火焰伤害增加。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.armor.silver_lion",
+    "name": "白银狮子",
+    "category": "equipment",
+    "attack_range": null,
+    "equipment_slot": "armor",
+    "metadata": {
+      "effect_summary": "锁定技：单次受到的伤害至多为 1；失去此防具时恢复体力。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.horse.jueying",
+    "name": "绝影",
+    "category": "equipment",
+    "attack_range": null,
+    "equipment_slot": "defensive_horse",
+    "metadata": {
+      "effect_summary": "其他角色计算到你的距离时 +1。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.horse.zhaohuangfeidian",
+    "name": "爪黄飞电",
+    "category": "equipment",
+    "attack_range": null,
+    "equipment_slot": "defensive_horse",
+    "metadata": {
+      "effect_summary": "其他角色计算到你的距离时 +1。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.horse.dilu",
+    "name": "的卢",
+    "category": "equipment",
+    "attack_range": null,
+    "equipment_slot": "defensive_horse",
+    "metadata": {
+      "effect_summary": "其他角色计算到你的距离时 +1。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.horse.hualiu",
+    "name": "骅骝",
+    "category": "equipment",
+    "attack_range": null,
+    "equipment_slot": "defensive_horse",
+    "metadata": {
+      "effect_summary": "其他角色计算到你的距离时 +1。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.horse.chitu",
+    "name": "赤兔",
+    "category": "equipment",
+    "attack_range": null,
+    "equipment_slot": "offensive_horse",
+    "metadata": {
+      "effect_summary": "你计算到其他角色的距离时 -1。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.horse.dayuan",
+    "name": "大宛",
+    "category": "equipment",
+    "attack_range": null,
+    "equipment_slot": "offensive_horse",
+    "metadata": {
+      "effect_summary": "你计算到其他角色的距离时 -1。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  },
+  {
+    "id": "equipment.horse.zixing",
+    "name": "紫骍",
+    "category": "equipment",
+    "attack_range": null,
+    "equipment_slot": "offensive_horse",
+    "metadata": {
+      "effect_summary": "你计算到其他角色的距离时 -1。"
+    },
+    "status": "BLOCKED",
+    "evidence": "registered and golden tests; independent per-card source and interaction closure incomplete"
+  }
+]

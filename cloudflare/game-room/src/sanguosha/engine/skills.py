@@ -1,13 +1,13 @@
 """Registered skills and explicit active/cross-player skill actions."""
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import json
 
 from sanguosha.content.characters.standard import ALL_GENERAL_POOL as CHARACTERS, ALL_SKILL_CATALOGUE as SKILLS
 from sanguosha.model.enums import Identity, Phase, Color, Kingdom, EquipmentSlot, Suit, Gender
-from sanguosha.model.zones import ZoneRef, ZoneType
+from sanguosha.model.zones import ZoneRef, ZoneType, CardZone
 from sanguosha.model.virtual_card import VirtualCard
 from .actions import Action, StepResult
-from .card_moves import CardMove, CardMoveReason
+from .card_moves import CardMove, CardMoveReason, CardMoveService
 from .deck import DrawCardsAction
 from .military_basics import SlashSequence, MilitaryStrike
 from .requests import PendingRequest, RequestType
@@ -16,7 +16,7 @@ from .recovery import RecoverAction
 from .card_rules import InvalidCardUse
 from .hp import LoseHpAction
 from .judgment import JudgmentAction, JudgmentPattern
-from .events import CardUsedEvent
+from .events import CardUsedEvent, EventRecorder
 from .suits import effective_color, effective_suit
 
 
@@ -49,7 +49,9 @@ class SkillRegistry:
             return True
         if skill_id == 'wansha' and player.marks.get('jilue_wansha', 0):
             return True
-        if character is None or (skill_id not in character.skill_ids
+        native = (character is not None and skill_id in character.skill_ids
+                  and skill_id not in character.metadata.get('derived_skills', ()))
+        if character is None or (not native
                                  and skill_id not in player.granted_skills
                                  and not transformed):
             return False
@@ -89,8 +91,9 @@ class SkillRegistry:
     def red_slash_materials(self, state, player_id):
         if not self.has(state, player_id, 'wusheng'):
             return ()
-        return tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, player_id))
-                     if effective_color(state, cid, player_id) is Color.RED)
+        return tuple(cid for ref, zone in state.zones.items()
+                     if ref.player_id == player_id and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
+                     for cid in zone.card_ids if effective_color(state, cid, player_id) is Color.RED)
 
     def emergency_peach_materials(self, state, player_id):
         if not self.has(state, player_id, 'jijiu') or state.current_player_id == player_id:
@@ -1071,6 +1074,27 @@ class WushengUseHandler:
     def __init__(self, skills, moves, slash_rule):
         self.skills, self.moves, self.slash_rule = skills, moves, slash_rule
 
+    def targets(self, state, player_id, material_id):
+        source = next((ref for ref, zone in state.zones.items()
+                       if ref.player_id == player_id and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
+                       and material_id in zone.card_ids), None)
+        if source is None:
+            return ()
+        preview = state
+        if source.zone_type is ZoneType.EQUIPMENT:
+            # A detached zone snapshot checks legality after paying the card.
+            # Never temporarily remove live equipment or publish preview events.
+            preview = replace(state, zones={ref: CardZone(ref, list(zone.card_ids))
+                                           for ref, zone in state.zones.items()})
+            CardMoveService(EventRecorder()).move(preview, CardMove(
+                'wusheng-target-preview', (material_id,), source,
+                ZoneRef(ZoneType.PROCESSING), CardMoveReason.USE, player_id))
+        limit = self.slash_rule.usage_limit(preview, player_id)
+        if (not self.slash_rule.can_use(preview, player_id) or preview.play_usage is None
+                or limit is not None and preview.play_usage.count('basic.slash') >= limit):
+            return ()
+        return self.slash_rule.target_candidates(preview, player_id)
+
     def step(self, state, frame):
         action = frame.action
         if frame.step_index == 0:
@@ -1079,7 +1103,7 @@ class WushengUseHandler:
                     action.material_id not in self.skills.red_slash_materials(state,action.player_id) or
                     limit is not None and state.play_usage.count('basic.slash') >= limit):
                 raise InvalidCardUse('武圣不可用')
-            targets = self.slash_rule.target_candidates(state, action.player_id)
+            targets = self.targets(state, action.player_id, action.material_id)
             if not targets:
                 raise InvalidCardUse('武圣没有合法杀目标')
             frame.step_index = 1
@@ -1088,13 +1112,16 @@ class WushengUseHandler:
                 allowed_player_ids=targets))
         if frame.step_index == 1:
             target = frame.decision
-            self.slash_rule.validate_targets(state, action.player_id, (target,))
+            if (action.material_id not in self.skills.red_slash_materials(state, action.player_id)
+                    or target not in self.targets(state, action.player_id, action.material_id)):
+                raise InvalidCardUse('武圣材料或目标已失效')
+            source = next(ref for ref, zone in state.zones.items() if action.material_id in zone.card_ids)
             card = state.cards[action.material_id]
             virtual = VirtualCard('basic.slash', (action.material_id,),
                                   effective_suit(state, action.material_id, action.player_id),
                                   effective_color(state, action.material_id, action.player_id))
             self.moves.move(state, CardMove(action.action_id+':processing', (action.material_id,),
-                ZoneRef(ZoneType.HAND,action.player_id), ZoneRef(ZoneType.PROCESSING),
+                source, ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.USE, action.player_id))
             from .yj2011_tier3 import record_slash_use
             counted=record_slash_use(state, action.player_id, (target,))
@@ -1315,7 +1342,8 @@ class SkillPlayOptions:
         limit = self.slash_rule.usage_limit(state,pid)
         slash_available = self.slash_rule.can_use(state, pid) and (limit is None or state.play_usage.count('basic.slash') < limit) and bool(self.slash_rule.target_candidates(state,pid))
         if slash_available:
-            extra.extend(f'virtual:wusheng:{cid}' for cid in self.skills.red_slash_materials(state,pid))
+            extra.extend(f'virtual:wusheng:{cid}' for cid in self.skills.red_slash_materials(state,pid)
+                         if WushengUseHandler(self.skills, None, self.slash_rule).targets(state, pid, cid))
             if self.skills.has(state,pid,'longdan'):
                 extra.extend(f'virtual:longdan:{cid}' for cid in hand
                              if state.cards[cid].definition_id == 'basic.dodge')

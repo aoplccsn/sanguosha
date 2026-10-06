@@ -147,7 +147,7 @@ T1 的区域表示为 `GameState.zones: dict[ZoneRef, CardZone]`。`PlayerState`
 
 `DeckService` 使用 T1 `RandomSource` 洗牌，发牌、摸牌、弃牌堆重洗都通过 `CardMoveService`。临时牌堆为杀 48、闪 20、桃 12；每人起手四张。摸牌阶段 `DrawPhaseBody` 压入 `DrawCardsAction(2)`。弃牌阶段 `DiscardPhaseBody` 以 `max(0, hp)` 为手牌上限，发布数量精确的 `CHOOSE_CARDS` 请求，再经移动服务转入弃牌堆。请求校验在引擎内完成，AI 和 GUI 提交相同的 `Decision`。
 
-`DamageActionHandler` 在 T5 组成时注入濒死 Action 工厂；旧 T4 单元环境不注入时保留 T4 的仅标记行为。体力不截断，达到零或以下后，`DyingAction` 按濒死者起的座次逐人压入实体桃响应 Action。桃响应后压入 `RecoverAction`；体力仍不高于零则重新询问，所有存活玩家一轮均放弃后压入 `DeathAction`。死亡动作公开身份、弃置死者手牌/装备区/判定区卡牌，处理击杀反贼摸三张与主公杀忠臣弃所有牌，再由 `IdentitySystem` 判断胜负。结果写入 typed `GameState.victory`，状态变为 FINISHED；出牌及回合帧完成清理后不再发新请求或新回合。
+`DamageActionHandler` 在 T5 组成时注入濒死 Action 工厂；旧 T4 单元环境不注入时保留 T4 的仅标记行为。体力不截断，达到零或以下后，`DyingAction` 按濒死者起的座次逐人压入实体桃响应 Action。桃响应后压入 `RecoverAction`；体力仍不高于零则重新询问，所有存活玩家一轮均放弃后压入 `DeathAction`。死亡动作公开身份、弃置死者手牌/装备区/判定区卡牌，处理击杀反贼摸三张与主公杀忠臣弃所有手牌和装备区牌，再由 `IdentitySystem` 判断胜负。结果写入 typed `GameState.victory`，状态变为 FINISHED；出牌及回合帧完成清理后不再发新请求或新回合。
 
 `projection.project_for_human` 是 GUI 的只读可见快照：只含真人具体手牌；对手只有手牌数量。真实身份仍在模型，公开身份由 `revealed_identities` 与主公公开规则决定。死亡时将玩家加入公开集合。`AIDecisionProvider` 仅解释 `PendingRequest`，用同一 `Decision` API；暂允许 AI 内部参考真实身份，优先受伤时用桃、可攻击时用杀、响应闪、友方濒死出桃，并按保留桃/闪的简单次序弃牌。
 

@@ -1117,8 +1117,9 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             virtual=VirtualCard('basic.slash',(material,),
                                 effective_suit(state, material, action.player_id),
                                 effective_color(state, material, action.player_id))
+            source=next(ref for ref,zone in state.zones.items() if material in zone.card_ids)
             self.moves.move(state,CardMove(action.action_id+':wusheng-processing',(material,),
-                ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.PROCESSING),CardMoveReason.RESPONSE,action.player_id))
+                source,ZoneRef(ZoneType.PROCESSING),CardMoveReason.RESPONSE,action.player_id))
             self.recorder.record(CardRespondedEvent(action.action_id+':wusheng-responded',action.player_id,material,
                                                     action.source_action_id,'basic.slash'))
             self.moves.move(state,CardMove(action.action_id+':wusheng-discard',(material,),

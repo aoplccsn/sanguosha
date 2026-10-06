@@ -80,6 +80,13 @@ async def play_web_match(url: str, humans: int, seed: int, audit_app=None, audit
             welcome = await recv_until(ws, "WELCOME")
             seats.append(welcome["seat_id"])
             await ws.send(json.dumps(wire("READY", ready=True)))
+            # Each connection is independent: sending READY does not mean the
+            # server processed it before the host's START_GAME arrives.
+            while True:
+                lobby = await recv_until(ws, "LOBBY_STATE")
+                if any(seat["seat_id"] == seats[-1] and seat["ready"]
+                       for seat in lobby["seats"]):
+                    break
         await clients[0].send(json.dumps(wire("START_GAME")))
 
         seen: list[set[str]] = [set() for _ in clients]

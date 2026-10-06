@@ -19,6 +19,7 @@ class CardMoveReason(StrEnum):
     USE = "use"
     RESPONSE = "response"
     DISCARD = "discard"
+    RECAST = "recast"
     SYSTEM = "system"
 
 

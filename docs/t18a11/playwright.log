@@ -1,0 +1,49 @@
+
+Running 41 tests using 1 worker
+
+
+
+(node:13516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/41] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-five 1440
+[2/41] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-five 390
+[3/41] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-five 430
+[4/41] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-eight 1440
+[5/41] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-eight 390
+[6/41] [edge] › e2e\t18a11-audit.spec.ts:23:2 › seat order and nonoverlap military-eight 430
+[7/41] [edge] › e2e\t18a11-audit.spec.ts:34:1 › real acquired Qixi cancellation then normal Peach
+[8/41] [edge] › e2e\t18a11-audit.spec.ts:40:44 › AI reveal and suit flow fire
+[9/41] [edge] › e2e\t18a11-audit.spec.ts:40:44 › AI reveal and suit flow fire_none
+[10/41] [edge] › e2e\t18a11-audit.spec.ts:47:1 › dismantlement hides hand until public discard
+[11/41] [edge] › e2e\t18a11-audit.spec.ts:50:1 › three discarded cards share one public presentation
+[12/41] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction savage
+[13/41] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction archery
+[14/41] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction counter_single
+[15/41] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction counter_group
+[16/41] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction harvest
+[17/41] [edge] › e2e\t18a11-audit.spec.ts:53:98 › interaction takeover
+[18/41] [edge] › e2e\t18a11-audit.spec.ts:61:1 › 103 GeneralDetail descriptions and two missing generals
+[19/41] [edge] › e2e\t18a11-audit.spec.ts:73:54 › bottom controls 12 cards equipment and judgment military-five
+[20/41] [edge] › e2e\t18a11-audit.spec.ts:73:54 › bottom controls 12 cards equipment and judgment military-eight
+[21/41] [edge] › e2e\t18a11-audit.spec.ts:81:1 › snatch keeps hidden choice secret through refresh
+[22/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41000
+[23/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41001
+[24/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41002
+[25/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41003
+[26/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41004
+[27/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41005
+[28/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41006
+[29/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41007
+[30/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41008
+[31/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-five seed 41009
+[32/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41000
+[33/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41001
+[34/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41002
+[35/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41003
+[36/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41004
+[37/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41005
+[38/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41006
+[39/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41007
+[40/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41008
+[41/41] [edge] › e2e\t18a11-audit.spec.ts:90:75 › formal room draft military-eight seed 41009
+  41 passed (51.7s)

@@ -79,6 +79,13 @@ class CardUseValidator:
             raise InvalidCardUse(f"unregistered card definition for {card_id}") from exc
 
     def target_candidates(self, state: GameState, user_id: PlayerId, card_id: CardInstanceId) -> tuple[PlayerId, ...]:
+        from .yj2011_tier3 import canonical_definition
+        if canonical_definition(state, self.skills, user_id,
+                state.cards[card_id].definition_id, card_id) == 'trick.iron_chain':
+            from .qiaoshui import prohibited
+            from .card_limits import card_allowed
+            if prohibited(state, user_id, 'trick.iron_chain') or not card_allowed(state, user_id, (card_id,)):
+                return ()
         rule = self.rule_for(state, card_id, user_id)
         candidates = rule.target_candidates(state, user_id)
         from .longnu import modifiers
@@ -107,6 +114,8 @@ class CardUseValidator:
     def validate_targets_for_card(self, rule: CardRule, state: GameState,
                                   user_id: PlayerId, card_id: CardInstanceId,
                                   targets: tuple[PlayerId, ...]) -> None:
+        if targets and getattr(rule, 'definition', None) == 'trick.iron_chain':
+            self.validate_card(state, user_id, card_id)
         from .longnu import modifiers
         ignore_distance,unlimited=modifiers(state,self.skills,user_id,card_id)
         if getattr(rule,'usage_key',None)=='basic.slash' and (ignore_distance or unlimited):
@@ -117,7 +126,7 @@ class CardUseValidator:
         if any(pid not in self.target_candidates(state, user_id, card_id) for pid in targets):
             raise InvalidCardUse("target is protected from this card")
 
-    def validate_card(self, state: GameState, user_id: PlayerId, card_id: CardInstanceId) -> CardRule:
+    def validate_card(self, state: GameState, user_id: PlayerId, card_id: CardInstanceId, *, recast=False) -> CardRule:
         if user_id not in state.players or not state.players[user_id].is_alive:
             raise InvalidCardUse("user is not alive")
         if state.current_player_id != user_id or state.current_phase is not Phase.PLAY:
@@ -125,7 +134,10 @@ class CardUseValidator:
         if card_id not in state.cards_in(ZoneRef(ZoneType.HAND, user_id)):
             raise InvalidCardUse("card is not in user's hand")
         from .card_limits import card_allowed
-        if not card_allowed(state, user_id, (card_id,)):
+        from .yj2011_tier3 import canonical_definition
+        recast = recast and canonical_definition(state, self.skills, user_id,
+            state.cards[card_id].definition_id, card_id) == 'trick.iron_chain'
+        if not recast and not card_allowed(state, user_id, (card_id,)):
             raise InvalidCardUse("card color is prohibited by Qianxi")
         rule = self.rule_for(state, card_id, user_id)
         from .forest import weimu_blocks
@@ -140,7 +152,7 @@ class CardUseValidator:
         limit = None if modifiers(state,self.skills,user_id,card_id)[1] else rule.usage_limit(state, user_id)
         if limit is not None and usage.count(getattr(rule, 'usage_key', state.cards[card_id].definition_id)) >= limit:
             raise InvalidCardUse("card use limit reached")
-        if not rule.can_use(state, user_id):
+        if not recast and not rule.can_use(state, user_id):
             raise InvalidCardUse("card's active-use condition is not met")
         return rule
 
@@ -151,7 +163,8 @@ class CardUseValidator:
 
     def can_offer(self, state: GameState, user_id: PlayerId, card_id: CardInstanceId) -> bool:
         try:
-            rule = self.validate_card(state, user_id, card_id)
-            return not rule.requires_target_selection or bool(self.target_candidates(state, user_id, card_id))
+            rule = self.validate_card(state, user_id, card_id, recast=True)
+            return (getattr(rule, 'definition', None) == 'trick.iron_chain'
+                    or not rule.requires_target_selection or bool(self.target_candidates(state, user_id, card_id)))
         except InvalidCardUse:
             return False

@@ -29,8 +29,8 @@ class DeathActionHandler:
         self.recorder = recorder
         self.skills = skills
 
-    def _discard_all(self, state: GameState, player_id: PlayerId, action_id: str) -> None:
-        personal = (ZoneType.HAND, ZoneType.EQUIPMENT, ZoneType.JUDGMENT, ZoneType.SPECIAL)
+    def _discard_all(self, state: GameState, player_id: PlayerId, action_id: str,
+                     personal=(ZoneType.HAND, ZoneType.EQUIPMENT, ZoneType.JUDGMENT, ZoneType.SPECIAL)) -> None:
         refs = sorted(
             (ref for ref in state.zones if ref.player_id == player_id and ref.zone_type in personal),
             key=lambda ref: (ref.zone_type.value, ref.equipment_slot.value if ref.equipment_slot else ""),
@@ -93,7 +93,8 @@ class DeathActionHandler:
                 frame.step_index = 1
                 return StepResult.push(DrawCardsAction(f"{action.action_id}:reward", action.killer_id, 3))
             if victim.identity is Identity.LOYALIST and killer is not None and killer.identity is Identity.LORD:
-                self._discard_all(state, killer.player_id, f"{action.action_id}:lord-penalty")
+                self._discard_all(state, killer.player_id, f"{action.action_id}:lord-penalty",
+                                  (ZoneType.HAND, ZoneType.EQUIPMENT))
                 self.recorder.record(LordPenaltyEvent(f"{action.action_id}:penalty", killer.player_id, action.target_id))
             frame.step_index = 2
             return StepResult.continue_()
@@ -115,6 +116,10 @@ class DeathActionHandler:
             from .gods import WuhunDeathAction
             frame.local['wuhun_resolved'] = True
             return StepResult.push(WuhunDeathAction(action.action_id + ':wuhun', action.target_id))
+        # Keep transformed death skills available until their own resolution ends.
+        victim.transformation_pool.clear()
+        victim.active_transformation = None
+        victim.transformation_skill = None
         victory = self.identity.evaluate(state)
         if victory is not None:
             state.victory = victory

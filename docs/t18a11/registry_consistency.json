@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "worker_python_files": 111,
+  "generals": 103,
+  "skills": 189,
+  "card_definitions": 43,
+  "physical_cards": 160,
+  "draft_offers_200_seeds_per_mode": {
+    "military-five": 103,
+    "military-eight": 103
+  },
+  "deployment": "NOT_PERFORMED"
+}
