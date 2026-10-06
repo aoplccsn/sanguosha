@@ -314,7 +314,7 @@ function EventStage({ event, players, combat }: { event?: PublicEvent; players: 
   if (top?.definition_id === 'trick.nullification') text = name(top.source_id) + '【无懈可击】 → 【' + (cardNames[definition] ?? base?.card_name ?? '') + '】'
   return <div key={String(event.event_id ?? kind) + String(event.presentation_phase ?? '')} data-event-id={event.event_id} data-stage={String(event.presentation_phase ?? 'result')} className={'event-stage event-' + kind.toLowerCase()}>
     <div className="action-cards">
-    {publicCards.map((card,index)=><div className="public-resolution-card" key={index}><img src={assetForCard(card)} alt={card.name}/><b>{card.suit}{card.rank} {card.name}</b></div>)}
+    {publicCards.map((card,index)=><div className="public-resolution-card" key={index}>{event.reason==='pindian' && Array.isArray(event.card_owner_ids) && <small>{name(event.card_owner_ids[index])} · 拼点</small>}<img src={assetForCard(card)} alt={card.name}/><b>{card.suit}{card.rank} {card.name}</b></div>)}
     {showCard && <div className="center-action-card base-card"><img src={assetForCard({ definition_id: definition } as CardView)} alt={cardNames[definition] ?? String(event.card_name ?? '卡牌')} /><b>{cardNames[definition] ?? String(event.card_name ?? '卡牌')}</b></div>}
     {top && <div className="center-action-card response-card"><img src={assetForCard({definition_id:top.definition_id} as CardView)} alt={cardNames[top.definition_id] ?? '响应牌'} /><b>{cardNames[top.definition_id] ?? '响应牌'}</b></div>}
     </div><strong>{text}</strong>

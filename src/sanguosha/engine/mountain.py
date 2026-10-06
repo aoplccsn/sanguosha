@@ -381,29 +381,29 @@ class ZhijiHandler:
                     or state.cards_in(ZoneRef(ZoneType.HAND, actor))):
                 return StepResult.complete(False)
             player.marks['awakened_zhiji'] = 1
-            choices = ('draw', 'recover') if player.hp < player.max_hp else ('draw',)
             frame.step_index = 1
+            return StepResult.push(LoseMaxHpAction(
+                frame.action.action_id + ':max-hp', actor, 1))
+        if not player.is_alive:
+            return StepResult.complete(False)
+        if frame.step_index == 1:
+            choices = ('draw', 'recover') if player.hp < player.max_hp else ('draw',)
+            frame.step_index = 2
             return StepResult.ask(PendingRequest(
                 frame.action.action_id + ':choice', actor, RequestType.CHOOSE_OPTION,
                 '志继：摸两张牌或回复一点体力', frame.action.action_id,
                 frame.frame_id, choices=choices))
-        if frame.step_index == 1:
+        if frame.step_index == 2:
             choice = frame.decision
             frame.decision = None
-            frame.step_index = 2
+            frame.step_index = 3
             if choice == 'recover' and player.hp < player.max_hp:
                 return StepResult.push(RecoverAction(
                     frame.action.action_id + ':recover', actor, actor, 1))
             return StepResult.push(DrawCardsAction(
                 frame.action.action_id + ':draw', actor, 2))
-        if frame.step_index == 2:
-            frame.step_index = 3
-            return StepResult.push(LoseMaxHpAction(
-                frame.action.action_id + ':max-hp', actor, 1))
-        if player.is_alive:
-            player.granted_skills['guanxing'] = 'zhiji'
-        return StepResult.complete(player.is_alive)
-
+        player.granted_skills['guanxing'] = 'zhiji'
+        return StepResult.complete(True)
 
 @dataclass(frozen=True, slots=True)
 class JiangAction(Action):

@@ -141,10 +141,6 @@ class FinishSkillBody:
                 from .yj2011 import JujianAction
                 frame.local['yj2011_jujian'] = True
                 return StepResult.push(JujianAction(frame.action.action_id + ':jujian', actor))
-            if state.players[actor].marks.pop('fangquan_pending', 0):
-                from .mountain import FangquanEndAction
-                frame.step_index = 10
-                return StepResult.push(FangquanEndAction(frame.action.action_id + ':fangquan-end', actor))
             if (not frame.local.get('benghuai_offered')
                     and self.skills.has(state, actor, 'benghuai')
                     and state.players[actor].is_alive):

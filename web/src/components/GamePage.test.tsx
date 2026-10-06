@@ -442,3 +442,14 @@ it('shows signed horse faces and authoritative abolished slots',()=>{
   expect(screen.getByText('\u5df2\u5e9f\u9664 \u6b66\u5668\u680f')).toBeInTheDocument()
  } finally {extraCards=[];player.equipment=oldEquipment;player.abolished_equipment_slots=oldSlots}
 })
+
+
+it('shows each public pindian card beside its original owner', () => {
+  request=null;waiting=undefined;combat=undefined
+  publicEvents=[{kind:'CardRevealedEvent',event_id:'pindian-public',reason:'pindian',source_id:'p1',target_ids:['p2'],card_owner_ids:['p1','p2'],cards:[card,{...card,name:'闪',definition_id:'basic.dodge'}]}]
+  const {container}=render(<GamePage />)
+  const faces=container.querySelectorAll('.public-resolution-card')
+  expect(faces).toHaveLength(2)
+  expect(faces[0]).toHaveTextContent('曹操 · 拼点')
+  expect(faces[1]).toHaveTextContent('刘备 · 拼点')
+})
