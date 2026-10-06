@@ -168,7 +168,7 @@ class YJ2012Handler(YJSkillHandler):
         from sanguosha.model.virtual_card import VirtualCard
         from .suits import effective_suit
         return replace(VirtualCard.spear(state, hand(state,pid),
-            lambda state,cid:effective_suit(state,cid,pid)), definition_id=definition)
+            lambda state,cid:effective_suit(state,cid,pid)), definition_id=definition, skill_id="qice")
 
     def qice_targets(self, state, pid, definition):
         from .military_tricks import MilitaryTrickRule

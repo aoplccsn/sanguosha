@@ -1,0 +1,51 @@
+...............FF                                                        [100%]
+================================== FAILURES ===================================
+________ test_lightning_remains_on_table_until_damage_reactions_finish ________
+
+    def test_lightning_remains_on_table_until_damage_reactions_finish():
+        from sanguosha.engine.military_tricks import ResolveDelayed
+        s = setup('xun_you')
+        s.state.players['p1'].granted_skills['jianxiong'] = 'audit-grant'
+        card = put(s, 'delayed.lightning', 'p1', ZoneType.JUDGMENT)
+        top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+        s.state.cards[top] = replace(s.state.cards[top], suit=Suit.SPADE, rank=2)
+        s.engine.start_action(ResolveDelayed('audit-lightning-table', 'p1', card))
+        offered = False
+        while s.engine.pending_request:
+            s = restore(s)
+            r = s.engine.pending_request
+            if r.request_id.endswith(':jianxiong'):
+                offered = True
+                assert card in s.state.cards_in(ZoneRef(ZoneType.PROCESSING))
+                answer(s, True)
+            else:
+                answer(s, r.timeout_value())
+>       assert offered
+E       assert False
+
+tests\test_t18a11_judgment.py:178: AssertionError
+__________ test_delayed_card_leaves_judgment_before_retrial_request ___________
+
+    def test_delayed_card_leaves_judgment_before_retrial_request():
+        from sanguosha.engine.military_tricks import ResolveDelayed
+        s = setup('xun_you')
+        s.state.players['p2'].granted_skills['guicai'] = 'audit-grant'
+        card = put(s, 'delayed.indulgence', 'p1', ZoneType.JUDGMENT)
+        s.engine.start_action(ResolveDelayed('audit-delayed-table', 'p1', card))
+        while s.engine.pending_request and ':guicai:' not in s.engine.pending_request.request_id:
+            answer(s, s.engine.pending_request.timeout_value())
+        assert s.engine.pending_request is not None
+        s = restore(s)
+>       assert card not in s.state.cards_in(ZoneRef(ZoneType.JUDGMENT, 'p1'))
+E       AssertionError: assert 'std-club-04-2' not in ('std-club-04-2',)
+E        +  where ('std-club-04-2',) = cards_in(ZoneRef(zone_type=<ZoneType.JUDGMENT: 'judgment'>, player_id='p1', equipment_slot=None, special_key=None))
+E        +    where cards_in = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_y...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None).cards_in
+E        +      where GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_y...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000012AD8282DB0>, events=<sanguosha.engine.events....A70>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000012AD82B7F70>).state
+E        +    and   ZoneRef(zone_type=<ZoneType.JUDGMENT: 'judgment'>, player_id='p1', equipment_slot=None, special_key=None) = ZoneRef(<ZoneType.JUDGMENT: 'judgment'>, 'p1')
+E        +      where <ZoneType.JUDGMENT: 'judgment'> = ZoneType.JUDGMENT
+
+tests\test_t18a11_judgment.py:193: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_judgment.py::test_lightning_remains_on_table_until_damage_reactions_finish
+FAILED tests/test_t18a11_judgment.py::test_delayed_card_leaves_judgment_before_retrial_request
+2 failed, 15 passed in 0.75s

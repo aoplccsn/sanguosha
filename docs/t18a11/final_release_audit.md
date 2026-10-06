@@ -65,3 +65,13 @@ Simulation详情见simulation_summary.json、ai_acceptance.json、random_simulat
 继续锦囊被动规则：无言延时锦囊及经典蛊惑帷幕例外R17/R18已修；当前186 BLOCKED、4 FIXED、2 PASS；384相关回归 + 35项禁止组合回归通过。仍不是RC。
 
 贞烈目标确认分层R19及R10用牌事件补齐完成；当前185 BLOCKED、5 FIXED、2 PASS；multitarget345及zhenlie60相关回归通过。未签发RC。
+
+延时牌处理区时序R20与当前无双响应冻结R21修复，无言类型边界闭环。当前184 BLOCKED、6 FIXED、2 PASS；相关407/91/250/118是独立定向批次统计，不合计为一次全量。未运行最终门禁或签发RC。
+
+流离成本后距离与非法目标R22/R23修复，相关157通过；R21多目标无双冻结回归269通过。尚184 BLOCKED，不签发RC。
+
+奇策/乱击来源、完整候选与成本边界闭环，新增R24–R26；当前182 BLOCKED、8 FIXED、2 PASS。95/120分别为定向批次，不相加冒充全量。最终门禁仍未运行，不签发RC。
+
+智迟R27–R29及12个独立边界测试闭环，相关213（含80场AI）及追加反例124通过。当前181 BLOCKED、9 FIXED、2 PASS；定向结果不冒充最终全量。未签发RC。
+
+判定收尾R30/R31修复，相关157通过；同人改判/FinishJudge全顺序待核，矩阵仍181 BLOCKED。未重跑化身795专项，未执行最终全量或签发RC。

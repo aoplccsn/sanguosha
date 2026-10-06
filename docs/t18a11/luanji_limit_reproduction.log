@@ -1,0 +1,119 @@
+FFFFF                                                                    [100%]
+================================== FAILURES ===================================
+______ test_luanji_cannot_bypass_ordinary_trick_use_restrictions[qianxi] ______
+
+restriction = 'qianxi'
+
+    @pytest.mark.parametrize('restriction',['qianxi','qiaoshui','zhuikong','zishou'])
+    def test_luanji_cannot_bypass_ordinary_trick_use_restrictions(restriction):
+        s=setup('xun_you');s.state.players['p1'].character_id='fire_yuan_shao';clear_hand(s)
+        cards=tuple(put(s,'basic.slash') for _ in range(2))
+        for c in cards:s.state.cards[c]=replace(s.state.cards[c],suit=Suit.SPADE)
+        if restriction=='qianxi':
+            s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'black','turn':s.state.turn_number}}
+        else:
+            mark={'qiaoshui':'qiaoshui_trick_lock','zhuikong':'zhuikong_self_only','zishou':'yj_zishou'}[restriction]
+            s.state.players['p1'].marks[mark]=s.state.turn_number
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(LuanjiAction('audit-luanji-limit','p1',cards))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_luanji.py:23: Failed
+_____ test_luanji_cannot_bypass_ordinary_trick_use_restrictions[qiaoshui] _____
+
+restriction = 'qiaoshui'
+
+    @pytest.mark.parametrize('restriction',['qianxi','qiaoshui','zhuikong','zishou'])
+    def test_luanji_cannot_bypass_ordinary_trick_use_restrictions(restriction):
+        s=setup('xun_you');s.state.players['p1'].character_id='fire_yuan_shao';clear_hand(s)
+        cards=tuple(put(s,'basic.slash') for _ in range(2))
+        for c in cards:s.state.cards[c]=replace(s.state.cards[c],suit=Suit.SPADE)
+        if restriction=='qianxi':
+            s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'black','turn':s.state.turn_number}}
+        else:
+            mark={'qiaoshui':'qiaoshui_trick_lock','zhuikong':'zhuikong_self_only','zishou':'yj_zishou'}[restriction]
+            s.state.players['p1'].marks[mark]=s.state.turn_number
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(LuanjiAction('audit-luanji-limit','p1',cards))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_luanji.py:23: Failed
+_____ test_luanji_cannot_bypass_ordinary_trick_use_restrictions[zhuikong] _____
+
+restriction = 'zhuikong'
+
+    @pytest.mark.parametrize('restriction',['qianxi','qiaoshui','zhuikong','zishou'])
+    def test_luanji_cannot_bypass_ordinary_trick_use_restrictions(restriction):
+        s=setup('xun_you');s.state.players['p1'].character_id='fire_yuan_shao';clear_hand(s)
+        cards=tuple(put(s,'basic.slash') for _ in range(2))
+        for c in cards:s.state.cards[c]=replace(s.state.cards[c],suit=Suit.SPADE)
+        if restriction=='qianxi':
+            s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'black','turn':s.state.turn_number}}
+        else:
+            mark={'qiaoshui':'qiaoshui_trick_lock','zhuikong':'zhuikong_self_only','zishou':'yj_zishou'}[restriction]
+            s.state.players['p1'].marks[mark]=s.state.turn_number
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(LuanjiAction('audit-luanji-limit','p1',cards))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_luanji.py:23: Failed
+______ test_luanji_cannot_bypass_ordinary_trick_use_restrictions[zishou] ______
+
+restriction = 'zishou'
+
+    @pytest.mark.parametrize('restriction',['qianxi','qiaoshui','zhuikong','zishou'])
+    def test_luanji_cannot_bypass_ordinary_trick_use_restrictions(restriction):
+        s=setup('xun_you');s.state.players['p1'].character_id='fire_yuan_shao';clear_hand(s)
+        cards=tuple(put(s,'basic.slash') for _ in range(2))
+        for c in cards:s.state.cards[c]=replace(s.state.cards[c],suit=Suit.SPADE)
+        if restriction=='qianxi':
+            s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'black','turn':s.state.turn_number}}
+        else:
+            mark={'qiaoshui':'qiaoshui_trick_lock','zhuikong':'zhuikong_self_only','zishou':'yj_zishou'}[restriction]
+            s.state.players['p1'].marks[mark]=s.state.turn_number
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(LuanjiAction('audit-luanji-limit','p1',cards))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_luanji.py:23: Failed
+__________ test_luanji_pair_order_does_not_change_same_suit_legality __________
+
+    def test_luanji_pair_order_does_not_change_same_suit_legality():
+        s=setup('xun_you');s.state.players['p1'].character_id='fire_yuan_shao';clear_hand(s)
+        cards=tuple(put(s,'basic.slash') for _ in range(2))
+        for c in cards:s.state.cards[c]=replace(s.state.cards[c],suit=Suit.HEART)
+>       s.engine.start_action(LuanjiAction('audit-luanji-reversed','p1',tuple(reversed(cards))))
+
+tests\test_t18a11_luanji.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\sanguosha\engine\engine.py:56: in start_action
+    return self.run_until_blocked()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+src\sanguosha\engine\engine.py:97: in run_until_blocked
+    outcome = self.registry.handler_for(frame.action).step(self.state, frame)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sanguosha.engine.fire.LuanjiHandler object at 0x000002017334DF30>
+state = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='fire_yuan_sh...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None)
+frame = ResolutionFrame(frame_id='frame-1', action=LuanjiAction(action_id='audit-luanji-reversed', player_id='p1', card_ids=('...e, child_result=None, result=None, status=<FrameStatus.READY: 'ready'>, deferred_step=None, reaction_child_result=None)
+
+    def step(self, state, frame):
+        from .military_tricks import TrickAction
+        action = frame.action
+        pid = action.player_id
+        if frame.step_index == 0:
+            if (not self.skills.has(state, pid, 'luanji')
+                    or state.current_player_id != pid or state.current_phase is not Phase.PLAY
+                    or action.card_ids not in self.pairs(state, pid)):
+>               raise InvalidCardUse('�һ����ϲ�����')
+E               sanguosha.engine.card_rules.InvalidCardUse: �һ����ϲ�����
+
+src\sanguosha\engine\fire.py:495: InvalidCardUse
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_luanji.py::test_luanji_cannot_bypass_ordinary_trick_use_restrictions[qianxi]
+FAILED tests/test_t18a11_luanji.py::test_luanji_cannot_bypass_ordinary_trick_use_restrictions[qiaoshui]
+FAILED tests/test_t18a11_luanji.py::test_luanji_cannot_bypass_ordinary_trick_use_restrictions[zhuikong]
+FAILED tests/test_t18a11_luanji.py::test_luanji_cannot_bypass_ordinary_trick_use_restrictions[zishou]
+FAILED tests/test_t18a11_luanji.py::test_luanji_pair_order_does_not_change_same_suit_legality
+5 failed in 0.43s

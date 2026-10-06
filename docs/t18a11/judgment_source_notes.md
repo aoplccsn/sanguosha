@@ -20,3 +20,5 @@ judgment_stale_reproduction.log保留探索记录：已确认发动后人为禁�
 judgment_targeted.log最终325 passed；含11个新增判定用例、AOE/无懈新增及既有相关回归。执行test_t13_mountain.py包含原有左慈AI单局smoke，未执行tests/test_t18a11_huashen.py的795专项，也未运行最终全量门禁。
 
 当前鬼才/鬼道/天妒/极略/帷幕等行补入组合证据仍保留BLOCKED，待所有触发次序/权限/判定后清理和互动边界闭环后再关闭。
+
+判定补核：room.cpp getAllPlayers在当前角色NotActive时将其移到末尾，judge的AskForRetrial沿该顺序。judgment_finish_reproduction.log两真实失败：无phase当前角色仍最先改判，拒绝天妒将独立gain_on_match成功判定牌弃掉。standard-generals.cpp Tiandu与Luoshen FinishJudge来源确认天妒是可选取得，不取消洛神的独立黑判定取得资格。已修inactive尾移及gain_on_match分支；judgment_finish_targeted.log 157 passed。同一持有者多技能选择顺序、FinishJudge完整触发顺序尚未闭环，鬼才/鬼道/天妒等继续BLOCKED。相关test_t13_mountain.py仅含原有普通左慈AI smoke，未执行795专项。

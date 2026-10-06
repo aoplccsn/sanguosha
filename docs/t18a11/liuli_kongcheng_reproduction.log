@@ -1,0 +1,27 @@
+............F                                                            [100%]
+================================== FAILURES ===================================
+__________ test_liuli_cannot_redirect_slash_to_empty_hand_kongcheng ___________
+
+    def test_liuli_cannot_redirect_slash_to_empty_hand_kongcheng():
+        from sanguosha.engine.military_basics import MilitaryStrike
+        from sanguosha.model.zones import ZoneRef,ZoneType
+        from sanguosha.engine.card_moves import CardMove,CardMoveReason
+        s=setup('xun_you');s.state.players['p3'].granted_skills['kongcheng']='audit'
+        hand=s.state.cards_in(ZoneRef(ZoneType.HAND,'p3'))
+        s.engine.reaction_provider.__self__.move(s.state,CardMove('audit-empty-kongcheng',hand,ZoneRef(ZoneType.HAND,'p3'),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM))
+        cost=put(s,'basic.slash','p2');card=put(s,'basic.slash')
+        a=MilitaryStrike('audit-liuli-kongcheng','p1','p2',card,'basic.dodge')
+>       assert 'p3' not in s.engine.registry.handler_for(a).liuli_targets(s.state,a,cost)
+E       AssertionError: assert 'p3' not in ('p3',)
+E        +  where ('p3',) = liuli_targets(GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_y...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None), MilitaryStrike(action_id='audit-liuli-kongcheng', source_id='p1', target_id='p2', card_id='std-heart-08-1', dodge_definition_id='basic.dodge', wine_bonus=0, virtual_card=None, root_action_id='', required_dodges=None), 'std-club-04-2')
+E        +    where liuli_targets = <sanguosha.engine.military_basics.MilitarySlashHandler object at 0x000002EB210EA740>.liuli_targets
+E        +      where <sanguosha.engine.military_basics.MilitarySlashHandler object at 0x000002EB210EA740> = handler_for(MilitaryStrike(action_id='audit-liuli-kongcheng', source_id='p1', target_id='p2', card_id='std-heart-08-1', dodge_definition_id='basic.dodge', wine_bonus=0, virtual_card=None, root_action_id='', required_dodges=None))
+E        +        where handler_for = <sanguosha.engine.registry.ActionHandlerRegistry object at 0x000002EB2109A2B0>.handler_for
+E        +          where <sanguosha.engine.registry.ActionHandlerRegistry object at 0x000002EB2109A2B0> = <sanguosha.engine.engine.GameEngine object at 0x000002EB21168E10>.registry
+E        +            where <sanguosha.engine.engine.GameEngine object at 0x000002EB21168E10> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000002EB21168E10>, events=<sanguosha.engine.events....C10>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000002EB2109A8A0>).engine
+E        +    and   GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_y...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000002EB21168E10>, events=<sanguosha.engine.events....C10>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000002EB2109A8A0>).state
+
+tests\test_t18a11_duel.py:153: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_duel.py::test_liuli_cannot_redirect_slash_to_empty_hand_kongcheng
+1 failed, 12 passed in 0.80s

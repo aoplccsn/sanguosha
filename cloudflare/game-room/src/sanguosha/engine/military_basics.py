@@ -154,9 +154,6 @@ class MilitaryDamageHandler(DamageActionHandler):
             self.recorder.record(BeforeDamageEvent(action.action_id + ':before', action.source_id, action.target_id, amount))
             frame.local['yj_face_down_before'] = not target.face_up
             target.hp -= amount
-            if (self.skills is not None and self.skills.has(state, action.target_id, 'zhichi')
-                    and state.current_player_id != action.target_id):
-                target.marks['yj_zhichi'] = state.turn_number
             if self.skills is not None and self.skills.has(state, action.target_id, 'renjie'):
                 target.marks['ren'] = target.marks.get('ren', 0) + amount
             from .fuhun import grant_after_damage
@@ -301,6 +298,14 @@ class MilitaryDamageHandler(DamageActionHandler):
                     self.moves.move(state,CardMove(action.action_id+':fankui-gain',(cid,),ref,
                         destination,CardMoveReason.SYSTEM,action.target_id))
             frame.step_index = 1
+        if frame.step_index == 1 and not frame.local.get('zhichi_checked'):
+            frame.local['zhichi_checked'] = True
+            current = state.players.get(state.current_player_id)
+            if (target.is_alive and self.skills is not None
+                    and self.skills.has(state, action.target_id, 'zhichi')
+                    and state.current_player_id != action.target_id
+                    and current is not None and current.is_alive and state.current_phase is not None):
+                target.marks['yj_zhichi'] = state.turn_number
         if frame.step_index == 1 and not frame.local.get('jianxiong_offered') and self.skills is not None and self.skills.has(state,action.target_id,'jianxiong') and target.is_alive:
             obtainable = self.jianxiong_materials(state, action)
             frame.local['jianxiong_offered'] = True
@@ -512,6 +517,7 @@ class MilitaryStrike(SlashEffectAction):
     wine_bonus: int = 0
     virtual_card: VirtualCard | None = None
     root_action_id: str = ""
+    required_dodges: int | None = None
 
 @dataclass(frozen=True,slots=True)
 class SlashSequence(Action):
@@ -523,13 +529,18 @@ class SlashSequence(Action):
     known_targets: tuple[str,...] = ()
 
 class SlashSequenceHandler:
+    def __init__(self, skills=None):
+        self.skills = skills
+
     def step(self,state,f):
         from .fuhuanghou import slash_window
         a=f.action
         if f.step_index==0:
             f.local['wine']=state.players[a.source_id].marks.pop('wine',0) if a.wine_bonus is None else a.wine_bonus
             from .qiaoshui import take_targets
-            slash_window(state,a.action_id,take_targets(state,a.action_id,a.targets),a.known_targets)
+            window=slash_window(state,a.action_id,take_targets(state,a.action_id,a.targets),a.known_targets)
+            f.local['required_dodges'] = {pid:required_dodge_count(state,a.source_id,pid,self.skills)
+                                          for pid in window['targets']}
             f.step_index=1
         window=slash_window(state,a.action_id)
         if f.cursor>=len(window['targets']) or state.status is GameStatus.FINISHED:
@@ -538,18 +549,30 @@ class SlashSequenceHandler:
         target=window['targets'][f.cursor]
         f.cursor+=1;window['cursor']=f.cursor
         if not state.players[target].is_alive:return StepResult.continue_()
+        counts=f.local.setdefault('required_dodges',{})
+        if target not in counts:
+            counts[target]=required_dodge_count(state,a.source_id,target,self.skills)
         return StepResult.push(MilitaryStrike(f'{a.action_id}:target:{f.cursor}',a.source_id,target,a.card_id,
-            'basic.dodge',int(f.local['wine']),a.virtual_card,a.action_id))
+            'basic.dodge',int(f.local['wine']),a.virtual_card,a.action_id,int(counts[target])))
 
 class MilitarySlashHandler:
     def liuli_targets(self, state, action, cost):
+        from copy import deepcopy
         owner = action.target_id
-        loses_weapon = cost in state.cards_in(ZoneRef(ZoneType.EQUIPMENT, owner, EquipmentSlot.WEAPON))
-        loses_horse = cost in state.cards_in(ZoneRef(ZoneType.EQUIPMENT, owner, EquipmentSlot.OFFENSIVE_HORSE))
-        reach = 1 if loses_weapon else self.distance.attack_range(state, owner)
-        return tuple(pid for pid in state.seat_order
-                     if pid not in (action.source_id, owner) and state.players[pid].is_alive
-                     and self.distance.distance_between(state, owner, pid) + int(loses_horse) <= reach)
+        # The cost is removed in an isolated probe, so fixed distances, horses,
+        # weapons and skill range modifiers still compose in the shared system.
+        probe = deepcopy(state)
+        for ref, zone in probe.zones.items():
+            if ref.player_id == owner and cost in zone.card_ids:
+                zone.card_ids.remove(cost)
+                break
+        from .fuhuanghou import target_allowed
+        return tuple(pid for pid in probe.seat_order
+                     if pid not in (action.source_id, owner) and probe.players[pid].is_alive
+                     and target_allowed(probe,action.source_id,pid)
+                     and not (self.skills is not None and self.skills.has(probe,pid,'kongcheng')
+                              and not probe.cards_in(ZoneRef(ZoneType.HAND,pid)))
+                     and self.distance.can_reach_with_slash(probe, owner, pid))
 
     def step(self,state,frame):
         from .actions import StepKind
@@ -568,6 +591,9 @@ class MilitarySlashHandler:
 
     def _step(self, state, frame):
         action = frame.action
+        if 'required_dodges' not in frame.local:
+            fixed=getattr(action,'required_dodges',None)
+            frame.local['required_dodges'] = fixed if fixed is not None else required_dodge_count(state, action.source_id, action.target_id, self.skills)
         if state.status is GameStatus.FINISHED or not state.players[action.target_id].is_alive:
             return StepResult.complete('prevented')
         from .fire import effective_armor
@@ -695,7 +721,7 @@ class MilitarySlashHandler:
             frame.step_index = 3
             return StepResult.push(RespondWithCardAction(action.action_id + ':response', action.target_id,
                 action.dodge_definition_id, action.action_id, '请打出闪响应杀', action.target_id, False,
-                response_total=required_dodge_count(state, action.source_id, action.target_id, self.skills)))
+                response_total=int(frame.local['required_dodges'])))
         if frame.step_index == 19:
             wanted = frame.decision is True
             frame.decision = None
@@ -777,8 +803,8 @@ class MilitarySlashHandler:
             if frame.child_result is True:
                 self.recorder.record(VirtualResponseEvent(action.action_id+':armor-dodge',
                     action.target_id, action.action_id, 'basic.dodge', 1,
-                    required_dodge_count(state, action.source_id, action.target_id, self.skills)))
-                if required_dodge_count(state, action.source_id, action.target_id, self.skills) == 1:
+                    int(frame.local['required_dodges'])))
+                if int(frame.local['required_dodges']) == 1:
                     return StepResult.complete('avoided')
                 frame.child_result = VirtualCard('basic.dodge',(),None,None)
                 frame.step_index = 3
@@ -786,10 +812,10 @@ class MilitarySlashHandler:
             frame.step_index = 3
             return StepResult.push(RespondWithCardAction(action.action_id + ':response', action.target_id,
                 action.dodge_definition_id, action.action_id, '八卦阵未生效，请打出闪', action.target_id, False,
-                response_total=required_dodge_count(state, action.source_id, action.target_id, self.skills)))
+                response_total=int(frame.local['required_dodges'])))
         if frame.step_index == 3:
             if frame.child_result is not None:
-                if required_dodge_count(state, action.source_id, action.target_id, self.skills) > 1 and not frame.local.get('dodge_complete'):
+                if int(frame.local['required_dodges']) > 1 and not frame.local.get('dodge_complete'):
                     frame.local['dodge_complete'] = True
                     frame.step_index = 18
                     return StepResult.push(RespondWithCardAction(action.action_id+':second-dodge',action.target_id,
@@ -1322,7 +1348,7 @@ def register_military_basics(definitions, rules, registry, moves, events, bodies
     registry.register(WineAction, WineHandler())
     registry.register(SlashEffectAction, MilitarySlashHandler(moves, skills, distance, events))
     registry.register(MilitaryStrike, MilitarySlashHandler(moves, skills, distance, events))
-    registry.register(SlashSequence, SlashSequenceHandler())
+    registry.register(SlashSequence, SlashSequenceHandler(skills))
     from .military_equipment import WeaponChoice,WeaponChoiceHandler
     registry.register(WeaponChoice,WeaponChoiceHandler(moves))
     handler = MilitaryDamageHandler(events, moves, skills, definitions)

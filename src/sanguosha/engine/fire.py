@@ -480,9 +480,14 @@ class LuanjiHandler:
         self.skills, self.moves, self.events = skills, moves, events
 
     def pairs(self, state, pid):
+        from .card_limits import card_allowed
+        from .military_tricks import MilitaryTrickRule
+        if not MilitaryTrickRule('trick.archery_attack', None, self.skills).can_use(state, pid):
+            return ()
         hand = state.cards_in(ZoneRef(ZoneType.HAND, pid))
         return tuple((a, b) for i, a in enumerate(hand) for b in hand[i+1:]
-                     if effective_suit(state, a, pid) is effective_suit(state, b, pid))
+                     if effective_suit(state, a, pid) is effective_suit(state, b, pid)
+                     and card_allowed(state, pid, (a, b)))
 
     def step(self, state, frame):
         from .military_tricks import TrickAction
@@ -491,7 +496,8 @@ class LuanjiHandler:
         if frame.step_index == 0:
             if (not self.skills.has(state, pid, 'luanji')
                     or state.current_player_id != pid or state.current_phase is not Phase.PLAY
-                    or action.card_ids not in self.pairs(state, pid)):
+                    or len(action.card_ids) != 2 or len(set(action.card_ids)) != 2
+                    or not any(set(action.card_ids) == set(pair) for pair in self.pairs(state, pid))):
                 raise InvalidCardUse('乱击材料不可用')
             targets = tuple(q for q in state.seat_order if q != pid and state.players[q].is_alive)
             if not targets:

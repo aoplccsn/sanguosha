@@ -1,0 +1,21 @@
+.....F                                                                   [100%]
+================================== FAILURES ===================================
+____ test_wushuang_slash_keeps_two_dodges_after_mid_response_skill_disable ____
+
+    def test_wushuang_slash_keeps_two_dodges_after_mid_response_skill_disable():
+        s=setup('xun_you');s.state.players['p1'].granted_skills['wushuang']='audit'
+        first=put(s,'basic.dodge','p2');second=put(s,'basic.dodge','p2')
+        card=put(s,'basic.slash')
+        s.engine.start_action(UseCardAction('audit-fixed-slash','p1',card,('p2',)))
+        assert s.engine.pending_request.required_definition_id=='basic.dodge'
+        s.state.players['p1'].disabled_skills.add('wushuang')
+        s=restore(s);answer(s,first)
+>       assert s.engine.pending_request is not None
+E       assert None is not None
+E        +  where None = <sanguosha.engine.engine.GameEngine object at 0x000001BE6CDC5860>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x000001BE6CDC5860> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000001BE6CDC5860>, events=<sanguosha.engine.events....E50>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000001BE6CDCFC50>).engine
+
+tests\test_t18a11_duel.py:60: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_duel.py::test_wushuang_slash_keeps_two_dodges_after_mid_response_skill_disable
+1 failed, 5 passed in 0.69s

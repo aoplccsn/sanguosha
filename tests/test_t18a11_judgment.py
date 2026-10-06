@@ -155,3 +155,81 @@ def test_lightning_spade_rank_boundaries_and_wuyan_prevents_delayed_trick_damage
     assert s.state.players['p1'].hp == hp
     destination = ZoneRef(ZoneType.DISCARD_PILE) if hit else ZoneRef(ZoneType.JUDGMENT, 'p2')
     assert card in s.state.cards_in(destination)
+
+
+def test_lightning_remains_on_table_until_damage_reactions_finish():
+    from sanguosha.engine.military_tricks import ResolveDelayed
+    s = setup('xun_you')
+    s.state.players['p1'].granted_skills['jianxiong'] = 'audit-grant'
+    card = put(s, 'delayed.lightning', 'p1', ZoneType.JUDGMENT)
+    top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    s.state.cards[top] = replace(s.state.cards[top], suit=Suit.SPADE, rank=2)
+    s.engine.start_action(ResolveDelayed('audit-lightning-table', 'p1', card))
+    offered = False
+    while s.engine.pending_request:
+        s = restore(s)
+        r = s.engine.pending_request
+        if r.request_id.endswith(':jianxiong'):
+            offered = True
+            assert card in s.state.cards_in(ZoneRef(ZoneType.PROCESSING))
+            answer(s, True)
+        else:
+            answer(s, r.timeout_value())
+    assert offered
+    assert card in s.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
+    assert not s.state.cards_in(ZoneRef(ZoneType.PROCESSING))
+
+
+def test_delayed_card_leaves_judgment_before_retrial_request():
+    from sanguosha.engine.military_tricks import ResolveDelayed
+    s = setup('xun_you')
+    s.state.players['p2'].granted_skills['guicai'] = 'audit-grant'
+    card = put(s, 'delayed.indulgence', 'p1', ZoneType.JUDGMENT)
+    s.engine.start_action(ResolveDelayed('audit-delayed-table', 'p1', card))
+    while s.engine.pending_request and ':guicai:' not in s.engine.pending_request.request_id:
+        answer(s, s.engine.pending_request.timeout_value())
+    assert s.engine.pending_request is not None
+    s = restore(s)
+    assert card not in s.state.cards_in(ZoneRef(ZoneType.JUDGMENT, 'p1'))
+    assert card in s.state.cards_in(ZoneRef(ZoneType.PROCESSING))
+
+
+def test_virtual_delayed_definition_survives_processing_and_reconnect():
+    from sanguosha.engine.military_tricks import ResolveDelayed
+    s = setup('xun_you')
+    s.state.players['p2'].granted_skills['guicai'] = 'audit-grant'
+    material = put(s, 'basic.slash', 'p1', ZoneType.JUDGMENT)
+    s.state.metadata['virtual_delayed_cards'] = {material: 'delayed.indulgence'}
+    top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    s.state.cards[top] = replace(s.state.cards[top], suit=Suit.SPADE)
+    s.engine.start_action(ResolveDelayed('audit-virtual-delayed', 'p1', material))
+    while s.engine.pending_request:
+        s = restore(s)
+        answer(s, s.engine.pending_request.timeout_value())
+    assert s.state.players['p1'].marks['skip_play'] == 1
+    assert material in s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert material not in s.state.metadata['virtual_delayed_cards']
+    assert not s.state.cards_in(ZoneRef(ZoneType.PROCESSING))
+
+
+def test_retrial_inactive_current_holder_moves_to_end_of_seat_order():
+    s=setup('xun_you');s.state.current_player_id='p3';s.state.current_phase=None
+    for pid in ('p1','p3','p4'):
+        s.state.players[pid].granted_skills['guicai']='audit'
+        put(s,'basic.slash',pid)
+    s.engine.start_action(JudgmentAction('audit-inactive-order','p2',JudgmentPattern(suit=Suit.HEART)))
+    order=[]
+    while s.engine.pending_request:
+        s=restore(s);order.append(s.engine.pending_request.player_id);answer(s,False)
+    assert order==['p4','p1','p3']
+
+
+def test_declining_tiandu_does_not_cancel_independent_gain_on_match():
+    from sanguosha.model.enums import Color
+    s=setup('xun_you');s.state.players['p1'].granted_skills['tiandu']='audit'
+    top=s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+    s.state.cards[top]=replace(s.state.cards[top],suit=Suit.SPADE)
+    s.engine.start_action(JudgmentAction('audit-luoshen-tiandu','p1',JudgmentPattern(color=Color.BLACK),gain_on_match=True))
+    s=restore(s);answer(s,False)
+    assert s.engine.last_result is True
+    assert top in s.state.cards_in(ZoneRef(ZoneType.HAND,'p1'))

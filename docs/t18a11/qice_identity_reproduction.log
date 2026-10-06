@@ -1,0 +1,86 @@
+...............F.F                                                       [100%]
+================================== FAILURES ===================================
+_____________ test_qice_virtual_preserves_declared_skill_identity _____________
+
+    def test_qice_virtual_preserves_declared_skill_identity():
+        from sanguosha.engine.yj2012 import YJ2012Handler
+        s=setup('xun_you');clear_hand(s);put(s,'basic.slash')
+        handler=YJ2012Handler(s.skills,s.engine.reaction_provider.__self__,s.definitions,None)
+        virtual=handler.qice_virtual(s.state,'p1','trick.duel')
+>       assert virtual.skill_id=='qice'
+E       AssertionError: assert '' == 'qice'
+E         
+E         - qice
+
+tests\test_t18a11_qice.py:71: AssertionError
+____________ test_qice_iron_chain_cannot_recast_with_empty_targets ____________
+
+    def test_qice_iron_chain_cannot_recast_with_empty_targets():
+        s=setup('xun_you');clear_hand(s);card=put(s,'basic.slash')
+        s.engine.start_action(YJ2012Action('audit-qice-no-recast','p1','qice'))
+        answer(s,'trick.iron_chain');s=restore(s)
+        assert s.engine.pending_request.min_count==1
+>       with pytest.raises(ValueError):answer(s,())
+                                       ^^^^^^^^^^^^
+
+tests\test_t18a11_qice.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_t17b_tier1.py:27: in answer
+    s.engine.submit_decision(Decision(r.request_id, r.player_id, value))
+src\sanguosha\engine\engine.py:66: in submit_decision
+    request.validate(decision.value)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PendingRequest(request_id='audit-qice-no-recast:request:2:0', player_id='p1', request_type=<RequestType.CHOOSE_PLAYERS..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=())
+value = ()
+
+    def validate(self, value: ChoiceValue) -> None:
+        kind = self.request_type
+        if kind is RequestType.YES_NO:
+            valid = type(value) is bool
+        elif kind is RequestType.CHOOSE_OPTION:
+            valid = type(value) is str and value in self.choices
+            if type(value) is dict and set(value) == {'option', 'targets'}:
+                option, targets = value['option'], value['targets']
+                spec = self.play_card_targets.get(option) if type(option) is str else None
+                valid = (spec is not None and type(targets) is tuple
+                         and spec[1] <= len(targets) <= spec[2]
+                         and len(targets) == len(set(targets))
+                         and all(type(target) is str and target in spec[0] for target in targets))
+        elif kind is RequestType.CHOOSE_PLAYER:
+            valid = type(value) is str and value in self.allowed_player_ids
+        elif kind is RequestType.RESPOND_WITH_CARD:
+            valid = (value is PASS_RESPONSE and self.allow_pass) or (
+                type(value) is str and value in self.eligible_card_ids
+            )
+        elif kind is RequestType.CHOOSE_CARD:
+            valid = type(value) is str and value in self.eligible_card_ids
+        elif kind is RequestType.CHOOSE_CARDS:
+            valid = (
+                type(value) is tuple
+                and self.min_count <= len(value) <= self.max_count
+                and (not value or len(value) >= self.minimum_nonempty_count)
+                and all(type(card_id) is str and card_id in self.eligible_card_ids for card_id in value)
+                and len(value) == len(set(value))
+                and all(sum(cid in group for cid in value) <= 1 for group in self.exclusive_card_groups)
+                and (not self.legal_card_sets or any(set(value) == set(cards) for cards in self.legal_card_sets))
+            )
+        elif kind is RequestType.CHOOSE_PLAYERS:
+            valid = (
+                type(value) is tuple
+                and self.min_count <= len(value) <= self.max_count
+                and all(type(player_id) is str and player_id in self.allowed_player_ids for player_id in value)
+                and len(value) == len(set(value))
+            )
+        else:
+            # Other request shapes are reserved for later rule stages.
+            raise InvalidDecision(f"request type {kind} has no T2 validator")
+        if not valid:
+>           raise InvalidDecision(f"illegal choice for {kind}: {value!r}")
+E           sanguosha.engine.errors.InvalidDecision: illegal choice for choose_players: ()
+
+src\sanguosha\engine\requests.py:120: InvalidDecision
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_qice.py::test_qice_virtual_preserves_declared_skill_identity
+FAILED tests/test_t18a11_qice.py::test_qice_iron_chain_cannot_recast_with_empty_targets
+2 failed, 16 passed in 1.21s

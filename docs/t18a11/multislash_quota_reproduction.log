@@ -1,0 +1,35 @@
+......F                                                                  [100%]
+================================== FAILURES ===================================
+_ test_multitarget_wushuang_slash_freezes_all_initial_targets_before_first_response _
+
+    def test_multitarget_wushuang_slash_freezes_all_initial_targets_before_first_response():
+        from sanguosha.model.enums import EquipmentSlot
+        from sanguosha.model.zones import ZoneRef,ZoneType
+        from sanguosha.engine.card_moves import CardMove,CardMoveReason
+        s=setup('xun_you');s.state.players['p1'].granted_skills['wushuang']='audit'
+        old=s.state.cards_in(ZoneRef(ZoneType.HAND,'p1'))
+        s.engine.reaction_provider.__self__.move(s.state,CardMove('audit-empty',old,ZoneRef(ZoneType.HAND,'p1'),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM))
+        put(s,'equipment.weapon.halberd','p1',ZoneType.EQUIPMENT,EquipmentSlot.WEAPON)
+        card=put(s,'basic.slash')
+        dodges={pid:[put(s,'basic.dodge',pid) for _ in range(2)] for pid in ('p2','p3')}
+        s.engine.start_action(UseCardAction('audit-multi-fixed','p1',card,('p2','p3')))
+        s.state.players['p1'].disabled_skills.add('wushuang')
+        seen=[]
+        while s.engine.pending_request:
+            s=restore(s);r=s.engine.pending_request
+            if r.required_definition_id=='basic.dodge':
+                a=s.engine.stack.snapshot()[-1].action
+                seen.append((r.player_id,a.response_number,a.response_total))
+                answer(s,next(c for c in dodges[r.player_id] if c in r.eligible_card_ids))
+            else:answer(s,r.timeout_value())
+>       assert seen==[('p2',1,2),('p2',2,2),('p3',1,2),('p3',2,2)]
+E       AssertionError: assert [('p2', 1, 2)... ('p3', 1, 1)] == [('p2', 1, 2)... ('p3', 2, 2)]
+E         
+E         At index 2 diff: ('p3', 1, 1) != ('p3', 1, 2)
+E         Right contains one more item: ('p3', 2, 2)
+E         Use -v to get more diff
+
+tests\test_t18a11_duel.py:87: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_duel.py::test_multitarget_wushuang_slash_freezes_all_initial_targets_before_first_response
+1 failed, 6 passed in 0.67s

@@ -1,0 +1,25 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_wushuang_duel_quota_stays_fixed_after_skill_disabled __________
+
+    def test_wushuang_duel_quota_stays_fixed_after_skill_disabled():
+        s=setup('xun_you')
+        s.state.players['p1'].granted_skills['wushuang']='audit'
+        first=put(s,'basic.slash','p2')
+        second=put(s,'basic.slash','p2')
+        card=put(s,'trick.duel')
+        s.engine.start_action(UseCardAction('audit-fixed-duel','p1',card,('p2',)))
+        while s.engine.pending_request.required_definition_id!='basic.slash':
+            s=restore(s);answer(s,s.engine.pending_request.timeout_value())
+        s.state.players['p1'].disabled_skills.add('wushuang')
+        s=restore(s);answer(s,first)
+>       assert s.engine.pending_request.player_id=='p2'
+E       AssertionError: assert 'p1' == 'p2'
+E         
+E         - p2
+E         + p1
+
+tests\test_t18a11_duel.py:17: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_duel.py::test_wushuang_duel_quota_stays_fixed_after_skill_disabled
+1 failed in 0.46s

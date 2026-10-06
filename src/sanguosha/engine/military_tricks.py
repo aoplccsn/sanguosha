@@ -72,6 +72,7 @@ class TargetTrick(Action):
     pool_key: str = ''
     savage_source_id: str | None = None
     virtual_card: VirtualCard | None = None
+    wushuang_players: tuple[str, ...] | None = None
 
 class MilitaryTrickRule:
     def __init__(self, definition, distance, skills=None):
@@ -183,6 +184,9 @@ class TrickHandler:
             adjusted=take_targets(state,a.action_id,targets)
             targets=tuple(q for q in adjusted if q in targets) if d in ('trick.savage_assault','trick.archery_attack','trick.god_salvation','trick.amazing_grace') else adjusted
             frame.local['confirmed_targets'] = tuple(targets)
+            if d == 'trick.duel':
+                frame.local['wushuang_players'] = tuple(pid for pid in (a.source_id, *targets)
+                    if self.skills is not None and self.skills.has(state,pid,'wushuang'))
             if d in ('trick.savage_assault', 'trick.archery_attack'):
                 from .forest import savage_effect_immune
                 from .yj2011_tier3 import protected
@@ -231,7 +235,7 @@ class TrickHandler:
             if not frame.child_result:
                 return StepResult.push(TargetTrick(f'{a.action_id}:effect:{frame.cursor}',a.source_id,
                     targets[frame.cursor-1],a.card_id,d,str(frame.local['pool']),
-                    frame.local.get('savage_source'),a.virtual_card))
+                    frame.local.get('savage_source'),a.virtual_card,frame.local.get('wushuang_players')))
         if frame.step_index == 3:
             frame.step_index=1
         if state.status is GameStatus.FINISHED or frame.cursor >= len(targets):
@@ -299,9 +303,13 @@ class TargetTrickHandler:
                 if d != 'trick.duel' and equipped(state,a.target_id,EquipmentSlot.ARMOR) == 'equipment.armor.vine':
                     return StepResult.complete('prevented')
                 f.local['who']=a.target_id
+                f.local['wushuang_players'] = (a.wushuang_players if a.wushuang_players is not None else
+                    tuple(pid for pid in (a.source_id,a.target_id)
+                          if self.skills is not None and self.skills.has(state,pid,'wushuang')))
                 return StepResult.push(RespondWithCardAction(a.action_id+':response:0',a.target_id,
                     'basic.dodge' if d == 'trick.archery_attack' else 'basic.slash',a.action_id,
-                    '请打出闪' if d == 'trick.archery_attack' else '请打出杀',a.target_id))
+                    '请打出闪' if d == 'trick.archery_attack' else '请打出杀',a.target_id,response_number=1,
+                    response_total=2 if d == 'trick.duel' and a.source_id in f.local['wushuang_players'] else 1))
         if f.step_index == 1:
             if d in ('trick.dismantlement','trick.snatch'):
                 self.move(state,a,f.decision,ZoneRef(ZoneType.HAND,a.source_id) if d == 'trick.snatch' else ZoneRef(ZoneType.DISCARD_PILE))
@@ -335,17 +343,17 @@ class TargetTrickHandler:
                         return StepResult.complete()
                     responder = f.local['who']
                     opponent = a.source_id if responder == a.target_id else a.target_id
-                    if (self.skills is not None and self.skills.has(state,opponent,'wushuang') and
-                            not f.local.get('duel_second')):
+                    if (opponent in f.local['wushuang_players'] and not f.local.get('duel_second')):
                         f.local['duel_second'] = True
                         f.cursor += 1
                         return StepResult.push(RespondWithCardAction(f'{a.action_id}:response:{f.cursor}',responder,
-                            'basic.slash',a.action_id,'无双：决斗中请再打出一张杀',responder))
+                            'basic.slash',a.action_id,'无双：决斗中请再打出一张杀',responder,response_number=2,response_total=2))
                     f.local.pop('duel_second',None)
                     who=a.source_id if f.local['who'] == a.target_id else a.target_id
                     f.local['who']=who
                     f.cursor+=1
-                    return StepResult.push(RespondWithCardAction(f'{a.action_id}:response:{f.cursor}',who,'basic.slash',a.action_id,'决斗：请继续打出杀',who))
+                    return StepResult.push(RespondWithCardAction(f'{a.action_id}:response:{f.cursor}',who,'basic.slash',a.action_id,'决斗：请继续打出杀',who,response_number=1,
+                        response_total=2 if (a.target_id if who == a.source_id else a.source_id) in f.local['wushuang_players'] else 1))
                 f.step_index=3
                 f.local.pop('duel_second',None)
                 who=str(f.local['who'])
@@ -401,8 +409,10 @@ class DelayedHandler:
         self.skills=skills
     def step(self,state,f):
         a=f.action
-        d=delayed_definition(state, a.card_id)
+        d=f.local.get('definition',delayed_definition(state, a.card_id))
         if f.step_index == 0:
+            f.local['definition']=d
+            f.local['virtual_delayed']=a.card_id in state.metadata.get('virtual_delayed_cards',{})
             f.step_index=1
             if self.definitions is not None and not self.definitions.get(d).nullifiable:
                 f.child_result = False
@@ -413,6 +423,8 @@ class DelayedHandler:
                 f.local['cancelled']=True
                 f.step_index=3
             else:
+                self.moves.move(state,CardMove(a.action_id+':table',(a.card_id,),
+                    locate(state,a.card_id),ZoneRef(ZoneType.PROCESSING),CardMoveReason.USE,a.player_id))
                 f.step_index=2
                 pattern={'delayed.indulgence':JudgmentPattern(suit=Suit.HEART),
                     'delayed.supply_shortage':JudgmentPattern(suit=Suit.CLUB),
@@ -422,12 +434,19 @@ class DelayedHandler:
             f.local['hit']=bool(f.child_result)
             f.step_index=3
             if d == 'delayed.lightning' and f.child_result:
-                self.moves.move(state,CardMove(a.action_id+':discard',(a.card_id,),locate(state,a.card_id),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM))
                 f.step_index=4
                 return StepResult.push(MilitaryDamageAction(a.action_id+':lightning',None,a.player_id,3,DamageNature.THUNDER,a.card_id))
             if d != 'delayed.lightning' and not f.child_result:
                 state.players[a.player_id].marks['skip_play' if d == 'delayed.indulgence' else 'skip_draw']=1
+        if f.step_index == 4:
+            if a.card_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
+                self.moves.move(state,CardMove(a.action_id+':discard',(a.card_id,),
+                    ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM))
+            return StepResult.complete()
         if f.step_index == 3:
+            source=locate(state,a.card_id)
+            if source.zone_type not in (ZoneType.PROCESSING,ZoneType.JUDGMENT):
+                return StepResult.complete()
             dest=ZoneRef(ZoneType.DISCARD_PILE)
             if d == 'delayed.lightning':
                 start=state.seat_order.index(a.player_id)
@@ -440,7 +459,9 @@ class DelayedHandler:
                                         for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid)))):
                         dest=ZoneRef(ZoneType.JUDGMENT,pid)
                         break
-            self.moves.move(state,CardMove(a.action_id+':move',(a.card_id,),locate(state,a.card_id),dest,CardMoveReason.SYSTEM))
+            self.moves.move(state,CardMove(a.action_id+':move',(a.card_id,),source,dest,CardMoveReason.SYSTEM))
+            if dest.zone_type is ZoneType.JUDGMENT and f.local.get('virtual_delayed'):
+                state.metadata.setdefault('virtual_delayed_cards',{})[a.card_id]=d
         return StepResult.complete()
 
 class JudgmentPhaseBody:

@@ -390,3 +390,17 @@ def test_zhenlie_source_hand_choice_hides_ids_and_faces_after_reconnect():
     old = s.state.cards[hidden]
     s.state.cards[hidden] = replace(old, definition_id='basic.peach', suit=Suit.DIAMOND, rank=13)
     assert room._request_payload(r) == before
+
+@pytest.mark.parametrize('source,target', [('p1','p2'),('p2','p1')])
+def test_wuyan_skill_damage_and_hp_loss_are_not_mistaken_for_trick_damage(source,target):
+    from sanguosha.engine.military_basics import MilitaryDamageAction
+    from sanguosha.engine.hp import LoseHpAction
+    s=setup('xun_you')
+    s.state.players['p1'].granted_skills['wuyan']='audit'
+    before=s.state.players[target].hp
+    s.engine.start_action(MilitaryDamageAction('audit-cardless',source,target,1))
+    s=drain(s)
+    assert s.state.players[target].hp==before-1
+    s.engine.start_action(LoseHpAction('audit-hploss',target,1))
+    s=drain(s)
+    assert s.state.players[target].hp==before-2

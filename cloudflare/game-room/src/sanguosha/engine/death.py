@@ -49,6 +49,9 @@ class DeathActionHandler:
         victim = state.players[action.target_id]
         if frame.step_index == 0:
             victim.status = PlayerStatus.DEAD
+            if action.target_id == state.current_player_id:
+                from .yj2011_tier3 import clear_zhichi
+                clear_zhichi(state)
             from .skill_leases import on_death
             on_death(state,action.target_id)
             from .card_limits import clear_source

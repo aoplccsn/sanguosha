@@ -186,6 +186,8 @@ class JudgmentHandler:
             if self.skills is not None:
                 start = state.seat_order.index(state.current_player_id or state.seat_order[0])
                 order = state.seat_order[start:] + state.seat_order[:start]
+                if state.current_phase is None and state.current_player_id in order:
+                    order = tuple(pid for pid in order if pid != state.current_player_id) + (state.current_player_id,)
                 for actor in order:
                     if not state.players[actor].is_alive:
                         continue
@@ -261,7 +263,7 @@ class JudgmentHandler:
         if frame.step_index == 2 and action.gain_on_match and frame.local['matched']:
             return self._finish(state, frame, card_id, ZoneRef(ZoneType.HAND, action.player_id))
         if frame.step_index == 3:
-            obtain = frame.decision is True
+            obtain = frame.decision is True or (action.gain_on_match and frame.local['matched'])
             frame.decision = None
             return self._finish(state, frame, card_id,
                                 ZoneRef(ZoneType.HAND, action.player_id) if obtain else ZoneRef(ZoneType.DISCARD_PILE))

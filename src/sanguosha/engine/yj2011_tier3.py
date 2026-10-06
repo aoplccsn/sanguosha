@@ -48,6 +48,11 @@ def protected(state, target):
     return state.players[target].marks.get('yj_zhichi') == state.turn_number
 
 
+def clear_zhichi(state):
+    for player in state.players.values():
+        player.marks.pop('yj_zhichi', None)
+
+
 def clear_turn(state):
     state.metadata.pop('longyin_ignored_events',None)
     for player in state.players.values():
