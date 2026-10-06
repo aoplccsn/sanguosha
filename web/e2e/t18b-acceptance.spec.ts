@@ -10,12 +10,12 @@ async function enter(page:Page,request:any,kind:string,general?:string){
 async function images(page:Page,selector:string){await expect.poll(()=>page.locator(selector).evaluateAll(nodes=>nodes.length>0&&nodes.every(n=>(n as HTMLImageElement).complete&&(n as HTMLImageElement).naturalWidth>0))).toBeTruthy()}
 async function noOverflow(page:Page){expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBeTruthy()}
 
-test('103 production portraits, 43 card arts and all 13 dynamic sets use production HTTP',async({request})=>{
- const catalog=await (await request.get('/api/catalog/generals')).json();expect(catalog).toHaveLength(103);expect(catalog.every((g:any)=>g.implemented&&g.playable)).toBeTruthy()
+test('108 production portraits, 44 card arts and all 17 dynamic sets use production HTTP',async({request})=>{
+ const catalog=await (await request.get('/api/catalog/generals')).json();expect(catalog).toHaveLength(108);expect(catalog.every((g:any)=>g.implemented&&g.playable)).toBeTruthy()
  const manifest=await (await request.get('/assets/manifest.json')).json()
- const cards=[...new Set(Object.entries(manifest).filter(([key])=>/^(basic|trick|delayed|equipment)\./.test(key)).map(([,v])=>'/assets/'+v))];expect(cards).toHaveLength(43)
+ const cards=[...new Set(Object.entries(manifest).filter(([key])=>/^(basic|trick|delayed|equipment)\./.test(key)).map(([,v])=>'/assets/'+v))];expect(cards).toHaveLength(44)
  for(const path of [...catalog.map((g:any)=>g.portrait),...cards]){const r=await request.get(String(path));expect(r.status(),String(path)).toBe(200);expect(r.headers()['content-type']).toMatch(/^image\/(png|webp)/);expect((await r.body()).length).toBeGreaterThan(100)}
- const idle=await (await request.get('/assets/idle_portraits.json')).json();expect(Object.keys(idle)).toHaveLength(13)
+ const idle=await (await request.get('/assets/idle_portraits.json')).json();expect(Object.keys(idle)).toHaveLength(17)
  for(const item of Object.values(idle) as any[])for(const path of new Set([item.video,item.panelVideo].filter(Boolean))){const r=await request.get(path);expect(r.status(),path).toBe(200);expect(r.headers()['content-type']).toMatch(/^video\/mp4/);expect((await r.body()).length).toBeGreaterThan(10000);const range=await request.get(path,{headers:{Range:'bytes=0-1023'}});expect(range.status()).toBe(206);expect((await range.body()).length).toBe(1024)}
 })
 

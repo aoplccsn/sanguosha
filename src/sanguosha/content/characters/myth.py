@@ -12,11 +12,11 @@ _G = Gender.MALE
 _F = Gender.FEMALE
 _W, _S, _U, _Q, _GOD = Kingdom.WEI, Kingdom.SHU, Kingdom.WU, Kingdom.QUN, Kingdom.QUN
 
-def _c(cid, name, kingdom, hp, gender, skills, *, god=False, derived_skills=()):
+def _c(cid, name, kingdom, hp, gender, skills, *, god=False, derived_skills=(), overpowered=False):
     return CharacterDefinition(cid, name, kingdom, hp, gender, tuple(skills), {
         "pack": cid.split("_", 1)[0], "resource_id": f"general.{cid}",
         "implemented": True, "playable": True,
-        "portrait_mode": "static", "god": god, "derived_skills": tuple(derived_skills),
+        "portrait_mode": "static", "god": god, "overpowered": overpowered, "huashen_eligible": not god, "derived_skills": tuple(derived_skills),
     })
 
 MYTH_CHARACTERS = (
@@ -39,7 +39,7 @@ MYTH_CHARACTERS = (
     _c('mountain_liushan','刘禅',_S,3,_G,('xiangle','fangquan','ruoyu')), _c('mountain_jiang_wei','姜维',_S,4,_G,('tiaoxin','zhiji','guanxing'), derived_skills=('guanxing',)),
     _c('mountain_sunce','孙策',_U,4,_G,('jiang','hunzi','zhiba')), _c('mountain_zhang_zhaozhang','张昭张纮',_U,3,_G,('zhijian','guzheng')),
     _c('mountain_zuoci','左慈',_Q,3,_G,('huashen','xinsheng')), _c('mountain_cai_wenji','蔡文姬',_Q,3,_F,('beige','duanchang')),
-    _c('mountain_god_zhaoyun','神赵云',_GOD,2,_G,('juejing','longhun'), god=True), _c('mountain_god_simayi','神司马懿',_GOD,4,_G,('renjie','baoyin','lianpo'), god=True),
+    _c('mountain_god_zhaoyun','神赵云',_GOD,2,_G,('juejing','longhun'), god=True), _c('mountain_god_simayi','神司马懿',_GOD,4,_G,('renjie','baoyin','lianpo'), god=True, overpowered=True),
 )
 
 _NAMES = {
@@ -187,9 +187,9 @@ _GOD_DESCRIPTIONS = {
     'shenfen': '出牌阶段限一次，弃六枚怒，对所有其他角色造成一点伤害，令其弃装备与四张手牌，然后翻面。',
     'juejing': '锁定技，摸牌阶段额外摸已损失体力值张牌；手牌上限加二。',
     'longhun': '可将等同于当前体力值的同花色牌分别当桃、火杀、闪或无懈可击使用或打出。',
-    'renjie': '锁定技，每受到一点伤害或在弃牌阶段因规则弃置一张牌，获得一枚忍。',
+    'renjie': '锁定技，不响应延时锦囊或其他角色使用的牌后获得一枚忍，每轮至多四枚。',
     'baoyin': '觉醒技，准备阶段若忍不少于四，减少一点体力上限并获得极略。',
-    'lianpo': '当你于一回合内杀死角色，可在此回合结束后进行一个额外回合。',
+    'lianpo': '击杀角色后，可选择本回合结束后额外回合（每回合限一次），或拥有极略时永久学习一个未拥有的极略技能。',
 }
 _GOD_TYPES = {
     'wushen': SkillType.VIEW_AS, 'wuhun': SkillType.LOCKED,
@@ -201,7 +201,7 @@ _GOD_TYPES = {
     'wumou': SkillType.LOCKED, 'wuwei': SkillType.ACTIVE,
     'shenfen': SkillType.ACTIVE, 'juejing': SkillType.LOCKED,
     'longhun': SkillType.VIEW_AS, 'renjie': SkillType.LOCKED,
-    'baoyin': SkillType.TRIGGERED, 'lianpo': SkillType.TRIGGERED,
+    'baoyin': SkillType.AWAKENING, 'lianpo': SkillType.TRIGGERED,
 }
 MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(
     s, _NAMES.get(s, _FOREST_NAMES.get(s, _MOUNTAIN_NAMES.get(s, s))),
@@ -215,6 +215,6 @@ MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(
     ) if enabled})
     for c in MYTH_CHARACTERS for s in c.skill_ids) + (
         SkillDefinition('jixi', '急袭', '你可以将一张田当【顺手牵羊】使用。', SkillType.VIEW_AS),
-        SkillDefinition('jilue', '极略', '你可以弃一枚忍标记，发动鬼才、放逐、集智、制衡或完杀对应效果。', SkillType.ACTIVE),
+        SkillDefinition('jilue', '极略', '获得时永久获得鬼才及当前势力对应技能。出牌阶段开始可移去忍永久学习未拥有的技能（成本2、2、3…），或移去至多两枚忍摸等量牌。', SkillType.ACTIVE),
     )
 MYTH_40_GENERAL_POOL = MYTH_CHARACTERS

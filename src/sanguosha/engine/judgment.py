@@ -39,6 +39,7 @@ class JudgmentAction(Action):
     gain_on_match: bool = False
     return_card_id: bool = False
     success_destination: ZoneRef | None = None
+    retain_result: bool = False
 
 
 class JudgmentHandler:
@@ -124,7 +125,7 @@ class JudgmentHandler:
 
     def _finish(self, state, frame, card_id, destination):
         action = frame.action
-        if card_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
+        if card_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)) and not action.retain_result:
             self.moves.move(state, CardMove(f"{action.action_id}:after-move", (card_id,),
                                             ZoneRef(ZoneType.PROCESSING), destination,
                                             CardMoveReason.SYSTEM, action.player_id, action.action_id))
@@ -262,7 +263,7 @@ class JudgmentHandler:
                 for actor in order:
                     if not state.players[actor].is_alive:
                         continue
-                    eligible = tuple(skill for skill in ('guicai', 'jilue', 'guidao')
+                    eligible = tuple(skill for skill in ('guicai', 'guidao')
                         if actor + ':' + skill not in frame.local.get('retrial_offered', ())
                         and self.skills.has(state, actor, skill)
                         and self.retrial_cards(state, actor, black=skill == 'guidao')

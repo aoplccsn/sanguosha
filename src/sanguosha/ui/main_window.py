@@ -679,7 +679,16 @@ class MainWindow(QMainWindow):
                 labels['skill:tianyi'] = '天义'
                 labels['skill:dimeng'] = '缔盟'
                 labels['skill:luanwu'] = '乱武'
+                from sanguosha.multiplayer.choice_labels import CHOICE_NAMES
+                labels.update(CHOICE_NAMES)
                 def option_label(choice):
+                    if choice.startswith('learn:'):
+                        return '永久获得【' + self.session.skills.skills[choice.split(':',1)[1]].name + '】'
+                    if choice.startswith('draw:'):
+                        return '移去' + choice.split(':',1)[1] + '枚忍并摸牌'
+                    if choice.startswith(('add:','remove:')):
+                        prefix, definition = choice.split(':',1)
+                        return ('记录' if prefix == 'add' else '移出') + self.session.definitions.get(definition).name
                     if choice.startswith(('basic.', 'trick.')):
                         return '声明【' + self.session.definitions.get(choice).name + '】'
                     if choice.startswith('virtual:wusheng:'):

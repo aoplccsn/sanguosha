@@ -163,7 +163,7 @@ def test_worker_catalog_matches_web_and_production_draft(worker_module, monkeypa
     draft_ids = {str(character.id) for character in PLAYABLE_GENERAL_POOL}
     worker_ids = {row["id"] for row in worker_catalog}
     web_ids = {row["id"] for row in web_catalog}
-    assert len(worker_catalog) == len(web_catalog) == len(python_ids) == len(draft_ids) == 103
+    assert len(worker_catalog) == len(web_catalog) == len(python_ids) == len(draft_ids) == 108
     assert worker_ids == web_ids == python_ids == draft_ids
     assert {row["id"] for row in worker_catalog if row["id"].startswith("yj2011_")} == {
         "yj2011_zhang_chunhua", "yj2011_yu_jin", "yj2011_cao_zhi",

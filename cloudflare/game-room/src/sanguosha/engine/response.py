@@ -29,6 +29,8 @@ class RespondWithCardAction(Action):
     response_number: int = 1
     response_total: int = 1
     use_card: bool = False
+    card_source_id: str | None = None
+    delayed_card: bool = False
 
 
 class RespondWithCardHandler:

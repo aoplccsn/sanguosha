@@ -48,7 +48,7 @@ for(const caseName of ['savage','archery','counter_single','counter_group','harv
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();await page.screenshot({path:shot(caseName),fullPage:true})
 })
 test('103 GeneralDetail descriptions and two missing generals',async({page,request})=>{
- const catalog=await (await request.get('/api/catalog/generals')).json();expect(catalog).toHaveLength(103)
+ const catalog=await (await request.get('/api/catalog/generals')).json();expect(catalog).toHaveLength(108)
  const records=await fixture(request,'layout');await enter(page,records[0])
  for(const g of catalog){
   for(const skill of g.skills){expect(skill.name).toBeTruthy();expect(skill.description.length).toBeGreaterThan(9);expect(skill.description).not.toMatch(/TODO|placeholder|规则摘要|待补/i)}

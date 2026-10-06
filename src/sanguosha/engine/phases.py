@@ -150,6 +150,9 @@ class PhaseActionHandler:
                 state.play_usage = PlayUsageState(action.player_id, state.turn_number)
             self.recorder.record(PhaseStartedEvent(f"{action.action_id}:start", action.player_id, action.phase))
             frame.step_index = 1
+            if action.phase is Phase.PLAY and self.skills is not None:
+                from .mobile_gods import MobileGodAction
+                return StepResult.push(MobileGodAction(action.action_id + ':jilue', action.player_id, 'jilue'))
             return StepResult.continue_()
         if frame.step_index == 4:
             # End the phase without opening fresh skill windows after victory.
@@ -203,9 +206,6 @@ class PhaseActionHandler:
                 if action.phase is Phase.DISCARD and self.skills is not None:
                     from .events import phase_rule_discards
                     cards = phase_rule_discards(self.recorder.events, action.action_id, action.player_id)
-                    if self.skills.has(state, action.player_id, 'renjie'):
-                        player = state.players[action.player_id]
-                        player.marks['ren'] = player.marks.get('ren', 0) + len(cards)
                     if (len(cards) >= 2 and self.skills.has(state, action.player_id, 'qinyin')
                             and state.players[action.player_id].is_alive):
                         frame.local['qinyin_pending'] = True

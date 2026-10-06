@@ -65,6 +65,12 @@ class DistanceSystem:
         return base
 
     def distance_between(self, state: GameState, source: PlayerId, target: PlayerId) -> int:
+        from .skills import SkillRegistry
+        effect = state.metadata.get('powei_range', {}).get(target, {})
+        if effect.get('target') == source and effect.get('turn') == state.turn_number:
+            return 1
+        if state.players[target].marks.get('pingding', 0) and SkillRegistry().has(state, source, 'yingba'):
+            return 1
         from .fuhuanghou import fixed_distance
         if fixed_distance(state,source,target) and state.players[source].is_alive and state.players[target].is_alive:return 1
         from .yj2011_tier3 import scoped_target

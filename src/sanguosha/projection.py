@@ -132,7 +132,9 @@ def project_for_human(
                                          and state.play_usage.count('skill.zhiheng') else "") +
                   (" · 主公技" if skills.skills[sid].metadata.get('lord') else "") +
                   (" · 已失去" if sid in player.disabled_skills or suppressed(state,pid,sid) else "")
-                  for sid in dict.fromkeys((*skills.characters[player.character_id].skill_ids,
+                  for sid in dict.fromkeys((*(sid for sid in skills.characters[player.character_id].skill_ids
+                                            if sid not in skills.characters[player.character_id].metadata.get('derived_skills', ())
+                                            or skills.has(state, pid, sid)),
                                             *player.granted_skills,
                                             *((player.transformation_skill,) if player.transformation_skill else ()))))
             if player.character_id in skills.characters else (),

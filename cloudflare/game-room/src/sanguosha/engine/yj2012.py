@@ -442,7 +442,7 @@ class YJ2012Handler(YJSkillHandler):
         a=f.action; p=state.players[a.player_id]
         if f.step_index == 0:
             if (not self.skills.has(state,a.player_id,'zili') or p.marks.get('zili_awakened')
-                    or len(state.cards_in(power_zone(a.player_id))) < 3):
+                    or (len(state.cards_in(power_zone(a.player_id))) < 3 and not p.marks.get('ignore_awakening:zili'))):
                 return StepResult.complete()
             p.marks['zili_awakened']=1
             f.step_index=1

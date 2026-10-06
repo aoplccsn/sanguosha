@@ -16,6 +16,7 @@ ADDITIONAL_BASICS = (
 )
 
 TRICKS = (
+    ("qizhengxiangsheng", "奇正相生"),
     ("dismantlement", "过河拆桥"), ("snatch", "顺手牵羊"),
     ("ex_nihilo", "无中生有"), ("duel", "决斗"),
     ("savage_assault", "南蛮入侵"), ("archery_attack", "万箭齐发"),

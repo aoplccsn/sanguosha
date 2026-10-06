@@ -63,5 +63,25 @@
     "video": "/assets/portraits/idle/thunder_god_zhangliao.mp4",
     "objectPosition": "center top",
     "panelVideo": "/assets/portraits/idle/thunder_god_zhangliao.panel.mp4"
+  },
+  "mobile_god_lusu": {
+    "video": "/assets/portraits/idle/mobile_god_lusu.mp4",
+    "panelVideo": "/assets/portraits/idle/mobile_god_lusu.panel.mp4",
+    "objectPosition": "center top"
+  },
+  "mobile_god_taishici": {
+    "video": "/assets/portraits/idle/mobile_god_taishici.mp4",
+    "panelVideo": "/assets/portraits/idle/mobile_god_taishici.panel.mp4",
+    "objectPosition": "center top"
+  },
+  "mobile_god_sunce": {
+    "video": "/assets/portraits/idle/mobile_god_sunce.mp4",
+    "panelVideo": "/assets/portraits/idle/mobile_god_sunce.panel.mp4",
+    "objectPosition": "center top"
+  },
+  "mobile_god_xunyu": {
+    "video": "/assets/portraits/idle/mobile_god_xunyu.mp4",
+    "panelVideo": "/assets/portraits/idle/mobile_god_xunyu.panel.mp4",
+    "objectPosition": "center top"
   }
 }

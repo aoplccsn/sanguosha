@@ -7,6 +7,10 @@ from sanguosha.content.characters.remaining import REMAINING_DEV_GENERALS, REMAI
 GENERAL_NAMES = {str(item.id): item.name for item in (*ALL_GENERAL_POOL,*REMAINING_DEV_GENERALS)}
 SKILL_NAMES = {str(item.id): item.name for item in (*ALL_SKILL_CATALOGUE,*REMAINING_DEV_SKILLS)}
 CHOICE_NAMES = {
+    'wei':'魏', 'shu':'蜀', 'wu':'吴', 'qun':'群',
+    'qi':'奇兵（仅你可见）', 'zheng':'正兵（仅你可见）', 'dodge':'打出闪', 'pass':'放弃响应',
+    'draw1_quota':'摸一张，杀上限加一', 'draw3_stop':'摸三张，本回合禁杀',
+    'discard_damage':'弃一张手牌，造成一点伤害', 'take_hand':'获得一张背面手牌', 'extra_turn':'本回合结束后额外回合',
     'cancel':'放弃', 'add':'增加目标', 'remove':'减少目标',
     'default':'正常摸牌', 'jiang':'多摸一张，本回合不能用或打出杀',
     'chi':'少摸一张，杀无距离限制且可多用一次',
@@ -61,6 +65,13 @@ def choice_labels(room, request):
         if name:
             return name
         prefix, _, suffix = value.partition(':')
+        if prefix == 'learn' and suffix in SKILL_NAMES:
+            return '永久获得【' + SKILL_NAMES[suffix] + '】'
+        if prefix == 'draw' and suffix.isdigit():
+            return '移去' + suffix + '枚忍，摸' + suffix + '张牌'
+        if prefix in ('add','remove') and session is not None:
+            try: return ('记录' if prefix == 'add' else '移出') + '【' + session.definitions.get(suffix).name + '】'
+            except Exception: pass
         if prefix in GENERAL_NAMES and suffix in SKILL_NAMES:
             return f'{GENERAL_NAMES[prefix]} · {SKILL_NAMES[suffix]}'
         if prefix in ('top', 'bottom', 'better'):

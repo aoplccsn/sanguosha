@@ -3,7 +3,7 @@ name: CN deployment GHCR image
 on:
   push:
     branches:
-      - t13-complete-roster-multiplayer
+      - t19-overpowered-generals
   workflow_dispatch:
 
 permissions:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build-and-push:
-    if: github.ref == 'refs/heads/t13-complete-roster-multiplayer'
+    if: github.ref == 'refs/heads/t19-overpowered-generals'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository

@@ -58,7 +58,7 @@ def test_duorui_dawu_suppression_removes_fog_offer_but_preserves_wind():
     assert s.engine.pending_request.choices == ('wind', 'fog', 'done')
 
 
-@pytest.mark.parametrize('first', ['guidao', 'jilue'])
+@pytest.mark.parametrize('first', ['guidao', 'guicai'])
 def test_same_owner_retrial_can_choose_order_and_final_replacement(first):
     from dataclasses import replace
     from test_t6_military_basics import put
@@ -66,22 +66,22 @@ def test_same_owner_retrial_can_choose_order_and_final_replacement(first):
     from sanguosha.model.enums import Suit
     from sanguosha.model.zones import ZoneRef, ZoneType
     s = game()
-    s.state.players['p1'].granted_skills.update(guidao='audit', jilue='audit')
+    s.state.players['p1'].granted_skills.update(guidao='audit', guicai='jilue.permanent')
     s.state.players['p1'].marks['ren'] = 2
     black = put(s, 'basic.slash', 'p1')
     red = put(s, 'basic.slash', 'p1')
     s.state.cards[black] = replace(s.state.cards[black], suit=Suit.SPADE)
     s.state.cards[red] = replace(s.state.cards[red], suit=Suit.HEART)
     s.engine.start_action(JudgmentAction('chosen-retrial', 'p3', JudgmentPattern(suit=Suit.HEART)))
-    assert s.engine.pending_request.choices == ('极略', '鬼道')
+    assert s.engine.pending_request.choices == ('鬼才', '鬼道')
     s = restore(s)
-    answer(s, '鬼道' if first == 'guidao' else '极略')
+    answer(s, '鬼道' if first == 'guidao' else '鬼才')
     answer(s, True)
     answer(s, black if first == 'guidao' else red)
     answer(s, True)
     answer(s, red if first == 'guidao' else black)
     assert s.engine.last_result is (first == 'guidao')
-    assert s.state.players['p1'].marks['ren'] == 1
+    assert s.state.players['p1'].marks['ren'] == 2
     assert not s.state.cards_in(ZoneRef(ZoneType.PROCESSING))
 
 
@@ -297,7 +297,7 @@ def test_zhijian_cannot_replace_occupied_equipment_slot():
 
 
 
-def test_native_guicai_and_jilue_retrial_public_events_have_distinct_identities():
+def test_native_guicai_and_jilue_same_skill_only_retrials_once():
     from dataclasses import replace
     from test_t6_military_basics import put
     from sanguosha.engine.judgment import JudgmentAction, JudgmentPattern
@@ -311,12 +311,11 @@ def test_native_guicai_and_jilue_retrial_public_events_have_distinct_identities(
     s.state.cards[first] = replace(s.state.cards[first], suit=Suit.HEART)
     s.state.cards[last] = replace(s.state.cards[last], suit=Suit.SPADE)
     s.engine.start_action(JudgmentAction('public-two-retrials', 'p3', JudgmentPattern(suit=Suit.SPADE)))
-    answer(s, '鬼才')
-    for choice in (True, first, True, last):
+    for choice in (True, first):
         answer(s, choice)
     room = MultiplayerRoom()
     room.session = s
     public = [room._public_event(e) for e in s.events.events if getattr(e, 'event_type', '') == 'judgment_card_replaced']
-    assert len(public) == 2
+    assert len(public) == 1
     # Presentation's seen set uses event_id, so both accepted replacements need identities.
-    assert len({e['event_id'] for e in public}) == 2
+    assert len({e['event_id'] for e in public}) == 1

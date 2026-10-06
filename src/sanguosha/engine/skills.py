@@ -47,8 +47,6 @@ class SkillRegistry:
                        and 'huashen' not in player.disabled_skills)
         if skill_id == 'wushuang' and state.players[player_id].marks.get('wuwei', 0):
             return True
-        if skill_id == 'wansha' and player.marks.get('jilue_wansha', 0):
-            return True
         native = (character is not None and skill_id in character.skill_ids
                   and skill_id not in character.metadata.get('derived_skills', ()))
         if character is None or (not native
@@ -70,6 +68,8 @@ class SkillRegistry:
         return skills
 
     def faction(self, state, player_id):
+        if player_id in state.metadata.get('kingdom_overrides',{}):
+            return Kingdom(state.metadata['kingdom_overrides'][player_id])
         player = state.players[player_id]
         transformed = (player.active_transformation if player.character_id == 'mountain_zuoci'
                        and 'huashen' not in player.disabled_skills else None)
@@ -192,6 +192,11 @@ class PreparationSkillBody:
         actor = frame.action.player_id
         if not state.players[actor].is_alive:
             return StepResult.complete()
+        if frame.step_index == 1 and not frame.local.get('mobile_tianyi') and self.skills.has(state,actor,'tianyi_guojia'):
+            from .mobile_gods import MobileGodAction
+            frame.local['mobile_tianyi'] = True
+            frame.step_index = 20
+            return StepResult.push(MobileGodAction(frame.action.action_id + ':tianyi',actor,'tianyi_guojia'))
         if frame.step_index == 1 and not frame.local.get('yj2013_xiansi') and self.skills.has(state,actor,'xiansi'):
             from .yj2013 import YJ2013Action
             frame.local['yj2013_xiansi']=True;frame.step_index=20
@@ -1203,6 +1208,18 @@ class SkillPlayOptions:
         extra = play_options(state, pid, self.skills)
         from .remaining_gods import play_options as god_play_options
         extra.extend(god_play_options(state,pid,self.skills))
+        if self.skills.has(state,pid,'huishi') and state.players[pid].max_hp < 10 and not state.play_usage.count('skill.huishi'):
+            extra.append('skill:huishi')
+        if self.skills.has(state,pid,'huishi_guojia') and not state.players[pid].marks.get('huishi_guojia_used'):
+            extra.append('skill:huishi_guojia')
+        if self.skills.has(state,pid,'zuoxing') and not state.play_usage.count('skill.zuoxing') and any(state.players[q].is_alive and state.players[q].max_hp > 1 for q in state.metadata.get('zuoxing_grantors',{}).get(pid,())):
+            extra.append('skill:zuoxing')
+        if self.skills.has(state,pid,'yingba') and not state.play_usage.count('skill.yingba') and any(q != pid and state.players[q].is_alive and state.players[q].max_hp > 1 for q in state.seat_order):
+            extra.append('skill:yingba')
+        if self.skills.has(state,pid,'dingzhou') and not state.play_usage.count('skill.dingzhou'):
+            materials = sum(len(z.card_ids) for r,z in state.zones.items() if r.player_id == pid and r.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT))
+            if any(q != pid and state.players[q].is_alive and 0 < sum(len(z.card_ids) for r,z in state.zones.items() if r.player_id == q and r.zone_type in (ZoneType.EQUIPMENT, ZoneType.JUDGMENT)) <= materials for q in state.seat_order):
+                extra.append('skill:dingzhou')
         from .fuhun import available as fuhun_available
         if fuhun_available(state,pid,self.skills,self.slash_rule):extra.append('skill:fuhun')
         from .card_limits import card_allowed
@@ -1226,11 +1243,6 @@ class SkillPlayOptions:
                 ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT) and zone.card_ids
                 for ref,zone in state.zones.items()):
             extra.append('skill:zhiheng')
-        if self.skills.has(state, pid, 'jilue') and state.players[pid].marks.get('ren', 0) > 0:
-            if not state.play_usage.count('skill.zhiheng') and materials:
-                extra.append('skill:jilue-zhiheng')
-            if not state.players[pid].marks.get('jilue_wansha'):
-                extra.append('skill:jilue-wansha')
         if self.skills.has(state,pid,'kurou'):
             extra.append('skill:kurou')
         if self.skills.has(state,pid,'wuwei') and state.players[pid].marks.get('rage', 0) >= 2:
@@ -1375,6 +1387,9 @@ class SkillPlayOptions:
     def build_action(self, state, pid, option, aid):
         if option not in self.options(state,pid):
             raise InvalidCardUse('skill option is no longer legal')
+        if option in ('skill:dingzhou', 'skill:yingba', 'skill:huishi', 'skill:huishi_guojia', 'skill:zuoxing'):
+            from .mobile_gods import MobileGodAction
+            return MobileGodAction(aid + ':mobile', pid, option.split(':')[1])
         if option.startswith('skill:xiansi_slash:'):
             from .yj2013 import XiansiSlashAction
             return XiansiSlashAction(aid+':xiansi',pid,option.split(':',2)[2])

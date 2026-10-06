@@ -6,6 +6,10 @@ def add_grant(state,pid,skill,source):
     if current and current not in sources:sources.append(current)
     if source not in sources:sources.append(source)
     player.granted_skills.setdefault(skill,source)
+    if skill == "jilue":
+        from .mobile_gods import initialize_jilue
+        from .skills import SkillRegistry
+        initialize_jilue(state,pid,SkillRegistry())
 
 
 def remove_grant(state,pid,skill,source):

@@ -38,9 +38,10 @@ class Pregame:
         roles = list(mode.roles)
         rng.shuffle(roles)
         roster = list(PLAYABLE_GENERAL_POOL)
-        rng.shuffle(roster)
+        from sanguosha.general_draft import draft_general_ids
+        candidates = draft_general_ids((c.id for c in roster), (), rng, mode.general_offer_count)
         return cls(rng, dict(zip(mode.seats, roles)),
-                   tuple(c.id for c in roster[:mode.general_offer_count]),
+                   candidates,
                    mode_id=mode_id)
 
     @property
@@ -73,7 +74,9 @@ class Pregame:
         self.generals[self.human_id] = chosen
         available = [character.id for character in PLAYABLE_GENERAL_POOL if character.id != chosen]
         for pid in game_mode(self.mode_id).seats[1:]:
-            selected = self.rng.choice(available)
+            from sanguosha.general_draft import draft_general_ids
+            offer = draft_general_ids(available, (), self.rng, game_mode(self.mode_id).general_offer_count)
+            selected = self.rng.choice(offer)
             available.remove(selected)
             self.generals[pid] = selected
         self.stage = SetupStage.COMPLETE

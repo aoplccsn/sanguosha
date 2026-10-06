@@ -16,11 +16,11 @@ from test_t6_military_basics import put
 
 
 def test_production_76_registry_catalog_and_locked_11():
-    assert len(ALL_GENERAL_POOL)==len(PLAYABLE_GENERAL_POOL)==103
-    assert len(ALL_65_GENERAL_POOL)==65 and len(ORDINARY_GENERAL_POOL)==91
+    assert len(ALL_GENERAL_POOL)==len(PLAYABLE_GENERAL_POOL)==108
+    assert len(ALL_65_GENERAL_POOL)==65 and len(ORDINARY_GENERAL_POOL)==92
     registry=SkillRegistry(); ids={str(c.id) for c in YJ2011_GENERAL_POOL}
     catalog=TestClient(app).get('/api/catalog/generals').json()
-    assert len(catalog)==103 and len({c['id'] for c in catalog})==103
+    assert len(catalog)==108 and len({c['id'] for c in catalog})==108
     skills={str(s.id):s for s in ALL_SKILL_CATALOGUE}
     yj=[s.id for s in ALL_SKILL_CATALOGUE if s.metadata.get('pack')=='yj2011']
     assert len(yj)==len(set(yj))==19

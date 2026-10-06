@@ -114,16 +114,12 @@ class UseCardActionHandler:
         outcome = StepResult.push(committed_effect) if committed_effect is not None else self._commit(state, action, targets)
         definition = self._definition(state,action)
         native_jizhi = self.skills is not None and self.skills.has(state, action.user_id, 'jizhi')
-        jilue_jizhi = (self.skills is not None and self.skills.has(state, action.user_id, 'jilue')
-                       and state.players[action.user_id].marks.get('ren', 0) > 0)
-        if (native_jizhi or jilue_jizhi) and definition.category is CardCategory.TRICK:
+        if native_jizhi and definition.category is CardCategory.TRICK:
             frame.local['jizhi_targets'] = tuple(targets)
-            frame.local['jilue_jizhi'] = not native_jizhi
             frame.step_index = 3
             return StepResult.ask(PendingRequest(
                 f"{action.action_id}:jizhi", action.user_id, RequestType.YES_NO,
-                '是否弃一枚忍标记发动【极略·集智】摸一张牌？' if not native_jizhi
-                else '是否发动【集智】摸一张牌？', action.action_id, frame.frame_id))
+                '是否发动【集智】摸一张牌？', action.action_id, frame.frame_id))
         return outcome
 
     def _commit_with_wumou(self, state, frame, action, targets):
@@ -201,10 +197,6 @@ class UseCardActionHandler:
             draw = frame.decision is True
             frame.decision = None
             if draw:
-                if frame.local.get('jilue_jizhi'):
-                    if state.players[action.user_id].marks.get('ren', 0) < 1:
-                        raise InvalidCardUse('极略忍标记不足')
-                    state.players[action.user_id].marks['ren'] -= 1
                 frame.step_index = 4
                 return StepResult.push(DrawCardsAction(f"{action.action_id}:jizhi-draw", action.user_id, 1))
             frame.step_index = 2

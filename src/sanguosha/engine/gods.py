@@ -860,14 +860,17 @@ class BaiyinHandler:
         if frame.step_index == 0:
             if (not player.is_alive or not self.skills.has(state, actor, 'baoyin')
                     or player.marks.get('awakened_baiyin')
-                    or player.marks.get('ren', 0) < 4):
+                    or (player.marks.get('ren', 0) < 4 and not player.marks.get('ignore_awakening:baoyin'))):
                 return StepResult.complete(False)
             player.marks['awakened_baiyin'] = 1
             frame.step_index = 1
             return StepResult.push(LoseMaxHpAction(
                 frame.action.action_id + ':max-hp', actor, 1))
         if player.is_alive:
-            player.granted_skills['jilue'] = 'baoyin'
+            from .skill_grants import add_grant
+            from .mobile_gods import initialize_jilue
+            add_grant(state, actor, 'jilue', 'baoyin')
+            initialize_jilue(state, actor, self.skills)
         return StepResult.complete(player.is_alive)
 
 
@@ -882,28 +885,4 @@ class JiluePlayHandler:
         self.skills = skills
 
     def step(self, state, frame):
-        action = frame.action
-        actor = action.player_id
-        player = state.players[actor]
-        if frame.step_index == 0:
-            if (not self.skills.has(state, actor, 'jilue')
-                    or player.marks.get('ren', 0) < 1
-                    or state.current_player_id != actor
-                    or state.current_phase is not Phase.PLAY
-                    or state.play_usage is None):
-                raise InvalidCardUse('极略当前不可用')
-            if action.mode == 'zhiheng':
-                if state.play_usage.count('skill.zhiheng'):
-                    raise InvalidCardUse('极略制衡本阶段已用')
-                player.marks['ren'] -= 1
-                from .skills import ZhihengAction
-                frame.step_index = 1
-                return StepResult.push(ZhihengAction(action.action_id + ':zhiheng', actor))
-            if action.mode == 'wansha':
-                if player.marks.get('jilue_wansha'):
-                    raise InvalidCardUse('本回合已发动极略完杀')
-                player.marks['ren'] -= 1
-                player.marks['jilue_wansha'] = 1
-                return StepResult.complete()
-            raise InvalidCardUse('极略模式不合法')
-        return StepResult.complete(frame.child_result)
+        raise InvalidCardUse('旧版临时极略已替换，请使用出牌阶段开始的永久学习请求')

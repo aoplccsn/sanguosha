@@ -199,6 +199,19 @@ class AIDecisionProvider:
 
     def decide(self, state: GameState, request: PendingRequest, *, response_context=None) -> Decision:
         player_id = request.player_id
+        if request.prompt == '神将：选择本局势力':
+            return Decision(request.request_id,player_id,'wu' if state.players[player_id].character_id == 'mountain_god_simayi' else 'wei')
+        from .mobile_gods import decide as mobile_decide
+        mobile_choice = mobile_decide(self,state,request)
+        if mobile_choice is not None: return mobile_choice
+        if request.request_type is RequestType.CHOOSE_OPTION and request.prompt.startswith(('极略：', '连破：')):
+            priority = ('learn:zhiheng', 'learn:jizhi', 'learn:fangzhu', 'learn:guicai', 'learn:wansha')
+            choice = next((q for q in priority if q in request.choices), None)
+            if request.prompt.startswith('连破：') and 'extra_turn' in request.choices:
+                choice = 'extra_turn'
+            if choice is None:
+                choice = next((q for q in ('draw:2', 'draw:1', 'cancel') if q in request.choices), request.choices[0])
+            return Decision(request.request_id, player_id, choice)
         if request.required_definition_id == 'trick.nullification' and response_context:
             target = response_context.get('current_target_id') or request.subject_player_id
             definition = response_context.get('definition_id', '')
@@ -382,6 +395,16 @@ class AIDecisionProvider:
                 value = next(choice for choice in request.choices if choice.startswith('virtual:longdan:'))
             elif enemies and 'skill:jijiang' in request.choices:
                 value = 'skill:jijiang'
+            elif 'skill:huishi' in request.choices and state.players[player_id].max_hp < 8:
+                value = 'skill:huishi'
+            elif 'skill:zuoxing' in request.choices:
+                value = 'skill:zuoxing'
+            elif enemies and 'skill:dingzhou' in request.choices:
+                value = 'skill:dingzhou'
+            elif enemies and 'skill:yingba' in request.choices and state.players[player_id].max_hp > 2:
+                value = 'skill:yingba'
+            elif 'skill:huishi_guojia' in request.choices and state.players[player_id].max_hp > 3:
+                value = 'skill:huishi_guojia'
             elif usable and state.ruleset_id == 'classic-military':
                 worthwhile = [choice for choice in usable if self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, enemies) > 0]
                 value = max(worthwhile, key=lambda choice: self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, enemies)) if worthwhile else END_PLAY_PHASE

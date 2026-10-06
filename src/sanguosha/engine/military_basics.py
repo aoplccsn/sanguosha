@@ -88,6 +88,8 @@ class MilitaryDamageHandler(DamageActionHandler):
 
     def step(self, state, frame):
         from .damage_cards import damage_definition
+        if frame.step_index == 50:
+            return StepResult.complete(0)
         if frame.step_index==40:
             wanted=frame.decision is True;frame.decision=None
             frame.step_index=41 if wanted else 0
@@ -111,6 +113,14 @@ class MilitaryDamageHandler(DamageActionHandler):
             return replacement
         if frame.step_index == 0:
             self.validate_start(state, action)
+            if (not frame.local.get('mobile_pinghe') and self.skills is not None
+                    and self.skills.has(state, action.target_id, 'pinghe')
+                    and action.source_id is not None and action.source_id != action.target_id
+                    and target.max_hp > 1 and state.cards_in(ZoneRef(ZoneType.HAND, action.target_id))):
+                from .mobile_gods import MobileGodAction
+                frame.local['mobile_pinghe'] = True
+                frame.step_index = 50
+                return StepResult.push(MobileGodAction(action.action_id + ':pinghe', action.target_id, 'pinghe', action.source_id))
             if not frame.local.get('source_modifiers_done'):
                 frame.local['source_modifiers_done'] = True
                 amount = action.amount
@@ -193,8 +203,6 @@ class MilitaryDamageHandler(DamageActionHandler):
             self.recorder.record(BeforeDamageEvent(action.action_id + ':before', action.source_id, action.target_id, amount))
             frame.local['yj_face_down_before'] = not target.face_up
             target.hp -= amount
-            if self.skills is not None and self.skills.has(state, action.target_id, 'renjie'):
-                target.marks['ren'] = target.marks.get('ren', 0) + amount
             from .fuhun import grant_after_damage
             grant_after_damage(state,action,self.skills)
             from .remaining_gods import gain_junlve
@@ -386,26 +394,6 @@ class MilitaryDamageHandler(DamageActionHandler):
             from .forest import FangzhuAction
             frame.local['fangzhu_offered'] = True
             return StepResult.push(FangzhuAction(action.action_id + ':fangzhu', action.target_id))
-        if frame.step_index == 14:
-            wanted = frame.decision is True
-            frame.decision = None
-            frame.step_index = 1
-            if wanted and target.marks.get('ren', 0) > 0:
-                target.marks['ren'] -= 1
-                from .forest import FangzhuAction
-                return StepResult.push(FangzhuAction(
-                    action.action_id + ':jilue-fangzhu', action.target_id))
-        if (frame.step_index == 1 and self.skills is not None and target.is_alive
-                and not frame.local.get('jilue_fangzhu_offered')
-                and self.skills.has(state, action.target_id, 'jilue')
-                and not self.skills.has(state, action.target_id, 'fangzhu')
-                and target.marks.get('ren', 0) > 0):
-            frame.local['jilue_fangzhu_offered'] = True
-            frame.step_index = 14
-            return StepResult.ask(PendingRequest(
-                action.action_id + ':jilue-fangzhu', action.target_id,
-                RequestType.YES_NO, '是否弃一枚忍标记发动【极略·放逐】？',
-                action.action_id, frame.frame_id))
         if (frame.step_index == 1 and self.skills is not None and target.is_alive
                 and self.skills.has(state, action.target_id, 'guixin')
                 and frame.local.get('guixin_count', 0) < int(frame.local['amount'])):
@@ -630,6 +618,17 @@ class MilitarySlashHandler:
 
     def _step(self, state, frame):
         action = frame.action
+        if frame.step_index == 51:
+            frame.step_index = 0
+            if frame.child_result is True:
+                return StepResult.complete('prevented')
+        if (frame.step_index == 0 and not frame.local.get('mobile_dulie') and self.skills is not None
+                and self.skills.has(state, action.target_id, 'dulie')
+                and action.source_id != action.target_id
+                and state.players[action.source_id].hp > state.players[action.target_id].hp):
+            frame.local['mobile_dulie'] = True
+            frame.step_index = 51
+            return StepResult.push(JudgmentAction(action.action_id + ':dulie', action.target_id, JudgmentPattern(suit=Suit.HEART)))
         if 'required_dodges' not in frame.local:
             fixed=getattr(action,'required_dodges',None)
             frame.local['required_dodges'] = fixed if fixed is not None else required_dodge_count(state, action.source_id, action.target_id, self.skills)
@@ -751,7 +750,9 @@ class MilitarySlashHandler:
                 return StepResult.ask(PendingRequest(action.action_id+':tieqi',action.source_id,
                     RequestType.YES_NO,'是否发动【铁骑】判定，使目标可能无法闪避？',
                     action.action_id,frame.frame_id))
-            if frame.local.get('tieqi_unavoidable') or frame.local.get('no_dodge'):
+            if (frame.local.get('tieqi_unavoidable') or frame.local.get('no_dodge')
+                    or self.skills is not None and self.skills.has(state, action.source_id, 'fuhai')
+                    and state.players[action.target_id].marks.get('pingding', 0)):
                 frame.child_result = None
                 frame.step_index = 3
                 return StepResult.continue_()
@@ -770,7 +771,7 @@ class MilitarySlashHandler:
             frame.step_index = 3
             return StepResult.push(RespondWithCardAction(action.action_id + ':response', action.target_id,
                 action.dodge_definition_id, action.action_id, '请打出闪响应杀', action.target_id, False,
-                response_total=int(frame.local['required_dodges'])))
+                response_total=int(frame.local['required_dodges']), card_source_id=action.source_id))
         if frame.step_index == 19:
             wanted = frame.decision is True
             frame.decision = None
@@ -861,7 +862,7 @@ class MilitarySlashHandler:
             frame.step_index = 3
             return StepResult.push(RespondWithCardAction(action.action_id + ':response', action.target_id,
                 action.dodge_definition_id, action.action_id, '八卦阵未生效，请打出闪', action.target_id, False,
-                response_total=int(frame.local['required_dodges'])))
+                response_total=int(frame.local['required_dodges']), card_source_id=action.source_id))
         if frame.step_index == 3:
             if frame.child_result is not None:
                 if int(frame.local['required_dodges']) > 1 and not frame.local.get('dodge_complete'):
@@ -869,7 +870,7 @@ class MilitarySlashHandler:
                     frame.step_index = 18
                     return StepResult.push(RespondWithCardAction(action.action_id+':second-dodge',action.target_id,
                         action.dodge_definition_id,action.action_id,'第一张闪已响应，还需第二张闪',
-                        action.target_id,not ignore,2,2))
+                        action.target_id,not ignore,2,2,card_source_id=action.source_id))
                 if (not frame.local.get('mengjin_offered') and self.skills is not None
                         and state.players[action.source_id].is_alive
                         and state.players[action.target_id].is_alive
@@ -1016,7 +1017,12 @@ class MilitaryResponseHandler(RespondWithCardHandler):
     def step(self, state, frame):
         action = frame.action
         from .qiaoshui import prohibited
-        if prohibited(state,action.player_id,str(action.required_definition_id)):return StepResult.complete()
+        from .mobile_gods import fuhai_prohibits_response
+        if (fuhai_prohibits_response(state, action, self.skills, self.recorder)
+                or prohibited(state, action.player_id, str(action.required_definition_id))):
+            from .mobile_gods import gain_ren_for_nonresponse
+            gain_ren_for_nonresponse(state, frame, self.skills, self.recorder)
+            return StepResult.complete()
         if frame.step_index == 30:
             return StepResult.complete(frame.local['leiji_response'])
         result = self._step_response(state, frame)
@@ -1030,6 +1036,9 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                                              else 'virtual:leiji-dodge')
             frame.step_index = 30
             return StepResult.push(LeijiAction(action.action_id + ':leiji', action.player_id))
+        if result.kind is StepKind.COMPLETE and result.value is None:
+            from .mobile_gods import gain_ren_for_nonresponse
+            gain_ren_for_nonresponse(state, frame, self.skills, self.recorder)
         return result
 
     def _move_response(self,state,action,move):

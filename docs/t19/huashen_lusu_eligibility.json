@@ -1,0 +1,23 @@
+[
+  {
+    "general_id": "mobile_god_lusu",
+    "skill_id": "tamo",
+    "allowed": true,
+    "source": "docs/t19/rules_lock.md",
+    "reason": "visible native skill; explicit general huashen eligibility override"
+  },
+  {
+    "general_id": "mobile_god_lusu",
+    "skill_id": "dingzhou",
+    "allowed": true,
+    "source": "docs/t19/rules_lock.md",
+    "reason": "visible native skill; explicit general huashen eligibility override"
+  },
+  {
+    "general_id": "mobile_god_lusu",
+    "skill_id": "zhimeng",
+    "allowed": true,
+    "source": "docs/t19/rules_lock.md",
+    "reason": "visible native skill; explicit general huashen eligibility override"
+  }
+]

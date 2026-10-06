@@ -10,7 +10,7 @@ test('single-origin container path: two browsers, reconnect, Slash and Dodge', a
     expect((await request.get('/')).ok()).toBe(true)
     expect((await request.get('/api/health')).ok()).toBe(true)
     const catalog = await (await request.get('/api/catalog/generals')).json() as unknown[]
-    expect(catalog).toHaveLength(76)
+    expect(catalog).toHaveLength(108)
 
     await host.goto('/?seed=3')
     await host.getByLabel('玩家昵称').fill('攻击方')

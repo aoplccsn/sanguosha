@@ -137,6 +137,11 @@ class GameSession:
             metadata={'mode_id': mode.mode_id},
             revealed_identities={setup.lord_id} if setup is not None else {ids[0]},
         )
+        if skills is not None:
+            from sanguosha.engine.mobile_gods import inject_qizheng
+            for pid in ids:
+                if skills.has(state,pid,'tianzuo'):
+                    inject_qizheng(state,pid,rng)
         for player in players.values():
             if skills is not None and skills.has(state,player.player_id,'jieying_liubei'):
                 player.chained=True
@@ -351,6 +356,8 @@ class GameSession:
             register_yj2011_tier3(registry, skills, moves, definitions, deck)
             from sanguosha.engine.yj2012 import register as register_yj2012
             register_yj2012(registry, skills, moves, definitions, deck)
+            from sanguosha.engine.mobile_gods import register as register_mobile_gods
+            register_mobile_gods(registry, skills, moves, rng)
             from sanguosha.engine.remaining_gods import register as register_remaining_gods
             register_remaining_gods(registry,skills,moves,definitions,deck)
             from sanguosha.engine.yj2013 import register as register_yj2013

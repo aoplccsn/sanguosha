@@ -46,6 +46,8 @@ class CardMoveService:
         clear_turn(state)
         for player in state.players.values():
             player.marks.pop('nightmare', None)
+            player.marks.pop('lianpo_pending', None)
+        state.metadata.pop('powei_range',None)
         refs = tuple(ref for ref in state.zones if ref.zone_type is ZoneType.PROCESSING
                      or ref.zone_type is ZoneType.SPECIAL and ref.player_id is None)
         for index, ref in enumerate(refs):

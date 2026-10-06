@@ -59,7 +59,7 @@ def test_all_final_portraits_have_verified_audio_free_runtime_and_matched_static
     reports=json.loads((ROOT/'docs/t15/media_report.json').read_text(encoding='utf-8'))
     manifest=json.loads((ROOT/'assets/idle_portraits.json').read_text(encoding='utf-8'))
     expected={'forest_god_lvbu','mountain_god_zhaoyun','fire_god_zhouyu','fire_god_zhugeliang','forest_god_caocao','mountain_god_simayi','wind_god_guanyu','wind_god_lvmeng','wind_zhang_jiao','shadow_god_liubei','shadow_god_luxun','thunder_god_ganning','thunder_god_zhangliao'}
-    assert set(manifest)==expected
+    assert set(manifest)==expected | {'mobile_god_lusu','mobile_god_taishici','mobile_god_sunce','mobile_god_xunyu'}
     assert {r['id'] for r in reports}==expected
     for report in reports:
         runtime=ROOT/report['runtime']
@@ -83,7 +83,7 @@ def test_current_panel_integrity():
     manifest=json.loads((ROOT/'assets/idle_portraits.json').read_text())
     sys.path.insert(0,str(ROOT/'scripts'))
     from prepare_idle_portraits import faststart
-    assert len(reports)==len(manifest)==13
+    assert len(reports)==13 and len(manifest)==17
     for report in reports:
         path=ROOT/report['path']
         assert manifest[report['id']]['panelVideo']=='/'+report['path']

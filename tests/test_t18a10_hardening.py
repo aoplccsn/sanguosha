@@ -13,8 +13,8 @@ from sanguosha.snapshot import snapshot_session, restore_session
 from test_t6_military_basics import game, put
 from test_t18a7_flow import room_for, send
 
-def test_103_descriptions_are_complete_and_original():
-    assert len(PLAYABLE_GENERAL_POOL)==103
+def test_108_descriptions_are_complete_and_original():
+    assert len(PLAYABLE_GENERAL_POOL)==108
     registry={s.id:s for s in ALL_SKILL_CATALOGUE}
     for general in PLAYABLE_GENERAL_POOL:
         for sid in general.skill_ids:

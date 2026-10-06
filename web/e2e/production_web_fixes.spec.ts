@@ -5,7 +5,7 @@ test('production draft renders Chinese names and loaded portraits', async ({ pag
   const response = await request.get('/api/catalog/generals')
   expect(response.ok()).toBeTruthy()
   const catalog = await response.json() as Array<{ id: string; name: string; portrait: string }>
-  expect(catalog).toHaveLength(65)
+  expect(catalog).toHaveLength(108)
   expect(catalog.filter((item) => item.id.includes('_god_'))).toHaveLength(8)
   for (const general of catalog) {
     expect(general.name).toMatch(/[\u3400-\u9fff]/u)

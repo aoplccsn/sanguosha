@@ -538,6 +538,9 @@ class FireHandLimit:
 
     def __call__(self, state, player_id):
         value = self.base(state, player_id)
+        if self.skills.has(state, player_id, 'pinghe'):
+            player = state.players[player_id]
+            return max(0, player.max_hp - player.hp)
         if self.skills.has(state, player_id, 'juejing'):
             value += 2
         if (self.skills.has(state, player_id, 'xueyi')

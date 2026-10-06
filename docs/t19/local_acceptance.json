@@ -1,0 +1,27 @@
+{
+  "roster": 108,
+  "ai": {
+    "military_five": 20,
+    "military_eight": 20,
+    "status": "PASS"
+  },
+  "pytest": {
+    "passed": 3025,
+    "old_assertions_failed": 5,
+    "targeted_resolution_passed": 9
+  },
+  "vitest": 120,
+  "playwright": {
+    "baseline": 42,
+    "t18b": 11,
+    "t19": 2,
+    "status": "PASS_WITH_TARGETED_RERUNS"
+  },
+  "assets": {
+    "portraits": 108,
+    "card_art": 44,
+    "dynamic": 17
+  },
+  "pyside": "PASS_STATIC_FALLBACK",
+  "worker": "PASS"
+}

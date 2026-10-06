@@ -56,9 +56,33 @@ class TurnActionHandler:
             frame.step_index = 1
             return StepResult.continue_()
         if frame.step_index == 0:
+            if not state.metadata.get('mobile_game_started') and self.skills is not None:
+                from .mobile_gods import MobileGodAction
+                if 'mobile_faction_owners' not in frame.local:
+                    frame.local['mobile_faction_owners'] = tuple(q for q in state.seat_order if state.players[q].character_id.startswith('mobile_god_') or state.players[q].character_id == 'mountain_god_simayi')
+                    frame.local['mobile_faction_cursor'] = 0
+                faction_owners = frame.local['mobile_faction_owners']; faction_index = frame.local['mobile_faction_cursor']
+                if faction_index < len(faction_owners):
+                    frame.local['mobile_faction_cursor'] = faction_index + 1
+                    return StepResult.push(MobileGodAction(action.action_id + ':faction:' + faction_owners[faction_index],faction_owners[faction_index],'faction'))
+                if 'mobile_start_owners' not in frame.local:
+                    frame.local['mobile_start_owners'] = tuple(q for q in state.seat_order if self.skills.has(state,q,'tamo'))
+                    frame.local['mobile_start_cursor'] = 0
+                owners = frame.local['mobile_start_owners']; index = frame.local['mobile_start_cursor']
+                if index < len(owners):
+                    frame.local['mobile_start_cursor'] = index + 1
+                    return StepResult.push(MobileGodAction(action.action_id + ':tamo:' + owners[index], owners[index], 'tamo'))
+                for owner in state.seat_order:
+                    if self.skills.has(state, owner, 'powei'):
+                        for q in state.seat_order:
+                            if q != owner:
+                                state.players[q].marks['wei:' + owner] = 1
+                state.metadata['mobile_game_started'] = True
             state.current_player_id = action.player_id
             state.current_phase = None
             state.turn_number += 1
+            from .mobile_gods import start_normal_round
+            start_normal_round(state, action.player_id)
             self.recorder.record(TurnStartedEvent(f"{action.action_id}:start", action.player_id, state.turn_number))
             from .remaining_gods import camp_start
             camp_start(state,action.player_id,self.skills)
@@ -67,6 +91,18 @@ class TurnActionHandler:
                 frame.cursor = len(action.phases)
             frame.step_index = 1
             return StepResult.continue_()
+        if (frame.step_index == 1 and frame.cursor == 0 and self.skills is not None
+                and not frame.local.get('mobile_dinghan') and self.skills.has(state,action.player_id,'dinghan')):
+            from .mobile_gods import MobileGodAction
+            frame.local['mobile_dinghan'] = True
+            return StepResult.push(MobileGodAction(action.action_id + ':dinghan',action.player_id,'dinghan'))
+        if frame.step_index == 1 and frame.cursor == 0 and self.skills is not None:
+            from .mobile_gods import MobileGodAction
+            owners = tuple(q for q in state.seat_order if state.players[q].is_alive and self.skills.has(state,q,'powei'))
+            index = frame.local.get('mobile_powei_cursor', 0)
+            if index < len(owners):
+                frame.local['mobile_powei_cursor'] = index + 1
+                return StepResult.push(MobileGodAction(action.action_id + ':powei:' + owners[index], owners[index], 'powei_start', action.player_id))
         if frame.step_index==1 and frame.cursor==0 and self.skills is not None:
             from .yj2011_tier3 import hand
             from .yj2013 import YJ2013Action
@@ -99,18 +135,21 @@ class TurnActionHandler:
                     and state.players[pid].marks.pop('lianpo_pending', 0)
                     and self.skills.has(state, pid, 'lianpo')), None)
                 if eligible is not None:
-                    frame.local['lianpo_actor'] = eligible
-                    frame.step_index = 9
-                    return StepResult.ask(PendingRequest(
-                        f'{action.action_id}:lianpo:{eligible}', eligible,
-                        RequestType.YES_NO, '连破：本回合结束后进行一个额外回合？',
-                        action.action_id, frame.frame_id))
+                    from .turn_order import queue_extra_turn
+                    queue_extra_turn(state, eligible)
+                    return StepResult.continue_()
             if not frame.local.get('camp_return_checked'):
                 from .remaining_gods import camp_source,clear_camp,RemainingGodAction
                 frame.local['camp_return_checked']=True
                 owner=camp_source(state,action.player_id,self.skills)
                 if owner is not None and owner!=action.player_id:
                     return StepResult.push(RemainingGodAction(action.action_id+':camp-return',owner,'campend',action.player_id))
+            if (not frame.local.get('mobile_zhimeng_end') and state.status is not GameStatus.FINISHED
+                    and state.players[action.player_id].is_alive and self.skills is not None
+                    and self.skills.has(state, action.player_id, 'zhimeng')):
+                from .mobile_gods import MobileGodAction
+                frame.local['mobile_zhimeng_end'] = True
+                return StepResult.push(MobileGodAction(action.action_id + ':zhimeng', action.player_id, 'zhimeng'))
             if state.ruleset_id == 'classic-military':
                 state.players[action.player_id].marks.pop('wine', None)
                 state.players[action.player_id].marks.pop('jilue_wansha', None)

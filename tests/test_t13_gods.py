@@ -391,7 +391,7 @@ def test_longhun_peach_is_offered_and_recovers():
     assert card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
 
 
-def test_renjie_marks_damage_and_baiyin_awakens_once():
+def test_renjie_no_damage_marks_and_baiyin_awakens_once():
     from sanguosha.engine.military_basics import MilitaryDamageAction
     from sanguosha.engine.gods import BaiyinAction
     session = GameSession.new_game(military=True, five_generals=True)
@@ -403,7 +403,7 @@ def test_renjie_marks_damage_and_baiyin_awakens_once():
         request = session.engine.pending_request
         session.engine.submit_decision(Decision(request.request_id, request.player_id,
                                                 request.timeout_value()))
-    assert player.marks['ren'] == 2
+    assert player.marks.get('ren',0) == 0
     player.marks['ren'] = 4
     maximum = player.max_hp
     session.engine.start_action(BaiyinAction('baiyin', 'p1'))
@@ -413,130 +413,19 @@ def test_renjie_marks_damage_and_baiyin_awakens_once():
     assert player.max_hp == maximum - 1
 
 
-def test_lianpo_offers_extra_turn_after_kill_at_turn_end():
-    from sanguosha.engine.death import DeathAction
-    from sanguosha.engine.turns import TurnAction
-    session = GameSession.new_game(military=True, five_generals=True)
-    state = session.state
-    state.players['p1'].character_id = 'mountain_god_simayi'
-    state.current_player_id = 'p1'
-    session.engine.start_action(DeathAction('lianpo-kill', 'p3', 'p1'))
-    assert state.players['p1'].marks['lianpo_pending'] == 1
-    session.engine.start_action(TurnAction('lianpo-turn', 'p1', (Phase.PREPARATION,)))
-    request = session.engine.pending_request
-    assert request is not None and request.player_id == 'p1'
-    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
-    assert state.extra_turn_queue == ['p1']
 
 
-def test_jilue_zhiheng_spends_ren_and_uses_existing_handler():
-    from sanguosha.engine.gods import JiluePlayAction
-    session = GameSession.new_game(military=True, five_generals=True)
-    state = session.state
-    player = state.players['p1']
-    player.character_id = 'mountain_god_simayi'
-    player.granted_skills['jilue'] = 'baoyin'
-    player.marks['ren'] = 2
-    state.current_player_id = 'p1'
-    state.current_phase = Phase.PLAY
-    state.turn_number = 1
-    state.play_usage = PlayUsageState('p1', 1)
-    card = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
-    session.engine.start_action(JiluePlayAction('jilue-zhiheng', 'p1', 'zhiheng'))
-    request = session.engine.pending_request
-    session.engine.submit_decision(Decision(request.request_id, 'p1', (card,)))
-    assert player.marks['ren'] == 1
-    assert state.play_usage.count('skill.zhiheng') == 1
 
 
-def test_jilue_wansha_temporary_skill():
-    from sanguosha.engine.gods import JiluePlayAction
-    session = GameSession.new_game(military=True, five_generals=True)
-    state = session.state
-    player = state.players['p1']
-    player.character_id = 'mountain_god_simayi'
-    player.granted_skills['jilue'] = 'baoyin'
-    player.marks['ren'] = 1
-    state.current_player_id = 'p1'
-    state.current_phase = Phase.PLAY
-    state.turn_number = 1
-    state.play_usage = PlayUsageState('p1', 1)
-    session.engine.start_action(JiluePlayAction('jilue-wansha', 'p1', 'wansha'))
-    assert session.skills.has(state, 'p1', 'wansha')
-    assert player.marks['ren'] == 0
 
 
-def test_jilue_guicai_spends_ren_and_replaces_judgment():
-    from sanguosha.engine.judgment import JudgmentAction, JudgmentPattern
-    session = GameSession.new_game(military=True, five_generals=True)
-    state = session.state
-    player = state.players['p1']
-    player.character_id = 'mountain_god_simayi'
-    player.granted_skills['jilue'] = 'baoyin'
-    player.marks['ren'] = 1
-    card = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
-    session.engine.start_action(JudgmentAction('jilue-judge', 'p2', JudgmentPattern()))
-    request = session.engine.pending_request
-    assert request.player_id == 'p1'
-    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
-    request = session.engine.pending_request
-    session.engine.submit_decision(Decision(request.request_id, 'p1', card))
-    while session.engine.pending_request is not None:
-        request = session.engine.pending_request
-        session.engine.submit_decision(Decision(request.request_id, request.player_id,
-                                                request.timeout_value()))
-    assert player.marks['ren'] == 0
-    assert card in state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
 
 
-def test_jilue_jizhi_spends_ren_on_trick_use():
-    from sanguosha.engine.card_use import UseCardAction
-    session = GameSession.new_game(military=True, five_generals=True)
-    state = session.state
-    player = state.players['p1']
-    player.character_id = 'mountain_god_simayi'
-    player.granted_skills['jilue'] = 'baoyin'
-    player.marks['ren'] = 1
-    state.current_player_id = 'p1'
-    state.current_phase = Phase.PLAY
-    state.turn_number = 1
-    state.play_usage = PlayUsageState('p1', 1)
-    card = state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))[0]
-    state.cards[card] = replace(state.cards[card], definition_id='trick.ex_nihilo')
-    before = len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1')))
-    session.engine.start_action(UseCardAction('jilue-jizhi', 'p1', card))
-    request = session.engine.pending_request
-    assert '极略' in request.prompt
-    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
-    while session.engine.pending_request is not None:
-        request = session.engine.pending_request
-        session.engine.submit_decision(Decision(request.request_id, request.player_id,
-                                                request.timeout_value()))
-    assert player.marks['ren'] == 0
-    assert len(state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))) == before + 2
 
 
-def test_jilue_fangzhu_uses_existing_turnover_action():
-    from sanguosha.engine.military_basics import MilitaryDamageAction
-    session = GameSession.new_game(military=True, five_generals=True)
-    state = session.state
-    player = state.players['p1']
-    player.character_id = 'mountain_god_simayi'
-    player.granted_skills['jilue'] = 'baoyin'
-    player.marks['ren'] = 1
-    session.engine.start_action(MilitaryDamageAction('jilue-fangzhu', 'p2', 'p1', 1))
-    request = session.engine.pending_request
-    assert '极略' in request.prompt
-    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
-    request = session.engine.pending_request
-    session.engine.submit_decision(Decision(request.request_id, 'p1', True))
-    request = session.engine.pending_request
-    session.engine.submit_decision(Decision(request.request_id, 'p1', 'p2'))
-    assert not state.players['p2'].face_up
-    assert player.marks['ren'] == 1
 
 
-def test_renjie_counts_only_own_discard_phase_rule_discards():
+def test_renjie_no_longer_counts_rule_discards():
     from sanguosha.engine.phases import PhaseAction
     session = GameSession.new_game(military=True, five_generals=True)
     state = session.state
@@ -550,7 +439,7 @@ def test_renjie_counts_only_own_discard_phase_rule_discards():
     assert request.request_type.value == 'choose_cards'
     session.engine.submit_decision(Decision(request.request_id, 'p1',
         tuple(request.eligible_card_ids[:before - 1])))
-    assert player.marks['ren'] == before - 1
+    assert player.marks.get('ren',0) == 0
 
 
 def test_all_eight_gods_finish_mixed_ai_games():

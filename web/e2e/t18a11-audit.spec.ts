@@ -59,7 +59,7 @@ for(const caseName of ['savage','archery','counter_single','counter_group','harv
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();await page.screenshot({path:shot(caseName),fullPage:true})
 })
 test('103 GeneralDetail descriptions and two missing generals',async({page,request})=>{
- const catalog=await (await request.get('/api/catalog/generals')).json();expect(catalog).toHaveLength(103)
+ const catalog=await (await request.get('/api/catalog/generals')).json();expect(catalog).toHaveLength(108)
  const records=await fixture(request,'layout');await enter(page,records[0])
  for(const g of catalog){
   for(const skill of g.skills){expect(skill.name).toBeTruthy();expect(skill.description.length).toBeGreaterThan(9);expect(skill.description).not.toMatch(/TODO|placeholder|规则摘要|待补/i)}
@@ -95,7 +95,10 @@ for(const mode of ['military-five','military-eight'])for(let i=0;i<10;i++)test('
  await expect(page.locator('.lobby-page')).toBeVisible();await page.getByRole('button',{name:'开始游戏',exact:true}).click()
  await expect(page.locator('.general-card').first()).toBeVisible();await page.locator('.general-card').nth(i%10).click()
  await page.getByRole('button',{name:'确认武将',exact:true}).click();await expect(page.locator('.game-page')).toBeVisible()
- await expect(page.locator('.game-hud')).toContainText(/第 \d+ 回合/)
+ if(await page.locator('.decision-prompt').filter({hasText:'选择本局势力'}).isVisible()){
+  await page.getByRole('button',{name:'魏',exact:true}).click()
+ }
+ await expect(page.locator('.game-hud')).toContainText(/第 [1-9]\d* 回合/)
  const record=await page.evaluate(()=>JSON.parse(localStorage.getItem('sanguosha.web.session.v1')!))
  const state=await (await page.request.get('/audit/state/'+record.roomCode)).json()
  expect(state.first_turn).toBe(1);expect(state.generals).toHaveLength(mode==='military-five'?5:8)

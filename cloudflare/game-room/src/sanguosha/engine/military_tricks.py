@@ -28,6 +28,8 @@ def delayed_definition(state, cid):
 @dataclass(frozen=True, slots=True)
 class NullificationWindow(Action):
     target_id: str
+    card_source_id: str | None = None
+    delayed_card: bool = False
 
 class NullificationHandler:
     def step(self, state, frame):
@@ -40,6 +42,7 @@ class NullificationHandler:
         if frame.step_index == 2:
             if frame.child_result is not None:
                 frame.local['cancelled'] = not frame.local['cancelled']
+                frame.local['counter_source'] = frame.local['responder']
                 frame.local['round'] += 1
                 frame.local['start'] = (frame.local['start'] + frame.cursor - 1) % len(state.seat_order)
                 frame.cursor = 0
@@ -51,9 +54,11 @@ class NullificationHandler:
         if not state.players[pid].is_alive:
             return StepResult.continue_()
         frame.step_index = 2
+        frame.local['responder'] = pid
         return StepResult.push(RespondWithCardAction(
             f'{action.action_id}:counter:{frame.local["round"]}:{frame.cursor}', pid,
-            'trick.nullification', action.action_id, '无懈可击：响应锦囊或反制上一张无懈', action.target_id))
+            'trick.nullification', action.action_id, '无懈可击：响应锦囊或反制上一张无懈', action.target_id,
+            card_source_id=frame.local.get('counter_source',action.card_source_id), delayed_card=action.delayed_card))
 
 @dataclass(frozen=True, slots=True)
 class TrickAction(Action):
@@ -158,6 +163,10 @@ class TrickHandler:
             from .forest import weimu_blocks
             if d.startswith('delayed.'):
                 target = a.targets[0] if a.targets else a.source_id
+                from .mobile_gods import cancel_dinghan_target
+                if cancel_dinghan_target(state,target,d,self.skills):
+                    self.moves.move(state,CardMove(a.action_id + ':dinghan-discard',(a.card_id,),ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.USE,a.source_id))
+                    return StepResult.complete()
                 if weimu_blocks(state, target, a.card_id, d, a.source_id, self.skills, a.virtual_card):
                     raise InvalidCardUse('帷幕阻止黑色锦囊成为目标')
                 self.moves.move(state,CardMove(a.action_id+':attach',(a.card_id,),ZoneRef(ZoneType.PROCESSING),
@@ -248,6 +257,9 @@ class TrickHandler:
         frame.cursor+=1
         if not state.players[target].is_alive or target in frame.local.get('zhenlie_cancelled',()):
             return StepResult.continue_()
+        from .mobile_gods import cancel_dinghan_target
+        if cancel_dinghan_target(state,target,d,self.skills):
+            return StepResult.continue_()
         if d == 'trick.savage_assault':
             from .forest import savage_effect_immune
             if savage_effect_immune(state, target, self.skills):
@@ -257,7 +269,7 @@ class TrickHandler:
         if self.definitions is not None and not self.definitions.get(d).nullifiable:
             frame.child_result = False
             return StepResult.continue_()
-        return StepResult.push(NullificationWindow(f'{a.action_id}:window:{frame.cursor}',target))
+        return StepResult.push(NullificationWindow(f'{a.action_id}:window:{frame.cursor}',target,card_source_id=a.source_id))
 
 class TargetTrickHandler:
     def __init__(self,moves,distance,skills=None):
@@ -277,6 +289,9 @@ class TargetTrickHandler:
             if protected(state, a.target_id):
                 return StepResult.complete('prevented')
             f.step_index=1
+            if d == 'trick.qizhengxiangsheng':
+                from .mobile_gods import MobileGodAction
+                return StepResult.push(MobileGodAction(a.action_id + ':qizheng',a.source_id,'qizheng',a.target_id))
             if d == 'trick.ex_nihilo':
                 return StepResult.push(DrawCardsAction(a.action_id+':draw',a.target_id,2))
             if d == 'trick.god_salvation':
@@ -439,7 +454,7 @@ class DelayedHandler:
             if self.definitions is not None and not self.definitions.get(d).nullifiable:
                 f.child_result = False
                 return StepResult.continue_()
-            return StepResult.push(NullificationWindow(a.action_id+':window',a.player_id))
+            return StepResult.push(NullificationWindow(a.action_id+':window',a.player_id,delayed_card=True))
         if f.step_index == 1:
             if f.child_result:
                 f.local['cancelled']=True

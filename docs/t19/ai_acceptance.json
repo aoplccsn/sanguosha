@@ -1,0 +1,839 @@
+{
+  "status": "PASS",
+  "production_roster_count": 108,
+  "development_candidate_count": 108,
+  "games": [
+    {
+      "mode": "military-five",
+      "seed": 19000,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "yj2013_yu_fan",
+        "yj2011_gao_shun",
+        "luxun"
+      ],
+      "turns": 36,
+      "decisions_and_turns": 500,
+      "seconds": 0.27,
+      "projection_checks": 95,
+      "reconnect_snapshots": 1,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19001,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "zhenji",
+        "wind_xiao_qiao",
+        "mountain_zhang_zhaozhang"
+      ],
+      "turns": 26,
+      "decisions_and_turns": 425,
+      "seconds": 0.23,
+      "projection_checks": 70,
+      "reconnect_snapshots": 1,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19002,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "huanggai",
+        "yj2011_xu_shu",
+        "yj2012_cheng_pu"
+      ],
+      "turns": 60,
+      "decisions_and_turns": 750,
+      "seconds": 0.39,
+      "projection_checks": 125,
+      "reconnect_snapshots": 2,
+      "winner": "内奸胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19003,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "fire_pang_tong",
+        "sunquan",
+        "yj2012_liu_biao"
+      ],
+      "turns": 14,
+      "decisions_and_turns": 315,
+      "seconds": 0.14,
+      "projection_checks": 55,
+      "reconnect_snapshots": 1,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19004,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "yj2013_guo_huai",
+        "zhugeliang",
+        "yj2011_wu_guotai"
+      ],
+      "turns": 39,
+      "decisions_and_turns": 695,
+      "seconds": 0.34,
+      "projection_checks": 115,
+      "reconnect_snapshots": 2,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19005,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "wind_god_lvmeng",
+        "xuchu",
+        "yj2012_hua_xiong"
+      ],
+      "turns": 26,
+      "decisions_and_turns": 565,
+      "seconds": 0.3,
+      "projection_checks": 95,
+      "reconnect_snapshots": 2,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19006,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "yj2013_li_ru",
+        "yj2011_chen_gong",
+        "daqiao"
+      ],
+      "turns": 14,
+      "decisions_and_turns": 177,
+      "seconds": 0.08,
+      "projection_checks": 30,
+      "reconnect_snapshots": 0,
+      "winner": "内奸胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19007,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "yj2012_cao_zhang",
+        "guanyu",
+        "wind_xiao_qiao"
+      ],
+      "turns": 10,
+      "decisions_and_turns": 298,
+      "seconds": 0.13,
+      "projection_checks": 50,
+      "reconnect_snapshots": 1,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19008,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "wind_zhou_tai",
+        "guanyu",
+        "zhouyu"
+      ],
+      "turns": 34,
+      "decisions_and_turns": 651,
+      "seconds": 0.35,
+      "projection_checks": 105,
+      "reconnect_snapshots": 2,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19009,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "yj2011_gao_shun",
+        "yj2013_zhu_ran",
+        "yj2012_ma_dai"
+      ],
+      "turns": 33,
+      "decisions_and_turns": 411,
+      "seconds": 0.22,
+      "projection_checks": 70,
+      "reconnect_snapshots": 1,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19010,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "wind_yuji",
+        "mobile_god_lusu",
+        "yj2011_xu_shu"
+      ],
+      "turns": 64,
+      "decisions_and_turns": 1158,
+      "seconds": 0.7,
+      "projection_checks": 190,
+      "reconnect_snapshots": 4,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19011,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "yj2013_liu_feng",
+        "fire_dian_wei",
+        "mountain_jiang_wei"
+      ],
+      "turns": 9,
+      "decisions_and_turns": 254,
+      "seconds": 0.11,
+      "projection_checks": 45,
+      "reconnect_snapshots": 0,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19012,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "xuchu",
+        "fire_yuan_shao",
+        "yj2012_liao_hua"
+      ],
+      "turns": 65,
+      "decisions_and_turns": 758,
+      "seconds": 0.38,
+      "projection_checks": 125,
+      "reconnect_snapshots": 2,
+      "winner": "内奸胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19013,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "fire_yan_liang_wen_chou",
+        "zhugeliang",
+        "wind_god_lvmeng"
+      ],
+      "turns": 24,
+      "decisions_and_turns": 578,
+      "seconds": 0.28,
+      "projection_checks": 95,
+      "reconnect_snapshots": 2,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19014,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "thunder_god_zhangliao",
+        "yj2011_ling_tong",
+        "xuchu"
+      ],
+      "turns": 11,
+      "decisions_and_turns": 243,
+      "seconds": 0.11,
+      "projection_checks": 90,
+      "reconnect_snapshots": 0,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19015,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "wind_god_guanyu",
+        "mountain_deng_ai",
+        "fire_pang_de"
+      ],
+      "turns": 25,
+      "decisions_and_turns": 383,
+      "seconds": 0.22,
+      "projection_checks": 65,
+      "reconnect_snapshots": 1,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19016,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "mountain_zhang_he",
+        "luxun",
+        "fire_god_zhugeliang"
+      ],
+      "turns": 22,
+      "decisions_and_turns": 429,
+      "seconds": 0.2,
+      "projection_checks": 70,
+      "reconnect_snapshots": 1,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19017,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "wind_god_lvmeng",
+        "forest_jia_xu",
+        "yj2011_cao_zhi"
+      ],
+      "turns": 27,
+      "decisions_and_turns": 592,
+      "seconds": 0.32,
+      "projection_checks": 100,
+      "reconnect_snapshots": 2,
+      "winner": "内奸胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19018,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "wind_zhou_tai",
+        "huangyueying",
+        "fire_taishi_ci"
+      ],
+      "turns": 49,
+      "decisions_and_turns": 697,
+      "seconds": 0.4,
+      "projection_checks": 115,
+      "reconnect_snapshots": 2,
+      "winner": "内奸胜利"
+    },
+    {
+      "mode": "military-five",
+      "seed": 19019,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "yj2012_liao_hua",
+        "mountain_zhang_zhaozhang",
+        "zhangliao"
+      ],
+      "turns": 19,
+      "decisions_and_turns": 319,
+      "seconds": 0.17,
+      "projection_checks": 55,
+      "reconnect_snapshots": 1,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20000,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "fire_yan_liang_wen_chou",
+        "yj2011_yu_jin",
+        "fire_xun_yu",
+        "fire_pang_de",
+        "machao",
+        "mountain_zuoci"
+      ],
+      "turns": 14,
+      "decisions_and_turns": 420,
+      "seconds": 0.24,
+      "projection_checks": 112,
+      "reconnect_snapshots": 1,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20001,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "yj2013_guan_ping",
+        "xiahou_dun",
+        "guojia",
+        "fire_dian_wei",
+        "fire_yuan_shao",
+        "yj2012_liao_hua"
+      ],
+      "turns": 56,
+      "decisions_and_turns": 1294,
+      "seconds": 0.98,
+      "projection_checks": 336,
+      "reconnect_snapshots": 5,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20002,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "mountain_zhang_he",
+        "yj2011_ling_tong",
+        "wind_cao_ren",
+        "fire_pang_de",
+        "zhugeliang",
+        "mountain_zuoci"
+      ],
+      "turns": 16,
+      "decisions_and_turns": 444,
+      "seconds": 0.28,
+      "projection_checks": 120,
+      "reconnect_snapshots": 1,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20003,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "shadow_god_luxun",
+        "yj2013_zhu_ran",
+        "wind_cao_ren",
+        "zhangfei",
+        "fire_xun_yu",
+        "huanggai"
+      ],
+      "turns": 24,
+      "decisions_and_turns": 664,
+      "seconds": 0.39,
+      "projection_checks": 176,
+      "reconnect_snapshots": 2,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20004,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "forest_lusu",
+        "daqiao",
+        "yj2012_cheng_pu",
+        "fire_dian_wei",
+        "shadow_god_luxun",
+        "fire_xun_yu"
+      ],
+      "turns": 19,
+      "decisions_and_turns": 555,
+      "seconds": 0.38,
+      "projection_checks": 144,
+      "reconnect_snapshots": 2,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20005,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "yj2013_zhu_ran",
+        "huanggai",
+        "guojia",
+        "wind_wei_yan",
+        "yj2012_liao_hua",
+        "yj2011_xu_sheng"
+      ],
+      "turns": 46,
+      "decisions_and_turns": 1015,
+      "seconds": 0.65,
+      "projection_checks": 264,
+      "reconnect_snapshots": 3,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20006,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "yj2012_liu_biao",
+        "yj2011_gao_shun",
+        "yj2012_hua_xiong",
+        "mobile_god_xunyu",
+        "caocao",
+        "sunquan"
+      ],
+      "turns": 10,
+      "decisions_and_turns": 268,
+      "seconds": 0.19,
+      "projection_checks": 72,
+      "reconnect_snapshots": 1,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20007,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "mountain_liushan",
+        "wind_god_lvmeng",
+        "mountain_zhang_zhaozhang",
+        "wind_yuji",
+        "yj2012_guan_xing_zhang_bao",
+        "yj2011_ma_su"
+      ],
+      "turns": 10,
+      "decisions_and_turns": 530,
+      "seconds": 0.34,
+      "projection_checks": 144,
+      "reconnect_snapshots": 2,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20008,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "yj2011_xu_sheng",
+        "mountain_deng_ai",
+        "yj2011_gao_shun",
+        "yj2013_jian_yong",
+        "mountain_god_zhaoyun",
+        "yj2012_bu_lianshi"
+      ],
+      "turns": 27,
+      "decisions_and_turns": 737,
+      "seconds": 0.47,
+      "projection_checks": 248,
+      "reconnect_snapshots": 2,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20009,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "yj2011_chen_gong",
+        "mountain_god_simayi",
+        "yj2013_fu_huanghou",
+        "yj2013_zhu_ran",
+        "wind_cao_ren",
+        "mountain_zuoci"
+      ],
+      "turns": 24,
+      "decisions_and_turns": 758,
+      "seconds": 0.43,
+      "projection_checks": 288,
+      "reconnect_snapshots": 2,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20010,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "forest_menghuo",
+        "yj2013_li_ru",
+        "fire_god_zhouyu",
+        "mobile_god_taishici",
+        "thunder_god_zhangliao",
+        "lvbu"
+      ],
+      "turns": 24,
+      "decisions_and_turns": 811,
+      "seconds": 0.52,
+      "projection_checks": 248,
+      "reconnect_snapshots": 3,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20011,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "sunshangxiang",
+        "fire_dian_wei",
+        "fire_god_zhouyu",
+        "wind_xiahou_yuan",
+        "yj2011_wu_guotai",
+        "yj2011_cao_zhi"
+      ],
+      "turns": 31,
+      "decisions_and_turns": 700,
+      "seconds": 0.47,
+      "projection_checks": 184,
+      "reconnect_snapshots": 2,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20012,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "daqiao",
+        "fire_god_zhugeliang",
+        "mountain_liushan",
+        "zhangfei",
+        "mountain_god_zhaoyun",
+        "guojia"
+      ],
+      "turns": 33,
+      "decisions_and_turns": 606,
+      "seconds": 0.42,
+      "projection_checks": 160,
+      "reconnect_snapshots": 2,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20013,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "zhenji",
+        "yj2012_liu_biao",
+        "yj2013_yu_fan",
+        "yj2013_li_ru",
+        "lvmeng",
+        "wind_wei_yan"
+      ],
+      "turns": 24,
+      "decisions_and_turns": 606,
+      "seconds": 0.42,
+      "projection_checks": 168,
+      "reconnect_snapshots": 2,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20014,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "forest_dong_zhuo",
+        "mountain_zuoci",
+        "thunder_god_zhangliao",
+        "machao",
+        "forest_jia_xu",
+        "mountain_sunce"
+      ],
+      "turns": 44,
+      "decisions_and_turns": 797,
+      "seconds": 0.54,
+      "projection_checks": 216,
+      "reconnect_snapshots": 3,
+      "winner": "主公与忠臣胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20015,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "yj2013_guan_ping",
+        "yj2012_cao_zhang",
+        "yj2012_liao_hua",
+        "fire_god_zhugeliang",
+        "mountain_deng_ai",
+        "yj2011_xu_sheng"
+      ],
+      "turns": 23,
+      "decisions_and_turns": 465,
+      "seconds": 0.3,
+      "projection_checks": 120,
+      "reconnect_snapshots": 1,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20016,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "mountain_jiang_wei",
+        "shadow_god_liubei",
+        "mobile_god_xunyu",
+        "yj2012_han_dang",
+        "yj2013_fu_huanghou",
+        "zhenji"
+      ],
+      "turns": 13,
+      "decisions_and_turns": 450,
+      "seconds": 0.29,
+      "projection_checks": 152,
+      "reconnect_snapshots": 1,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20017,
+      "generals": [
+        "mobile_god_guojia",
+        "mobile_god_xunyu",
+        "yj2011_zhang_chunhua",
+        "yj2013_guo_huai",
+        "yj2012_cheng_pu",
+        "mountain_zhang_he",
+        "wind_god_guanyu",
+        "mountain_cai_wenji"
+      ],
+      "turns": 12,
+      "decisions_and_turns": 433,
+      "seconds": 0.26,
+      "projection_checks": 112,
+      "reconnect_snapshots": 1,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20018,
+      "generals": [
+        "mobile_god_lusu",
+        "mobile_god_taishici",
+        "fire_yuan_shao",
+        "yj2012_xun_you",
+        "mountain_god_simayi",
+        "yj2013_liu_feng",
+        "mountain_zhang_zhaozhang",
+        "fire_xun_yu"
+      ],
+      "turns": 24,
+      "decisions_and_turns": 443,
+      "seconds": 0.31,
+      "projection_checks": 120,
+      "reconnect_snapshots": 1,
+      "winner": "反贼胜利"
+    },
+    {
+      "mode": "military-eight",
+      "seed": 20019,
+      "generals": [
+        "mobile_god_sunce",
+        "mountain_god_simayi",
+        "huatuo",
+        "yj2013_jian_yong",
+        "luxun",
+        "huanggai",
+        "yj2011_yu_jin",
+        "fire_taishi_ci"
+      ],
+      "turns": 52,
+      "decisions_and_turns": 1227,
+      "seconds": 0.85,
+      "projection_checks": 480,
+      "reconnect_snapshots": 4,
+      "winner": "反贼胜利"
+    }
+  ],
+  "failures": [],
+  "coverage": [
+    "caocao",
+    "daqiao",
+    "fire_dian_wei",
+    "fire_god_zhouyu",
+    "fire_god_zhugeliang",
+    "fire_pang_de",
+    "fire_pang_tong",
+    "fire_taishi_ci",
+    "fire_xun_yu",
+    "fire_yan_liang_wen_chou",
+    "fire_yuan_shao",
+    "forest_dong_zhuo",
+    "forest_jia_xu",
+    "forest_lusu",
+    "forest_menghuo",
+    "guanyu",
+    "guojia",
+    "huanggai",
+    "huangyueying",
+    "huatuo",
+    "luxun",
+    "lvbu",
+    "lvmeng",
+    "machao",
+    "mobile_god_guojia",
+    "mobile_god_lusu",
+    "mobile_god_sunce",
+    "mobile_god_taishici",
+    "mobile_god_xunyu",
+    "mountain_cai_wenji",
+    "mountain_deng_ai",
+    "mountain_god_simayi",
+    "mountain_god_zhaoyun",
+    "mountain_jiang_wei",
+    "mountain_liushan",
+    "mountain_sunce",
+    "mountain_zhang_he",
+    "mountain_zhang_zhaozhang",
+    "mountain_zuoci",
+    "shadow_god_liubei",
+    "shadow_god_luxun",
+    "sunquan",
+    "sunshangxiang",
+    "thunder_god_zhangliao",
+    "wind_cao_ren",
+    "wind_god_guanyu",
+    "wind_god_lvmeng",
+    "wind_wei_yan",
+    "wind_xiahou_yuan",
+    "wind_xiao_qiao",
+    "wind_yuji",
+    "wind_zhou_tai",
+    "xiahou_dun",
+    "xuchu",
+    "yj2011_cao_zhi",
+    "yj2011_chen_gong",
+    "yj2011_gao_shun",
+    "yj2011_ling_tong",
+    "yj2011_ma_su",
+    "yj2011_wu_guotai",
+    "yj2011_xu_sheng",
+    "yj2011_xu_shu",
+    "yj2011_yu_jin",
+    "yj2011_zhang_chunhua",
+    "yj2012_bu_lianshi",
+    "yj2012_cao_zhang",
+    "yj2012_cheng_pu",
+    "yj2012_guan_xing_zhang_bao",
+    "yj2012_han_dang",
+    "yj2012_hua_xiong",
+    "yj2012_liao_hua",
+    "yj2012_liu_biao",
+    "yj2012_ma_dai",
+    "yj2012_xun_you",
+    "yj2013_fu_huanghou",
+    "yj2013_guan_ping",
+    "yj2013_guo_huai",
+    "yj2013_jian_yong",
+    "yj2013_li_ru",
+    "yj2013_liu_feng",
+    "yj2013_yu_fan",
+    "yj2013_zhu_ran",
+    "zhangfei",
+    "zhangliao",
+    "zhenji",
+    "zhouyu",
+    "zhugeliang"
+  ],
+  "seconds": 5.4,
+  "new_general_coverage": 6
+}

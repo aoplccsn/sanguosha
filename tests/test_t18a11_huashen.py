@@ -52,13 +52,13 @@ def test_in_play_and_duplicate_forms_are_excluded_after_reconnect(general):
             return candidates[0]
     draw_transformations(s.state,'p1',1,SkillRegistry(),Reject())
 
-def test_pool_exactly_90_and_exhaustion_has_no_duplicates():
-    assert len(BASE)==90 and len(GODS)==12
+def test_pool_exactly_91_and_exhaustion_has_no_duplicates():
+    assert len(BASE)==91 and len(GODS)==16
     s=blank()
     class First:
         def choice(self, candidates):return candidates[0]
     got=draw_transformations(s.state,'p1',999,SkillRegistry(),First())
-    assert set(got)=={c.id for c in BASE} and len(got)==90
+    assert set(got)=={c.id for c in BASE} and len(got)==91
     assert draw_transformations(s.state,'p1',1,SkillRegistry(),First())==()
 
 @pytest.mark.parametrize('kind', tuple(SkillType))
@@ -117,7 +117,7 @@ def test_dead_in_play_general_still_excluded_and_pool_subtracts_exactly():
         def choice(self,candidates):return candidates[0]
     got=draw_transformations(s.state,'p1',999,registry,First())
     assert set(got)=={c.id for c in BASE}-{BASE[0].id,BASE[1].id,BASE[2].id}
-    assert len(got)==87
+    assert len(got)==88
 
 
 def test_jiangwei_awakening_reward_is_not_a_native_huashen_choice():
@@ -148,7 +148,8 @@ def test_jiangwei_guanxing_requires_awakened_grant_and_survives_reconnect():
 
 
 REVIEWED_SKILLS = json.loads((Path(__file__).resolve().parents[1] /
-    'docs/t18a11/huashen_skill_eligibility.json').read_text(encoding='utf-8'))
+    'docs/t18a11/huashen_skill_eligibility.json').read_text(encoding='utf-8')) + json.loads((Path(__file__).resolve().parents[1] /
+    'docs/t19/huashen_lusu_eligibility.json').read_text(encoding='utf-8'))
 
 
 @pytest.mark.parametrize('row', REVIEWED_SKILLS,

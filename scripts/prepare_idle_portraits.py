@@ -18,6 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 IDS = {
+    'mobile_god_lusu', 'mobile_god_taishici', 'mobile_god_sunce', 'mobile_god_guojia', 'mobile_god_xunyu',
     'forest_god_lvbu', 'mountain_god_zhaoyun', 'fire_god_zhouyu',
     'fire_god_zhugeliang', 'forest_god_caocao', 'mountain_god_simayi',
     'wind_god_guanyu', 'wind_god_lvmeng', 'wind_zhang_jiao',

@@ -243,8 +243,10 @@ class MultiplayerRoom:
         assert self.pregame is not None
         pool = PLAYABLE_GENERAL_POOL
         remaining = [c.id for c in pool if c.id not in self.pregame.generals.values()]
-        self.pregame.rng.shuffle(remaining)
-        candidates = tuple(map(str, remaining[:9])) + (('forest_god_lvbu',) if self.review_god_lvbu and pid == self.host_id else (str(remaining[9]),))
+        from sanguosha.general_draft import draft_general_ids
+        candidates = tuple(map(str, draft_general_ids(remaining, (), self.pregame.rng)))
+        if self.review_god_lvbu and pid == self.host_id:
+            candidates = tuple(c for c in candidates if c != 'forest_god_lvbu')[:9] + ('forest_god_lvbu',)
         first_choices = {request.choices[0] for other_pid, request in self.draft_requests.items() if other_pid != pid}
         if candidates[0] in first_choices:
             alternative = next((choice for choice in candidates[1:] if choice not in first_choices), None)
@@ -351,7 +353,9 @@ class MultiplayerRoom:
         available = [c.id for c in pool if c.id not in self.pregame.generals.values()]
         for seat in self.seats.values():
             if seat.controller is Controller.AI:
-                selected = self.pregame.rng.choice(available)
+                from sanguosha.general_draft import draft_general_ids
+                offer = draft_general_ids(available, (), self.pregame.rng)
+                selected = self.pregame.rng.choice(offer)
                 available.remove(selected)
                 self.pregame.generals[seat.player_id] = selected
         self.pregame.stage = SetupStage.COMPLETE

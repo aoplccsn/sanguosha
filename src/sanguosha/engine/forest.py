@@ -200,10 +200,21 @@ class FangzhuHandler:
             if target not in self.targets(state, owner):
                 raise InvalidCardUse('放逐目标已不可用')
             frame.local['target'] = target
+            from .skill_grants import grant_sources
+            if 'jilue.permanent' in grant_sources(state, owner, 'fangzhu'):
+                frame.step_index = 5
+                return StepResult.push(TurnoverAction(action.action_id + ':turnover', target))
             missing = max(0, state.players[owner].max_hp - state.players[owner].hp)
             frame.step_index = 3
             if missing:
                 return StepResult.push(DrawCardsAction(action.action_id + ':draw', target, missing))
+        if frame.step_index == 5:
+            target = frame.local['target']
+            missing = max(0, state.players[owner].max_hp - state.players[owner].hp)
+            frame.step_index = 4
+            if missing and state.players[target].is_alive:
+                return StepResult.push(DrawCardsAction(action.action_id + ':draw', target, missing))
+            return StepResult.complete()
         if frame.step_index == 3:
             target = frame.local['target']
             if not state.players[target].is_alive:

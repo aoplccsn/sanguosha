@@ -166,5 +166,11 @@
   "general.yj2013_yu_fan": "generals/wu/yj2013_yu_fan.png",
   "general.yj2013_zhu_ran": "generals/wu/yj2013_zhu_ran.png",
   "general.yj2013_fu_huanghou": "generals/qun/yj2013_fu_huanghou.png",
-  "general.yj2013_li_ru": "generals/qun/yj2013_li_ru.png"
+  "general.yj2013_li_ru": "generals/qun/yj2013_li_ru.png",
+  "general.mobile_god_lusu": "generals/qun/mobile_god_lusu.png",
+  "general.mobile_god_taishici": "generals/qun/mobile_god_taishici.png",
+  "general.mobile_god_sunce": "generals/qun/mobile_god_sunce.png",
+  "general.mobile_god_xunyu": "generals/qun/mobile_god_xunyu.png",
+  "general.mobile_god_guojia": "generals/qun/mobile_god_guojia.png",
+  "trick.qizhengxiangsheng": "cards/default_card.png"
 }

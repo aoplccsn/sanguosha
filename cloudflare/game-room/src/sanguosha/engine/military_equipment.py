@@ -64,6 +64,11 @@ class MilitaryMoveService(CardMoveService):
             self.reactions.clear()
             state.metadata['reaction_event_cursor']=len(self.recorder.events)
             return None
+        if self.skills is not None:
+            from .mobile_gods import initialize_jilue
+            for pid in state.seat_order:
+                if state.players[pid].is_alive:
+                    initialize_jilue(state, pid, self.skills)
         cursor = state.metadata.get('reaction_event_cursor', 0)
         from .events import CardMovedEvent
         new_events = [event for event in self.recorder.events[cursor:]
@@ -82,6 +87,8 @@ class MilitaryMoveService(CardMoveService):
                     from dataclasses import replace
                     targets=state.metadata.get('qiaoshui_targets',{}).get(event.event_id.removesuffix(':used'))
                     if targets is not None:event=replace(event,target_ids=tuple(targets))
+                from .mobile_gods import event_reactions as mobile_event_reactions
+                self.reactions.extend(mobile_event_reactions(state,event,self.skills,self.recorder))
                 from .zhangliao import event_reactions as zhangliao_event_reactions
                 self.reactions.extend(zhangliao_event_reactions(state,event,self.skills,getattr(self,'definitions',None)))
                 from .yj2013 import event_reactions as yj2013_event_reactions

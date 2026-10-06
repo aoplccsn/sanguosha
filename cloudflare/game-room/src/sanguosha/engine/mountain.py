@@ -80,7 +80,7 @@ class ZaoxianHandler:
         if frame.step_index == 0:
             if (not player.is_alive or not self.skills.has(state, player.player_id, 'zaoxian')
                     or player.marks.get('awakened_zaoxian')
-                    or len(state.cards_in(field_zone(player.player_id))) < 3):
+                    or (len(state.cards_in(field_zone(player.player_id))) < 3 and not player.marks.get('ignore_awakening:zaoxian'))):
                 return StepResult.complete(False)
             player.marks['awakened_zaoxian'] = 1
             frame.step_index = 1
@@ -253,8 +253,8 @@ class RuoyuHandler:
             if (not player.is_alive or player.identity is not Identity.LORD
                     or not self.skills.has(state, player_id, 'ruoyu')
                     or player.marks.get('awakened_ruoyu')
-                    or any(other.is_alive and other.hp < player.hp
-                           for other in state.players.values())):
+                    or (not player.marks.get('ignore_awakening:ruoyu') and any(other.is_alive and other.hp < player.hp
+                           for other in state.players.values()))):
                 return StepResult.complete(False)
             player.marks['awakened_ruoyu'] = 1
             frame.step_index = 1
@@ -378,7 +378,7 @@ class ZhijiHandler:
         if frame.step_index == 0:
             if (not player.is_alive or not self.skills.has(state, actor, 'zhiji')
                     or player.marks.get('awakened_zhiji')
-                    or state.cards_in(ZoneRef(ZoneType.HAND, actor))):
+                    or (state.cards_in(ZoneRef(ZoneType.HAND, actor)) and not player.marks.get('ignore_awakening:zhiji'))):
                 return StepResult.complete(False)
             player.marks['awakened_zhiji'] = 1
             frame.step_index = 1
@@ -448,7 +448,7 @@ class HunziHandler:
         player = state.players[actor]
         if frame.step_index == 0:
             if (not player.is_alive or not self.skills.has(state, actor, 'hunzi')
-                    or player.marks.get('awakened_hunzi') or player.hp != 1):
+                    or player.marks.get('awakened_hunzi') or (player.hp != 1 and not player.marks.get('ignore_awakening:hunzi'))):
                 return StepResult.complete(False)
             player.marks['awakened_hunzi'] = 1
             frame.step_index = 1
@@ -689,7 +689,7 @@ def draw_transformations(state, player_id, count, skills, rng):
                 if general.id not in in_play and general.id not in held
                 and general.metadata.get('playable', True)
                 and general.id != 'mountain_zuoci'
-                and not general.metadata.get('god', False)
+                and general.metadata.get('huashen_eligible', not general.metadata.get('god', False))
                 and not general.metadata.get('development_only', False)]
     selected = []
     for _ in range(min(count, len(eligible))):
