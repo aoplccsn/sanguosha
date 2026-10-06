@@ -1,0 +1,39 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+______________ test_wuhun_self_damage_does_not_create_nightmare _______________
+
+    def test_wuhun_self_damage_does_not_create_nightmare():
+        s = game()
+        s.state.players['p1'].character_id = 'wind_god_guanyu'
+        s.engine.start_action(MilitaryDamageAction('self-wuhun', 'p1', 'p1', 1))
+        finish(s)
+>       assert not s.state.players['p1'].marks.get('nightmare')
+E       AssertionError: assert not 1
+E        +  where 1 = <built-in method get of dict object at 0x000002478022A7C0>('nightmare')
+E        +    where <built-in method get of dict object at 0x000002478022A7C0> = {'nightmare': 1}.get
+E        +      where {'nightmare': 1} = PlayerState(player_id='p1', seat=0, character_id='wind_god_guanyu', identity=<Identity.LORD: 'lord'>, hp=3, max_hp=4, ...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).marks
+
+t18a11_final\test_t18a11_final_audit.py:265: AssertionError
+_________ test_wuhun_revenge_clears_nightmare_marks_after_resolution __________
+
+    def test_wuhun_revenge_clears_nightmare_marks_after_resolution():
+        from dataclasses import replace
+        from sanguosha.engine.gods import WuhunDeathAction
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        s = game()
+        s.state.players['p1'].character_id = 'wind_god_guanyu'
+        s.state.players['p2'].marks['nightmare'] = 2
+        s.state.players['p3'].marks['nightmare'] = 1
+        top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+        s.state.cards[top] = replace(s.state.cards[top], definition_id='basic.peach')
+        s.engine.start_action(WuhunDeathAction('clean-wuhun', 'p1'))
+        finish(s)
+>       assert not any(p.marks.get('nightmare') for p in s.state.players.values())
+E       assert not True
+E        +  where True = any(<generator object test_wuhun_revenge_clears_nightmare_marks_after_resolution.<locals>.<genexpr> at 0x000002478051C860>)
+
+t18a11_final\test_t18a11_final_audit.py:280: AssertionError
+=========================== short test summary info ===========================
+FAILED t18a11_final/test_t18a11_final_audit.py::test_wuhun_self_damage_does_not_create_nightmare
+FAILED t18a11_final/test_t18a11_final_audit.py::test_wuhun_revenge_clears_nightmare_marks_after_resolution
+2 failed, 18 deselected in 0.28s

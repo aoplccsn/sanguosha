@@ -152,3 +152,31 @@ Shared closeout systems; code **974bc0c**:
 Five real roots this batch; cumulative **68**. No defensive tests/invariants or unrelated refactor. 79 dependent BLOCKED rows selected, **7 PASS / 3 FIXED** newly closed. Current **153 BLOCKED / 24 FIXED / 15 PASS**. Evidence and all remaining per-row clauses: closeout_system_audit.md; source hashes: closeout_system_sources.json.
 
 Targeted **284 main Python / 49 closure Python / 209 final turn recheck / 3 scoped Web**, all passed; overlapping batches are not summed. Correct implementations reuse existing tests; 12 added cases cover only confirmed differences. Fixture mistakes and correct experimental paths are documented separately and not counted. No full pytest, Zuoci 795 rerun, final gates or RC.
+
+
+## 2026-10-07 最终153条闭环
+
+基线974bc0c / 9195e9f。11项真实根因；本轮127 PASS / 26 FIXED；总表142 PASS / 50 FIXED / 0 BLOCKED。完整证据见 final_rules_audit.md、final_rule_clauses.json、final_sources.json。代码checkpoint：49f0bb0。
+
+| ID | 系统 | 基线差异 | 修复 | 复现证据 |
+| --- | --- | --- | --- | --- |
+| R67 | 同角色多判定技能顺序 | 固定鬼才/极略/鬼道、天妒优先 | 公共判定窗口让角色选择顺序；每次重算资格；先获得牌后不再重复获得 | 5 order failures |
+| R68 | 夺锐狂暴资格 | 内部怒标记名rage作为禁借ID，放行kuangbao | 映射到实际技能kuangbao；专用状态unique技能不可借 | god_reproduction.log |
+| R69 | 狂暴失效 | 按神吕布身份加怒，断肠后仍触发 | 公共有效技能查询决定伤害加怒 | god_reproduction.log |
+| R70 | 大雾失效 | 七星有效即允许大雾，夺锐失效后仍可发动 | 天气共用流程按狂风/大雾各自有效权限询问 | god_reproduction.log |
+| R71 | 业炎目标与成本 | 小业炎固定3人、不含自己；大业炎允许装备成本 | 小业炎1至3名存活角色；大业炎四花色手牌 | yeyan_reproduction.log 4 failures |
+| R72 | 龙魂材料区域 | 仅手牌，混合装备材料不列候选/无法支付 | 公共材料移动支持手牌及装备；用牌/响应共用；装备支付后检查范围 | longhun_reproduction.log 3 failures |
+| R73 | 武神锁定身份 | 仅提供可选虚拟杀，红桃桃仍能当桃；实体红桃杀无远距 | 共享有效牌身份锁定红桃手牌为杀，投影/用牌/响应一致；逐牌免距且保留次数 | guanyu_reproduction.log 2 failures |
+| R74 | 武魂完整条款 | 漏桃园判定例外；自伤误加梦魇；复仇后不清 | 桃/桃园均存活；仅其他来源伤害计梦魇；结算/终局清梦魇 | guanyu_reproduction.log + wuhun_reproduction.log |
+| R75 | 直谏放置 | 允许替换已有同栏装备 | 仅其他存活角色对应空栏；直接放置而非使用装备 | zhijian_reproduction.log 1 failure |
+
+| R76 | 多改判公开事件身份 | 鬼才与极略同actor共用replaced/move ID，前端已播放集合漏第二次 | 按实际改判技能区分公开事件及支付移动ID | identity_reproduction.log; identity_targeted.log 82 passed |
+
+| R77 | 终局临时标记清理 | 终局中断TurnAction，陷阵/智迟标记不清除 | 公共terminal cleanup复用既有clear_turn | full_pytest_before_closeout_fix.log six AI failures; 166 targeted passed |
+
+11项新增真实基线根因；累计79。多判定技能顺序两类窗口共用同一根因修复，不按每个技能重复计数；武魂的三个缺漏为同一技能条款闭环。无前借取的非法狂暴前提探针及主动防御测试已移除，不计基线产品bug。旧结论/统计均为历史checkpoint；最终七项验收另行登记，未通过前不签RC。
+
+
+R77：最终完整Python回归的六个既有AI对局实际复现终局回合中断后陷阵/智迟标记残留。公共terminal cleanup复用既有clear_turn，不新增测试。另四个旧救援断言已按既有座次询问规则更新，未改动救援实现、不计新bug。首轮环境权限失败及完整回归10失败日志均保留。
+
+最终七项全部PASS：pytest2186（用户明确排除左慈795）、Vitest120、Playwright42、TypeScript、fresh Vite build、PySide smoke、Worker112。代码49f0bb0；证据final_acceptance.json与final_rules_audit.md。签发 **T18A.11 release candidate rules and interaction audit**。

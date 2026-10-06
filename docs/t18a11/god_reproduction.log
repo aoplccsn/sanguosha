@@ -1,0 +1,60 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+__________________ test_duorui_cannot_borrow_unique_kuangbao __________________
+
+    def test_duorui_cannot_borrow_unique_kuangbao():
+        from sanguosha.engine.zhangliao import borrowable
+        s = game()
+>       assert 'kuangbao' not in borrowable(s.state, 'p2', s.skills)
+E       AssertionError: assert 'kuangbao' not in ('kuangbao', 'wumou', 'wuwei')
+E        +  where ('kuangbao', 'wumou', 'wuwei') = <function borrowable at 0x0000018E3A416020>(GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='thunder_god_...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None), 'p2', <sanguosha.engine.skills.SkillRegistry object at 0x0000018E3A309D30>)
+E        +    where GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='thunder_god_...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000018E3A6E2CF0>, events=<sanguosha.engine.events....D30>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000018E3A308440>).state
+E        +    and   <sanguosha.engine.skills.SkillRegistry object at 0x0000018E3A309D30> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000018E3A6E2CF0>, events=<sanguosha.engine.events....D30>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000018E3A308440>).skills
+
+C:\Sanguosha\tests\test_t18a11_final_audit.py:26: AssertionError
+_______ test_duanchang_lost_kuangbao_does_not_gain_rage_on_later_damage _______
+
+    def test_duanchang_lost_kuangbao_does_not_gain_rage_on_later_damage():
+        from sanguosha.engine.death import DeathAction
+        s = game()
+        s.state.players['p3'].character_id = 'mountain_cai_wenji'
+        s.engine.start_action(DeathAction('duanchang-rage', 'p3', 'p2'))
+        finish(s)
+        assert not s.skills.has(s.state, 'p2', 'kuangbao')
+        before = s.state.players['p2'].marks.get('rage', 0)
+        s.engine.start_action(MilitaryDamageAction('after-duanchang', 'p4', 'p2', 1))
+        finish(s)
+>       assert s.state.players['p2'].marks.get('rage', 0) == before
+E       AssertionError: assert 1 == 0
+E        +  where 1 = <built-in method get of dict object at 0x0000018E3A73E480>('rage', 0)
+E        +    where <built-in method get of dict object at 0x0000018E3A73E480> = {'rage': 1}.get
+E        +      where {'rage': 1} = PlayerState(player_id='p2', seat=1, character_id='forest_god_lvbu', identity=<Identity.LOYALIST: 'loyalist'>, hp=3, ma...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).marks
+
+C:\Sanguosha\tests\test_t18a11_final_audit.py:39: AssertionError
+______ test_duorui_dawu_suppression_removes_fog_offer_but_preserves_wind ______
+
+    def test_duorui_dawu_suppression_removes_fog_offer_but_preserves_wind():
+        from test_t6_military_basics import put
+        from sanguosha.engine.gods import StarWeatherAction, star_zone
+        from sanguosha.engine.card_moves import CardMove, CardMoveReason
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        s = game()
+        s.state.players['p2'].character_id = 'fire_god_zhugeliang'
+        cid = put(s, 'basic.slash', 'p2')
+        s.engine.reaction_provider.__self__.move(s.state, CardMove('star-fixture', (cid,),
+            ZoneRef(ZoneType.HAND, 'p2'), star_zone('p2'), CardMoveReason.SYSTEM))
+        begin_lease(s.state, 'p1', 'p2', 'dawu')
+        s.engine.start_action(StarWeatherAction('leased-dawu', 'p2'))
+>       assert s.engine.pending_request.choices == ('wind', 'done')
+E       AssertionError: assert ('wind', 'fog', 'done') == ('wind', 'done')
+E         
+E         At index 1 diff: 'fog' != 'done'
+E         Left contains one more item: 'done'
+E         Use -v to get more diff
+
+C:\Sanguosha\tests\test_t18a11_final_audit.py:54: AssertionError
+=========================== short test summary info ===========================
+FAILED ..\..\..\..\..\Sanguosha\tests\test_t18a11_final_audit.py::test_duorui_cannot_borrow_unique_kuangbao
+FAILED ..\..\..\..\..\Sanguosha\tests\test_t18a11_final_audit.py::test_duanchang_lost_kuangbao_does_not_gain_rage_on_later_damage
+FAILED ..\..\..\..\..\Sanguosha\tests\test_t18a11_final_audit.py::test_duorui_dawu_suppression_removes_fog_offer_but_preserves_wind
+3 failed, 9 deselected in 0.36s

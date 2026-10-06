@@ -1,0 +1,34 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_native_guicai_and_jilue_retrial_public_events_have_distinct_identities _
+
+    def test_native_guicai_and_jilue_retrial_public_events_have_distinct_identities():
+        from dataclasses import replace
+        from test_t6_military_basics import put
+        from sanguosha.engine.judgment import JudgmentAction, JudgmentPattern
+        from sanguosha.model.enums import Suit
+        from sanguosha.multiplayer.room import MultiplayerRoom
+        s = game()
+        s.state.players['p1'].granted_skills.update(guicai='audit', jilue='audit')
+        s.state.players['p1'].marks['ren'] = 1
+        first = put(s, 'basic.slash', 'p1')
+        last = put(s, 'basic.slash', 'p1')
+        s.state.cards[first] = replace(s.state.cards[first], suit=Suit.HEART)
+        s.state.cards[last] = replace(s.state.cards[last], suit=Suit.SPADE)
+        s.engine.start_action(JudgmentAction('public-two-retrials', 'p3', JudgmentPattern(suit=Suit.SPADE)))
+        answer(s, '����')
+        for choice in (True, first, True, last):
+            answer(s, choice)
+        room = MultiplayerRoom()
+        room.session = s
+        public = [room._public_event(e) for e in s.events.events if getattr(e, 'event_type', '') == 'judgment_card_replaced']
+        assert len(public) == 2
+        # Presentation's seen set uses event_id, so both accepted replacements need identities.
+>       assert len({e['event_id'] for e in public}) == 2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = len({'public-two-retrials:replaced:p1'})
+
+t18a11_final\test_t18a11_final_audit.py:322: AssertionError
+=========================== short test summary info ===========================
+FAILED t18a11_final/test_t18a11_final_audit.py::test_native_guicai_and_jilue_retrial_public_events_have_distinct_identities
+1 failed, 21 deselected in 0.34s

@@ -1,0 +1,60 @@
+{
+  "code_checkpoint": "49f0bb0",
+  "certificate": "T18A.11 release candidate rules and interaction audit",
+  "status": "ISSUED",
+  "rules": {
+    "baseline_blocked": 153,
+    "final_blocked": 0,
+    "new_real_bugs": 11,
+    "new_pass": 127,
+    "new_fixed": 26,
+    "total_pass": 142,
+    "total_fixed": 50
+  },
+  "gates": {
+    "full_pytest": {
+      "result": "PASS",
+      "excluded": "tests/test_t18a11_huashen.py — 795 cases; user explicitly prohibited rerun",
+      "tests": 2186,
+      "seconds": 206.8,
+      "exit_code": 0,
+      "log": "final_pytest.log",
+      "junit": "final_pytest.xml"
+    },
+    "Vitest": {
+      "result": "PASS",
+      "files": 16,
+      "tests": 120,
+      "log": "final_vitest.log"
+    },
+    "Playwright": {
+      "result": "PASS",
+      "tests": 42,
+      "log": "final_playwright.log"
+    },
+    "TypeScript": {
+      "result": "PASS",
+      "command": "node node_modules/typescript/bin/tsc -b",
+      "exit_code": 0,
+      "log": "final_typescript.log"
+    },
+    "fresh_Vite_build": {
+      "result": "PASS",
+      "command": "venv python scripts/sync_web_assets.py --production; node node_modules/vite/bin/vite.js build",
+      "exit_code": 0,
+      "log": "final_vite_build.log"
+    },
+    "PySide_smoke": {
+      "result": "PASS",
+      "command": "QT_QPA_PLATFORM=offscreen SANGUOSHA_SMOKE_TEST=1 venv python -m sanguosha",
+      "exit_code": 0,
+      "log": "final_pyside_smoke.log"
+    },
+    "Worker_mirror_consistency": {
+      "result": "PASS",
+      "files": 112,
+      "evidence": "worker_mirror.json"
+    }
+  },
+  "issued_at": "2026-10-07 Asia/Shanghai"
+}

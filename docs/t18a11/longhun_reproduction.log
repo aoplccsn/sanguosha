@@ -1,0 +1,151 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+__ test_classic_longhun_can_pay_mixed_hand_equipment_materials[peach-heart] ___
+
+mode = 'peach', suit = 'heart'
+
+    @pytest.mark.parametrize('mode,suit', [('peach', 'heart'), ('slash', 'diamond'), ('response', 'club')])
+    def test_classic_longhun_can_pay_mixed_hand_equipment_materials(mode, suit):
+        from dataclasses import replace
+        from test_t6_military_basics import put
+        from sanguosha.engine.gods import LonghunUse, longhun_option
+        from sanguosha.engine.response import RespondWithCardAction
+        from sanguosha.model.enums import Suit, EquipmentSlot
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        s = game()
+        s.state.players['p1'].character_id = 'mountain_god_zhaoyun'
+        s.state.players['p1'].hp = 2
+        s.state.players['p1'].max_hp = 3
+        a = put(s, 'basic.slash', 'p1')
+        b = put(s, 'equipment.armor.vine', 'p1', ZoneType.EQUIPMENT, EquipmentSlot.ARMOR)
+        for cid in (a, b):
+            s.state.cards[cid] = replace(s.state.cards[cid], suit=Suit(suit))
+        if mode == 'response':
+            s.engine.start_action(RespondWithCardAction('equipment-longhun', 'p1', 'basic.dodge', 'incoming'))
+            assert longhun_option((a, b)) in s.engine.pending_request.eligible_card_ids
+            s = restore(s)
+            answer(s, longhun_option((a, b)))
+        else:
+>           s.engine.start_action(LonghunUse('equipment-longhun', 'p1', (a, b),
+                'basic.peach' if mode == 'peach' else 'basic.fire_slash'))
+
+t18a11_final\test_t18a11_final_audit.py:201: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Sanguosha\src\sanguosha\engine\engine.py:59: in start_action
+    return self.run_until_blocked()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Sanguosha\src\sanguosha\engine\engine.py:114: in run_until_blocked
+    outcome = self.registry.handler_for(frame.action).step(self.state, frame)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sanguosha.engine.gods.LonghunUseHandler object at 0x0000027C927A52B0>
+state = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='mountain_god...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None)
+frame = ResolutionFrame(frame_id='frame-1', action=LonghunUse(action_id='equipment-longhun', player_id='p1', material_ids=('st...e, child_result=None, result=None, status=<FrameStatus.READY: 'ready'>, deferred_step=None, reaction_child_result=None)
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index in (0, 1):
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, action.player_id, action.material_ids, action.definition_id, skills=self.skills, skill_id='longhun')
+        actor = action.player_id
+        hand = ZoneRef(ZoneType.HAND, actor)
+        processing = ZoneRef(ZoneType.PROCESSING)
+        if frame.step_index == 0:
+            if not self.available(state, actor, action.definition_id, action.material_ids):
+>               raise InvalidCardUse('������Ʋ�����')
+E               sanguosha.engine.card_rules.InvalidCardUse: ������Ʋ�����
+
+C:\Sanguosha\src\sanguosha\engine\gods.py:644: InvalidCardUse
+_ test_classic_longhun_can_pay_mixed_hand_equipment_materials[slash-diamond] __
+
+mode = 'slash', suit = 'diamond'
+
+    @pytest.mark.parametrize('mode,suit', [('peach', 'heart'), ('slash', 'diamond'), ('response', 'club')])
+    def test_classic_longhun_can_pay_mixed_hand_equipment_materials(mode, suit):
+        from dataclasses import replace
+        from test_t6_military_basics import put
+        from sanguosha.engine.gods import LonghunUse, longhun_option
+        from sanguosha.engine.response import RespondWithCardAction
+        from sanguosha.model.enums import Suit, EquipmentSlot
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        s = game()
+        s.state.players['p1'].character_id = 'mountain_god_zhaoyun'
+        s.state.players['p1'].hp = 2
+        s.state.players['p1'].max_hp = 3
+        a = put(s, 'basic.slash', 'p1')
+        b = put(s, 'equipment.armor.vine', 'p1', ZoneType.EQUIPMENT, EquipmentSlot.ARMOR)
+        for cid in (a, b):
+            s.state.cards[cid] = replace(s.state.cards[cid], suit=Suit(suit))
+        if mode == 'response':
+            s.engine.start_action(RespondWithCardAction('equipment-longhun', 'p1', 'basic.dodge', 'incoming'))
+            assert longhun_option((a, b)) in s.engine.pending_request.eligible_card_ids
+            s = restore(s)
+            answer(s, longhun_option((a, b)))
+        else:
+>           s.engine.start_action(LonghunUse('equipment-longhun', 'p1', (a, b),
+                'basic.peach' if mode == 'peach' else 'basic.fire_slash'))
+
+t18a11_final\test_t18a11_final_audit.py:201: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Sanguosha\src\sanguosha\engine\engine.py:59: in start_action
+    return self.run_until_blocked()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Sanguosha\src\sanguosha\engine\engine.py:114: in run_until_blocked
+    outcome = self.registry.handler_for(frame.action).step(self.state, frame)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <sanguosha.engine.gods.LonghunUseHandler object at 0x0000027C928CA0D0>
+state = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='mountain_god...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None)
+frame = ResolutionFrame(frame_id='frame-1', action=LonghunUse(action_id='equipment-longhun', player_id='p1', material_ids=('st...e, child_result=None, result=None, status=<FrameStatus.READY: 'ready'>, deferred_step=None, reaction_child_result=None)
+
+    def step(self, state, frame):
+        action = frame.action
+        if frame.step_index in (0, 1):
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, action.player_id, action.material_ids, action.definition_id, skills=self.skills, skill_id='longhun')
+        actor = action.player_id
+        hand = ZoneRef(ZoneType.HAND, actor)
+        processing = ZoneRef(ZoneType.PROCESSING)
+        if frame.step_index == 0:
+            if not self.available(state, actor, action.definition_id, action.material_ids):
+>               raise InvalidCardUse('������Ʋ�����')
+E               sanguosha.engine.card_rules.InvalidCardUse: ������Ʋ�����
+
+C:\Sanguosha\src\sanguosha\engine\gods.py:644: InvalidCardUse
+_ test_classic_longhun_can_pay_mixed_hand_equipment_materials[response-club] __
+
+mode = 'response', suit = 'club'
+
+    @pytest.mark.parametrize('mode,suit', [('peach', 'heart'), ('slash', 'diamond'), ('response', 'club')])
+    def test_classic_longhun_can_pay_mixed_hand_equipment_materials(mode, suit):
+        from dataclasses import replace
+        from test_t6_military_basics import put
+        from sanguosha.engine.gods import LonghunUse, longhun_option
+        from sanguosha.engine.response import RespondWithCardAction
+        from sanguosha.model.enums import Suit, EquipmentSlot
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        s = game()
+        s.state.players['p1'].character_id = 'mountain_god_zhaoyun'
+        s.state.players['p1'].hp = 2
+        s.state.players['p1'].max_hp = 3
+        a = put(s, 'basic.slash', 'p1')
+        b = put(s, 'equipment.armor.vine', 'p1', ZoneType.EQUIPMENT, EquipmentSlot.ARMOR)
+        for cid in (a, b):
+            s.state.cards[cid] = replace(s.state.cards[cid], suit=Suit(suit))
+        if mode == 'response':
+            s.engine.start_action(RespondWithCardAction('equipment-longhun', 'p1', 'basic.dodge', 'incoming'))
+>           assert longhun_option((a, b)) in s.engine.pending_request.eligible_card_ids
+E           AssertionError: assert 'virtual:longhun:std-club-04-2:std-heart-08-1' in ('mil-diamond-06',)
+E            +  where 'virtual:longhun:std-club-04-2:std-heart-08-1' = <function longhun_option at 0x0000027C926167A0>(('std-club-04-2', 'std-heart-08-1'))
+E            +  and   ('mil-diamond-06',) = PendingRequest(request_id='equipment-longhun:request', player_id='p1', request_type=<RequestType.RESPOND_WITH_CARD: 'r..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()).eligible_card_ids
+E            +    where PendingRequest(request_id='equipment-longhun:request', player_id='p1', request_type=<RequestType.RESPOND_WITH_CARD: 'r..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000027C928634D0>.pending_request
+E            +      where <sanguosha.engine.engine.GameEngine object at 0x0000027C928634D0> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000027C928634D0>, events=<sanguosha.engine.events....9D0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000027C92750A50>).engine
+
+t18a11_final\test_t18a11_final_audit.py:197: AssertionError
+=========================== short test summary info ===========================
+FAILED t18a11_final/test_t18a11_final_audit.py::test_classic_longhun_can_pay_mixed_hand_equipment_materials[peach-heart]
+FAILED t18a11_final/test_t18a11_final_audit.py::test_classic_longhun_can_pay_mixed_hand_equipment_materials[slash-diamond]
+FAILED t18a11_final/test_t18a11_final_audit.py::test_classic_longhun_can_pay_mixed_hand_equipment_materials[response-club]
+3 failed, 12 deselected in 0.30s

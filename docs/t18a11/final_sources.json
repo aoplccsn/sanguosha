@@ -1,0 +1,58 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/standard-generals.cpp",
+    "sha256": "b6d5dd946addb3076295bfdedd6ef68424e10b6f3234e8193955793777e936ce"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/nostalgia.cpp",
+    "sha256": "d53b1b7d51911ba8c6b832f1c2fa25f0779f5f74d514cbef723f1cfc1a431a3e"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/wind.cpp",
+    "sha256": "266e3ed0b657e74ee26c101b2b2e352e8240daa4ed7b5b876e7b2f613200571f"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/fire.cpp",
+    "sha256": "be52fb19e5b4c50a892a0e269423cffcb946b6366a59f55338213318e19a3429"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/thicket.cpp",
+    "sha256": "cf9548b90a9c8cfa240fb071f378df726dbddf57fadc7a53ff54487672b173f1"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/mountain.cpp",
+    "sha256": "6af7a935814d9dd7e3edd4f2cc10972c4a59c5bd3f8959a66abe6765590b18db"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/god.cpp",
+    "sha256": "0fdd392bb4977697431964710fa6a213d2cfc4fb71d18de3023d63fa344c5642"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/yjcm.cpp",
+    "sha256": "f3d841e5d964096d3f9dfc76ee731aae1ae76639e4ffc9d6a575aff18d0068ab"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/yjcm2012.cpp",
+    "sha256": "4201945fa47162ac6987de35f4482ad22462b34838dee89af9138c41d4abbc4d"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/yjcm2013.cpp",
+    "sha256": "e95319d7dcc81faf2cdb04d71fb1a2c52113dc1aee6855c063bd98afebc0ae0c"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/server/roomthread.cpp",
+    "sha256": "44e94940742e9a70067432e7cfa33639848a1ccf06b545c56b59d1101bc400b7"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/core/skill.cpp",
+    "sha256": "07972cf065db9a98d5101a97629cee57fa8660476baa13366a6f91b314834b5f"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/libccy/noname/e18a8256e01ab1357e4c7472349dceb3d0aa1a3a/character/extra/skill.js",
+    "sha256": "55a0d5de01df7d6943be29ca6d9c24c9c49c2a7363523ed4979ae9328d52f902"
+  },
+  {
+    "url": "https://gltjk.com/sanguosha/rules/rule/principle.html",
+    "role": "Archived primary rules text fetched through web search; raw HTTP 403, no invented byte hash. Same-player simultaneous actions chosen by that player; examples Tiandu/Songwei and Luoshen/Songwei."
+  }
+]

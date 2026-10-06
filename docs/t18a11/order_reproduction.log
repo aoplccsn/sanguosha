@@ -1,0 +1,134 @@
+..FFFFF                                                                  [100%]
+================================== FAILURES ===================================
+___ test_same_owner_retrial_can_choose_order_and_final_replacement[guidao] ____
+
+first = 'guidao'
+
+    @pytest.mark.parametrize('first', ['guidao', 'jilue'])
+    def test_same_owner_retrial_can_choose_order_and_final_replacement(first):
+        from dataclasses import replace
+        from test_t6_military_basics import put
+        from sanguosha.engine.judgment import JudgmentAction, JudgmentPattern
+        from sanguosha.model.enums import Suit
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        s = game()
+        s.state.players['p1'].granted_skills.update(guidao='audit', jilue='audit')
+        s.state.players['p1'].marks['ren'] = 2
+        black = put(s, 'basic.slash', 'p1')
+        red = put(s, 'basic.slash', 'p1')
+        s.state.cards[black] = replace(s.state.cards[black], suit=Suit.SPADE)
+        s.state.cards[red] = replace(s.state.cards[red], suit=Suit.HEART)
+        s.engine.start_action(JudgmentAction('chosen-retrial', 'p3', JudgmentPattern(suit=Suit.HEART)))
+>       assert s.engine.pending_request.choices == ('����', '����')
+E       AssertionError: assert () == ('����', '����')
+E         
+E         Right contains 2 more items, first extra item: '����'
+E         Use -v to get more diff
+
+t18a11_final\test_t18a11_final_audit.py:68: AssertionError
+____ test_same_owner_retrial_can_choose_order_and_final_replacement[jilue] ____
+
+first = 'jilue'
+
+    @pytest.mark.parametrize('first', ['guidao', 'jilue'])
+    def test_same_owner_retrial_can_choose_order_and_final_replacement(first):
+        from dataclasses import replace
+        from test_t6_military_basics import put
+        from sanguosha.engine.judgment import JudgmentAction, JudgmentPattern
+        from sanguosha.model.enums import Suit
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        s = game()
+        s.state.players['p1'].granted_skills.update(guidao='audit', jilue='audit')
+        s.state.players['p1'].marks['ren'] = 2
+        black = put(s, 'basic.slash', 'p1')
+        red = put(s, 'basic.slash', 'p1')
+        s.state.cards[black] = replace(s.state.cards[black], suit=Suit.SPADE)
+        s.state.cards[red] = replace(s.state.cards[red], suit=Suit.HEART)
+        s.engine.start_action(JudgmentAction('chosen-retrial', 'p3', JudgmentPattern(suit=Suit.HEART)))
+>       assert s.engine.pending_request.choices == ('����', '����')
+E       AssertionError: assert () == ('����', '����')
+E         
+E         Right contains 2 more items, first extra item: '����'
+E         Use -v to get more diff
+
+t18a11_final\test_t18a11_final_audit.py:68: AssertionError
+___ test_finish_judge_tiandu_songwei_order_is_judged_players_choice[tiandu] ___
+
+first = 'tiandu'
+
+    @pytest.mark.parametrize('first', ['tiandu', 'songwei'])
+    def test_finish_judge_tiandu_songwei_order_is_judged_players_choice(first):
+        from dataclasses import replace
+        from sanguosha.engine.judgment import JudgmentAction, JudgmentPattern
+        from sanguosha.engine.events import CardMovedEvent
+        from sanguosha.model.enums import Suit, Identity
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        s = game()
+        s.state.players['p1'].character_id = 'forest_caopi'
+        s.state.players['p1'].identity = Identity.LORD
+        s.state.players['p2'].character_id = 'guojia'
+        top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+        s.state.cards[top] = replace(s.state.cards[top], suit=Suit.SPADE)
+        before = len(s.events.events)
+        s.engine.start_action(JudgmentAction('chosen-finish', 'p2', JudgmentPattern()))
+>       assert s.engine.pending_request.choices == ('���', '����')
+E       AssertionError: assert () == ('���', '����')
+E         
+E         Right contains 2 more items, first extra item: '���'
+E         Use -v to get more diff
+
+t18a11_final\test_t18a11_final_audit.py:95: AssertionError
+__ test_finish_judge_tiandu_songwei_order_is_judged_players_choice[songwei] ___
+
+first = 'songwei'
+
+    @pytest.mark.parametrize('first', ['tiandu', 'songwei'])
+    def test_finish_judge_tiandu_songwei_order_is_judged_players_choice(first):
+        from dataclasses import replace
+        from sanguosha.engine.judgment import JudgmentAction, JudgmentPattern
+        from sanguosha.engine.events import CardMovedEvent
+        from sanguosha.model.enums import Suit, Identity
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        s = game()
+        s.state.players['p1'].character_id = 'forest_caopi'
+        s.state.players['p1'].identity = Identity.LORD
+        s.state.players['p2'].character_id = 'guojia'
+        top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+        s.state.cards[top] = replace(s.state.cards[top], suit=Suit.SPADE)
+        before = len(s.events.events)
+        s.engine.start_action(JudgmentAction('chosen-finish', 'p2', JudgmentPattern()))
+>       assert s.engine.pending_request.choices == ('���', '����')
+E       AssertionError: assert () == ('���', '����')
+E         
+E         Right contains 2 more items, first extra item: '���'
+E         Use -v to get more diff
+
+t18a11_final\test_t18a11_final_audit.py:95: AssertionError
+_________ test_finish_judge_field_before_tiandu_removes_obtain_window _________
+
+    def test_finish_judge_field_before_tiandu_removes_obtain_window():
+        from dataclasses import replace
+        from sanguosha.engine.mountain import TuntianAction, field_zone
+        from sanguosha.model.enums import Suit
+        from sanguosha.model.zones import ZoneRef, ZoneType
+        s = game()
+        s.state.players['p2'].character_id = 'mountain_deng_ai'
+        s.state.players['p2'].granted_skills['tiandu'] = 'audit'
+        top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+        s.state.cards[top] = replace(s.state.cards[top], suit=Suit.CLUB)
+        s.engine.start_action(TuntianAction('chosen-field', 'p2'))
+        answer(s, True)
+>       assert s.engine.pending_request.choices == ('���', '����')
+E       AssertionError: assert () == ('���', '����')
+E         
+E         Right contains 2 more items, first extra item: '���'
+E         Use -v to get more diff
+
+t18a11_final\test_t18a11_final_audit.py:117: AssertionError
+=========================== short test summary info ===========================
+FAILED t18a11_final/test_t18a11_final_audit.py::test_same_owner_retrial_can_choose_order_and_final_replacement[guidao]
+FAILED t18a11_final/test_t18a11_final_audit.py::test_same_owner_retrial_can_choose_order_and_final_replacement[jilue]
+FAILED t18a11_final/test_t18a11_final_audit.py::test_finish_judge_tiandu_songwei_order_is_judged_players_choice[tiandu]
+FAILED t18a11_final/test_t18a11_final_audit.py::test_finish_judge_tiandu_songwei_order_is_judged_players_choice[songwei]
+FAILED t18a11_final/test_t18a11_final_audit.py::test_finish_judge_field_before_tiandu_removes_obtain_window
+5 failed, 2 passed in 0.28s

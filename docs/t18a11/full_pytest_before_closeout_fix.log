@@ -1,0 +1,392 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 13%]
+...............................F.....F....................F............. [ 16%]
+...F............FF...................................................... [ 19%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 29%]
+........................................................................ [ 32%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+.F...................................................................... [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 55%]
+........................................................................ [ 59%]
+........................................................................ [ 62%]
+........................................................................ [ 65%]
+........................................................................ [ 69%]
+........................................................................ [ 72%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 82%]
+........FF.............................................................. [ 85%]
+...............................F........................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+..........................                                               [100%]
+================================== FAILURES ===================================
+_ test_all_eleven_forced_ai_matches_with_live_skill_restore[3-military-eight] _
+
+mode = 'military-eight', seed = 3
+
+    @pytest.mark.parametrize('mode',['military-five','military-eight'])
+    @pytest.mark.parametrize('seed',range(40))
+    def test_all_eleven_forced_ai_matches_with_live_skill_restore(mode,seed):
+        s=GameSession.new_game(seed=300+seed,military=True,five_generals=True,mode_id=mode)
+        order=GENERALS[seed%11:]+GENERALS[:seed%11]
+        for pid,gid in zip(s.state.seat_order,order):
+            c=s.skills.characters[gid]; p=s.state.players[pid]
+            p.character_id=gid; p.max_hp=c.max_hp+int(p.identity is Identity.LORD); p.hp=p.max_hp
+            s.character_names[pid]=c.name
+        s.human_id='ai-only'; restored=set()
+        for _ in range(50000):
+            if s.state.status is GameStatus.FINISHED: break
+            request=s.engine.pending_request
+            if request:
+                skill=next((name for name in ('��Ӣ','��ʫ','��Թ','ѣ��','��ս','��¶','����','����','����','ƴ��','����','�ټ�','����','�ƾ�') if name in request.prompt),None)
+                if skill and skill not in restored:
+                    s=restore_session(snapshot_session(s)); assert s.engine.pending_request==request
+                    restored.add(skill)
+            assert s.step_auto()
+        else: pytest.fail('match did not resolve')
+        assert s.state.victory is not None and s.engine.pending_request is None
+        assert s.engine.stack.is_empty()
+>       assert not any(k.startswith('yj_xianzhen') or k=='yj_zhichi' for p in s.state.players.values() for k in p.marks)
+E       assert not True
+E        +  where True = any(<generator object test_all_eleven_forced_ai_matches_with_live_skill_restore.<locals>.<genexpr> at 0x00000246AD5B5D20>)
+
+tests\test_t17b_complete.py:43: AssertionError
+_ test_all_eleven_forced_ai_matches_with_live_skill_restore[6-military-eight] _
+
+mode = 'military-eight', seed = 6
+
+    @pytest.mark.parametrize('mode',['military-five','military-eight'])
+    @pytest.mark.parametrize('seed',range(40))
+    def test_all_eleven_forced_ai_matches_with_live_skill_restore(mode,seed):
+        s=GameSession.new_game(seed=300+seed,military=True,five_generals=True,mode_id=mode)
+        order=GENERALS[seed%11:]+GENERALS[:seed%11]
+        for pid,gid in zip(s.state.seat_order,order):
+            c=s.skills.characters[gid]; p=s.state.players[pid]
+            p.character_id=gid; p.max_hp=c.max_hp+int(p.identity is Identity.LORD); p.hp=p.max_hp
+            s.character_names[pid]=c.name
+        s.human_id='ai-only'; restored=set()
+        for _ in range(50000):
+            if s.state.status is GameStatus.FINISHED: break
+            request=s.engine.pending_request
+            if request:
+                skill=next((name for name in ('��Ӣ','��ʫ','��Թ','ѣ��','��ս','��¶','����','����','����','ƴ��','����','�ټ�','����','�ƾ�') if name in request.prompt),None)
+                if skill and skill not in restored:
+                    s=restore_session(snapshot_session(s)); assert s.engine.pending_request==request
+                    restored.add(skill)
+            assert s.step_auto()
+        else: pytest.fail('match did not resolve')
+        assert s.state.victory is not None and s.engine.pending_request is None
+        assert s.engine.stack.is_empty()
+>       assert not any(k.startswith('yj_xianzhen') or k=='yj_zhichi' for p in s.state.players.values() for k in p.marks)
+E       assert not True
+E        +  where True = any(<generator object test_all_eleven_forced_ai_matches_with_live_skill_restore.<locals>.<genexpr> at 0x00000246B213DFC0>)
+
+tests\test_t17b_complete.py:43: AssertionError
+_ test_all_eleven_forced_ai_matches_with_live_skill_restore[17-military-five] _
+
+mode = 'military-five', seed = 17
+
+    @pytest.mark.parametrize('mode',['military-five','military-eight'])
+    @pytest.mark.parametrize('seed',range(40))
+    def test_all_eleven_forced_ai_matches_with_live_skill_restore(mode,seed):
+        s=GameSession.new_game(seed=300+seed,military=True,five_generals=True,mode_id=mode)
+        order=GENERALS[seed%11:]+GENERALS[:seed%11]
+        for pid,gid in zip(s.state.seat_order,order):
+            c=s.skills.characters[gid]; p=s.state.players[pid]
+            p.character_id=gid; p.max_hp=c.max_hp+int(p.identity is Identity.LORD); p.hp=p.max_hp
+            s.character_names[pid]=c.name
+        s.human_id='ai-only'; restored=set()
+        for _ in range(50000):
+            if s.state.status is GameStatus.FINISHED: break
+            request=s.engine.pending_request
+            if request:
+                skill=next((name for name in ('��Ӣ','��ʫ','��Թ','ѣ��','��ս','��¶','����','����','����','ƴ��','����','�ټ�','����','�ƾ�') if name in request.prompt),None)
+                if skill and skill not in restored:
+                    s=restore_session(snapshot_session(s)); assert s.engine.pending_request==request
+                    restored.add(skill)
+            assert s.step_auto()
+        else: pytest.fail('match did not resolve')
+        assert s.state.victory is not None and s.engine.pending_request is None
+        assert s.engine.stack.is_empty()
+>       assert not any(k.startswith('yj_xianzhen') or k=='yj_zhichi' for p in s.state.players.values() for k in p.marks)
+E       assert not True
+E        +  where True = any(<generator object test_all_eleven_forced_ai_matches_with_live_skill_restore.<locals>.<genexpr> at 0x00000246B213E420>)
+
+tests\test_t17b_complete.py:43: AssertionError
+_ test_all_eleven_forced_ai_matches_with_live_skill_restore[25-military-eight] _
+
+mode = 'military-eight', seed = 25
+
+    @pytest.mark.parametrize('mode',['military-five','military-eight'])
+    @pytest.mark.parametrize('seed',range(40))
+    def test_all_eleven_forced_ai_matches_with_live_skill_restore(mode,seed):
+        s=GameSession.new_game(seed=300+seed,military=True,five_generals=True,mode_id=mode)
+        order=GENERALS[seed%11:]+GENERALS[:seed%11]
+        for pid,gid in zip(s.state.seat_order,order):
+            c=s.skills.characters[gid]; p=s.state.players[pid]
+            p.character_id=gid; p.max_hp=c.max_hp+int(p.identity is Identity.LORD); p.hp=p.max_hp
+            s.character_names[pid]=c.name
+        s.human_id='ai-only'; restored=set()
+        for _ in range(50000):
+            if s.state.status is GameStatus.FINISHED: break
+            request=s.engine.pending_request
+            if request:
+                skill=next((name for name in ('��Ӣ','��ʫ','��Թ','ѣ��','��ս','��¶','����','����','����','ƴ��','����','�ټ�','����','�ƾ�') if name in request.prompt),None)
+                if skill and skill not in restored:
+                    s=restore_session(snapshot_session(s)); assert s.engine.pending_request==request
+                    restored.add(skill)
+            assert s.step_auto()
+        else: pytest.fail('match did not resolve')
+        assert s.state.victory is not None and s.engine.pending_request is None
+        assert s.engine.stack.is_empty()
+>       assert not any(k.startswith('yj_xianzhen') or k=='yj_zhichi' for p in s.state.players.values() for k in p.marks)
+E       assert not True
+E        +  where True = any(<generator object test_all_eleven_forced_ai_matches_with_live_skill_restore.<locals>.<genexpr> at 0x00000246B21AEEA0>)
+
+tests\test_t17b_complete.py:43: AssertionError
+_ test_all_eleven_forced_ai_matches_with_live_skill_restore[32-military-five] _
+
+mode = 'military-five', seed = 32
+
+    @pytest.mark.parametrize('mode',['military-five','military-eight'])
+    @pytest.mark.parametrize('seed',range(40))
+    def test_all_eleven_forced_ai_matches_with_live_skill_restore(mode,seed):
+        s=GameSession.new_game(seed=300+seed,military=True,five_generals=True,mode_id=mode)
+        order=GENERALS[seed%11:]+GENERALS[:seed%11]
+        for pid,gid in zip(s.state.seat_order,order):
+            c=s.skills.characters[gid]; p=s.state.players[pid]
+            p.character_id=gid; p.max_hp=c.max_hp+int(p.identity is Identity.LORD); p.hp=p.max_hp
+            s.character_names[pid]=c.name
+        s.human_id='ai-only'; restored=set()
+        for _ in range(50000):
+            if s.state.status is GameStatus.FINISHED: break
+            request=s.engine.pending_request
+            if request:
+                skill=next((name for name in ('��Ӣ','��ʫ','��Թ','ѣ��','��ս','��¶','����','����','����','ƴ��','����','�ټ�','����','�ƾ�') if name in request.prompt),None)
+                if skill and skill not in restored:
+                    s=restore_session(snapshot_session(s)); assert s.engine.pending_request==request
+                    restored.add(skill)
+            assert s.step_auto()
+        else: pytest.fail('match did not resolve')
+        assert s.state.victory is not None and s.engine.pending_request is None
+        assert s.engine.stack.is_empty()
+>       assert not any(k.startswith('yj_xianzhen') or k=='yj_zhichi' for p in s.state.players.values() for k in p.marks)
+E       assert not True
+E        +  where True = any(<generator object test_all_eleven_forced_ai_matches_with_live_skill_restore.<locals>.<genexpr> at 0x00000246B1F8E5E0>)
+
+tests\test_t17b_complete.py:43: AssertionError
+_ test_all_eleven_forced_ai_matches_with_live_skill_restore[32-military-eight] _
+
+mode = 'military-eight', seed = 32
+
+    @pytest.mark.parametrize('mode',['military-five','military-eight'])
+    @pytest.mark.parametrize('seed',range(40))
+    def test_all_eleven_forced_ai_matches_with_live_skill_restore(mode,seed):
+        s=GameSession.new_game(seed=300+seed,military=True,five_generals=True,mode_id=mode)
+        order=GENERALS[seed%11:]+GENERALS[:seed%11]
+        for pid,gid in zip(s.state.seat_order,order):
+            c=s.skills.characters[gid]; p=s.state.players[pid]
+            p.character_id=gid; p.max_hp=c.max_hp+int(p.identity is Identity.LORD); p.hp=p.max_hp
+            s.character_names[pid]=c.name
+        s.human_id='ai-only'; restored=set()
+        for _ in range(50000):
+            if s.state.status is GameStatus.FINISHED: break
+            request=s.engine.pending_request
+            if request:
+                skill=next((name for name in ('��Ӣ','��ʫ','��Թ','ѣ��','��ս','��¶','����','����','����','ƴ��','����','�ټ�','����','�ƾ�') if name in request.prompt),None)
+                if skill and skill not in restored:
+                    s=restore_session(snapshot_session(s)); assert s.engine.pending_request==request
+                    restored.add(skill)
+            assert s.step_auto()
+        else: pytest.fail('match did not resolve')
+        assert s.state.victory is not None and s.engine.pending_request is None
+        assert s.engine.stack.is_empty()
+>       assert not any(k.startswith('yj_xianzhen') or k=='yj_zhichi' for p in s.state.players.values() for k in p.marks)
+E       assert not True
+E        +  where True = any(<generator object test_all_eleven_forced_ai_matches_with_live_skill_restore.<locals>.<genexpr> at 0x00000246AD5B66C0>)
+
+tests\test_t17b_complete.py:43: AssertionError
+_____________ test_zhenlie_dying_rescued_then_discard_and_cancel ______________
+
+    def test_zhenlie_dying_rescued_then_discard_and_cancel():
+        s=wang();s.state.players['p1'].hp=1;peach=put(s,'basic.peach','p1');card=put(s,'basic.slash','p2')
+        s.engine.start_action(UseCardAction('slash','p2',card,('p1',)));answer(s,True)
+>       assert s.engine.pending_request.required_definition_id=='basic.peach';s=restore(s);answer(s,peach)
+                                                                                           ^^^^^^^^^^^^^^^
+
+tests\test_t17c_zhenlie.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_t17b_tier1.py:27: in answer
+    s.engine.submit_decision(Decision(r.request_id, r.player_id, value))
+src\sanguosha\engine\engine.py:69: in submit_decision
+    request.validate(decision.value)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PendingRequest(request_id='slash:effect:target:1:zhenlie:cost:dying:ask:0:1:p2:request', player_id='p2', request_type=..., subject_player_id='p1', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=())
+value = 'std-club-04-2'
+
+    def validate(self, value: ChoiceValue) -> None:
+        kind = self.request_type
+        if kind is RequestType.YES_NO:
+            valid = type(value) is bool
+        elif kind is RequestType.CHOOSE_OPTION:
+            valid = type(value) is str and value in self.choices
+            if type(value) is dict and set(value) == {'option', 'targets'}:
+                option, targets = value['option'], value['targets']
+                spec = self.play_card_targets.get(option) if type(option) is str else None
+                valid = (spec is not None and type(targets) is tuple
+                         and spec[1] <= len(targets) <= spec[2]
+                         and len(targets) == len(set(targets))
+                         and all(type(target) is str and target in spec[0] for target in targets))
+        elif kind is RequestType.CHOOSE_PLAYER:
+            valid = type(value) is str and value in self.allowed_player_ids
+        elif kind is RequestType.RESPOND_WITH_CARD:
+            valid = (value is PASS_RESPONSE and self.allow_pass) or (
+                type(value) is str and value in self.eligible_card_ids
+            )
+        elif kind is RequestType.CHOOSE_CARD:
+            valid = type(value) is str and value in self.eligible_card_ids
+        elif kind is RequestType.CHOOSE_CARDS:
+            valid = (
+                type(value) is tuple
+                and self.min_count <= len(value) <= self.max_count
+                and (not value or len(value) >= self.minimum_nonempty_count)
+                and all(type(card_id) is str and card_id in self.eligible_card_ids for card_id in value)
+                and len(value) == len(set(value))
+                and all(sum(cid in group for cid in value) <= 1 for group in self.exclusive_card_groups)
+                and (not self.legal_card_sets or any(set(value) == set(cards) for cards in self.legal_card_sets))
+            )
+        elif kind is RequestType.CHOOSE_PLAYERS:
+            valid = (
+                type(value) is tuple
+                and self.min_count <= len(value) <= self.max_count
+                and all(type(player_id) is str and player_id in self.allowed_player_ids for player_id in value)
+                and len(value) == len(set(value))
+            )
+        else:
+            # Other request shapes are reserved for later rule stages.
+            raise InvalidDecision(f"request type {kind} has no T2 validator")
+        if not valid:
+>           raise InvalidDecision(f"illegal choice for {kind}: {value!r}")
+E           sanguosha.engine.errors.InvalidDecision: illegal choice for respond_with_card: 'std-club-04-2'
+
+src\sanguosha\engine\requests.py:120: InvalidDecision
+__________ test_dying_peach_response_rescues_and_consumes_real_card ___________
+
+    def test_dying_peach_response_rescues_and_consumes_real_card():
+        session = GameSession.new_game(6)
+        peach = find_card(session, PEACH_ID)
+        relocate(session, peach, hand(P2), "give-peach")
+        session.state.players[P2].hp = 0
+        session.engine.start_action(DyingAction("dying-p2", P2, P3))
+        request = session.engine.pending_request
+>       assert request.player_id == P2 and peach in request.eligible_card_ids
+E       AssertionError: assert ('p1' == 'p2'
+E         
+E         - p2
+E         + p1)
+
+tests\test_t5_match.py:115: AssertionError
+_____________ test_negative_hp_can_be_rescued_by_multiple_peaches _____________
+
+    def test_negative_hp_can_be_rescued_by_multiple_peaches():
+        session = GameSession.new_game(6)
+        peaches = [cid for cid, card in session.state.cards.items() if card.definition_id == PEACH_ID][:2]
+        for index, peach in enumerate(peaches):
+            relocate(session, peach, hand(P2), f"give-peach-{index}")
+        session.state.players[P2].hp = -1
+        session.engine.start_action(DyingAction("deep-dying", P2, P3))
+>       answer(session, peaches[0])
+
+tests\test_t5_match.py:130: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_t5_match.py:51: in answer
+    return session.engine.submit_decision(Decision(request.request_id, request.player_id, value))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\sanguosha\engine\engine.py:69: in submit_decision
+    request.validate(decision.value)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PendingRequest(request_id='deep-dying:ask:0:1:p1:request', player_id='p1', request_type=<RequestType.RESPOND_WITH_CARD..., subject_player_id='p2', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=())
+value = 'card-069'
+
+    def validate(self, value: ChoiceValue) -> None:
+        kind = self.request_type
+        if kind is RequestType.YES_NO:
+            valid = type(value) is bool
+        elif kind is RequestType.CHOOSE_OPTION:
+            valid = type(value) is str and value in self.choices
+            if type(value) is dict and set(value) == {'option', 'targets'}:
+                option, targets = value['option'], value['targets']
+                spec = self.play_card_targets.get(option) if type(option) is str else None
+                valid = (spec is not None and type(targets) is tuple
+                         and spec[1] <= len(targets) <= spec[2]
+                         and len(targets) == len(set(targets))
+                         and all(type(target) is str and target in spec[0] for target in targets))
+        elif kind is RequestType.CHOOSE_PLAYER:
+            valid = type(value) is str and value in self.allowed_player_ids
+        elif kind is RequestType.RESPOND_WITH_CARD:
+            valid = (value is PASS_RESPONSE and self.allow_pass) or (
+                type(value) is str and value in self.eligible_card_ids
+            )
+        elif kind is RequestType.CHOOSE_CARD:
+            valid = type(value) is str and value in self.eligible_card_ids
+        elif kind is RequestType.CHOOSE_CARDS:
+            valid = (
+                type(value) is tuple
+                and self.min_count <= len(value) <= self.max_count
+                and (not value or len(value) >= self.minimum_nonempty_count)
+                and all(type(card_id) is str and card_id in self.eligible_card_ids for card_id in value)
+                and len(value) == len(set(value))
+                and all(sum(cid in group for cid in value) <= 1 for group in self.exclusive_card_groups)
+                and (not self.legal_card_sets or any(set(value) == set(cards) for cards in self.legal_card_sets))
+            )
+        elif kind is RequestType.CHOOSE_PLAYERS:
+            valid = (
+                type(value) is tuple
+                and self.min_count <= len(value) <= self.max_count
+                and all(type(player_id) is str and player_id in self.allowed_player_ids for player_id in value)
+                and len(value) == len(set(value))
+            )
+        else:
+            # Other request shapes are reserved for later rule stages.
+            raise InvalidDecision(f"request type {kind} has no T2 validator")
+        if not valid:
+>           raise InvalidDecision(f"illegal choice for {kind}: {value!r}")
+E           sanguosha.engine.errors.InvalidDecision: illegal choice for respond_with_card: 'card-069'
+
+src\sanguosha\engine\requests.py:120: InvalidDecision
+____________________ test_wine_only_saves_its_dying_owner _____________________
+
+    def test_wine_only_saves_its_dying_owner():
+        s=game(); wine=put(s,'basic.wine','p2'); s.state.players['p2'].hp=0
+        s.engine.start_action(DyingAction('dying','p2','p1'))
+>       assert wine in s.engine.pending_request.eligible_card_ids
+E       AssertionError: assert 'std-club-04-2' in ()
+E        +  where () = PendingRequest(request_id='dying:ask:0:1:p1:request', player_id='p1', request_type=<RequestType.RESPOND_WITH_CARD: 're..., subject_player_id='p2', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()).eligible_card_ids
+E        +    where PendingRequest(request_id='dying:ask:0:1:p1:request', player_id='p1', request_type=<RequestType.RESPOND_WITH_CARD: 're..., subject_player_id='p2', play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x00000246B29450D0>.pending_request
+E        +      where <sanguosha.engine.engine.GameEngine object at 0x00000246B29450D0> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x00000246B29450D0>, events=<sanguosha.engine.events....None, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x00000246B231E7B0>).engine
+
+tests\test_t6_remaining_effects.py:79: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t17b_complete.py::test_all_eleven_forced_ai_matches_with_live_skill_restore[3-military-eight]
+FAILED tests/test_t17b_complete.py::test_all_eleven_forced_ai_matches_with_live_skill_restore[6-military-eight]
+FAILED tests/test_t17b_complete.py::test_all_eleven_forced_ai_matches_with_live_skill_restore[17-military-five]
+FAILED tests/test_t17b_complete.py::test_all_eleven_forced_ai_matches_with_live_skill_restore[25-military-eight]
+FAILED tests/test_t17b_complete.py::test_all_eleven_forced_ai_matches_with_live_skill_restore[32-military-five]
+FAILED tests/test_t17b_complete.py::test_all_eleven_forced_ai_matches_with_live_skill_restore[32-military-eight]
+FAILED tests/test_t17c_zhenlie.py::test_zhenlie_dying_rescued_then_discard_and_cancel
+FAILED tests/test_t5_match.py::test_dying_peach_response_rescues_and_consumes_real_card
+FAILED tests/test_t5_match.py::test_negative_hp_can_be_rescued_by_multiple_peaches
+FAILED tests/test_t6_remaining_effects.py::test_wine_only_saves_its_dying_owner
+10 failed, 2176 passed in 204.88s (0:03:24)

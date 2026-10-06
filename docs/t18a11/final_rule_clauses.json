@@ -1,0 +1,3502 @@
+[
+  {
+    "general_id": "caocao",
+    "skill_id": "jianxiong",
+    "result": "FIXED",
+    "locked_clause": "受到牌造成的伤害后，可获得仍可取得的材料牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 受到牌造成的伤害后，可获得仍可取得的材料牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t13_skill_suppression.py::test_disabled_skill_is_not_available_and_survives_reconnect",
+      "tests/test_t18a11_aoe.py::test_juxiang_does_not_reclaim_material_already_obtained_by_jianxiong",
+      "tests/test_t18a11_aoe.py::test_virtual_aoe_jianxiong_obtains_all_materials",
+      "tests/test_t18a11_aoe.py::test_classic_jianxiong_requires_whole_virtual_card_still_on_table",
+      "tests/test_t18a11_equipment_distance.py::test_green_dragon_followup_is_use_with_materials_on_table_until_jianxiong",
+      "tests/test_t18a11_equipment_distance.py::test_green_dragon_alliance_supplied_material_preserves_provider_and_use_owner",
+      "tests/test_t18a11_judgment.py::test_lightning_remains_on_table_until_damage_reactions_finish",
+      "tests/test_t7_five_generals.py::test_jianxiong_gains_damage_card_and_can_decline",
+      "tests/test_t7_five_generals.py::test_jianxiong_no_material_does_not_ask",
+      "tests/test_t7_five_generals.py::test_ai_normally_accepts_jianxiong",
+      "tests/test_t7_five_generals.py::test_jianxiong_collects_both_virtual_spear_materials"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "caocao",
+    "skill_id": "hujia",
+    "result": "PASS",
+    "locked_clause": "需要闪时，可请求其他魏势力角色代为提供。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 需要闪时，可请求其他魏势力角色代为提供。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t7_five_generals.py::test_registered_characters_and_lord_skills",
+      "tests/test_t7_five_generals.py::test_hujia_asks_wei_ally_for_dodge",
+      "tests/test_t7_five_generals.py::test_hujia_all_allies_pass_returns_no_dodge",
+      "tests/test_t7_five_generals.py::test_hujia_decline_and_armor_response_remain_legal",
+      "tests/test_t8_network_chains.py::test_nested_action_over_tcp"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "liubei",
+    "skill_id": "rende",
+    "result": "PASS",
+    "locked_clause": "出牌阶段交给其他角色手牌；本阶段累计交出两张后恢复一点体力。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 出牌阶段交给其他角色手牌；本阶段累计交出两张后恢复一点体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t17c_zhangliao.py::test_duorui_eligible_native_skills_excludes_lord_awakening_limited_special_and_grants",
+      "tests/test_t7b_ui.py::test_human_skill_chip_is_near_table_and_uses_engine_request",
+      "tests/test_t7_five_generals.py::test_rende_recovers_once_at_two_cards"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "liubei",
+    "skill_id": "jijiang",
+    "result": "PASS",
+    "locked_clause": "需要杀时，可请求其他蜀势力角色代为提供。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 需要杀时，可请求其他蜀势力角色代为提供。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/mountain.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_ruoyu_lord_awakes_once_and_reuses_jijiang",
+      "tests/test_t18a11_equipment_distance.py::test_green_dragon_alliance_supplied_material_preserves_provider_and_use_owner",
+      "tests/test_t7_five_generals.py::test_registered_characters_and_lord_skills",
+      "tests/test_t7_five_generals.py::test_jijiang_active_uses_shu_ally_slash",
+      "tests/test_t7_five_generals.py::test_jijiang_declined_does_not_repeat_forever",
+      "tests/test_t7_five_generals.py::test_jijiang_can_answer_duel_slash_request",
+      "tests/test_t8_network_chains.py::test_nested_action_over_tcp"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "sunquan",
+    "skill_id": "zhiheng",
+    "result": "PASS",
+    "locked_clause": "出牌阶段限一次，弃任意张牌并摸等量牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 出牌阶段限一次，弃任意张牌并摸等量牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/gods.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_jilue_zhiheng_spends_ren_and_uses_existing_handler",
+      "tests/test_t7_five_generals.py::test_zhiheng_discards_hand_and_equipment_draws_and_locks"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "lvbu",
+    "skill_id": "wushuang",
+    "result": "FIXED",
+    "locked_clause": "杀需两闪，决斗中对手每次需两杀。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 杀需两闪，决斗中对手每次需两杀。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/military_tricks.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t11_lvbu_engine.py::test_wuqian_and_shenfen_are_engine_events_with_authoritative_multi_target_damage",
+      "tests/test_t18a11_duel.py::test_wushuang_duel_quota_stays_fixed_after_skill_disabled",
+      "tests/test_t18a11_duel.py::test_duel_requires_correct_number_of_slashes_for_either_wushuang_owner",
+      "tests/test_t18a11_duel.py::test_wushuang_slash_keeps_two_dodges_after_mid_response_skill_disable",
+      "tests/test_t18a11_duel.py::test_multitarget_wushuang_slash_freezes_all_initial_targets_before_first_response",
+      "tests/test_t7b_cross_system.py::test_wushuang_requires_two_real_virtual_dodge_responses",
+      "tests/test_t7b_cross_system.py::test_wushuang_numbers_two_physical_dodges_for_vfx",
+      "tests/test_t7b_cross_system.py::test_lijian_duel_obeys_lu_bu_wushuang_double_slash",
+      "tests/test_t7b_vfx.py::test_armor_virtual_dodge_and_second_wushuang_dodge_have_distinct_cues",
+      "tests/test_t7_five_generals.py::test_wushuang_slash_requires_two_dodges",
+      "tests/test_t7_five_generals.py::test_wushuang_duel_requires_two_slashes_and_wusheng_can_supply_them",
+      "tests/test_t7_five_generals.py::test_qinggang_wushuang_does_not_offer_armor_for_second_dodge",
+      "tests/test_t7_five_generals.py::test_halberd_multi_target_wushuang_applies_per_target",
+      "tests/test_t8_network_chains.py::test_nested_action_over_tcp"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "guanyu",
+    "skill_id": "wusheng",
+    "result": "FIXED",
+    "locked_clause": "红色牌可作为杀使用或打出。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 红色牌可作为杀使用或打出。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fuhun.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t17c_first_batch.py::test_jiangchi_jiang_blocks_slash_response_even_virtual",
+      "tests/test_t17c_fuhun.py::test_fuhun_real_use_two_costs_shared_quota_damage_only_grants_restore",
+      "tests/test_t17c_fuhun.py::test_fuhun_grant_survives_save_and_preserves_existing_sources",
+      "tests/test_t17c_fuhun.py::test_fuhun_grants_removed_by_real_turn_end",
+      "tests/test_t17c_longyin.py::test_wusheng_is_a_real_use_event_not_only_damage",
+      "tests/test_t17c_qianxi.py::test_qianxi_single_view_as_filtered_and_equipment_jijiu_remains",
+      "tests/test_t17c_zhangliao.py::test_duorui_actual_slot_borrow_suppression_and_exact_target_turn_end_restore",
+      "tests/test_t17c_zhangliao.py::test_duorui_target_death_expires_lease_without_erasing_permanent_suppression",
+      "tests/test_t17c_zhangliao.py::test_duorui_borrower_death_removes_grant_but_target_suppression_lasts_to_target_end",
+      "tests/test_t17c_zhangliao.py::test_duorui_grant_sources_coexist_with_earlier_and_fuhun_grants",
+      "tests/test_t18a11_equipment_distance.py::test_duorui_each_slot_actual_abolish_restore_and_public_geometry",
+      "tests/test_t18a11_equipment_distance.py::test_green_dragon_followup_is_use_with_materials_on_table_until_jianxiong",
+      "tests/test_t18a11_wusheng.py::test_red_equipment_is_a_real_wusheng_cost_for_use_and_response",
+      "tests/test_t18a11_wusheng.py::test_wusheng_cost_cannot_retain_consumed_weapon_or_horse_distance",
+      "tests/test_t7_five_generals.py::test_wusheng_active_virtual_slash_keeps_single_instance",
+      "tests/test_t7_five_generals.py::test_wushuang_duel_requires_two_slashes_and_wusheng_can_supply_them",
+      "tests/test_t7_five_generals.py::test_wusheng_still_obeys_slash_distance",
+      "tests/test_t7_five_generals.py::test_crossbow_allows_repeated_wusheng_slashes",
+      "tests/test_t7_five_generals.py::test_renwang_does_not_block_red_wusheng_slash",
+      "tests/test_t7_five_generals.py::test_spear_and_wusheng_are_separate_slash_response_sources",
+      "tests/test_t7_five_generals.py::test_gui_wusheng_response_highlights_red_material"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "simayi",
+    "skill_id": "fankui",
+    "result": "PASS",
+    "locked_clause": "受到伤害后，可取走伤害来源的一张牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 受到伤害后，可取走伤害来源的一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t18a11_equipment_distance.py::test_qinggang_target_binding_survives_weapon_stolen_by_first_target",
+      "tests/test_t7b_rule_modifiers.py::test_fankui_takes_one_real_card_from_damage_source",
+      "tests/test_t7b_rule_modifiers.py::test_fankui_self_damage_preserves_hand_and_can_gain_own_equipment"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "simayi",
+    "skill_id": "guicai",
+    "result": "FIXED",
+    "locked_clause": "判定牌生效前，可用一张手牌替换。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Classic hand-only Guicai; current-turn living-seat retrial order, same-owner choice, each skill at most once, legal response material and latest judgment face. No forced modern equipment Guicai expansion. R76: each actual retrial skill has a distinct public replacement/movement identity, preventing the frontend played-event set from suppressing the second replacement.",
+    "implementation": "src/sanguosha/engine/judgment.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_songwei_uses_final_color_after_retrial",
+      "tests/test_t12_forest.py::test_baonue_uses_final_spade_after_guicai_retrial",
+      "tests/test_t13_gods.py::test_jilue_guicai_spends_ren_and_replaces_judgment",
+      "tests/test_t18a11_judgment.py::test_retrial_offers_every_holder_in_current_turn_seat_order",
+      "tests/test_t18a11_judgment.py::test_sequential_retrial_uses_last_card_and_tiandu_obtains_only_final_card",
+      "tests/test_t18a11_judgment.py::test_multiple_guicai_holders_can_replace_in_one_judgment",
+      "tests/test_t18a11_judgment.py::test_delayed_card_leaves_judgment_before_retrial_request",
+      "tests/test_t18a11_judgment.py::test_virtual_delayed_definition_survives_processing_and_reconnect",
+      "tests/test_t18a11_judgment.py::test_retrial_inactive_current_holder_moves_to_end_of_seat_order",
+      "tests/test_t18a11_judgment_system.py::test_reconnect_retains_revealed_judgment_before_first_retrial",
+      "tests/test_t18a11_judgment_system.py::test_final_retrial_public_history_and_destination_survive_tiandu_request",
+      "tests/test_t7b_cross_system.py::test_guicai_replaces_lethal_lightning_judgment",
+      "tests/test_t7b_rule_modifiers.py::test_guicai_replaces_revealed_card_before_judgment_result",
+      "tests/test_t18a11_final_audit.py::test_native_guicai_and_jilue_retrial_public_events_have_distinct_identities"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "xiahou_dun",
+    "skill_id": "ganglie",
+    "result": "PASS",
+    "locked_clause": "受伤后可判定，令伤害来源弃牌或受伤。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 受伤后可判定，令伤害来源弃牌或受伤。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t18a11_aoe.py::test_huoshou_death_mid_aoe_leaves_later_damage_without_source",
+      "tests/test_t7b_rule_modifiers.py::test_ganglie_failed_judgment_lets_source_take_damage",
+      "tests/test_t7b_rule_modifiers.py::test_ganglie_source_can_discard_two_hand_cards"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "zhangliao",
+    "skill_id": "tuxi",
+    "result": "PASS",
+    "locked_clause": "摸牌阶段可改为取得其他角色的手牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 摸牌阶段可改为取得其他角色的手牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/deck.py",
+    "behavior_evidence": [
+      "tests/test_t7b_rule_modifiers.py::test_tuxi_replaces_draw_with_two_other_players_hand_cards"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "xuchu",
+    "skill_id": "luoyi",
+    "result": "PASS",
+    "locked_clause": "少摸一张牌，使本回合指定伤害增加。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 少摸一张牌，使本回合指定伤害增加。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/deck.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/yj2011.py",
+    "behavior_evidence": [
+      "tests/test_t17c_longnu.py::test_longnu_converted_slash_receives_luoyi_damage_bonus",
+      "tests/test_t18a11_aoe.py::test_qice_aoe_damage_uses_virtual_trick_identity_not_basic_material",
+      "tests/test_t18a11_damage_system.py::test_source_damage_modifier_is_frozen_before_tianxiang_transfer",
+      "tests/test_t18a11_damage_system.py::test_transferred_damage_packet_does_not_repeat_source_luoyi_bonus",
+      "tests/test_t18a11_damage_system.py::test_chain_waits_for_first_dying_and_keeps_source_bonus_single",
+      "tests/test_t7b_rule_modifiers.py::test_luoyi_draws_one_and_adds_slash_damage_this_turn"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "guojia",
+    "skill_id": "tiandu",
+    "result": "FIXED",
+    "locked_clause": "自己的判定牌结算后可获得。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Optional obtain final own judgment card only while still processing; same-time choice with Songwei and automatic Tuntian/Luoshen acquisition; selecting acquisition first removes Tiandu window; declining Tiandu preserves independent destination.",
+    "implementation": "src/sanguosha/engine/judgment.py",
+    "behavior_evidence": [
+      "tests/test_t18a11_final_audit.py::test_finish_judge_tiandu_songwei_order_is_judged_players_choice",
+      "tests/test_t18a11_final_audit.py::test_finish_judge_field_before_tiandu_removes_obtain_window",
+      "tests/test_t18a11_judgment.py::test_sequential_retrial_uses_last_card_and_tiandu_obtains_only_final_card",
+      "tests/test_t18a11_judgment.py::test_declining_tiandu_does_not_cancel_independent_gain_on_match",
+      "tests/test_t18a11_judgment_system.py::test_public_final_judgment_uses_judged_players_effective_suit_color",
+      "tests/test_t18a11_judgment_system.py::test_final_retrial_public_history_and_destination_survive_tiandu_request",
+      "tests/test_t7b_cross_system.py::test_tiandu_collects_eight_trigrams_judgment_before_virtual_dodge",
+      "tests/test_t7b_rule_modifiers.py::test_tiandu_obtains_own_resolved_judgment_card"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "guojia",
+    "skill_id": "yiji",
+    "result": "PASS",
+    "locked_clause": "每受到一点伤害，可摸牌并分配。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 每受到一点伤害，可摸牌并分配。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t7b_rule_modifiers.py::test_yiji_handles_each_damage_point_and_splits_drawn_cards"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "zhenji",
+    "skill_id": "luoshen",
+    "result": "FIXED",
+    "locked_clause": "准备阶段可连续判定，获得黑色判定牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Preparation optional repeated black judgment; black automatic acquisition participates in same-owner FinishJudge choice, red stops. Only final card acquired, placed/acquired card is not acquired twice; normal judgment result and Songwei remain independent.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t18a11_judgment.py::test_declining_tiandu_does_not_cancel_independent_gain_on_match",
+      "tests/test_t7b_rule_modifiers.py::test_luoshen_repeats_black_judgment_and_stops_on_red"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "zhangfei",
+    "skill_id": "paoxiao",
+    "result": "PASS",
+    "locked_clause": "出牌阶段使用杀不受次数限制。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 出牌阶段使用杀不受次数限制。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fuhun.py; src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t17c_fuhun.py::test_fuhun_real_use_two_costs_shared_quota_damage_only_grants_restore",
+      "tests/test_t17c_fuhun.py::test_fuhun_response_does_not_grant_or_consume_play_quota",
+      "tests/test_t17c_fuhun.py::test_fuhun_grant_survives_save_and_preserves_existing_sources",
+      "tests/test_t17c_fuhun.py::test_fuhun_grants_removed_by_real_turn_end",
+      "tests/test_t17c_zhangliao.py::test_duorui_eligible_native_skills_excludes_lord_awakening_limited_special_and_grants",
+      "tests/test_t18a11_equipment_distance.py::test_crossbow_live_permission_loss_preserves_native_paoxiao",
+      "tests/test_t7b_rule_modifiers.py::test_paoxiao_removes_slash_count_limit_without_changing_range"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "zhugeliang",
+    "skill_id": "guanxing",
+    "result": "PASS",
+    "locked_clause": "准备阶段可查看并调整牌堆顶的牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 准备阶段可查看并调整牌堆顶的牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_zhiji_empty_hand_awakes_and_reuses_guanxing",
+      "tests/test_t18a11_closeout.py::test_zhiji_max_hp_payment_precedes_reward",
+      "tests/test_t7b_cross_system.py::test_guanxing_can_move_safe_card_above_lightning_judgment",
+      "tests/test_t7b_rule_modifiers.py::test_guanxing_reorders_top_and_bottom_without_losing_cards"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "zhugeliang",
+    "skill_id": "kongcheng",
+    "result": "PASS",
+    "locked_clause": "没有手牌时，不能成为杀或决斗的目标。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 没有手牌时，不能成为杀或决斗的目标。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/card_rules.py; src/sanguosha/engine/fuhuanghou.py; src/sanguosha/engine/gods.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/military_tricks.py; src/sanguosha/engine/qiaoshui.py; src/sanguosha/engine/wind.py; src/sanguosha/engine/yj2011_tier3.py",
+    "behavior_evidence": [
+      "tests/test_t17c_fuhuanghou.py::test_qiuyuan_kongcheng_prohibition_and_decline",
+      "tests/test_t18a11_duel.py::test_liuli_cannot_redirect_slash_to_empty_hand_kongcheng",
+      "tests/test_t18a11_equipment_distance.py::test_green_dragon_cannot_follow_up_against_newly_empty_kongcheng",
+      "tests/test_t7b_rule_modifiers.py::test_kongcheng_and_qianxun_restrict_engine_targets"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "zhaoyun",
+    "skill_id": "longdan",
+    "result": "FIXED",
+    "locked_clause": "杀与闪可互相转化使用或打出。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 杀与闪可互相转化使用或打出。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/response.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_duanchang_suppresses_killers_character_skills_through_reconnect",
+      "tests/test_t17c_fuhuanghou.py::test_qiuyuan_virtual_dodge_transfers_subcards_without_response",
+      "tests/test_t17c_qianxi.py::test_qianxi_single_view_as_filtered_and_equipment_jijiu_remains",
+      "tests/test_t18a11_view_as_system.py::test_longdan_all_slash_prints_can_respond_as_dodge",
+      "tests/test_t7b_rule_modifiers.py::test_longdan_uses_dodge_as_slash_in_play_phase",
+      "tests/test_t7b_rule_modifiers.py::test_longdan_responds_with_opposite_basic_card"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "machao",
+    "skill_id": "tieqi",
+    "result": "PASS",
+    "locked_clause": "使用杀指定目标后，可判定以限制其闪避。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 使用杀指定目标后，可判定以限制其闪避。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t7b_cross_system.py::test_tieqi_red_judgment_prevents_eight_trigrams_dodge",
+      "tests/test_t7b_rule_modifiers.py::test_tieqi_red_judgment_blocks_dodge_black_allows_it"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "huangyueying",
+    "skill_id": "jizhi",
+    "result": "PASS",
+    "locked_clause": "使用非延时锦囊时可摸一张牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 使用非延时锦囊时可摸一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/card_use.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_jilue_jizhi_spends_ren_on_trick_use",
+      "tests/test_t17c_longnu.py::test_longnu_converted_trick_does_not_trigger_jizhi_or_wumou",
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_jizhi_uses_adjusted_targets_and_preserves_draw_child",
+      "tests/test_t18a11_recast.py::test_targeted_iron_chain_still_is_use_and_keeps_jizhi_window",
+      "tests/test_t7b_rule_modifiers.py::test_jizhi_draws_before_non_delayed_trick_resolves"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "lvmeng",
+    "skill_id": "keji",
+    "result": "PASS",
+    "locked_clause": "本回合未使用或打出杀时可跳过弃牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 本回合未使用或打出杀时可跳过弃牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/discard.py",
+    "behavior_evidence": [
+      "tests/test_t7b_cross_system.py::test_keji_rejects_skip_after_real_slash_response_this_turn",
+      "tests/test_t7b_rule_modifiers.py::test_keji_only_offered_without_slash_use_or_response_this_turn"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "huanggai",
+    "skill_id": "kurou",
+    "result": "PASS",
+    "locked_clause": "出牌阶段可失去一点体力并摸两张牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 出牌阶段可失去一点体力并摸两张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t7b_rule_modifiers.py::test_kurou_uses_hp_loss_and_can_enter_dying"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "zhouyu",
+    "skill_id": "yingzi",
+    "result": "PASS",
+    "locked_clause": "摸牌阶段额外摸一张牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 摸牌阶段额外摸一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/deck.py; src/sanguosha/engine/mountain.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_hunzi_awakes_at_one_hp_and_grants_existing_skills",
+      "tests/test_t7b_rule_modifiers.py::test_yingzi_draw_and_biyue_optional_end_draw"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "zhouyu",
+    "skill_id": "fanjian",
+    "result": "PASS",
+    "locked_clause": "每阶段一次，令目标猜花色并取得你的牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 每阶段一次，令目标猜花色并取得你的牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t7b_rule_modifiers.py::test_fanjian_random_hand_card_is_given_and_wrong_guess_deals_damage"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "daqiao",
+    "skill_id": "liuli",
+    "result": "FIXED",
+    "locked_clause": "成为杀的目标时，可弃牌转移目标。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 成为杀的目标时，可弃牌转移目标。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t18a11_duel.py::test_liuli_horse_cost_preserves_fixed_distance_override",
+      "tests/test_t18a11_duel.py::test_liuli_removing_cost_recalculates_range_without_mutating_real_equipment",
+      "tests/test_t18a11_duel.py::test_liuli_fixed_distance_horse_cost_actual_redirect_resumes_after_reconnect",
+      "tests/test_t18a11_duel.py::test_liuli_cannot_redirect_slash_to_empty_hand_kongcheng",
+      "tests/test_t7b_cross_system.py::test_liuli_redirects_one_halberd_target_without_copying_slash",
+      "tests/test_t7b_rule_modifiers.py::test_liuli_discards_card_and_redirects_slash_damage"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "luxun",
+    "skill_id": "lianying",
+    "result": "PASS",
+    "locked_clause": "失去最后一张手牌后可摸一张牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 失去最后一张手牌后可摸一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_equipment.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_move_reaction_queue_survives_reconnect",
+      "tests/test_t7b_rule_modifiers.py::test_lianying_follows_real_loss_of_last_hand_card"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "sunshangxiang",
+    "skill_id": "jieyin",
+    "result": "PASS",
+    "locked_clause": "弃两张手牌，与受伤男性角色各恢复一点体力。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 弃两张手牌，与受伤男性角色各恢复一点体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t7b_rule_modifiers.py::test_jieyin_discards_two_and_recovers_both_once_per_play_phase"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "sunshangxiang",
+    "skill_id": "xiaoji",
+    "result": "PASS",
+    "locked_clause": "失去装备区的牌后摸两张牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 失去装备区的牌后摸两张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_equipment.py",
+    "behavior_evidence": [
+      "tests/test_t17b_tier3.py::test_exchange_silver_lion_xiaoji_and_xuanfeng_departure_reactions",
+      "tests/test_t18a11_equipment_distance.py::test_ice_sword_selects_second_card_after_first_move_reactions",
+      "tests/test_t18a11_equipment_distance.py::test_equipment_replacement_waits_for_departure_reaction_before_install",
+      "tests/test_t7b_cross_system.py::test_xiaoji_draws_after_weapon_replacement",
+      "tests/test_t7b_rule_modifiers.py::test_xiaoji_triggers_from_equipment_zone_loss"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "huatuo",
+    "skill_id": "qingnang",
+    "result": "PASS",
+    "locked_clause": "弃一张手牌，令受伤角色恢复一点体力。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 弃一张手牌，令受伤角色恢复一点体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t7b_rule_modifiers.py::test_qingnang_discards_real_card_recovers_and_is_once_per_phase"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "diaochan",
+    "skill_id": "lijian",
+    "result": "PASS",
+    "locked_clause": "弃一张牌，令两名男性角色进行决斗。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 弃一张牌，令两名男性角色进行决斗。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t7b_cross_system.py::test_lijian_duel_obeys_lu_bu_wushuang_double_slash",
+      "tests/test_t7b_rule_modifiers.py::test_lijian_discards_cost_and_starts_two_male_duel_without_counter_window"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "diaochan",
+    "skill_id": "biyue",
+    "result": "PASS",
+    "locked_clause": "结束阶段可摸一张牌。",
+    "source_profile": "src/package/nostalgia.cpp + standard-generals.cpp",
+    "review": "Locked clause: 结束阶段可摸一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t7b_rule_modifiers.py::test_yingzi_draw_and_biyue_optional_end_draw"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "wind_xiahou_yuan",
+    "skill_id": "shensu",
+    "result": "PASS",
+    "locked_clause": "你可跳过判定阶段和摸牌阶段，视为使用一张无距离限制的杀；亦可跳过出牌阶段并弃置一张装备牌，视为使用一张无距离限制的杀。两项可分别发动。",
+    "source_profile": "src/package/wind.cpp",
+    "review": "Locked clause: 你可跳过判定阶段和摸牌阶段，视为使用一张无距离限制的杀；亦可跳过出牌阶段并弃置一张装备牌，视为使用一张无距离限制的杀。两项可分别发动。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/wind.py",
+    "behavior_evidence": [
+      "tests/test_t12_wind.py::test_shensu_both_branches_skip_phases_and_resolve_slashes",
+      "tests/test_t12_wind.py::test_shensu_decline_keeps_regular_phases"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "wind_cao_ren",
+    "skill_id": "jushou",
+    "result": "PASS",
+    "locked_clause": "结束阶段开始时，你可以摸三张牌，然后将武将牌翻面。背面朝上时跳过下个自己的回合并翻回正面。",
+    "source_profile": "src/package/wind.cpp",
+    "review": "Locked clause: 结束阶段开始时，你可以摸三张牌，然后将武将牌翻面。背面朝上时跳过下个自己的回合并翻回正面。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t12_wind.py::test_jushou_draws_three_turns_over_and_skips_next_turn",
+      "tests/test_t12_wind.py::test_jushou_decline_and_ai_resource_choice"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "wind_huang_zhong",
+    "skill_id": "liegong",
+    "result": "PASS",
+    "locked_clause": "出牌阶段使用杀指定目标后，若其手牌数不小于你的体力值，或不大于你的攻击范围，你可以令其不能以闪响应此杀。",
+    "source_profile": "src/package/wind.cpp",
+    "review": "Locked clause: 出牌阶段使用杀指定目标后，若其手牌数不小于你的体力值，或不大于你的攻击范围，你可以令其不能以闪响应此杀。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t12_wind.py::test_liegong_high_hand_blocks_dodge",
+      "tests/test_t12_wind.py::test_liegong_low_hand_blocks_dodge_but_middle_hand_does_not",
+      "tests/test_t12_wind.py::test_liegong_uses_equipment_range_with_elemental_slash"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "wind_wei_yan",
+    "skill_id": "kuanggu",
+    "result": "PASS",
+    "locked_clause": "锁定技。你对距离一以内的角色每造成一点伤害后，回复一点体力。",
+    "source_profile": "src/package/wind.cpp",
+    "review": "Locked clause: 锁定技。你对距离一以内的角色每造成一点伤害后，回复一点体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t12_wind.py::test_kuanggu_checks_damage_distance_and_recovers_each_point",
+      "tests/test_t12_wind.py::test_kuanggu_at_full_hp_does_not_overheal",
+      "tests/test_t12_wind.py::test_kuanggu_amplified_damage_recovers_each_point_with_unique_actions",
+      "tests/test_t14_2_choice_labels.py::test_huashen_and_view_as_use_catalogue_names"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "wind_xiao_qiao",
+    "skill_id": "tianxiang",
+    "result": "PASS",
+    "locked_clause": "受到伤害前，你可以弃置一张红桃手牌并选择一名其他角色，将此次伤害转移给该角色；结算后其摸等同于已损失体力值的牌。",
+    "source_profile": "src/package/wind.cpp",
+    "review": "Locked clause: 受到伤害前，你可以弃置一张红桃手牌并选择一名其他角色，将此次伤害转移给该角色；结算后其摸等同于已损失体力值的牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t12_wind.py::test_tianxiang_transfers_damage_and_draws_after_resolution",
+      "tests/test_t12_wind.py::test_tianxiang_decline_and_equipment_cannot_pay_cost",
+      "tests/test_t12_wind.py::test_tianxiang_target_dying_does_not_draw_after_death",
+      "tests/test_t18a11_damage_system.py::test_source_damage_modifier_is_frozen_before_tianxiang_transfer"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "wind_zhou_tai",
+    "skill_id": "buqu",
+    "result": "PASS",
+    "locked_clause": "锁定技。濒死时亮出牌堆顶一张牌作为不屈牌；若点数与已有不屈牌均不同，回复至一点体力，否则弃置并继续濒死流程。有不屈牌时手牌上限等于其数量。",
+    "source_profile": "src/package/wind.cpp",
+    "review": "Locked clause: 锁定技。濒死时亮出牌堆顶一张牌作为不屈牌；若点数与已有不屈牌均不同，回复至一点体力，否则弃置并继续濒死流程。有不屈牌时手牌上限等于其数量。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/wind.py; src/sanguosha/engine/zhangliao.py",
+    "behavior_evidence": [
+      "tests/test_t12_wind.py::test_buqu_unique_rank_recovers_and_repeated_dying_adds_a_card",
+      "tests/test_t12_wind.py::test_buqu_duplicate_rank_enters_discard_then_normal_dying_and_death_cleanup",
+      "tests/test_t12_wind.py::test_buqu_duplicate_allows_peach_rescue_and_keeps_existing_pile",
+      "tests/test_t12_wind.py::test_buqu_pile_count_replaces_normal_hand_limit",
+      "tests/test_t12_wind.py::test_buqu_pile_is_public_in_each_player_projection"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "wind_zhang_jiao",
+    "skill_id": "leiji",
+    "result": "PASS",
+    "locked_clause": "使用或打出闪时，你可以令一名其他角色判定：黑桃则对其造成两点雷电伤害；梅花则你回复一点体力，再对其造成一点雷电伤害。",
+    "source_profile": "src/package/wind.cpp",
+    "review": "Locked clause: 使用或打出闪时，你可以令一名其他角色判定：黑桃则对其造成两点雷电伤害；梅花则你回复一点体力，再对其造成一点雷电伤害。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t12_wind.py::test_leiji_judgment_suits_use_normal_damage_and_recover",
+      "tests/test_t12_wind.py::test_leiji_thunder_damage_propagates_through_chain",
+      "tests/test_t12_wind.py::test_guidao_can_change_leiji_judgment_before_thunder_damage"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "wind_zhang_jiao",
+    "skill_id": "guidao",
+    "result": "FIXED",
+    "locked_clause": "任意角色的判定牌生效前，你可以打出一张黑色牌替换之。",
+    "source_profile": "src/package/wind.cpp",
+    "review": "Black effective hand/equipment, exchange prior judgment into owner hand; same-owner retrial choice, current-turn actor order, fresh material/ren and card-place checks through saved frame.",
+    "implementation": "src/sanguosha/engine/judgment.py",
+    "behavior_evidence": [
+      "tests/test_t12_wind.py::test_guidao_replaces_judgment_with_black_card_from_legal_zone",
+      "tests/test_t12_wind.py::test_guidao_can_change_leiji_judgment_before_thunder_damage",
+      "tests/test_t18a11_final_audit.py::test_same_owner_retrial_can_choose_order_and_final_replacement",
+      "tests/test_t18a11_judgment.py::test_guidao_exchanges_old_judgment_into_owners_hand",
+      "tests/test_t18a11_judgment.py::test_retrial_offers_every_holder_in_current_turn_seat_order",
+      "tests/test_t18a11_judgment.py::test_sequential_retrial_uses_last_card_and_tiandu_obtains_only_final_card",
+      "tests/test_t18a11_judgment.py::test_qianxi_does_not_prohibit_black_equipment_guidao_material",
+      "tests/test_t18a11_judgment_system.py::test_guidao_ai_preferred_material_is_evaluated_for_judged_player"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "wind_zhang_jiao",
+    "skill_id": "huangtian",
+    "result": "PASS",
+    "locked_clause": "主公技。其他群势力角色在各自出牌阶段限一次，可以将一张闪或闪电交给你。",
+    "source_profile": "src/package/wind.cpp",
+    "review": "Locked clause: 主公技。其他群势力角色在各自出牌阶段限一次，可以将一张闪或闪电交给你。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/wind_lord.py",
+    "behavior_evidence": [
+      "tests/test_t12_wind.py::test_huangtian_gives_card_to_lord_once_per_play_phase",
+      "tests/test_t12_wind.py::test_huangtian_play_option_and_lord_faction_limits",
+      "tests/test_t12_wind.py::test_huangtian_ai_gives_only_to_needy_ally"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "wind_yuji",
+    "skill_id": "guhuo",
+    "result": "FIXED",
+    "locked_clause": "你可以扣置一张手牌，声明为基本牌或非延时锦囊牌使用或打出。其他角色依次可质疑；被质疑时展示实体牌，并按真伪结算质疑者失去体力或摸牌。仅真牌且实体牌为红桃时继续生效。",
+    "source_profile": "src/package/wind.cpp",
+    "review": "Locked clause: 你可以扣置一张手牌，声明为基本牌或非延时锦囊牌使用或打出。其他角色依次可质疑；被质疑时展示实体牌，并按真伪结算质疑者失去体力或摸牌。仅真牌且实体牌为红桃时继续生效。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/wind_guhuo.py; src/sanguosha/engine/zhangliao.py",
+    "behavior_evidence": [
+      "tests/test_t12_wind.py::test_guhuo_active_challenge_truth_suit_and_effect",
+      "tests/test_t12_wind.py::test_guhuo_active_ex_nihilo_resolves_normal_trick_effect",
+      "tests/test_t12_wind.py::test_guhuo_response_uses_existing_response_window",
+      "tests/test_t12_wind.py::test_guhuo_committed_card_masked_and_challenge_request_resumes",
+      "tests/test_t12_wind.py::test_guhuo_ai_challenge_does_not_read_committed_card_truth",
+      "tests/test_t12_wind.py::test_guhuo_multiple_challengers_each_lose_hp_before_effect",
+      "tests/test_t12_wind.py::test_guhuo_unchallenged_discard_remains_masked_in_projection",
+      "tests/test_t12_wind.py::test_guhuo_wine_response_and_challenged_false_nullification",
+      "tests/test_t12_wind.py::test_guhuo_room_masks_card_and_restores_challenge_on_reconnect",
+      "tests/test_t12_wind.py::test_guhuo_ai_selects_truthful_heart_slash_and_material",
+      "tests/test_t18a11_aoe.py::test_guhuo_true_heart_savage_is_obtained_by_juxiang",
+      "tests/test_t18a11_aoe.py::test_guhuo_only_effective_declaration_is_captured",
+      "tests/test_t18a11_aoe.py::test_classic_guhuo_black_declared_aoe_is_not_prohibited_by_weimu"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "wind_god_guanyu",
+    "skill_id": "wushen",
+    "result": "FIXED",
+    "locked_clause": "锁定技，你的红桃手牌视为杀，使用红桃杀无距离限制。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Mandatory heart-hand identity through shared canonical_definition, per-card unlimited distance, ordinary quota and prohibitions; printed definitions remain unchanged. Equipment is outside the filter. Physical use/projection/response and explicit representation share the effective identity.",
+    "implementation": "src/sanguosha/engine/gods.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_wushen_heart_card_uses_real_slash_pipeline",
+      "tests/test_t13_gods.py::test_wushen_heart_card_can_respond_as_slash",
+      "tests/test_t18a11_final_audit.py::test_wushen_heart_peach_has_locked_slash_identity_and_distant_targets",
+      "tests/test_t18a11_final_audit.py::test_wushen_heart_peach_cannot_be_offered_as_peach_response"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "wind_god_guanyu",
+    "skill_id": "wuhun",
+    "result": "FIXED",
+    "locked_clause": "锁定技，你受到伤害后令来源获得等量梦魇；死亡时令梦魇最多者判定，非桃或桃园结义则死亡。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Other-source damage only, per-point marks before dying resolution; maximum living-mark tie chosen by dying owner; final Peach or GodSalvation preserves target, other card directly kills without rescue; aftermath clears all nightmare marks including terminal cancellation.",
+    "implementation": "src/sanguosha/engine/death.py; src/sanguosha/engine/military_equipment.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_wuhun_nonpeach_judgment_kills_max_nightmare_target",
+      "tests/test_t13_gods.py::test_wuhun_nightmare_mark_survives_snapshot",
+      "tests/test_t18a11_damage_system.py::test_wuhun_dead_owner_tie_request_resolves_nested_death_before_terminal",
+      "tests/test_t18a11_final_audit.py::test_classic_wuhun_god_salvation_judgment_preserves_target",
+      "tests/test_t18a11_final_audit.py::test_wuhun_self_damage_does_not_create_nightmare",
+      "tests/test_t18a11_final_audit.py::test_wuhun_revenge_clears_nightmare_marks_after_resolution"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "wind_god_lvmeng",
+    "skill_id": "shelie",
+    "result": "PASS",
+    "locked_clause": "摸牌阶段可改为亮出牌堆顶五张牌，每种花色获得一张，其余弃置。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 摸牌阶段可改为亮出牌堆顶五张牌，每种花色获得一张，其余弃置。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/gods.py; src/sanguosha/engine/wind.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_shelie_replaces_draw_with_one_card_per_suit"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "wind_god_lvmeng",
+    "skill_id": "gongxin",
+    "result": "PASS",
+    "locked_clause": "出牌阶段限一次，查看一名其他角色手牌，可将其中一张红桃牌弃置或置于牌堆顶。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 出牌阶段限一次，查看一名其他角色手牌，可将其中一张红桃牌弃置或置于牌堆顶。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/gods.py; src/sanguosha/engine/private_hands.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_gongxin_places_selected_heart_on_draw_top",
+      "tests/test_t13_gods.py::test_gongxin_private_reveal_survives_reconnect_without_leaking"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_dian_wei",
+    "skill_id": "qiangxi",
+    "result": "FIXED",
+    "locked_clause": "出牌阶段限一次，你可以失去一点体力或弃置一张武器牌，对攻击范围内一名其他角色造成一点伤害。",
+    "source_profile": "src/package/fire.cpp",
+    "review": "Locked clause: 出牌阶段限一次，你可以失去一点体力或弃置一张武器牌，对攻击范围内一名其他角色造成一点伤害。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fire.py",
+    "behavior_evidence": [
+      "tests/test_t12_fire.py::test_qiangxi_hp_cost_uses_hp_loss_then_damage",
+      "tests/test_t12_fire.py::test_qiangxi_weapon_cost_from_hand_or_equipment",
+      "tests/test_t12_fire.py::test_qiangxi_range_and_once_per_play_phase",
+      "tests/test_t12_fire.py::test_qiangxi_dying_after_hp_cost_stops_damage",
+      "tests/test_t18a11_equipment_distance.py::test_qiangxi_weapon_cost_preserves_independent_attack_range_modifier"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_xun_yu",
+    "skill_id": "quhu",
+    "result": "PASS",
+    "locked_clause": "出牌阶段限一次，与体力值大于你的角色拼点。你赢时，令其对其攻击范围内另一名角色造成一点伤害；否则其对你造成一点伤害。",
+    "source_profile": "src/package/fire.cpp",
+    "review": "Locked clause: 出牌阶段限一次，与体力值大于你的角色拼点。你赢时，令其对其攻击范围内另一名角色造成一点伤害；否则其对你造成一点伤害。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fire.py",
+    "behavior_evidence": [
+      "tests/test_t12_fire.py::test_quhu_pindian_win_or_loss_deals_correct_damage"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_xun_yu",
+    "skill_id": "jieming",
+    "result": "PASS",
+    "locked_clause": "每受到一点伤害后，可令一名角色将手牌补至其体力上限，至多补至五张。",
+    "source_profile": "src/package/fire.cpp",
+    "review": "Locked clause: 每受到一点伤害后，可令一名角色将手牌补至其体力上限，至多补至五张。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t12_fire.py::test_jieming_triggers_per_damage_point_and_caps_each_draw_at_five"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_pang_tong",
+    "skill_id": "niepan",
+    "result": "PASS",
+    "locked_clause": "限定技，濒死时可弃置所有区域的牌，解除连环并翻至正面，摸三张牌，回复至三点体力（不超过上限）。",
+    "source_profile": "src/package/fire.cpp",
+    "review": "Locked clause: 限定技，濒死时可弃置所有区域的牌，解除连环并翻至正面，摸三张牌，回复至三点体力（不超过上限）。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fire.py",
+    "behavior_evidence": [
+      "tests/test_t12_fire.py::test_niepan_clears_areas_draws_three_and_recovers_once"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_wolong",
+    "skill_id": "bazhen",
+    "result": "PASS",
+    "locked_clause": "锁定技。未装备防具时，视为装备八卦阵：需要闪时可判定，红色结果视为打出闪。",
+    "source_profile": "src/package/fire.cpp",
+    "review": "Locked clause: 锁定技。未装备防具时，视为装备八卦阵：需要闪时可判定，红色结果视为打出闪。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fire.py",
+    "behavior_evidence": [
+      "tests/test_t12_fire.py::test_bazhen_acts_as_eight_trigrams_without_physical_armor"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_taishi_ci",
+    "skill_id": "tianyi",
+    "result": "PASS",
+    "locked_clause": "出牌阶段限一次，与一名其他角色拼点。你赢时本回合杀的次数和目标各加一且无距离限制；否则本回合不能使用杀。",
+    "source_profile": "src/package/fire.cpp",
+    "review": "Locked clause: 出牌阶段限一次，与一名其他角色拼点。你赢时本回合杀的次数和目标各加一且无距离限制；否则本回合不能使用杀。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fire.py",
+    "behavior_evidence": [
+      "tests/test_t12_fire.py::test_tianyi_win_or_loss_modifies_slash_for_turn"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_pang_de",
+    "skill_id": "mengjin",
+    "result": "PASS",
+    "locked_clause": "你的杀被闪抵消后，可以弃置目标角色的一张牌。",
+    "source_profile": "src/package/fire.cpp",
+    "review": "Locked clause: 你的杀被闪抵消后，可以弃置目标角色的一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fire.py; src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t12_fire.py::test_mengjin_after_dodge_discards_target_card_without_revealing_hand_ids"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_yan_liang_wen_chou",
+    "skill_id": "shuangxiong",
+    "result": "PASS",
+    "locked_clause": "摸牌阶段可改为判定并获得判定牌；本回合可将与判定结果颜色不同的一张手牌当决斗使用。",
+    "source_profile": "src/package/fire.cpp",
+    "review": "Locked clause: 摸牌阶段可改为判定并获得判定牌；本回合可将与判定结果颜色不同的一张手牌当决斗使用。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fire.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/wind.py",
+    "behavior_evidence": [
+      "tests/test_t12_fire.py::test_shuangxiong_replaces_draw_and_records_judgment_color"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_yuan_shao",
+    "skill_id": "xueyi",
+    "result": "PASS",
+    "locked_clause": "主公技，锁定技。每有一名其他存活的群势力角色，你的手牌上限加二。",
+    "source_profile": "src/package/fire.cpp",
+    "review": "Locked clause: 主公技，锁定技。每有一名其他存活的群势力角色，你的手牌上限加二。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fire.py",
+    "behavior_evidence": [
+      "tests/test_t12_fire.py::test_xueyi_adds_two_hand_limit_per_living_qun_character"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_god_zhouyu",
+    "skill_id": "qinyin",
+    "result": "PASS",
+    "locked_clause": "弃牌阶段弃置至少两张牌后，可令所有角色各回复或失去一点体力。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 弃牌阶段弃置至少两张牌后，可令所有角色各回复或失去一点体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/gods.py; src/sanguosha/engine/phases.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_qinyin_uses_recover_actions_for_all_living_players"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_god_zhouyu",
+    "skill_id": "yeyan",
+    "result": "FIXED",
+    "locked_clause": "限定技，小业炎对一至三名角色各造成一点火焰伤害；大业炎弃四种花色各一张手牌并失去三点体力，分配三点火焰伤害。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Limited once/spent mark persists; small one to three distinct living targets including self, one fire each. Great four different-suit discardable hand cards and HP3, distribute 2+1 or3; no equipped cost. Shared HP/death/chain pipeline and terminal stop apply.",
+    "implementation": "src/sanguosha/engine/gods.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_yeyan_small_deals_three_fire_damage_through_shared_pipeline",
+      "tests/test_t13_gods.py::test_yeyan_great_pays_four_distinct_suits_and_hp",
+      "tests/test_t18a11_final_audit.py::test_small_yeyan_allows_fewer_than_three_targets",
+      "tests/test_t18a11_final_audit.py::test_yeyan_can_target_self",
+      "tests/test_t18a11_final_audit.py::test_great_yeyan_cannot_pay_missing_suit_with_equipped_card"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "fire_god_zhugeliang",
+    "skill_id": "qixing",
+    "result": "PASS",
+    "locked_clause": "开局拥有七张星牌；摸牌阶段结束时可将任意张手牌与等量星牌交换。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 开局拥有七张星牌；摸牌阶段结束时可将任意张手牌与等量星牌交换。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/gods.py; src/sanguosha/engine/phases.py; src/sanguosha/engine/zhangliao.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_qixing_initial_stars_private_and_exchange_reconnect_safe",
+      "tests/test_t17c_zhangliao.py::test_duorui_eligible_native_skills_excludes_lord_awakening_limited_special_and_grants"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_god_zhugeliang",
+    "skill_id": "kuangfeng",
+    "result": "PASS",
+    "locked_clause": "结束阶段可弃一张星，令一名角色直到你下次准备阶段受到的火焰伤害加一。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 结束阶段可弃一张星，令一名角色直到你下次准备阶段受到的火焰伤害加一。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/zhangliao.py",
+    "behavior_evidence": [
+      "tests/test_t17c_zhangliao.py::test_duorui_eligible_native_skills_excludes_lord_awakening_limited_special_and_grants"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "fire_god_zhugeliang",
+    "skill_id": "dawu",
+    "result": "FIXED",
+    "locked_clause": "结束阶段可弃任意张星，令等量角色直到你下次准备阶段防止非雷电伤害。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Finish-phase stars cost/targets, non-thunder prevention and source start/death cleanup; fog offer requires effective Dawu independently of Qixing, suppressed borrowed source no longer invokes it.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t18a11_final_audit.py::test_duorui_dawu_suppression_removes_fog_offer_but_preserves_wind"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "forest_caopi",
+    "skill_id": "fangzhu",
+    "result": "PASS",
+    "locked_clause": "每受到一次伤害后，你可以令一名其他角色摸等同于你已损失体力值的牌，然后将其武将牌翻面。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 每受到一次伤害后，你可以令一名其他角色摸等同于你已损失体力值的牌，然后将其武将牌翻面。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_fangzhu_draws_then_turns_over_and_skips_next_turn",
+      "tests/test_t12_forest.py::test_fangzhu_turns_face_down_target_face_up",
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types",
+      "tests/test_t13_gods.py::test_jilue_fangzhu_uses_existing_turnover_action"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_caopi",
+    "skill_id": "songwei",
+    "result": "FIXED",
+    "locked_clause": "主公技。其他魏势力角色的黑色判定牌生效后，其可以令你摸一张牌。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Effective living other lord, judged player effective Wei, final black in judged context; judged player decides invoke/order with own FinishJudge effects. Classic identity has one lord: unreachable multiple-lord state is not a new scope.",
+    "implementation": "src/sanguosha/engine/forest.py; src/sanguosha/engine/judgment.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_songwei_black_judgment_is_wei_players_decision",
+      "tests/test_t12_forest.py::test_songwei_uses_final_color_after_retrial",
+      "tests/test_t12_forest.py::test_songwei_requires_black_judgment_and_lord",
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types",
+      "tests/test_t18a11_final_audit.py::test_finish_judge_tiandu_songwei_order_is_judged_players_choice",
+      "tests/test_t18a11_judgment_system.py::test_songwei_full_qualification_and_optional_decline",
+      "tests/test_t18a11_judgment_system.py::test_finish_judgment_skill_runs_before_default_discard_and_luoying",
+      "tests/test_t18a11_judgment_system.py::test_lightning_transfer_continues_identically_from_finish_judge_snapshot"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "forest_xuhuang",
+    "skill_id": "duanliang",
+    "result": "PASS",
+    "locked_clause": "你可以将一张黑色基本牌或装备牌当兵粮寸断使用；你使用兵粮寸断的距离限制为二。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 你可以将一张黑色基本牌或装备牌当兵粮寸断使用；你使用兵粮寸断的距离限制为二。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/forest.py; src/sanguosha/engine/military_tricks.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_duanliang_uses_black_basic_at_distance_two",
+      "tests/test_t12_forest.py::test_duanliang_rejects_red_basic_and_black_trick",
+      "tests/test_t12_forest.py::test_duanliang_accepts_black_equipment_from_hand",
+      "tests/test_t12_forest.py::test_duanliang_rejects_distance_three_after_defensive_horse",
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types",
+      "tests/test_t18a11_view_as_system.py::test_trick_view_as_valid_use_reconnect_cost_and_final_identity"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_menghuo",
+    "skill_id": "zaiqi",
+    "result": "PASS",
+    "locked_clause": "摸牌阶段，若你已受伤，你可以改为亮出等同于已损失体力值的牌；每有一张红桃牌，你回复一点体力，然后获得其余的牌。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 摸牌阶段，若你已受伤，你可以改为亮出等同于已损失体力值的牌；每有一张红桃牌，你回复一点体力，然后获得其余的牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/deck.py; src/sanguosha/engine/forest.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_zaiqi_replaces_draw_with_reveal_recovery_and_gain",
+      "tests/test_t12_forest.py::test_zaiqi_normal_draw_when_unwounded_or_declined",
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_zhurong",
+    "skill_id": "lieren",
+    "result": "PASS",
+    "locked_clause": "你使用杀对目标角色造成伤害后，可以与其拼点；若你赢，获得其一张牌。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 你使用杀对目标角色造成伤害后，可以与其拼点；若你赢，获得其一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/forest.py; src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_lieren_uses_pindian_and_hides_opponents_hand_ids",
+      "tests/test_t12_forest.py::test_lieren_decline_or_tied_pindian_does_not_gain",
+      "tests/test_t12_forest.py::test_lieren_equipment_gain_survives_snapshot_without_hand_leak",
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_sunjian",
+    "skill_id": "yinghun",
+    "result": "PASS",
+    "locked_clause": "准备阶段，若你已受伤，你可以令一名其他角色摸X张牌并弃一张牌，或摸一张牌并弃X张牌（X为你已损失体力值）。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 准备阶段，若你已受伤，你可以令一名其他角色摸X张牌并弃一张牌，或摸一张牌并弃X张牌（X为你已损失体力值）。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/forest.py; src/sanguosha/engine/mountain.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types",
+      "tests/test_t12_forest.py::test_yinghun_draws_two_then_target_discards_one",
+      "tests/test_t12_forest.py::test_yinghun_draw_one_then_discard_missing_hp",
+      "tests/test_t12_forest.py::test_yinghun_unwounded_or_declined_does_not_change_target_hand",
+      "tests/test_t13_mountain.py::test_hunzi_awakes_at_one_hp_and_grants_existing_skills"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_lusu",
+    "skill_id": "haoshi",
+    "result": "PASS",
+    "locked_clause": "摸牌阶段，你可以额外摸两张牌；若摸牌结束后你的手牌数大于五，你须将一半手牌交给一名手牌最少的其他角色。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 摸牌阶段，你可以额外摸两张牌；若摸牌结束后你的手牌数大于五，你须将一半手牌交给一名手牌最少的其他角色。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/deck.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types",
+      "tests/test_t12_forest.py::test_haoshi_gives_exact_half_to_lowest_hand_player",
+      "tests/test_t12_forest.py::test_haoshi_decline_draws_two_and_does_not_force_gift",
+      "tests/test_t12_forest.py::test_haoshi_only_offers_lowest_hand_recipient"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_lusu",
+    "skill_id": "dimeng",
+    "result": "PASS",
+    "locked_clause": "出牌阶段限一次，你可以弃置等同于两名其他角色手牌数差的牌，令他们交换手牌。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 出牌阶段限一次，你可以弃置等同于两名其他角色手牌数差的牌，令他们交换手牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/forest.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types",
+      "tests/test_t12_forest.py::test_dimeng_swaps_entire_hands_once_per_turn",
+      "tests/test_t12_forest.py::test_dimeng_pays_hand_difference_and_swap_stays_private"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_jia_xu",
+    "skill_id": "luanwu",
+    "result": "PASS",
+    "locked_clause": "限定技。出牌阶段，你可以令其他角色依次对距离最近的合法角色使用一张杀，否则失去一点体力。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 限定技。出牌阶段，你可以令其他角色依次对距离最近的合法角色使用一张杀，否则失去一点体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/forest.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types",
+      "tests/test_t12_forest.py::test_luanwu_forces_nearest_slash_then_other_players_lose_hp",
+      "tests/test_t12_forest.py::test_luanwu_cannot_be_used_twice",
+      "tests/test_t12_forest.py::test_luanwu_pending_choice_restores_without_private_card_ids",
+      "tests/test_t12_forest.py::test_forest_room_only_sends_luanwu_request_to_current_actor"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_dong_zhuo",
+    "skill_id": "jiuchi",
+    "result": "PASS",
+    "locked_clause": "你可以将一张黑桃手牌当酒使用或用于自己濒死时自救。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 你可以将一张黑桃手牌当酒使用或用于自己濒死时自救。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/forest.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types",
+      "tests/test_t12_forest.py::test_jiuchi_uses_spade_hand_card_as_wine",
+      "tests/test_t12_forest.py::test_jiuchi_spade_hand_card_can_self_rescue",
+      "tests/test_t12_forest.py::test_jiuchi_rejects_non_spade_material",
+      "tests/test_t12_forest.py::test_jiuchi_rejects_equipped_spade_and_offers_hand_only",
+      "tests/test_t12_forest.py::test_jiuchi_virtual_wine_adds_damage_to_next_slash"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_dong_zhuo",
+    "skill_id": "roulin",
+    "result": "PASS",
+    "locked_clause": "锁定技。你对女性角色使用杀，或女性角色对你使用杀时，目标角色须连续使用两张闪才能抵消。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 锁定技。你对女性角色使用杀，或女性角色对你使用杀时，目标角色须连续使用两张闪才能抵消。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types",
+      "tests/test_t12_forest.py::test_roulin_requires_two_dodges_against_female_target",
+      "tests/test_t12_forest.py::test_roulin_applies_only_across_female_dong_pair",
+      "tests/test_t12_forest.py::test_roulin_first_dodge_then_reconnect_requires_second_and_pass_takes_damage"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_dong_zhuo",
+    "skill_id": "benghuai",
+    "result": "PASS",
+    "locked_clause": "结束阶段开始时，若你的体力值不是全场最低，你须选择失去一点体力或减少一点体力上限。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 结束阶段开始时，若你的体力值不是全场最低，你须选择失去一点体力或减少一点体力上限。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/forest.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types",
+      "tests/test_t12_forest.py::test_benghuai_can_reduce_max_hp_and_clamps_current_hp",
+      "tests/test_t12_forest.py::test_benghuai_only_when_another_living_player_has_lower_hp",
+      "tests/test_t12_forest.py::test_benghuai_loses_hp_without_damage_and_restores_choice"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_dong_zhuo",
+    "skill_id": "baonue",
+    "result": "PASS",
+    "locked_clause": "主公技。其他群势力角色造成伤害后，其可以进行判定；若结果为黑桃，你回复一点体力。",
+    "source_profile": "src/package/thicket.cpp",
+    "review": "Locked clause: 主公技。其他群势力角色造成伤害后，其可以进行判定；若结果为黑桃，你回复一点体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/forest.py; src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t12_forest.py::test_forest_catalogue_has_rule_text_and_types",
+      "tests/test_t12_forest.py::test_baonue_spade_judgment_recovers_dong_zhuo",
+      "tests/test_t12_forest.py::test_baonue_requires_other_qun_source_and_dong_lord",
+      "tests/test_t12_forest.py::test_baonue_does_not_trigger_from_dong_own_damage",
+      "tests/test_t12_forest.py::test_baonue_final_judgment_and_decline",
+      "tests/test_t12_forest.py::test_baonue_uses_final_spade_after_guicai_retrial"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_god_caocao",
+    "skill_id": "guixin",
+    "result": "PASS",
+    "locked_clause": "每受到一点伤害，可从每名其他角色处获得一张牌，然后将武将牌翻面。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 每受到一点伤害，可从每名其他角色处获得一张牌，然后将武将牌翻面。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/gods.py; src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_guixin_gains_one_card_per_other_player_and_turns_over",
+      "tests/test_t13_gods.py::test_guixin_triggers_once_per_damage_point"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_god_lvbu",
+    "skill_id": "kuangbao",
+    "result": "FIXED",
+    "locked_clause": "锁定技，开局获得两枚怒；每造成或受到一点伤害，获得一枚怒。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Initial rage2 and per-point dealt/received marks belong to effective Kuangbao; Duanchang suppression disables subsequent mark gain. Unique native skill excluded from Duorui via correct public skill ID.",
+    "implementation": "未定位显式skill id；需追踪规则修饰器",
+    "behavior_evidence": [
+      "tests/test_t18a11_final_audit.py::test_duorui_cannot_borrow_unique_kuangbao",
+      "tests/test_t18a11_final_audit.py::test_duanchang_lost_kuangbao_does_not_gain_rage_on_later_damage"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "forest_god_lvbu",
+    "skill_id": "wumou",
+    "result": "PASS",
+    "locked_clause": "锁定技，使用非延时锦囊时弃一枚怒或失去一点体力。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 锁定技，使用非延时锦囊时弃一枚怒或失去一点体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/card_use.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_wumou_pays_rage_before_non_delayed_trick_resolves",
+      "tests/test_t17c_longnu.py::test_longnu_converted_trick_does_not_trigger_jizhi_or_wumou"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_god_lvbu",
+    "skill_id": "wuwei",
+    "result": "PASS",
+    "locked_clause": "出牌阶段可弃两枚怒，令一名角色本回合受到你的杀时防具无效，且你获得无双。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 出牌阶段可弃两枚怒，令一名角色本回合受到你的杀时防具无效，且你获得无双。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/god_lvbu.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/turns.py",
+    "behavior_evidence": [
+      "tests/test_t11_lvbu_engine.py::test_wuqian_and_shenfen_are_engine_events_with_authoritative_multi_target_damage"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "forest_god_lvbu",
+    "skill_id": "shenfen",
+    "result": "PASS",
+    "locked_clause": "出牌阶段限一次，弃六枚怒，对所有其他角色造成一点伤害，令其弃装备与四张手牌，然后翻面。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 出牌阶段限一次，弃六枚怒，对所有其他角色造成一点伤害，令其弃装备与四张手牌，然后翻面。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/god_lvbu.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/zhangliao.py",
+    "behavior_evidence": [
+      "tests/test_t11_lvbu_engine.py::test_wuqian_and_shenfen_are_engine_events_with_authoritative_multi_target_damage",
+      "tests/test_t11_lvbu_engine.py::test_shenfen_requires_six_rage_and_one_use_per_play_phase"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_zhang_he",
+    "skill_id": "qiaobian",
+    "result": "PASS",
+    "locked_clause": "你可以弃置一张手牌跳过判定、摸牌、出牌或弃牌阶段。跳过摸牌阶段时可从至多两名其他角色各获得一张手牌；跳过出牌阶段时可移动场上的一张装备牌或延时锦囊牌。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Locked clause: 你可以弃置一张手牌跳过判定、摸牌、出牌或弃牌阶段。跳过摸牌阶段时可从至多两名其他角色各获得一张手牌；跳过出牌阶段时可移动场上的一张装备牌或延时锦囊牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/wind.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_qiaobian_discards_hand_card_and_marks_only_legal_phase",
+      "tests/test_t13_mountain.py::test_qiaobian_draw_replacement_takes_from_two_distinct_players",
+      "tests/test_t13_mountain.py::test_qiaobian_decline_has_no_cost_or_skip",
+      "tests/test_t13_mountain.py::test_qiaobian_rejects_unskippable_phase",
+      "tests/test_t13_mountain.py::test_qiaobian_moves_equipment_to_open_matching_slot",
+      "tests/test_t13_mountain.py::test_qiaobian_delayed_trick_excludes_duplicate_and_immune_targets"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_deng_ai",
+    "skill_id": "tuntian",
+    "result": "FIXED",
+    "locked_clause": "回合外失去牌后，你可以判定；若结果不为红桃，将判定牌置于武将牌上作为田。你与其他角色的距离减少田的数量。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Actual off-turn hand/equipment loss only; NotActive current qualifies, own hand-equipment relocation does not. Nonheart final card goes directly to field, optional same-time Tiandu acquisition; field count gives outgoing distance correction.",
+    "implementation": "src/sanguosha/engine/distance.py; src/sanguosha/engine/military_equipment.py; src/sanguosha/engine/mountain.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_tuntian_nonheart_judgment_enters_authoritative_field",
+      "tests/test_t13_mountain.py::test_tuntian_off_turn_card_loss_queues_reaction",
+      "tests/test_t13_mountain.py::test_tuntian_field_reduces_outgoing_distance",
+      "tests/test_t18a11_card_move_system.py::test_tuntian_excludes_own_hand_equipment_relocation",
+      "tests/test_t18a11_card_move_system.py::test_tuntian_notactive_current_still_triggers_on_actual_loss",
+      "tests/test_t18a11_judgment_system.py::test_successful_field_judgment_never_enters_discard_or_luoying_window",
+      "tests/test_t18a11_judgment_system.py::test_field_heart_failure_remains_ordinary_discard"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "mountain_liushan",
+    "skill_id": "xiangle",
+    "result": "PASS",
+    "locked_clause": "锁定技，其他角色使用杀指定你为目标时，须额外弃置一张基本牌，否则此杀对你无效。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Locked clause: 锁定技，其他角色使用杀指定你为目标时，须额外弃置一张基本牌，否则此杀对你无效。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_xiangle_prevents_slash_when_attacker_declines_basic_cost",
+      "tests/test_t13_mountain.py::test_xiangle_consumes_basic_cost_then_slash_continues"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_jiang_wei",
+    "skill_id": "tiaoxin",
+    "result": "PASS",
+    "locked_clause": "出牌阶段限一次，选择攻击范围内一名其他角色，其须对你使用一张杀，否则你弃置其一张牌。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Locked clause: 出牌阶段限一次，选择攻击范围内一名其他角色，其须对你使用一张杀，否则你弃置其一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_tiaoxin_decline_discards_target_card_and_once_per_phase",
+      "tests/test_t13_mountain.py::test_tiaoxin_uses_real_forced_slash_pipeline"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_jiang_wei",
+    "skill_id": "guanxing",
+    "result": "PASS",
+    "locked_clause": "准备阶段可查看并调整牌堆顶的牌。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Locked clause: 准备阶段可查看并调整牌堆顶的牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_zhiji_empty_hand_awakes_and_reuses_guanxing",
+      "tests/test_t18a11_closeout.py::test_zhiji_max_hp_payment_precedes_reward",
+      "tests/test_t7b_cross_system.py::test_guanxing_can_move_safe_card_above_lightning_judgment",
+      "tests/test_t7b_rule_modifiers.py::test_guanxing_reorders_top_and_bottom_without_losing_cards"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_sunce",
+    "skill_id": "jiang",
+    "result": "PASS",
+    "locked_clause": "使用或成为红色杀、决斗的目标时，你可以摸一张牌。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Locked clause: 使用或成为红色杀、决斗的目标时，你可以摸一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_equipment.py; src/sanguosha/engine/mountain.py; src/sanguosha/engine/yj2012.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_jiang_reacts_to_red_slash_use_and_target_without_duplicate",
+      "tests/test_t17c_first_batch.py::test_jiangchi_draw_phase_modes",
+      "tests/test_t17c_first_batch.py::test_jiangchi_jiang_blocks_slash_response_even_virtual",
+      "tests/test_t17c_request_privacy.py::test_new_fixed_branch_labels_explain_effects_in_chinese"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_sunce",
+    "skill_id": "zhiba",
+    "result": "PASS",
+    "locked_clause": "主公技，其他吴势力角色出牌阶段限一次可与你拼点；你觉醒后可拒绝。若你未赢，可获得双方拼点牌。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Locked clause: 主公技，其他吴势力角色出牌阶段限一次可与你拼点；你觉醒后可拒绝。若你未赢，可获得双方拼点牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/mountain.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_zhiba_pindian_claims_cards_when_lord_does_not_win"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_zhang_zhaozhang",
+    "skill_id": "zhijian",
+    "result": "FIXED",
+    "locked_clause": "出牌阶段，你可以将手牌中的一张装备牌置入其他角色装备区，然后摸一张牌。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Hand equipment only; another living character with matching empty, non-abolished slot; put directly without use/replacement, then draw1. Target and material rechecked before commitment.",
+    "implementation": "src/sanguosha/engine/mountain.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_zhijian_places_in_empty_equipment_slot_and_draws",
+      "tests/test_t18a11_final_audit.py::test_zhijian_cannot_replace_occupied_equipment_slot"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "mountain_zhang_zhaozhang",
+    "skill_id": "guzheng",
+    "result": "PASS",
+    "locked_clause": "其他角色弃牌阶段结束后，你可以将其此阶段因规则弃置的一张牌归还，然后获得其余这些牌。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Locked clause: 其他角色弃牌阶段结束后，你可以将其此阶段因规则弃置的一张牌归还，然后获得其余这些牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/phases.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_guzheng_uses_exact_discard_phase_cards"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_zuoci",
+    "skill_id": "xinsheng",
+    "result": "PASS",
+    "locked_clause": "受到伤害后，你可以按伤害点数获得新的未登场武将牌。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Locked clause: 受到伤害后，你可以按伤害点数获得新的未登场武将牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_equipment.py; src/sanguosha/engine/mountain.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_xinsheng_draws_new_unique_general_cards"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_cai_wenji",
+    "skill_id": "beige",
+    "result": "PASS",
+    "locked_clause": "其他角色受到杀造成的伤害后，你可以弃置一张牌令其判定：红桃回复，方块摸牌，梅花伤害来源弃牌，黑桃伤害来源翻面。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Locked clause: 其他角色受到杀造成的伤害后，你可以弃置一张牌令其判定：红桃回复，方块摸牌，梅花伤害来源弃牌，黑桃伤害来源翻面。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_equipment.py; src/sanguosha/engine/mountain.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_beige_uses_final_judgment_suit_for_recovery",
+      "tests/test_t13_mountain.py::test_beige_nonheart_suits_use_shared_effects",
+      "tests/test_t13_mountain.py::test_slash_damage_offers_beige_to_cai_wenji"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_cai_wenji",
+    "skill_id": "duanchang",
+    "result": "PASS",
+    "locked_clause": "锁定技，你死亡时，杀死你的角色失去其武将技能。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Locked clause: 锁定技，你死亡时，杀死你的角色失去其武将技能。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/death.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_duanchang_suppresses_killers_character_skills_through_reconnect",
+      "tests/test_t18a11_final_audit.py::test_duanchang_lost_kuangbao_does_not_gain_rage_on_later_damage"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_god_zhaoyun",
+    "skill_id": "juejing",
+    "result": "PASS",
+    "locked_clause": "锁定技，摸牌阶段额外摸已损失体力值张牌；手牌上限加二。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 锁定技，摸牌阶段额外摸已损失体力值张牌；手牌上限加二。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fire.py; src/sanguosha/engine/phases.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_juejing_draws_for_missing_hp_and_increases_hand_limit"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_god_zhaoyun",
+    "skill_id": "longhun",
+    "result": "FIXED",
+    "locked_clause": "可将等同于当前体力值的同花色牌分别当桃、火杀、闪或无懈可击使用或打出。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "max(1,current HP) same effective suit; hand/equipment may be mixed. Four conversions and use/response contexts checked; public shared payment preserves one virtual card and numbered response. Post-cost gear preview uses existing distance and quota permissions.",
+    "implementation": "src/sanguosha/engine/gods.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/response.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_longhun_response_uses_current_hp_same_suit_cards",
+      "tests/test_t13_gods.py::test_longhun_fire_slash_uses_shared_slash_pipeline",
+      "tests/test_t13_gods.py::test_longhun_peach_is_offered_and_recovers",
+      "tests/test_t18a11_final_audit.py::test_classic_longhun_can_pay_mixed_hand_equipment_materials",
+      "tests/test_t18a11_view_as_system.py::test_view_as_cannot_use_qianxi_forbidden_hand_color"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "mountain_god_simayi",
+    "skill_id": "renjie",
+    "result": "FIXED",
+    "locked_clause": "锁定技，每受到一点伤害或在弃牌阶段因规则弃置一张牌，获得一枚忍。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 锁定技，每受到一点伤害或在弃牌阶段因规则弃置一张牌，获得一枚忍。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/phases.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_renjie_marks_damage_and_baiyin_awakens_once",
+      "tests/test_t13_gods.py::test_renjie_counts_only_own_discard_phase_rule_discards",
+      "tests/test_t18a11_damage_system.py::test_lose_hp_is_not_damage_and_recovery_is_capped"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "mountain_god_simayi",
+    "skill_id": "lianpo",
+    "result": "PASS",
+    "locked_clause": "当你于一回合内杀死角色，可在此回合结束后进行一个额外回合。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp; current classic catalogue",
+    "review": "Locked clause: 当你于一回合内杀死角色，可在此回合结束后进行一个额外回合。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/death.py; src/sanguosha/engine/turns.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_lianpo_offers_extra_turn_after_kill_at_turn_end"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_zhang_chunhua",
+    "skill_id": "jueqing",
+    "result": "PASS",
+    "locked_clause": "锁定技。伤害结算开始前，你将要造成的伤害视为失去体力。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 锁定技。伤害结算开始前，你将要造成的伤害视为失去体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2011.py",
+    "behavior_evidence": [
+      "tests/test_t17b_tier2.py::test_jueqing_replaces_damage_without_chains_or_damage_triggers",
+      "tests/test_t17b_tier2.py::test_jueqing_dying_reconnect_and_no_damage_killer_reward"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_zhang_chunhua",
+    "skill_id": "shangshi",
+    "result": "PASS",
+    "locked_clause": "每当你的手牌数、体力值或体力上限改变后，若你的手牌数小于X，你可以将手牌补至X张。（X为你已损失的体力值）",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 每当你的手牌数、体力值或体力上限改变后，若你的手牌数小于X，你可以将手牌补至X张。（X为你已损失的体力值） Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2011.py",
+    "behavior_evidence": [
+      "tests/test_t17b_tier2.py::test_shangshi_all_lost_hp_and_hand_counts_no_cap",
+      "tests/test_t17b_tier2.py::test_shangshi_health_loss_event_offer_and_decline_not_repeated"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_yu_jin",
+    "skill_id": "yizhong",
+    "result": "PASS",
+    "locked_clause": "锁定技。若你的装备区没有防具牌，黑色【杀】对你无效。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 锁定技。若你的装备区没有防具牌，黑色【杀】对你无效。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2011.py",
+    "behavior_evidence": [
+      "tests/test_t17b_tier1.py::test_yizhong_effect_immunity_for_all_slash_colors",
+      "tests/test_t17b_tier1.py::test_yizhong_armor_present_and_qinggang_does_not_disable_skill",
+      "tests/test_t17b_tier1.py::test_yizhong_colorless_virtual_slash_and_no_general_branch"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_cao_zhi",
+    "skill_id": "luoying",
+    "result": "FIXED",
+    "locked_clause": "其他角色的牌因判定或弃置而置入弃牌堆时，你可以获得其中至少一张梅花牌。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 其他角色的牌因判定或弃置而置入弃牌堆时，你可以获得其中至少一张梅花牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2011_tier3.py",
+    "behavior_evidence": [
+      "tests/test_t17b_complete.py::test_two_humans_ai_room_skill_reconnect_and_timeout",
+      "tests/test_t17b_edges.py::test_luoying_semantic_boundaries_for_equipment_death_and_system_move",
+      "tests/test_t17b_tier3.py::test_luoying_move_facts_include_only_other_discard",
+      "tests/test_t17b_tier3.py::test_luoying_batch_subset_rechecks_and_judgment_provenance",
+      "tests/test_t17c_jianyong_zongshi.py::test_zongshi_acquires_before_remaining_pindian_discard_without_luoying_claim",
+      "tests/test_t17c_zongxuan.py::test_zongxuan_precedes_luoying_and_selected_card_cannot_be_taken",
+      "tests/test_t18a11_judgment_system.py::test_successful_field_judgment_never_enters_discard_or_luoying_window",
+      "tests/test_t18a11_judgment_system.py::test_finish_judgment_skill_runs_before_default_discard_and_luoying"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_cao_zhi",
+    "skill_id": "jiushi",
+    "result": "PASS",
+    "locked_clause": "若你的武将牌正面朝上，你可以将武将牌翻面，视为你使用了一张【酒】。每当你受到伤害扣减体力前，若武将牌背面朝上，你可以在伤害结算后将武将牌翻至正面朝上。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 若你的武将牌正面朝上，你可以将武将牌翻面，视为你使用了一张【酒】。每当你受到伤害扣减体力前，若武将牌背面朝上，你可以在伤害结算后将武将牌翻至正面朝上。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/yj2011_tier3.py",
+    "behavior_evidence": [
+      "tests/test_t17b_edges.py::test_jiushi_initial_face_down_fatal_rescue_flip_is_after_dying_resolution",
+      "tests/test_t17b_tier3.py::test_jiushi_active_legality_turnover_and_wine_quota",
+      "tests/test_t17b_tier3.py::test_jiushi_damage_uses_orientation_before_hp_deduction",
+      "tests/test_t17b_tier3.py::test_jiushi_dying_self_rescue_does_not_grant_after_damage_flip"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_fa_zheng",
+    "skill_id": "enyuan",
+    "result": "PASS",
+    "locked_clause": "每当你获得一名其他角色的两张或更多的牌后，你可以令其摸一张牌。每当你受到1点伤害后，你可以令伤害来源选择一项：交给你一张手牌，或失去1点体力。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 每当你获得一名其他角色的两张或更多的牌后，你可以令其摸一张牌。每当你受到1点伤害后，你可以令伤害来源选择一项：交给你一张手牌，或失去1点体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2011_tier3.py",
+    "behavior_evidence": [
+      "tests/test_t17b_edges.py::test_enyuan_cross_hand_equipment_single_batch_and_no_mixed_source_merge",
+      "tests/test_t17b_tier3.py::test_enyuan_same_acquisition_batch_source_threshold",
+      "tests/test_t17b_tier3.py::test_enyuan_each_damage_point_source_gives_or_loses_hp",
+      "tests/test_t18a11_card_move_system.py::test_xingshang_cross_zone_acquisition_is_one_enyuan_fact"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_fa_zheng",
+    "skill_id": "xuanhuo",
+    "result": "PASS",
+    "locked_clause": "摸牌阶段开始时，你可以放弃摸牌并选择一名其他角色：若如此做，该角色摸两张牌，然后该角色可以对其攻击范围内由你选择的一名角色使用一张【杀】，否则令你获得其两张牌。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 摸牌阶段开始时，你可以放弃摸牌并选择一名其他角色：若如此做，该角色摸两张牌，然后该角色可以对其攻击范围内由你选择的一名角色使用一张【杀】，否则令你获得其两张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/deck.py",
+    "behavior_evidence": [
+      "tests/test_t17b_tier3.py::test_xuanhuo_draw_replacement_forced_slash_or_two_private_acquisitions",
+      "tests/test_t17b_tier3.py::test_private_hand_ai_invariant_under_enemy_card_changes"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_ma_su",
+    "skill_id": "xinzhan",
+    "result": "PASS",
+    "locked_clause": "阶段技。若你的手牌数大于你的体力上限，你可以观看牌堆顶的三张牌，然后你可以展示并获得其中至少一张红桃牌，然后将其余的牌置于牌堆顶。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 阶段技。若你的手牌数大于你的体力上限，你可以观看牌堆顶的三张牌，然后你可以展示并获得其中至少一张红桃牌，然后将其余的牌置于牌堆顶。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2011_tier3.py",
+    "behavior_evidence": [
+      "tests/test_t17b_tier3.py::test_xinzhan_private_top_three_hearts_and_ordered_return",
+      "tests/test_t17b_tier3.py::test_xinzhan_equal_max_hp_is_illegal"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_ma_su",
+    "skill_id": "huilei",
+    "result": "PASS",
+    "locked_clause": "锁定技。你死亡时，杀死你的其他角色弃置其所有牌。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 锁定技。你死亡时，杀死你的其他角色弃置其所有牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/death.py",
+    "behavior_evidence": [
+      "tests/test_t17b_tier3.py::test_huilei_death_killer_discard_before_rebel_reward"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_xu_shu",
+    "skill_id": "jujian",
+    "result": "PASS",
+    "locked_clause": "结束阶段开始时，你可以弃置一张非基本牌并选择一名其他角色：若如此做，该角色选择一项：摸两张牌，或回复1点体力，或重置武将牌并将其翻至正面朝上。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 结束阶段开始时，你可以弃置一张非基本牌并选择一名其他角色：若如此做，该角色选择一项：摸两张牌，或回复1点体力，或重置武将牌并将其翻至正面朝上。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py; src/sanguosha/engine/yj2011.py",
+    "behavior_evidence": [
+      "tests/test_t17b_tier2.py::test_jujian_cost_target_and_recipient_choice_restore"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_ling_tong",
+    "skill_id": "xuanfeng",
+    "result": "PASS",
+    "locked_clause": "每当你失去一次装备区的牌后，或弃牌阶段结束时若你于本阶段内弃置了至少两张你的牌，你可以弃置一名其他角色的一张牌，然后弃置一名其他角色的一张牌。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 每当你失去一次装备区的牌后，或弃牌阶段结束时若你于本阶段内弃置了至少两张你的牌，你可以弃置一名其他角色的一张牌，然后弃置一名其他角色的一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2011.py",
+    "behavior_evidence": [
+      "tests/test_t17b_edges.py::test_exchange_multislot_xuanfeng_triggers_once_per_owner",
+      "tests/test_t17b_integration.py::test_xuanfeng_multiplayer_opaque_choice_mid_request_restore_and_timeout",
+      "tests/test_t17b_integration.py::test_xuanfeng_discard_phase_exact_batch_threshold",
+      "tests/test_t17b_integration.py::test_xuanfeng_ai_choice_invariant_under_hidden_card_changes",
+      "tests/test_t17b_tier2.py::test_xuanfeng_any_equipment_leave_reason_private_choice_and_reconnect",
+      "tests/test_t17b_tier3.py::test_exchange_silver_lion_xiaoji_and_xuanfeng_departure_reactions",
+      "tests/test_t18a11_card_move_system.py::test_zongxuan_reserved_equipment_does_not_publish_duplicate_departure_trigger",
+      "tests/test_t18a11_card_move_system.py::test_zongxuan_equipment_departure_is_once_for_top_or_discard"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_xu_sheng",
+    "skill_id": "pojun",
+    "result": "PASS",
+    "locked_clause": "每当你使用【杀】对目标角色造成伤害后，你可以令其摸X张牌，然后将其武将牌翻面。（X为该角色的体力值且至多为5）",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 每当你使用【杀】对目标角色造成伤害后，你可以令其摸X张牌，然后将其武将牌翻面。（X为该角色的体力值且至多为5） Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2011.py",
+    "behavior_evidence": [
+      "tests/test_t17b_tier1.py::test_pojun_chosen_text_draw_current_hp_then_turn",
+      "tests/test_t17b_tier1.py::test_pojun_slash_damage_not_unrelated_damage_or_chain",
+      "tests/test_t17b_tier1.py::test_pojun_waits_for_dying_and_does_not_offer_for_dead_target"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_wu_guotai",
+    "skill_id": "ganlu",
+    "result": "PASS",
+    "locked_clause": "阶段技。你可以令装备区的牌数量差不超过你已损失体力值的两名角色交换他们装备区的装备牌。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 阶段技。你可以令装备区的牌数量差不超过你已损失体力值的两名角色交换他们装备区的装备牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2011_tier3.py",
+    "behavior_evidence": [
+      "tests/test_t17b_complete.py::test_two_humans_ai_room_skill_reconnect_and_timeout",
+      "tests/test_t17b_tier3.py::test_ganlu_atomic_same_slot_multiple_slots_mid_request_restore",
+      "tests/test_t17b_tier3.py::test_ganlu_illegal_count_not_offered_and_exchange_invalid_has_no_effects",
+      "tests/test_t17b_tier3.py::test_exchange_silver_lion_xiaoji_and_xuanfeng_departure_reactions"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_wu_guotai",
+    "skill_id": "buyi",
+    "result": "PASS",
+    "locked_clause": "每当一名角色进入濒死状态时，你可以展示该角色的一张手牌：若此牌为非基本牌，该角色弃置此牌，然后回复1点体力。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 每当一名角色进入濒死状态时，你可以展示该角色的一张手牌：若此牌为非基本牌，该角色弃置此牌，然后回复1点体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/dying.py; src/sanguosha/engine/yj2011_tier3.py",
+    "behavior_evidence": [
+      "tests/test_t17b_complete.py::test_two_humans_ai_room_skill_reconnect_and_timeout",
+      "tests/test_t17b_edges.py::test_reveal_public_event_contains_only_selected_card_definition",
+      "tests/test_t17b_tier3.py::test_buyi_dying_choice_card_type_restore_and_privacy",
+      "tests/test_t17b_tier3.py::test_private_hand_ai_invariant_under_enemy_card_changes"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_chen_gong",
+    "skill_id": "mingce",
+    "result": "PASS",
+    "locked_clause": "阶段技。你可以将一张装备牌或【杀】交给一名其他角色：若如此做，该角色可以视为对其攻击范围内由你选择的一名角色使用一张【杀】，否则其摸一张牌。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 阶段技。你可以将一张装备牌或【杀】交给一名其他角色：若如此做，该角色可以视为对其攻击范围内由你选择的一名角色使用一张【杀】，否则其摸一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2011_tier3.py",
+    "behavior_evidence": [
+      "tests/test_t17b_complete.py::test_two_humans_ai_room_skill_reconnect_and_timeout",
+      "tests/test_t17b_tier3.py::test_mingce_gift_virtual_slash_normal_response_or_draw",
+      "tests/test_t18a6_polish.py::test_skill_cue_preserves_public_target_without_long_description",
+      "tests/test_t18a6_polish.py::test_real_ai_mingce_targets_ally_then_public_enemy"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2011_gao_shun",
+    "skill_id": "xianzhen",
+    "result": "FIXED",
+    "locked_clause": "阶段技。你可以与一名其他角色拼点：若你赢，本回合，该角色的防具无效，你无视与该角色的距离，你对该角色使用【杀】无次数限制；若你没赢，你不能使用【杀】，直到回合结束。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 阶段技。你可以与一名其他角色拼点：若你赢，本回合，该角色的防具无效，你无视与该角色的距离，你对该角色使用【杀】无次数限制；若你没赢，你不能使用【杀】，直到回合结束。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries. R77: a game-ending death cancels the TurnAction before ordinary end-of-turn clear_turn. Shared terminal cleanup now invokes that existing cleanup, removing actual temporary marks.",
+    "implementation": "src/sanguosha/engine/yj2011_tier3.py",
+    "behavior_evidence": [
+      "tests/test_t17b_complete.py::test_two_humans_ai_room_skill_reconnect_and_timeout",
+      "tests/test_t17b_edges.py::test_xianzhen_spear_virtual_slash_exempt_target_does_not_consume_normal_quota",
+      "tests/test_t17b_edges.py::test_zhichi_and_xianzhen_all_players_clear_at_real_turn_end",
+      "tests/test_t17b_tier3.py::test_xianzhen_pindian_snapshot_result_and_scoped_quota",
+      "tests/test_t17c_longyin.py::test_forced_and_xianzhen_uncounted_slash_do_not_erase_prior_quota"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Existing six seeded AI failures provide reproduction; no new test added."
+  },
+  {
+    "general_id": "yj2011_gao_shun",
+    "skill_id": "jinjiu",
+    "result": "PASS",
+    "locked_clause": "锁定技。你的【酒】视为【杀】。",
+    "source_profile": "src/package/yjcm.cpp",
+    "review": "Locked clause: 锁定技。你的【酒】视为【杀】。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/card_use.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/yj2011_tier3.py",
+    "behavior_evidence": [
+      "tests/test_t17b_production.py::test_jinjiu_projection_owner_sees_slash_physical_identity_unchanged",
+      "tests/test_t17b_tier3.py::test_jinjiu_wine_is_slash_use_and_response_no_self_rescue"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_xun_you",
+    "skill_id": "zhiyu",
+    "result": "PASS",
+    "locked_clause": "受伤后可摸一张并公开全部手牌。若这些牌颜色一致，伤害来源须弃一张手牌。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Code-only independent closure: YJ2012Handler.zhiyu and damage_reaction matched frozen YJCM2012 clause: one offer after damage, optional draw then public whole hand, nonempty same effective color only, living source with hand must discard one; no source means no discard. Public reveal does not grant persistent viewing.",
+    "implementation": "src/sanguosha/engine/yj2012.py",
+    "behavior_evidence": [],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_wang_yi",
+    "skill_id": "miji",
+    "result": "PASS",
+    "locked_clause": "结束阶段受伤时，可摸不超过已损失体力值的牌，再把等量手牌分给其他角色。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 结束阶段受伤时，可摸不超过已损失体力值的牌，再把等量手牌分给其他角色。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t17c_first_batch.py::test_miji_current_hand_distribution_restore_all_choices"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_cao_zhang",
+    "skill_id": "jiangchi",
+    "result": "PASS",
+    "locked_clause": "摸牌时可少摸一张，换取本回合杀不限距离且多用一次；也可多摸一张，但本回合不能使用或打出杀。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 摸牌时可少摸一张，换取本回合杀不限距离且多用一次；也可多摸一张，但本回合不能使用或打出杀。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/deck.py",
+    "behavior_evidence": [
+      "tests/test_t17c_camp.py::test_camp_bonus_combines_with_jiangchi_draw_count",
+      "tests/test_t17c_first_batch.py::test_jiangchi_draw_phase_modes",
+      "tests/test_t17c_first_batch.py::test_jiangchi_jiang_blocks_slash_response_even_virtual",
+      "tests/test_t18b_desktop_acceptance.py::test_borrowed_skill_bar_available_and_disabled_native_status"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_guan_xing_zhang_bao",
+    "skill_id": "fuhun",
+    "result": "PASS",
+    "locked_clause": "可用两张手牌组成普通杀。你在出牌阶段用此杀造成伤害后，本回合获得武圣和咆哮。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 可用两张手牌组成普通杀。你在出牌阶段用此杀造成伤害后，本回合获得武圣和咆哮。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/fuhun.py; src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t17c_fuhun.py::test_fuhun_real_use_two_costs_shared_quota_damage_only_grants_restore",
+      "tests/test_t17c_fuhun.py::test_fuhun_response_does_not_grant_or_consume_play_quota",
+      "tests/test_t17c_fuhun.py::test_fuhun_grant_survives_save_and_preserves_existing_sources",
+      "tests/test_t17c_fuhun.py::test_fuhun_damage_outside_play_does_not_grant",
+      "tests/test_t17c_fuhun.py::test_fuhun_qianxi_all_red_rejected_mixed_pair_allowed",
+      "tests/test_t17c_fuhun.py::test_fuhun_grants_removed_by_real_turn_end",
+      "tests/test_t17c_zhangliao.py::test_duorui_grant_sources_coexist_with_earlier_and_fuhun_grants",
+      "tests/test_t18a11_view_as_system.py::test_two_materials_are_one_numbered_slash_response"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_ma_dai",
+    "skill_id": "qianxi",
+    "result": "PASS",
+    "locked_clause": "准备阶段可判定，并选择距离为1的一名角色。本回合，该角色不能使用或打出与判定结果同色的手牌。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 准备阶段可判定，并选择距离为1的一名角色。本回合，该角色不能使用或打出与判定结果同色的手牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t17c_fuhun.py::test_fuhun_qianxi_all_red_rejected_mixed_pair_allowed",
+      "tests/test_t17c_longnu.py::test_longnu_converted_slash_respects_qianxi_and_skill_suppression",
+      "tests/test_t17c_mieji_zhiyan.py::test_zhiyan_qianxi_recovers_but_cannot_use_prohibited_equipment",
+      "tests/test_t17c_qianxi.py::test_qianxi_preparation_judgment_target_and_restore",
+      "tests/test_t17c_qianxi.py::test_qianxi_decline_has_no_judgment_or_limit",
+      "tests/test_t17c_qianxi.py::test_qianxi_physical_response_filters_but_discard_is_legal",
+      "tests/test_t17c_qianxi.py::test_qianxi_ordinary_use_rejected_before_consuming_card",
+      "tests/test_t17c_qianxi.py::test_qianxi_mixed_spear_pair_is_legal_red_pair_is_rejected_restore",
+      "tests/test_t17c_qianxi.py::test_qianxi_all_banned_spear_does_not_offer_activation",
+      "tests/test_t17c_qianxi.py::test_qianxi_equipment_and_mixed_zone_materials_are_unrestricted",
+      "tests/test_t17c_qianxi.py::test_qianxi_effective_hongyan_and_source_death_expiration",
+      "tests/test_t17c_qianxi.py::test_qianxi_real_source_death_removes_mark_and_limit",
+      "tests/test_t17c_qianxi.py::test_qianxi_owner_turn_end_clears_limit_and_mark",
+      "tests/test_t17c_qianxi.py::test_qianxi_single_view_as_filtered_and_equipment_jijiu_remains",
+      "tests/test_t18a11_judgment.py::test_qianxi_forbidden_hand_material_is_not_a_retrial_candidate",
+      "tests/test_t18a11_judgment.py::test_qianxi_does_not_prohibit_black_equipment_guidao_material",
+      "tests/test_t18a11_luanji.py::test_luanji_cannot_bypass_ordinary_trick_use_restrictions",
+      "tests/test_t18a11_qice.py::test_qice_unavailable_conditions_do_not_pay_materials",
+      "tests/test_t18a11_view_as_system.py::test_view_as_cannot_use_qianxi_forbidden_hand_color",
+      "tests/test_t18a11_view_as_system.py::test_lianhuan_qianxi_banned_color_still_allows_only_recast"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_bu_lianshi",
+    "skill_id": "anxu",
+    "result": "PASS",
+    "locked_clause": "每个出牌阶段一次。选择手牌数量不同的两名其他角色，让牌少者取得牌多者一张手牌并公开；若不是黑桃，你摸一张。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 每个出牌阶段一次。选择手牌数量不同的两名其他角色，让牌少者取得牌多者一张手牌并公开；若不是黑桃，你摸一张。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2012.py",
+    "behavior_evidence": [
+      "tests/test_t17c_first_batch.py::test_anxu_lower_chooses_private_card_then_public_reveal",
+      "tests/test_t17c_first_batch.py::test_anxu_no_unequal_hands_negative",
+      "tests/test_t17c_first_batch.py::test_anxu_ai_hidden_hand_definition_invariance",
+      "tests/test_t17c_request_privacy.py::test_anxu_hidden_choice_labels_never_include_physical_ids"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_cheng_pu",
+    "skill_id": "lihuo",
+    "result": "PASS",
+    "locked_clause": "可把普通杀改为火杀；这次杀造成过伤害时，全部结算后失去1点体力。你使用火杀可多指定一名目标。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 可把普通杀改为火杀；这次杀造成过伤害时，全部结算后失去1点体力。你使用火杀可多指定一名目标。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/yj2012.py",
+    "behavior_evidence": [
+      "tests/test_t17c_chengpu.py::test_lihuo_real_fire_damage_and_single_hp_cost_restore",
+      "tests/test_t17c_chengpu.py::test_lihuo_multiple_targets_and_chain_pay_hp_only_once",
+      "tests/test_t17c_chengpu.py::test_lihuo_hp_loss_can_dying_after_card_finishes",
+      "tests/test_t17c_xiansi.py::test_xiansi_extra_target_uses_modifier_without_halberd_or_lihuo_bonus"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_cheng_pu",
+    "skill_id": "chunlao",
+    "result": "PASS",
+    "locked_clause": "结束阶段没有醇时，可把手牌中的任意数量杀存为醇。角色濒死时，可消耗一张醇让其视为使用酒自救。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 结束阶段没有醇时，可把手牌中的任意数量杀存为醇。角色濒死时，可消耗一张醇让其视为使用酒自救。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/dying.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t17c_chengpu.py::test_chunlao_finish_store_multiple_slash_and_nonempty_no_refill",
+      "tests/test_t17c_chengpu.py::test_chunlao_saves_other_via_their_wine_without_jiuyuan_double_bonus"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_han_dang",
+    "skill_id": "gongqi",
+    "result": "PASS",
+    "locked_clause": "每个出牌阶段一次。弃一张手牌或装备，本回合攻击范围无限；弃的是装备牌时，还可弃置别人一张牌。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 每个出牌阶段一次。弃一张手牌或装备，本回合攻击范围无限；弃的是装备牌时，还可弃置别人一张牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2012.py",
+    "behavior_evidence": [
+      "tests/test_t17c_first_batch.py::test_gongqi_discard_weapon_range_and_optional_target_private_choice",
+      "tests/test_t17c_first_batch.py::test_gongqi_nonequipment_no_second_discard_and_once"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_han_dang",
+    "skill_id": "jiefan",
+    "result": "PASS",
+    "locked_clause": "每局一次，在出牌阶段选一人。攻击范围覆盖此人的角色依次选择：弃一张武器牌，或让此人摸一张。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 每局一次，在出牌阶段选一人。攻击范围覆盖此人的角色依次选择：弃一张武器牌，或让此人摸一张。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2012.py",
+    "behavior_evidence": [
+      "tests/test_t17c_first_batch.py::test_jiefan_snapshot_payer_order_discard_or_draw_limited"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_liu_biao",
+    "skill_id": "zishou",
+    "result": "PASS",
+    "locked_clause": "摸牌阶段可多摸现存势力数的牌。选择多摸后，本回合出牌阶段使用牌的目标限于自己。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 摸牌阶段可多摸现存势力数的牌。选择多摸后，本回合出牌阶段使用牌的目标限于自己。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/deck.py",
+    "behavior_evidence": [
+      "tests/test_t17c_first_batch.py::test_zishou_draw_and_target_filter",
+      "tests/test_t17c_first_batch.py::test_zishou_global_tricks_rejected_and_self_exnihilo_allowed",
+      "tests/test_t18a11_luanji.py::test_luanji_cannot_bypass_ordinary_trick_use_restrictions"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_liu_biao",
+    "skill_id": "zongshi",
+    "result": "PASS",
+    "locked_clause": "锁定：你的手牌上限增加现存势力数。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Code-only modifier closure: DiscardPhaseBody adds factions(state,skills), whose set contains only living effective kingdoms; recomputed each discard phase. Shared hand-limit/phase/snapshot evidence applies.",
+    "implementation": "src/sanguosha/engine/discard.py",
+    "behavior_evidence": [
+      "tests/test_t17c_jianyong_zongshi.py::test_zongshi_each_pindian_side_win_loss_tie_before_discard_restore",
+      "tests/test_t17c_jianyong_zongshi.py::test_zongshi_decline_discards_both_and_dual_holders_prioritize_initiator",
+      "tests/test_t17c_jianyong_zongshi.py::test_zongshi_acquires_before_remaining_pindian_discard_without_luoying_claim"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2012_hua_xiong",
+    "skill_id": "shiyong",
+    "result": "PASS",
+    "locked_clause": "锁定：红色杀或带酒加成的杀每次对你造成伤害后，你的体力上限减1。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 锁定：红色杀或带酒加成的杀每次对你造成伤害后，你的体力上限减1。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2012.py",
+    "behavior_evidence": [
+      "tests/test_t17c_first_batch.py::test_shiyong_red_or_wine_once",
+      "tests/test_t17c_first_batch.py::test_shiyong_virtual_uses_virtual_definition_and_color",
+      "tests/test_t17c_first_batch.py::test_shiyong_chain_retains_slash_and_wine_provenance"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_cao_chong",
+    "skill_id": "chengxiang",
+    "result": "PASS",
+    "locked_clause": "受伤后可展示牌堆顶四张，取得其中点数总和不超过13的至少一张，剩余牌弃置。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 受伤后可展示牌堆顶四张，取得其中点数总和不超过13的至少一张，剩余牌弃置。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2013.py",
+    "behavior_evidence": [
+      "tests/test_t17c_caochong.py::test_chengxiang_reveal_budget_nonempty_and_restore",
+      "tests/test_t17c_caochong.py::test_chengxiang_one_offer_for_multi_point_damage_decline",
+      "tests/test_t17c_caochong.py::test_chengxiang_can_finish_after_first_pick",
+      "tests/test_t17c_request_privacy.py::test_chengxiang_public_candidates_have_rank_labels_and_restore"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_cao_chong",
+    "skill_id": "renxin",
+    "result": "PASS",
+    "locked_clause": "另一名体力为1的角色将受伤时，可翻面并弃一张装备牌，取消这次伤害。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 另一名体力为1的角色将受伤时，可翻面并弃一张装备牌，取消这次伤害。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py",
+    "behavior_evidence": [
+      "tests/test_t17c_caochong.py::test_renxin_other_one_hp_equipment_cost_turnover_prevents_all_damage",
+      "tests/test_t17c_caochong.py::test_renxin_only_other_exact_one_hp"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_guo_huai",
+    "skill_id": "jingce",
+    "result": "PASS",
+    "locked_clause": "出牌阶段结束时，本回合用牌数量达到当前体力值，可摸两张。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 出牌阶段结束时，本回合用牌数量达到当前体力值，可摸两张。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/phases.py",
+    "behavior_evidence": [
+      "tests/test_t17c_jingce.py::test_jingce_end_play_threshold_and_restore",
+      "tests/test_t18a11_recast.py::test_recast_does_not_count_for_jingce_or_consume_qiaoshui_success",
+      "tests/test_t18a11_release.py::test_jingce_never_starts_a_new_phase_end_request_after_lord_death"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_man_chong",
+    "skill_id": "junxing",
+    "result": "PASS",
+    "locked_clause": "每个出牌阶段一次。弃任意数量手牌，让另一人弃一张类型与这些牌均不同的手牌；不弃则翻面，并摸与你弃牌数量相同的牌。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 每个出牌阶段一次。弃任意数量手牌，让另一人弃一张类型与这些牌均不同的手牌；不弃则翻面，并摸与你弃牌数量相同的牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2013.py",
+    "behavior_evidence": [
+      "tests/test_t17c_manchong.py::test_junxing_different_type_or_flip_draw_restore",
+      "tests/test_t17c_manchong.py::test_junxing_all_three_types_force_flip_delayed_counts_as_trick"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_man_chong",
+    "skill_id": "yuce",
+    "result": "PASS",
+    "locked_clause": "受伤后可展示一张手牌。伤害来源若不弃一张类型不同的手牌，你回复1点体力。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 受伤后可展示一张手牌。伤害来源若不弃一张类型不同的手牌，你回复1点体力。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2013.py",
+    "behavior_evidence": [
+      "tests/test_t17c_manchong.py::test_yuce_damage_reveal_source_private_type_difference",
+      "tests/test_t17c_manchong.py::test_yuce_no_source_still_recover_and_empty_hand_no_offer"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_guan_ping",
+    "skill_id": "longyin",
+    "result": "PASS",
+    "locked_clause": "角色在出牌阶段使用杀时，可弃一张牌取消这次杀的次数计数；若杀为红色，你再摸一张。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 角色在出牌阶段使用杀时，可弃一张牌取消这次杀的次数计数；若杀为红色，你再摸一张。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2013.py",
+    "behavior_evidence": [
+      "tests/test_t17c_longyin.py::test_longyin_real_slash_quota_cost_color_and_restore",
+      "tests/test_t17c_longyin.py::test_two_longyin_owners_remove_only_this_slash_not_previous_count",
+      "tests/test_t17c_longyin.py::test_spear_virtual_color_and_longyin_event"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_jian_yong",
+    "skill_id": "qiaoshui",
+    "result": "PASS",
+    "locked_clause": "出牌阶段开始可与别人拼点。赢后，本回合下一张基本牌或非延时锦囊可加一人（忽略距离），或在至少两目标时减一人；未赢则本回合禁用锦囊。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 出牌阶段开始可与别人拼点。赢后，本回合下一张基本牌或非延时锦囊可加一人（忽略距离），或在至少两目标时减一人；未赢则本回合禁用锦囊。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/phases.py",
+    "behavior_evidence": [
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_add_slash_without_distance_reconnect_and_quota",
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_fixed_self_cards_extra_target",
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_remove_aoe_target",
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_cancel_consumes_next_card_and_equipment_does_not",
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_pindian_success_or_turn_trick_lock",
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_decline_no_hand_and_prohibited_extra_targets",
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_phase_hook_and_turn_scoped_cleanup",
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_jizhi_uses_adjusted_targets_and_preserves_draw_child",
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_extra_wine_expires_at_current_turn_end",
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_response_uses_consume_success_but_regular_responses_do_not",
+      "tests/test_t17c_qiaoshui.py::test_qiaoshui_beneficial_extra_target_ai_uses_public_friend_attitude",
+      "tests/test_t18a11_aoe.py::test_qice_qiaoshui_extra_target_weimu_checks_combined_virtual_color",
+      "tests/test_t18a11_luanji.py::test_luanji_cannot_bypass_ordinary_trick_use_restrictions",
+      "tests/test_t18a11_qice.py::test_qice_unavailable_conditions_do_not_pay_materials",
+      "tests/test_t18a11_recast.py::test_recast_does_not_count_for_jingce_or_consume_qiaoshui_success",
+      "tests/test_t18a11_recast.py::test_use_prohibition_does_not_forbid_recast_but_still_forbids_targets",
+      "tests/test_t18a11_view_as_system.py::test_view_as_trick_cannot_bypass_qiaoshui_lock"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_liu_feng",
+    "skill_id": "xiansi",
+    "result": "PASS",
+    "locked_clause": "准备阶段可从一至两名角色处各取一张手牌或装备，存为公开的逆。其他角色可消耗两张逆，对你使用一张遵守距离及次数规则的杀。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 准备阶段可从一至两名角色处各取一张手牌或装备，存为公开的逆。其他角色可消耗两张逆，对你使用一张遵守距离及次数规则的杀。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py; src/sanguosha/engine/yj2013.py",
+    "behavior_evidence": [
+      "tests/test_t17c_xiansi.py::test_xiansi_preparation_includes_self_and_public_counter_faces_restore",
+      "tests/test_t17c_xiansi.py::test_xiansi_materialless_slash_wine_and_shared_quota_restore",
+      "tests/test_t17c_xiansi.py::test_xiansi_negative_preflight_preserves_counter_and_stack",
+      "tests/test_t17c_xiansi.py::test_xiansi_extra_target_uses_modifier_without_halberd_or_lihuo_bonus"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_pan_zhang_ma_zhong",
+    "skill_id": "duodao",
+    "result": "PASS",
+    "locked_clause": "被杀造成伤害后，可弃一张牌，取得伤害来源当前装备的武器。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 被杀造成伤害后，可弃一张牌，取得伤害来源当前装备的武器。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2013.py",
+    "behavior_evidence": [
+      "tests/test_t17c_duodao.py::test_duodao_after_slash_cost_and_weapon_obtain_restore",
+      "tests/test_t17c_duodao.py::test_duodao_non_slash_no_offer_and_no_weapon_optional_decline",
+      "tests/test_t17c_duodao.py::test_duodao_may_pay_cost_without_source_weapon"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_yu_fan",
+    "skill_id": "zongxuan",
+    "result": "FIXED",
+    "locked_clause": "自己的手牌或装备因弃置离场时，可选其中任意有序子集置顶；最后选择的牌位于牌堆最上方。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 自己的手牌或装备因弃置离场时，可选其中任意有序子集置顶；最后选择的牌位于牌堆最上方。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_equipment.py; src/sanguosha/engine/zongxuan.py",
+    "behavior_evidence": [
+      "tests/test_t17c_zongxuan.py::test_zongxuan_ordered_subset_before_discard_and_reconnect",
+      "tests/test_t17c_zongxuan.py::test_zongxuan_precedes_luoying_and_selected_card_cannot_be_taken",
+      "tests/test_t17c_zongxuan.py::test_zongxuan_only_discard_reason",
+      "tests/test_t17c_zongxuan.py::test_zongxuan_equipment_loss_recovery_after_top_placement",
+      "tests/test_t17c_zongxuan.py::test_zongxuan_private_reservation_faces_and_desktop_click_order",
+      "tests/test_t18a11_card_move_system.py::test_zongxuan_reserved_equipment_does_not_publish_duplicate_departure_trigger",
+      "tests/test_t18a11_card_move_system.py::test_zongxuan_equipment_departure_is_once_for_top_or_discard"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_yu_fan",
+    "skill_id": "zhiyan",
+    "result": "PASS",
+    "locked_clause": "结束阶段可让一人摸一张并公开。若是装备，其回复1点体力并使用这件装备。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 结束阶段可让一人摸一张并公开。若是装备，其回复1点体力并使用这件装备。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t17c_mieji_zhiyan.py::test_zhiyan_finish_draw_reveal_recover_and_use_outside_play_restore",
+      "tests/test_t17c_mieji_zhiyan.py::test_zhiyan_qianxi_recovers_but_cannot_use_prohibited_equipment",
+      "tests/test_t17c_mieji_zhiyan.py::test_zhiyan_equipment_replacement_uses_existing_silver_lion_reaction"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_zhu_ran",
+    "skill_id": "danshou",
+    "result": "PASS",
+    "locked_clause": "本出牌阶段第N次发动须弃N张牌，选攻击范围内一人：N为1弃其一张牌，2令其交一张牌，3造成1点伤害，4或更多则双方各摸两张。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 本出牌阶段第N次发动须弃N张牌，选攻击范围内一人：N为1弃其一张牌，2令其交一张牌，3造成1点伤害，4或更多则双方各摸两张。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2013.py",
+    "behavior_evidence": [
+      "tests/test_t17c_danshou_fencheng.py::test_danshou_exact_cost_all_branches_restore",
+      "tests/test_t17c_danshou_fencheng.py::test_danshou_new_play_phase_resets_count",
+      "tests/test_t17c_danshou_fencheng.py::test_danshou_equipment_cost_removes_its_range_before_target_choice",
+      "tests/test_t17c_danshou_fencheng.py::test_danshou_never_offers_cost_that_removes_only_reachable_target"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_fu_huanghou",
+    "skill_id": "zhuikong",
+    "result": "PASS",
+    "locked_clause": "别人回合开始、你受伤且双方有手牌时，可拼点。赢则其本回合普通牌只能指定自己；未赢则其到你的距离固定为1，直到回合结束。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 别人回合开始、你受伤且双方有手牌时，可拼点。赢则其本回合普通牌只能指定自己；未赢则其到你的距离固定为1，直到回合结束。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/turns.py",
+    "behavior_evidence": [
+      "tests/test_t17c_fuhuanghou.py::test_zhuikong_win_self_only_or_loss_directional_distance_restore",
+      "tests/test_t17c_fuhuanghou.py::test_zhuikong_optional_conditions",
+      "tests/test_t17c_fuhuanghou.py::test_zhuikong_turn_hook_restriction_and_turn_end_cleanup",
+      "tests/test_t18a11_luanji.py::test_luanji_cannot_bypass_ordinary_trick_use_restrictions"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_fu_huanghou",
+    "skill_id": "qiuyuan",
+    "result": "PASS",
+    "locked_clause": "成为杀目标时，可向另一名非使用者索要闪；对方不交则追加为同一张杀的目标，忽略距离并保留禁止条件。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 成为杀目标时，可向另一名非使用者索要闪；对方不交则追加为同一张杀的目标，忽略距离并保留禁止条件。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/yj2013.py",
+    "behavior_evidence": [
+      "tests/test_t17c_fuhuanghou.py::test_qiuyuan_gift_is_not_response_and_can_be_used_by_owner",
+      "tests/test_t17c_fuhuanghou.py::test_qiuyuan_empty_hand_extra_target_ignores_distance_and_restores",
+      "tests/test_t17c_fuhuanghou.py::test_qiuyuan_declined_gift_and_repeat_target_does_not_loop",
+      "tests/test_t17c_fuhuanghou.py::test_qiuyuan_kongcheng_prohibition_and_decline",
+      "tests/test_t17c_fuhuanghou.py::test_qiuyuan_virtual_dodge_transfers_subcards_without_response",
+      "tests/test_t17c_fuhuanghou.py::test_qiuyuan_virtual_use_room_combat_dynamic_target_projection"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_li_ru",
+    "skill_id": "juece",
+    "result": "PASS",
+    "locked_clause": "结束阶段可对一名没有手牌的角色造成1点伤害。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 结束阶段可对一名没有手牌的角色造成1点伤害。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t17c_juece.py::test_juece_finish_only_empty_other_targets_and_restore",
+      "tests/test_t17c_juece.py::test_juece_no_empty_target_no_request"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_li_ru",
+    "skill_id": "mieji",
+    "result": "PASS",
+    "locked_clause": "每个出牌阶段一次。把一张黑色锦囊手牌置顶，选择有手牌的其他角色；其须弃一张锦囊，或两张非锦囊牌。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 每个出牌阶段一次。把一张黑色锦囊手牌置顶，选择有手牌的其他角色；其须弃一张锦囊，或两张非锦囊牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2013.py",
+    "behavior_evidence": [
+      "tests/test_t17c_mieji_zhiyan.py::test_mieji_top_cost_and_exact_category_combinations_restore",
+      "tests/test_t17c_mieji_zhiyan.py::test_mieji_only_one_nontrick_discards_available_card"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "yj2013_li_ru",
+    "skill_id": "fencheng",
+    "result": "PASS",
+    "locked_clause": "每局一次，在出牌阶段发动。其他角色按座次弃牌或承受2点火伤；首人至少弃1张，之后的最低数量为上一人实际弃牌数加1，不弃则重置为1。",
+    "source_profile": "src/package/yjcm2013.cpp",
+    "review": "Locked clause: 每局一次，在出牌阶段发动。其他角色按座次弃牌或承受2点火伤；首人至少弃1张，之后的最低数量为上一人实际弃牌数加1，不弃则重置为1。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2013.py",
+    "behavior_evidence": [
+      "tests/test_t17c_danshou_fencheng.py::test_fencheng_actual_discard_count_then_damage_resets_threshold_restore",
+      "tests/test_t17c_danshou_fencheng.py::test_fencheng_partial_below_threshold_is_rejected_and_timeout_declines",
+      "tests/test_t17c_danshou_fencheng.py::test_fencheng_chain_can_kill_source_but_remaining_seats_still_resolve"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "shadow_god_liubei",
+    "skill_id": "longnu",
+    "result": "PASS",
+    "locked_clause": "锁定，出牌阶段开始交替执行：先失去1点体力并摸一张，本阶段红色手牌变为不限距离的火杀；下次体力上限减1并摸一张，本阶段锦囊手牌变为雷杀，雷杀不限次数。",
+    "source_profile": "Noname frozen extra/skill.js classic drlt / locked catalogue mappings",
+    "review": "Locked clause: 锁定，出牌阶段开始交替执行：先失去1点体力并摸一张，本阶段红色手牌变为不限距离的火杀；下次体力上限减1并摸一张，本阶段锦囊手牌变为雷杀，雷杀不限次数。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/card_use.py; src/sanguosha/engine/longnu.py; src/sanguosha/engine/phases.py",
+    "behavior_evidence": [
+      "tests/test_t17c_longnu.py::test_longnu_alternates_actual_hp_and_maxhp_cost_and_clears_each_play_restore",
+      "tests/test_t17c_longnu.py::test_longnu_red_hand_forced_fire_slash_distant_target_and_projection",
+      "tests/test_t17c_longnu.py::test_longnu_black_slash_keeps_distance_and_red_fire_keeps_quota",
+      "tests/test_t17c_longnu.py::test_longnu_tricks_and_printed_thunder_unlimited_but_keep_distance_and_normal_quota",
+      "tests/test_t17c_longnu.py::test_longnu_physical_response_identity_uses_same_conversion_restore",
+      "tests/test_t17c_longnu.py::test_longnu_converted_trick_does_not_trigger_jizhi_or_wumou",
+      "tests/test_t17c_longnu.py::test_longnu_converted_slash_respects_qianxi_and_skill_suppression",
+      "tests/test_t17c_longnu.py::test_longnu_converted_savage_assault_is_not_acquired_by_juxiang",
+      "tests/test_t17c_longnu.py::test_longnu_converted_slash_receives_luoyi_damage_bonus"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "shadow_god_liubei",
+    "skill_id": "jieying_liubei",
+    "result": "PASS",
+    "locked_clause": "锁定：你保持横置。你存活且技能有效时，所有横置角色手牌上限增加2。结束阶段横置一名未横置的其他角色。",
+    "source_profile": "Noname frozen extra/skill.js classic drlt / locked catalogue mappings",
+    "review": "Locked clause: 锁定：你保持横置。你存活且技能有效时，所有横置角色手牌上限增加2。结束阶段横置一名未横置的其他角色。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/chaining.py; src/sanguosha/engine/remaining_gods.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/skill_leases.py",
+    "behavior_evidence": [
+      "tests/test_t17c_liubei_jieying.py::test_jieying_chain_hand_bonus_global_and_source_suppression_or_death"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "shadow_god_luxun",
+    "skill_id": "junlve",
+    "result": "PASS",
+    "locked_clause": "锁定：每造成或受到1点伤害，增加一枚军略。",
+    "source_profile": "Noname frozen extra/skill.js classic drlt / locked catalogue mappings",
+    "review": "Locked clause: 锁定：每造成或受到1点伤害，增加一枚军略。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/remaining_gods.py",
+    "behavior_evidence": [
+      "tests/test_t17c_god_luxun.py::test_junlve_counts_each_damage_point_dealt_and_received",
+      "tests/test_t17c_god_luxun.py::test_junlve_self_damage_has_both_damage_roles",
+      "tests/test_t17c_god_luxun.py::test_cuike_odd_seven_damage_creates_eighth_mark_then_optional_burst",
+      "tests/test_t17c_god_luxun.py::test_zhanhuo_all_equipment_departures_before_fire_then_fresh_junlve",
+      "tests/test_t17c_god_luxun.py::test_zhanhuo_without_mark_or_chain_not_available",
+      "tests/test_t18a11_release.py::test_cuike_killing_lord_does_not_offer_burst_after_victory"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "shadow_god_luxun",
+    "skill_id": "cuike",
+    "result": "PASS",
+    "locked_clause": "出牌阶段开始，军略为奇数可对一人造成1点伤害；为偶数可横置一人并弃其区域一张牌。处理后军略超过七枚，还可清空标记，对所有其他角色各造成1点伤害。",
+    "source_profile": "Noname frozen extra/skill.js classic drlt / locked catalogue mappings",
+    "review": "Locked clause: 出牌阶段开始，军略为奇数可对一人造成1点伤害；为偶数可横置一人并弃其区域一张牌。处理后军略超过七枚，还可清空标记，对所有其他角色各造成1点伤害。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/phases.py",
+    "behavior_evidence": [
+      "tests/test_t17c_god_luxun.py::test_cuike_odd_seven_damage_creates_eighth_mark_then_optional_burst",
+      "tests/test_t17c_god_luxun.py::test_cuike_even_can_chain_empty_target",
+      "tests/test_t17c_god_luxun.py::test_cuike_even_discards_judgment_region_card_restore",
+      "tests/test_t18a11_release.py::test_cuike_killing_lord_does_not_offer_burst_after_victory"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "shadow_god_luxun",
+    "skill_id": "zhanhuo",
+    "result": "PASS",
+    "locked_clause": "每局一次，在出牌阶段清空军略，选不超过消耗数量的横置角色，弃其全部装备，再对其中一人造成1点火伤。",
+    "source_profile": "Noname frozen extra/skill.js classic drlt / locked catalogue mappings",
+    "review": "Locked clause: 每局一次，在出牌阶段清空军略，选不超过消耗数量的横置角色，弃其全部装备，再对其中一人造成1点火伤。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/remaining_gods.py",
+    "behavior_evidence": [
+      "tests/test_t17c_god_luxun.py::test_zhanhuo_all_equipment_departures_before_fire_then_fresh_junlve",
+      "tests/test_t17c_god_luxun.py::test_zhanhuo_without_mark_or_chain_not_available"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "thunder_god_ganning",
+    "skill_id": "poxi",
+    "result": "PASS",
+    "locked_clause": "每个出牌阶段一次。查看另一人手牌，可从双方手牌弃四张各不相同花色的牌。你自己弃0张则体力上限减1；1张则结束出牌且本回合手牌上限减1；2张无额外效果；3张回复1点；4张摸四张。",
+    "source_profile": "Noname frozen extra/skill.js classic drlt / locked catalogue mappings",
+    "review": "Locked clause: 每个出牌阶段一次。查看另一人手牌，可从双方手牌弃四张各不相同花色的牌。你自己弃0张则体力上限减1；1张则结束出牌且本回合手牌上限减1；2张无额外效果；3张回复1点；4张摸四张。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/private_hands.py; src/sanguosha/engine/remaining_gods.py",
+    "behavior_evidence": [
+      "tests/test_t17c_desktop_choices.py::test_desktop_poxi_private_faces_and_exact_suit_confirm_validation",
+      "tests/test_t17c_poxi.py::test_poxi_four_suits_each_own_card_count_result_restore",
+      "tests/test_t17c_poxi.py::test_poxi_authorized_viewer_only_and_wire_uses_visible_faces",
+      "tests/test_t17c_poxi.py::test_poxi_rejects_partial_and_duplicate_suit_selection",
+      "tests/test_t17c_poxi.py::test_poxi_one_own_card_ends_real_play_and_reduces_hand_limit",
+      "tests/test_t17c_poxi.py::test_poxi_reveal_does_not_survive_skill_suppression_or_actor_death"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "thunder_god_ganning",
+    "skill_id": "jieying_ganning",
+    "result": "PASS",
+    "locked_clause": "回合开始没有营时，你取得营；结束阶段可交给另一人。有营者多摸一张，出牌阶段杀上限及手牌上限各加1。其他持营者回合结束，营移除，你取得其全部手牌。",
+    "source_profile": "Noname frozen extra/skill.js classic drlt / locked catalogue mappings",
+    "review": "Locked clause: 回合开始没有营时，你取得营；结束阶段可交给另一人。有营者多摸一张，出牌阶段杀上限及手牌上限各加1。其他持营者回合结束，营移除，你取得其全部手牌。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/remaining_gods.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t17c_camp.py::test_camp_source_skill_disabled_no_bonuses_and_no_hand_acquisition"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "thunder_god_zhangliao",
+    "skill_id": "duorui",
+    "result": "FIXED",
+    "locked_clause": "出牌阶段对别人造成伤害后，可废除一个尚可用的装备栏，暂取其一项普通技能并令其失效。全栏已废时无需再废栏。效果到其下次回合结束或死亡；归还前不能再次夺锐。限定、觉醒、主公及特殊技能不能借取。",
+    "source_profile": "Noname frozen extra/skill.js classic drlt / locked catalogue mappings",
+    "review": "Ordinary native eligibility, four-slot cost/departure, one outstanding lease, target turn-end/death expiry, borrower death retaining suppression, exact source removal, restored native/earlier grant. kuangbao maps to archive baonu unique and is ineligible; dawu suppression uses its own effective permission.",
+    "implementation": "src/sanguosha/engine/zhangliao.py",
+    "behavior_evidence": [
+      "tests/test_t17c_zhangliao.py::test_duorui_actual_slot_borrow_suppression_and_exact_target_turn_end_restore",
+      "tests/test_t17c_zhangliao.py::test_duorui_cannot_repeat_while_lease_active_and_all_slots_abolished_skips_cost",
+      "tests/test_t17c_zhangliao.py::test_duorui_abolished_equipment_uses_loss_pipeline_and_cannot_equip_again",
+      "tests/test_t17c_zhangliao.py::test_duorui_target_death_expires_lease_without_erasing_permanent_suppression",
+      "tests/test_t17c_zhangliao.py::test_duorui_borrower_death_removes_grant_but_target_suppression_lasts_to_target_end",
+      "tests/test_t17c_zhangliao.py::test_duorui_grant_sources_coexist_with_earlier_and_fuhun_grants",
+      "tests/test_t17c_zhangliao.py::test_duorui_eligible_native_skills_excludes_lord_awakening_limited_special_and_grants",
+      "tests/test_t18a11_equipment_distance.py::test_duorui_each_slot_actual_abolish_restore_and_public_geometry",
+      "tests/test_t18a11_final_audit.py::test_duorui_cannot_borrow_unique_kuangbao",
+      "tests/test_t18a11_final_audit.py::test_duorui_dawu_suppression_removes_fog_offer_but_preserves_wind",
+      "tests/test_t18b_desktop_acceptance.py::test_borrowed_skill_bar_available_and_disabled_native_status"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "thunder_god_zhangliao",
+    "skill_id": "zhiti",
+    "result": "PASS",
+    "locked_clause": "锁定：攻击范围内受伤的其他角色手牌上限减1。与范围内受伤角色拼点或决斗获胜，或被其造成伤害后，恢复一个已废除的装备栏。",
+    "source_profile": "Noname frozen extra/skill.js classic drlt / locked catalogue mappings",
+    "review": "Living/wounded opponent within actual weapon and directed distance; receiver damage, strict Pindian winner and Duel actual winner independently qualify; ties do not. Restore slot after prior cost/departure reactions; hand penalty applies once per qualifying living source.",
+    "implementation": "src/sanguosha/engine/remaining_gods.py; src/sanguosha/engine/zhangliao.py",
+    "behavior_evidence": [
+      "tests/test_t17c_zhangliao.py::test_zhiti_received_damage_restores_only_for_wounded_source_in_actual_range",
+      "tests/test_t17c_zhangliao.py::test_zhiti_pindian_victory_restores_one_slot_and_tie_does_not",
+      "tests/test_t17c_zhangliao.py::test_zhiti_duel_victory_both_sides_uses_result_after_response_not_any_damage",
+      "tests/test_t17c_zhangliao.py::test_zhiti_hand_penalty_uses_weapon_range_and_projection_exposes_abolished_slots"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "动态授予/附属",
+    "skill_id": "jixi",
+    "result": "PASS",
+    "locked_clause": "你可以将一张田当【顺手牵羊】使用。",
+    "source_profile": "src/package/mountain.cpp",
+    "review": "Locked clause: 你可以将一张田当【顺手牵羊】使用。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/skills.py",
+    "behavior_evidence": [
+      "tests/test_t13_mountain.py::test_zaoxian_awakens_once_and_grants_jixi",
+      "tests/test_t13_mountain.py::test_jixi_uses_existing_snatch_and_consumes_field_card"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  },
+  {
+    "general_id": "动态授予/附属",
+    "skill_id": "jilue",
+    "result": "FIXED",
+    "locked_clause": "你可以弃一枚忍标记，发动鬼才、放逐、集智、制衡或完杀对应效果。",
+    "source_profile": "QS-v2 frozen src/package/god.cpp (Baiyin/Jilve aliases)",
+    "review": "Spend ren once for chosen branch: Guicai/Fangzhu/Jizhi/Zhiheng/Wansha; retrial may be selected before native alternative. Independent native skills and temporary Wansha survive correct source expiry; branch usage/choice and restore retain consumption. R76: each actual retrial skill has a distinct public replacement/movement identity, preventing the frontend played-event set from suppressing the second replacement.",
+    "implementation": "src/sanguosha/engine/card_use.py; src/sanguosha/engine/gods.py; src/sanguosha/engine/judgment.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/zhangliao.py",
+    "behavior_evidence": [
+      "tests/test_t13_gods.py::test_renjie_marks_damage_and_baiyin_awakens_once",
+      "tests/test_t13_gods.py::test_jilue_zhiheng_spends_ren_and_uses_existing_handler",
+      "tests/test_t13_gods.py::test_jilue_wansha_temporary_skill",
+      "tests/test_t13_gods.py::test_jilue_guicai_spends_ren_and_replaces_judgment",
+      "tests/test_t13_gods.py::test_jilue_jizhi_spends_ren_on_trick_use",
+      "tests/test_t13_gods.py::test_jilue_fangzhu_uses_existing_turnover_action",
+      "tests/test_t18a11_final_audit.py::test_same_owner_retrial_can_choose_order_and_final_replacement",
+      "tests/test_t18a11_final_audit.py::test_native_guicai_and_jilue_retrial_public_events_have_distinct_identities"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "Confirmed rule difference only"
+  },
+  {
+    "general_id": "动态授予/附属",
+    "skill_id": "paiyi",
+    "result": "PASS",
+    "locked_clause": "每个出牌阶段一次。消耗一张权，令一名角色摸两张；其手牌随后多于你时，你对其造成1点伤害。",
+    "source_profile": "src/package/yjcm2012.cpp",
+    "review": "Locked clause: 每个出牌阶段一次。消耗一张权，令一名角色摸两张；其手牌随后多于你时，你对其造成1点伤害。 Existing independent behavior cases below establish choices/effects; shared audited material, phase, damage, death, card-place, effective-skill and snapshot rules supply the relevant common boundaries.",
+    "implementation": "src/sanguosha/engine/yj2012.py",
+    "behavior_evidence": [
+      "tests/test_t17c_first_batch.py::test_zili_threshold_one_time_and_grant",
+      "tests/test_t17c_first_batch.py::test_zili_recover_and_preparation_hook",
+      "tests/test_t17c_first_batch.py::test_paiyi_draw_then_compare_and_once"
+    ],
+    "shared_evidence": [
+      "projection.py/private_hands.py",
+      "room.py/room_snapshot.py/snapshot.py",
+      "skill_grants.py/skill_leases.py",
+      "engine.py terminal gate",
+      "prior T18A.11 shared-system reports"
+    ],
+    "new_test_reason": "No new test for correct implementation"
+  }
+]

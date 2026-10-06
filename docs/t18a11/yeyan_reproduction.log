@@ -1,0 +1,192 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+_____________ test_small_yeyan_allows_fewer_than_three_targets[1] _____________
+
+count = 1
+
+    @pytest.mark.parametrize('count', [1, 2])
+    def test_small_yeyan_allows_fewer_than_three_targets(count):
+        from sanguosha.engine.gods import YeyanAction
+        s = game()
+        s.state.players['p1'].character_id = 'fire_god_zhouyu'
+        s.engine.start_action(YeyanAction('small-yeyan', 'p1'))
+        answer(s, 'small')
+        targets = ('p3', 'p4')[:count]
+        before = {pid: s.state.players[pid].hp for pid in targets}
+>       answer(s, targets)
+
+t18a11_final\test_t18a11_final_audit.py:133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Sanguosha\tests\test_t17b_tier1.py:27: in answer
+    s.engine.submit_decision(Decision(r.request_id, r.player_id, value))
+C:\Sanguosha\src\sanguosha\engine\engine.py:69: in submit_decision
+    request.validate(decision.value)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PendingRequest(request_id='small-yeyan:small-targets', player_id='p1', request_type=<RequestType.CHOOSE_PLAYERS: 'choo..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=())
+value = ('p3',)
+
+    def validate(self, value: ChoiceValue) -> None:
+        kind = self.request_type
+        if kind is RequestType.YES_NO:
+            valid = type(value) is bool
+        elif kind is RequestType.CHOOSE_OPTION:
+            valid = type(value) is str and value in self.choices
+            if type(value) is dict and set(value) == {'option', 'targets'}:
+                option, targets = value['option'], value['targets']
+                spec = self.play_card_targets.get(option) if type(option) is str else None
+                valid = (spec is not None and type(targets) is tuple
+                         and spec[1] <= len(targets) <= spec[2]
+                         and len(targets) == len(set(targets))
+                         and all(type(target) is str and target in spec[0] for target in targets))
+        elif kind is RequestType.CHOOSE_PLAYER:
+            valid = type(value) is str and value in self.allowed_player_ids
+        elif kind is RequestType.RESPOND_WITH_CARD:
+            valid = (value is PASS_RESPONSE and self.allow_pass) or (
+                type(value) is str and value in self.eligible_card_ids
+            )
+        elif kind is RequestType.CHOOSE_CARD:
+            valid = type(value) is str and value in self.eligible_card_ids
+        elif kind is RequestType.CHOOSE_CARDS:
+            valid = (
+                type(value) is tuple
+                and self.min_count <= len(value) <= self.max_count
+                and (not value or len(value) >= self.minimum_nonempty_count)
+                and all(type(card_id) is str and card_id in self.eligible_card_ids for card_id in value)
+                and len(value) == len(set(value))
+                and all(sum(cid in group for cid in value) <= 1 for group in self.exclusive_card_groups)
+                and (not self.legal_card_sets or any(set(value) == set(cards) for cards in self.legal_card_sets))
+            )
+        elif kind is RequestType.CHOOSE_PLAYERS:
+            valid = (
+                type(value) is tuple
+                and self.min_count <= len(value) <= self.max_count
+                and all(type(player_id) is str and player_id in self.allowed_player_ids for player_id in value)
+                and len(value) == len(set(value))
+            )
+        else:
+            # Other request shapes are reserved for later rule stages.
+            raise InvalidDecision(f"request type {kind} has no T2 validator")
+        if not valid:
+>           raise InvalidDecision(f"illegal choice for {kind}: {value!r}")
+E           sanguosha.engine.errors.InvalidDecision: illegal choice for choose_players: ('p3',)
+
+C:\Sanguosha\src\sanguosha\engine\requests.py:120: InvalidDecision
+_____________ test_small_yeyan_allows_fewer_than_three_targets[2] _____________
+
+count = 2
+
+    @pytest.mark.parametrize('count', [1, 2])
+    def test_small_yeyan_allows_fewer_than_three_targets(count):
+        from sanguosha.engine.gods import YeyanAction
+        s = game()
+        s.state.players['p1'].character_id = 'fire_god_zhouyu'
+        s.engine.start_action(YeyanAction('small-yeyan', 'p1'))
+        answer(s, 'small')
+        targets = ('p3', 'p4')[:count]
+        before = {pid: s.state.players[pid].hp for pid in targets}
+>       answer(s, targets)
+
+t18a11_final\test_t18a11_final_audit.py:133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Sanguosha\tests\test_t17b_tier1.py:27: in answer
+    s.engine.submit_decision(Decision(r.request_id, r.player_id, value))
+C:\Sanguosha\src\sanguosha\engine\engine.py:69: in submit_decision
+    request.validate(decision.value)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PendingRequest(request_id='small-yeyan:small-targets', player_id='p1', request_type=<RequestType.CHOOSE_PLAYERS: 'choo..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=())
+value = ('p3', 'p4')
+
+    def validate(self, value: ChoiceValue) -> None:
+        kind = self.request_type
+        if kind is RequestType.YES_NO:
+            valid = type(value) is bool
+        elif kind is RequestType.CHOOSE_OPTION:
+            valid = type(value) is str and value in self.choices
+            if type(value) is dict and set(value) == {'option', 'targets'}:
+                option, targets = value['option'], value['targets']
+                spec = self.play_card_targets.get(option) if type(option) is str else None
+                valid = (spec is not None and type(targets) is tuple
+                         and spec[1] <= len(targets) <= spec[2]
+                         and len(targets) == len(set(targets))
+                         and all(type(target) is str and target in spec[0] for target in targets))
+        elif kind is RequestType.CHOOSE_PLAYER:
+            valid = type(value) is str and value in self.allowed_player_ids
+        elif kind is RequestType.RESPOND_WITH_CARD:
+            valid = (value is PASS_RESPONSE and self.allow_pass) or (
+                type(value) is str and value in self.eligible_card_ids
+            )
+        elif kind is RequestType.CHOOSE_CARD:
+            valid = type(value) is str and value in self.eligible_card_ids
+        elif kind is RequestType.CHOOSE_CARDS:
+            valid = (
+                type(value) is tuple
+                and self.min_count <= len(value) <= self.max_count
+                and (not value or len(value) >= self.minimum_nonempty_count)
+                and all(type(card_id) is str and card_id in self.eligible_card_ids for card_id in value)
+                and len(value) == len(set(value))
+                and all(sum(cid in group for cid in value) <= 1 for group in self.exclusive_card_groups)
+                and (not self.legal_card_sets or any(set(value) == set(cards) for cards in self.legal_card_sets))
+            )
+        elif kind is RequestType.CHOOSE_PLAYERS:
+            valid = (
+                type(value) is tuple
+                and self.min_count <= len(value) <= self.max_count
+                and all(type(player_id) is str and player_id in self.allowed_player_ids for player_id in value)
+                and len(value) == len(set(value))
+            )
+        else:
+            # Other request shapes are reserved for later rule stages.
+            raise InvalidDecision(f"request type {kind} has no T2 validator")
+        if not valid:
+>           raise InvalidDecision(f"illegal choice for {kind}: {value!r}")
+E           sanguosha.engine.errors.InvalidDecision: illegal choice for choose_players: ('p3', 'p4')
+
+C:\Sanguosha\src\sanguosha\engine\requests.py:120: InvalidDecision
+_________________________ test_yeyan_can_target_self __________________________
+
+    def test_yeyan_can_target_self():
+        from sanguosha.engine.gods import YeyanAction
+        s = game()
+        s.state.players['p1'].character_id = 'fire_god_zhouyu'
+        s.engine.start_action(YeyanAction('self-yeyan', 'p1'))
+        answer(s, 'small')
+>       assert 'p1' in s.engine.pending_request.allowed_player_ids
+E       AssertionError: assert 'p1' in ('p2', 'p3', 'p4', 'p5')
+E        +  where ('p2', 'p3', 'p4', 'p5') = PendingRequest(request_id='self-yeyan:small-targets', player_id='p1', request_type=<RequestType.CHOOSE_PLAYERS: 'choos..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()).allowed_player_ids
+E        +    where PendingRequest(request_id='self-yeyan:small-targets', player_id='p1', request_type=<RequestType.CHOOSE_PLAYERS: 'choos..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000021BA4BF7250>.pending_request
+E        +      where <sanguosha.engine.engine.GameEngine object at 0x0000021BA4BF7250> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000021BA4BF7250>, events=<sanguosha.engine.events....2B0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000021BA4B687D0>).engine
+
+t18a11_final\test_t18a11_final_audit.py:145: AssertionError
+_________ test_great_yeyan_cannot_pay_missing_suit_with_equipped_card _________
+
+    def test_great_yeyan_cannot_pay_missing_suit_with_equipped_card():
+        from dataclasses import replace
+        from test_t6_military_basics import put
+        from test_t17c_juece import empty
+        from sanguosha.engine.gods import YeyanAction
+        from sanguosha.model.enums import Suit, EquipmentSlot
+        from sanguosha.model.zones import ZoneType
+        s = game()
+        s.state.players['p1'].character_id = 'fire_god_zhouyu'
+        empty(s, 'p1')
+        for suit in (Suit.HEART, Suit.CLUB, Suit.SPADE):
+            cid = put(s, 'basic.slash', 'p1')
+            s.state.cards[cid] = replace(s.state.cards[cid], suit=suit)
+        cid = put(s, 'equipment.weapon.crossbow', 'p1', ZoneType.EQUIPMENT, EquipmentSlot.WEAPON)
+        s.state.cards[cid] = replace(s.state.cards[cid], suit=Suit.DIAMOND)
+        s.engine.start_action(YeyanAction('hand-yeyan', 'p1'))
+>       assert s.engine.pending_request.choices == ('small',)
+E       AssertionError: assert ('small', 'great') == ('small',)
+E         
+E         Left contains one more item: 'great'
+E         Use -v to get more diff
+
+t18a11_final\test_t18a11_final_audit.py:168: AssertionError
+=========================== short test summary info ===========================
+FAILED t18a11_final/test_t18a11_final_audit.py::test_small_yeyan_allows_fewer_than_three_targets[1]
+FAILED t18a11_final/test_t18a11_final_audit.py::test_small_yeyan_allows_fewer_than_three_targets[2]
+FAILED t18a11_final/test_t18a11_final_audit.py::test_yeyan_can_target_self - ...
+FAILED t18a11_final/test_t18a11_final_audit.py::test_great_yeyan_cannot_pay_missing_suit_with_equipped_card
+4 failed, 7 deselected in 0.28s
