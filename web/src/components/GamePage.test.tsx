@@ -45,6 +45,22 @@ describe('GamePage', () => {
     expect(screen.getByText('已废除 防具栏')).toBeInTheDocument()
     delete (players[1] as any).abolished_equipment_slots
   })
+  it('renders private Zongxuan cards and submits the selected top-placement order', async () => {
+    ;(players[0] as any).special_piles = {'committed:zongxuan:cost':[
+      {...card,card_id:'reserved-1'},
+      {...card,card_id:'reserved-2',name:'闪',definition_id:'basic.dodge'},
+    ]}
+    request = {request_id:'zongxuan',player_id:'p1',request_type:'choose_cards',subject_player_id:'p1',
+      prompt:'【纵玄】依次选择要置于牌堆顶的牌，最后一张在最上方（可空选）',choices:[],allowed_player_ids:[],eligible_card_ids:['reserved-1','reserved-2'],min_count:0,max_count:2,remaining_ms:60000}
+    render(<GamePage />)
+    const panel=within(screen.getByRole('dialog',{name:'纵玄'}))
+    expect(panel.getByText('待置顶牌')).toBeInTheDocument()
+    await userEvent.click(panel.getByRole('button',{name:/^闪 /}))
+    await userEvent.click(panel.getByRole('button',{name:/^杀 /}))
+    await userEvent.click(panel.getByRole('button',{name:'确定'}))
+    expect(submitDecision).toHaveBeenCalledWith('zongxuan',['reserved-2','reserved-1'])
+    delete (players[0] as any).special_piles
+  })
   it('shows public counter cards in the Xiansi modal and requires exactly two', async () => {
     ;(players[1] as any).special_piles = {counter:[
       {...card,card_id:'counter-1'},

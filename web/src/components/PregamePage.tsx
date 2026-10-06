@@ -1,4 +1,7 @@
 import { useGame } from '../state/GameContext'
+import { DynamicPortrait } from './DynamicPortrait'
+import { idlePortrait } from '../idlePortraits'
+import { readVfxQuality } from '../vfx/CombatVFXRuntime'
 import { Timer } from './Timer'
 import { skillTypeLabel } from '../labels'
 import { defaultGeneralPortrait, generalPortrait } from '../assets'
@@ -34,7 +37,7 @@ export function PregamePage() {
       </div>
       <aside className="general-detail">
         {selected ? <>
-          <img src={generalPortrait(selected.id, selected.kingdom, state.generals)} alt={selected.name} />
+          <DynamicPortrait staticPortrait={generalPortrait(selected.id, selected.kingdom, state.generals)} idleVideo={idlePortrait(selected.id)?.video} objectPosition={idlePortrait(selected.id)?.objectPosition} name={selected.name} quality={readVfxQuality()} />
           <div><h2>{selected.name}<span>{kingdomLabel[selected.kingdom]}</span></h2><p>{selected.max_hp} 体力</p>
             {selected.skills.map((skill) => <section key={skill.id}><h3>{skill.name}<em>{skillTypeLabel(skill.type)}</em></h3><p>{skill.description}</p></section>)}
           </div>

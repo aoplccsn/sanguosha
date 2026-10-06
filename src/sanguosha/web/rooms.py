@@ -7,7 +7,7 @@ import secrets
 import time
 from dataclasses import dataclass, field
 
-from sanguosha.multiplayer.room import HUMAN_DECISION_TIMEOUT_SECONDS, MultiplayerRoom, RoomPhase
+from sanguosha.multiplayer.room import HUMAN_DECISION_TIMEOUT_SECONDS, MultiplayerRoom, RoomPhase, Controller
 
 LOG = logging.getLogger(__name__)
 ROOM_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"
@@ -51,6 +51,9 @@ class RoomManager:
                     timeout_seconds=self.timeout_seconds, review_god_lvbu=review_god_lvbu,
                     mode_id=mode_id, allow_gods=allow_gods))
                 managed.game.ai_presentation = self.ai_presentation
+                # Yield between bounded batches so WebSocket senders can drain.
+                managed.game.auto_step_budget = 32
+                managed.game.suspend_on_budget = True
                 self.rooms[code] = managed
                 LOG.info("room created code=%s", code)
                 return managed
@@ -73,6 +76,12 @@ class RoomManager:
         now = time.monotonic()
         for code, managed in tuple(self.rooms.items()):
             managed.game.poll()
+            game=managed.game
+            if (game.phase is RoomPhase.IN_GAME and game.session is not None
+                    and game.ai_deadline is None and game.presentation_deadline is None):
+                request=game.session.engine.pending_request
+                if request is None or game.seats[request.player_id].controller is Controller.AI or game.request_deadline is None:
+                    game.pump()
             if managed.game.phase is RoomPhase.FINISHED and not managed.finish_logged:
                 LOG.info("game finished code=%s", code)
                 managed.finish_logged = True

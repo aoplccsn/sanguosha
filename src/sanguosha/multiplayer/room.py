@@ -439,6 +439,7 @@ class MultiplayerRoom:
             steps += 1
             if steps > max_steps:
                 if self.suspend_on_budget:
+                    self._sync()
                     return
                 raise RuntimeError("multiplayer match step limit exceeded")
             request = self.session.engine.pending_request
@@ -685,9 +686,10 @@ class MultiplayerRoom:
             return None
         frames = self.session.engine.stack.snapshot()
         root = next((f for f in reversed(frames) if isinstance(f.action, UseCardAction)), None)
-        if root is None:
+        root_id = root.action.action_id if root else next((e.event_id.removesuffix(':used') for e in reversed(self.session.events.events) if isinstance(e, CardUsedEvent) and any(f.action.action_id.startswith(e.event_id.removesuffix(':used')) for f in frames)), None)
+        if root_id is None:
             return None
-        base = self._base_action(root.action.action_id)
+        base = self._base_action(root_id)
         if base is None:
             return None
         trick = next((f for f in reversed(frames) if isinstance(f.action, TrickAction)), None)
@@ -697,13 +699,21 @@ class MultiplayerRoom:
             base['target_ids'] = str(trick.local.get('targets', '')).split('|') if trick.local.get('targets') else base['target_ids']
             base['resolved_target_ids'] = base['target_ids'][:max(0, trick.cursor - 1)]
         base['current_target_id'] = str(window.action.target_id if window else effect.action.target_id if effect else '')
+        from sanguosha.engine.military_basics import SlashSequence,MilitaryStrike
+        slash=next((f for f in reversed(frames) if isinstance(f.action,SlashSequence)),None)
+        strike=next((f for f in reversed(frames) if isinstance(f.action,MilitaryStrike)),None)
+        if slash:
+            dynamic=self.session.state.metadata.get('slash_target_windows',{}).get(slash.action.action_id,{})
+            base['target_ids']=list(dynamic.get('targets',slash.action.targets))
+            base['resolved_target_ids']=base['target_ids'][:max(0,slash.cursor-1)]
+            base['current_target_id']=str(strike.action.target_id if strike else '')
         if window:
             count = sum(isinstance(e, (CardRespondedEvent, VirtualResponseEvent)) and
                         e.source_action_id == window.action.action_id for e in self.session.events.events)
             base['nullification_count'] = count
             base['cancelled'] = bool(count % 2)
         responses = [e for e in self.session.events.events if isinstance(e, (CardRespondedEvent, VirtualResponseEvent))
-                     and e.source_action_id.startswith(root.action.action_id)]
+                     and e.source_action_id.startswith(root_id)]
         if responses:
             e = responses[-1]
             base['top_response'] = {'source_id': str(e.player_id), 'definition_id': str(e.response_definition_id)}
@@ -726,6 +736,8 @@ class MultiplayerRoom:
             if event.event_type == 'guhuo_reveal':
                 result.update(actual=str(event.metadata['actual']),
                               suit=str(event.metadata['suit']), truth=bool(event.metadata['truth']))
+        elif isinstance(event,Event) and event.event_type=='slash_target_added':
+            result.update(kind='SkillEvent',source_id=str(event.source_id),target_ids=list(map(str,event.target_ids)),skill_id='qiuyuan',skill_name='求援')
         elif isinstance(event, (CardUsedEvent, TrickTargetsDeclaredEvent)):
             result.update(source_id=str(event.player_id), target_ids=list(map(str, event.target_ids)))
             definition_id = (event.virtual_definition_id or str(self.session.state.cards[event.card_id].definition_id)

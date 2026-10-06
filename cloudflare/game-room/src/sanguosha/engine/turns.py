@@ -67,6 +67,19 @@ class TurnActionHandler:
                 frame.cursor = len(action.phases)
             frame.step_index = 1
             return StepResult.continue_()
+        if frame.step_index==1 and frame.cursor==0 and self.skills is not None:
+            from .yj2011_tier3 import hand
+            from .yj2013 import YJ2013Action
+            if 'zhuikong_owners' not in frame.local:
+                start=state.seat_order.index(action.player_id);order=state.seat_order[start:]+state.seat_order[:start]
+                frame.local['zhuikong_owners']=tuple(q for q in order if q!=action.player_id and state.players[q].is_alive and self.skills.has(state,q,'zhuikong'))
+                frame.local['zhuikong_cursor']=0
+            owners=frame.local['zhuikong_owners'];index=frame.local['zhuikong_cursor']
+            if index<len(owners):
+                frame.local['zhuikong_cursor']=index+1;owner=owners[index]
+                if state.players[owner].is_alive and state.players[owner].hp<state.players[owner].max_hp and hand(state,owner) and hand(state,action.player_id):
+                    return StepResult.push(YJ2013Action(action.action_id+':zhuikong:'+owner,owner,'zhuikong',action.player_id))
+                return StepResult.continue_()
         if (frame.step_index == 1 and frame.cursor == 0 and not frame.local.get('yj2012_dangxian')
                 and self.skills is not None and self.skills.has(state, action.player_id, 'dangxian')):
             frame.local['yj2012_dangxian'] = True
@@ -103,12 +116,18 @@ class TurnActionHandler:
                     state.players[action.player_id].marks.pop('wuwei', None)
                     for other in state.players.values():
                         other.marks.pop('wuwei_target_' + action.player_id, None)
+            wine_targets=state.metadata.get('qiaoshui_wine_targets',{})
+            for pid,effect in tuple(wine_targets.items()):
+                if effect['source']==action.player_id:
+                    state.players[pid].marks.pop('wine',None);del wine_targets[pid]
             from .card_limits import clear_source
             clear_source(state, action.player_id)
             from .fuhun import clear_grants
             clear_grants(state,action.player_id)
             from .yj2011_tier3 import clear_turn
             clear_turn(state)
+            from .fuhuanghou import clear_turn as clear_zhuikong
+            clear_zhuikong(state,action.player_id)
             from .skill_leases import expire_target
             expire_target(state,action.player_id)
             state.current_phase = None

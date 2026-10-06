@@ -71,6 +71,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
   const field = player.special_piles?.tian ?? []
   const power = player.special_piles?.quan ?? []
   const counters = player.special_piles?.counter ?? []
+  const zongxuanCards = new Set(Object.entries(player.special_piles ?? {}).filter(([key])=>key.startsWith('committed:zongxuan:')).flatMap(([,cards])=>cards.map(card=>card.card_id)))
   const committed = Object.entries(player.special_piles ?? {})
     .filter(([key]) => key.startsWith('committed:'))
     .flatMap(([, cards]) => cards)
@@ -119,7 +120,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
         {player.active_transformation && <span className="zone-token">化身 {state.generals[player.active_transformation]?.name ?? '已选择武将'}</span>}
         {!!player.transformation_pool?.length && <span className="zone-token">化身池 {player.transformation_pool.length}</span>}
         {committed.map((card) => <span key={card.card_id} className="zone-token judgment-token"
-          title={card.name + (card.suit ? ' ' + card.suit + card.rank : '')}>蛊惑 · {card.name}</span>)}
+          title={card.name + (card.suit ? ' ' + card.suit + card.rank : '')}>{zongxuanCards.has(card.card_id) ? '纵玄待选' : '蛊惑'} · {card.name}</span>)}
       </div>
       <div className="mini-skills">{player.skill_labels.map((skill) => <span key={skill}>{skill}</span>)}</div>
       <div className="seat-marks">{!!player.marks && Object.entries(player.marks).filter(([, count]) => count > 0).map(([mark, count]) => <span key={mark} className="mark-badge">{markLabel(mark)} {count}</span>)}</div>
@@ -249,7 +250,7 @@ function DecisionPrompt({ request, projection, canConfirm, processing, summary, 
 }
 
 export function GeneralDetailPanel({ player, general, quality, onClose }: { player: PlayerView; general?: GeneralInfo; quality: VfxQuality; onClose(): void }) {
-  return <div className="modal-backdrop" onClick={onClose}><aside className="game-general-detail paper-panel" onClick={(event) => event.stopPropagation()}>
+  return <div className="modal-backdrop" onClick={onClose}><aside className="game-general-detail paper-panel" data-portrait-mode={idlePortrait(player.character_id) ? 'dynamic' : 'static'} onClick={(event) => event.stopPropagation()}>
     <button className="modal-close" onClick={onClose}>×</button>
     <DynamicPortrait staticPortrait={generalPortrait(player.character_id, general?.kingdom ?? ({ 魏: 'wei', 蜀: 'shu', 吴: 'wu', 群: 'qun' } as Record<string, string>)[player.faction] ?? 'qun', general ? { [general.id]: general } : {})} idleVideo={idlePortrait(player.character_id)?.video} objectPosition={idlePortrait(player.character_id)?.objectPosition} name={player.character_name} quality={quality} />
     <div><p className="eyebrow">武将详情</p><h2>{player.character_name}<span>{player.faction}</span></h2><p>{player.hp} / {player.max_hp} 体力 · {player.identity_label}</p>
@@ -332,6 +333,24 @@ export function GamePage() {
   const selectedCards = activeSelection.cards
   const selectedTargets = activeSelection.targets
   const selectedOption = activeSelection.option
+  const selectionStorageKey = state.roomCode && state.seatId ? `sanguosha.selection.v1:${state.roomCode}:${state.seatId}` : ''
+  const attemptedSelectionRestore = useRef(false)
+  useEffect(() => {
+    if (!request || !selectionStorageKey || attemptedSelectionRestore.current) return
+    attemptedSelectionRestore.current = true
+    try {
+      const raw = sessionStorage.getItem(selectionStorageKey)
+      if (!raw) return
+      const saved = JSON.parse(raw)
+      if (saved.requestId !== request.request_id) { sessionStorage.removeItem(selectionStorageKey); return }
+      const option = typeof saved.option === 'string' && (request.choices.includes(saved.option) || request.eligible_card_ids.includes(saved.option)) ? saved.option : ''
+      const targets = request.play_card_targets?.[option]?.targets ?? request.allowed_player_ids
+      setSelection({requestId:selectionKey,option,
+        cards:Array.isArray(saved.cards) ? [...new Set<string>(saved.cards.filter((id:unknown)=>typeof id==='string' && request.eligible_card_ids.includes(id)))].slice(0,request.max_count || 1) : [],
+        targets:Array.isArray(saved.targets) ? [...new Set<string>(saved.targets.filter((id:unknown)=>typeof id==='string' && targets.includes(id)))].slice(0,request.play_card_targets?.[option]?.max ?? request.max_count ?? 1) : []})
+    } catch { /* A malformed local selection never changes the authoritative request. */ }
+  },[request,selectionKey,selectionStorageKey])
+
   const [hint, setHint] = useState('')
   useEffect(() => {
     if (!hint) return
@@ -343,7 +362,13 @@ export function GamePage() {
   const selectionKeyRef = useRef(selectionKey)
   selectionKeyRef.current = selectionKey
   function updateSelection(update: (current: typeof selection) => typeof selection) {
-    setSelection((current) => update(current.requestId === selectionKeyRef.current ? current : { requestId: selectionKeyRef.current, cards: [], targets: [], option: '' }))
+    setSelection((current) => {
+      const next = update(current.requestId === selectionKeyRef.current ? current : { requestId: selectionKeyRef.current, cards: [], targets: [], option: '' })
+      if (selectionStorageKey && request) {
+        try { sessionStorage.setItem(selectionStorageKey, JSON.stringify({...next,requestId:request.request_id})) } catch { /* Selection still works when browser storage is unavailable. */ }
+      }
+      return next
+    })
   }
   function setSelectedCards(next: string[] | ((current: string[]) => string[])) {
     updateSelection((current) => ({ ...current, cards: typeof next === 'function' ? next(current.cards) : next }))
@@ -458,11 +483,13 @@ export function GamePage() {
     if (request.request_type === 'choose_player') value = selectedTargets[0]
     if (request.request_type === 'choose_players') value = selectedTargets
     if (playTargetSpec) value = { option: selectedOption, targets: selectedTargets }
+    if (selectionStorageKey) { try { sessionStorage.removeItem(selectionStorageKey) } catch { /* Optional local selection cache. */ } }
     actions.submitDecision(request.request_id, value)
   }
   function submitImmediate(value: unknown) {
     if (!request || requestRef.current !== request.request_id || state.decisionProcessing) { setHint('当前响应已更新或正在处理'); return }
     setHint('')
+    if (selectionStorageKey) { try { sessionStorage.removeItem(selectionStorageKey) } catch { /* Optional local selection cache. */ } }
     actions.submitDecision(request.request_id, value)
   }
   const minimum = request?.min_count ?? 1

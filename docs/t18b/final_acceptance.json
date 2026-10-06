@@ -1,0 +1,60 @@
+{
+  "status": "COMPLETE",
+  "branch": "t17c-remaining-generals",
+  "baseline": "e34ae2e",
+  "final_commit_title": "T18B complete 103-general roster and presentation",
+  "roster_count": 103,
+  "yj2012": 12,
+  "yj2013": 11,
+  "new_gods": 4,
+  "new_skill_entries_including_reused_mashu": 50,
+  "new_skill_definitions": 49,
+  "ordinary_portraits": 23,
+  "new_dynamic_sets": 4,
+  "total_dynamic_sets": 13,
+  "card_art": 43,
+  "python": {
+    "passed": 1448,
+    "seconds": 409.33
+  },
+  "vitest": {
+    "passed": 92,
+    "files": 15
+  },
+  "typescript": "PASS",
+  "fresh_vite": "PASS",
+  "playwright": {
+    "new_acceptance": 11,
+    "t18a9_regression": 10
+  },
+  "pyside": {
+    "new_general_portrait_detail": 27,
+    "native_ten_general_selection_and_start": 27,
+    "borrowed_skill_bar": 1,
+    "total": 55
+  },
+  "ai": {
+    "five_player": 30,
+    "eight_player": 30,
+    "new_general_coverage": 27,
+    "projection_checks": 8723,
+    "reconnect_snapshots": 97,
+    "failures": []
+  },
+  "registry_consistency": "PASS",
+  "worker_source_mirror_files": 111,
+  "masters_unchanged": "PASS",
+  "production_http_assets": "PASS",
+  "mobile_viewports": [
+    [
+      390,
+      844
+    ],
+    [
+      430,
+      932
+    ]
+  ],
+  "deployment": "NOT_PERFORMED",
+  "remaining_blocking_issues": []
+}

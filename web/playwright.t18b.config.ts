@@ -1,0 +1,2 @@
+import { defineConfig, devices } from '@playwright/test'
+export default defineConfig({outputDir:'./test-results/t18b',testDir:'./e2e',testMatch:'t18b-acceptance.spec.ts',timeout:180000,workers:1,reporter:[['line'],['json',{outputFile:'../docs/t18b/playwright_report.json'}]],use:{baseURL:'http://127.0.0.1:8018',trace:'retain-on-failure',screenshot:'only-on-failure'},projects:[{name:'installed-edge',use:{...devices['Desktop Chrome'],channel:'msedge'}}]})

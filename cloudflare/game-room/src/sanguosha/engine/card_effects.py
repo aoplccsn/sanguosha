@@ -54,11 +54,13 @@ class PeachEffectHandler:
         action = frame.action
         assert isinstance(action, PeachEffectAction)
         if frame.step_index == 0:
-            frame.step_index = 1
-            return StepResult.push(RecoverAction(
-                f"{action.action_id}:recover", action.user_id, action.user_id, 1, action.card_id,
-            ))
-        return StepResult.complete(frame.child_result)
+            from .qiaoshui import take_targets
+            frame.local['targets']=take_targets(state,action.action_id,(action.user_id,))
+            frame.step_index=1
+        targets=frame.local['targets']
+        if frame.cursor>=len(targets):return StepResult.complete(frame.child_result)
+        target=targets[frame.cursor];frame.cursor+=1
+        return StepResult.push(RecoverAction(f"{action.action_id}:recover:{frame.cursor}",action.user_id,target,1,action.card_id))
 
 
 from .response import RespondWithCardAction  # noqa: E402

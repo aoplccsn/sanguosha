@@ -25,6 +25,19 @@ class MilitaryMoveService(CardMoveService):
         return owner, lost_last_hand, lost_equipment, silver
     def move(self,state,move):
         facts=self._departure_facts(state,move)
+        owner=move.from_zone.player_id
+        if (move.reason is CardMoveReason.DISCARD and move.to_zone.zone_type is ZoneType.DISCARD_PILE
+                and move.from_zone.zone_type in (ZoneType.HAND,ZoneType.EQUIPMENT)
+                and owner is not None and state.players[owner].is_alive
+                and self.skills is not None and self.skills.has(state,owner,'zongxuan')):
+            from dataclasses import replace
+            from .zongxuan import PendingDiscard
+            # Reserve the outgoing cards, before publishing any discard or loss reaction.
+            # The original move and departure facts resume on the ordinary reaction stack.
+            super().move(state,replace(move,move_id=move.move_id+':reserved',to_zone=ZoneRef(ZoneType.SPECIAL,owner,special_key='committed:zongxuan:'+move.move_id),reason=CardMoveReason.SYSTEM,related_action_id=None))
+            index=next((i for i,x in enumerate(self.reactions) if not isinstance(x,PendingDiscard)),len(self.reactions))
+            self.reactions.insert(index,PendingDiscard(move.move_id+':zongxuan',owner,move,facts))
+            return
         super().move(state,move)
         self._after_departure(state,move,facts)
     def _after_departure(self,state,move,facts):
@@ -45,6 +58,9 @@ class MilitaryMoveService(CardMoveService):
     def next_reaction(self,state):
         cursor = state.metadata.get('reaction_event_cursor', 0)
         new_events = self.recorder.events[cursor:]
+        from .qiaoshui import before_reactions
+        window,blocked=before_reactions(state,new_events,self.skills,getattr(self,'definitions',None))
+        if blocked:return window
         state.metadata['reaction_event_cursor'] = len(self.recorder.events)
         if self.skills is not None:
             from .events import CardUsedEvent, AfterDamageEvent
@@ -52,6 +68,10 @@ class MilitaryMoveService(CardMoveService):
             from sanguosha.model.enums import Color
             from .mountain import JiangAction, XinshengAction, BeigeAction
             for event in new_events:
+                if isinstance(event,CardUsedEvent):
+                    from dataclasses import replace
+                    targets=state.metadata.get('qiaoshui_targets',{}).get(event.event_id.removesuffix(':used'))
+                    if targets is not None:event=replace(event,target_ids=tuple(targets))
                 from .zhangliao import event_reactions as zhangliao_event_reactions
                 self.reactions.extend(zhangliao_event_reactions(state,event,self.skills,getattr(self,'definitions',None)))
                 from .yj2013 import event_reactions as yj2013_event_reactions
@@ -92,7 +112,8 @@ class MilitaryMoveService(CardMoveService):
             action=self.reactions.pop(0)
             target=(getattr(action,'target_id',None) or getattr(action,'player_id',None)
                     or getattr(action,'owner_id',None))
-            if target is not None and state.players[target].is_alive:
+            from .zongxuan import PendingDiscard
+            if isinstance(action,PendingDiscard) or target is not None and state.players[target].is_alive:
                 return action
         return None
 

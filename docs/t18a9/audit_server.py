@@ -13,7 +13,7 @@ from sanguosha.session import GameSession
 from test_t6_military_basics import put
 app = create_app(WebConfig(ai_presentation=True))
 @app.post('/audit/fixture/{case}')
-def fixture(case: str):
+async def fixture(case: str):
     interrupt=case=='harvest_interrupt'
     if interrupt: case='harvest'
     managed = app.state.room_manager.create(seed=3, mode_id='military-eight')

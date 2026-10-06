@@ -2,8 +2,8 @@
 
 Style references reviewed: current wind_zhang_jiao and fire_god_zhugeliang static portraits. Match their dense painted material detail and epic lighting, while keeping original compositions and stronger paper/ink texture. Source 1024×1536; runtime 768×1152 PNG; web 600×900 WebP. No official artwork reuse.
 
-| ID / 武将 | 核心气质 | 动作 | 镜头 | 主色 | 道具 | 环境 | 光线 | 背景事件 | 构图区别 |
-|---|---|---|---|---|---|---|---|---|---|
+| ID | 武将 | 核心气质 | 动作 | 镜头 | 主色 | 道具 | 环境 | 光线 | 背景事件 | 构图区别 |
+|---|---|---|---|---|---|---|---|---|---|---|
 | xun_you | 荀攸 | 沉静谋断 | 侧坐俯看地图，指尖落在木筹旁 | 右侧三分之二侧面半身 | 墨青／旧金 | 竹简、木筹 | 军帐棋案 | 单侧烛光 | 帐外夜行兵影 | 横向案面与纵向垂帘形成静态结构 |
 | wang_yi | 王异 | 坚毅守城 | 转身拉紧护腕，回望城下 | 略低机位左侧半身 | 赭红／铁灰 | 短剑、护腕 | 风雪城墙 | 冷天光与火盆 | 远处城门守军 | 回望动作，风雪斜线 |
 | cao_zhang | 曹彰 | 迅猛勇烈 | 俯身握缰，长戟横穿下景 | 近景低机位 | 铜金／深蓝 | 长戟、缰绳 | 疾驰山道 | 晨曦侧逆光 | 身后扬尘骑阵 | 骑乘前倾而非站立 |

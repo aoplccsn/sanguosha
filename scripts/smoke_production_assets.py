@@ -9,12 +9,12 @@ def get(path):
         assert response.status==200 and body,path
         return body,response.headers.get_content_type()
 catalog=json.loads(get('/api/catalog/generals')[0])
-assert len(catalog)==76
+assert len(catalog)==103
 portraits=[row['portrait'] for row in catalog]
-assert len(set(portraits))==76 and all('default' not in path for path in portraits)
+assert len(set(portraits))==103 and all('default' not in path for path in portraits)
 manifest=json.loads(get('/assets/manifest.json')[0])
 cards=sorted({'/assets/'+path for key,path in manifest.items() if key.startswith(('basic.','trick.','delayed.','equipment.'))})
 for path in portraits+cards:
     body,content_type=get(path)
     assert content_type in ('image/png','image/webp') and len(body)>100,(path,content_type)
-print(json.dumps({'portraits':f'{len(portraits)}/76','card_art':f'{len(cards)}/{len(cards)}','host':base,'status':'PASS'},ensure_ascii=False))
+print(json.dumps({'portraits':f'{len(portraits)}/103','card_art':f'{len(cards)}/{len(cards)}','host':base,'status':'PASS'},ensure_ascii=False))

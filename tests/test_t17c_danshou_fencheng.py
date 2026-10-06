@@ -68,7 +68,7 @@ def test_fencheng_partial_below_threshold_is_rejected_and_timeout_declines():
 
 
 def test_danshou_equipment_cost_removes_its_range_before_target_choice():
-    from sanguosha.model.enums import EquipmentSlot
+    from sanguosha.model.enums import EquipmentSlot,PlayerStatus
     s=game('zhu_ran');weapon=put(s,'equipment.weapon.serpent_spear','p1',ZoneType.EQUIPMENT,EquipmentSlot.WEAPON)
     s.engine.start_action(YJ2013Action('skill','p1','danshou'));answer(s,(weapon,))
     assert 'p3' not in s.engine.pending_request.allowed_player_ids
@@ -92,3 +92,19 @@ def test_fencheng_chain_can_kill_source_but_remaining_seats_still_resolve():
     assert not s.state.players['p1'].is_alive
     victims={e.target_id for e in s.events.events if isinstance(e,AfterDamageEvent)}
     assert {'p2','p3','p4','p5'}<=victims
+
+
+def test_danshou_never_offers_cost_that_removes_only_reachable_target():
+    from sanguosha.engine.yj2013 import play_options
+    from sanguosha.model.enums import EquipmentSlot,PlayerStatus
+    s=game('zhu_ran')
+    for q in ('p2','p4','p5'):s.state.players[q].hp=0;s.state.players[q].status=PlayerStatus.DEAD
+    # The survivor's defensive horse makes distance two; only our weapon reaches.
+    put(s,'equipment.horse.jueying','p3',ZoneType.EQUIPMENT,EquipmentSlot.DEFENSIVE_HORSE)
+    weapon=put(s,'equipment.weapon.serpent_spear','p1',ZoneType.EQUIPMENT,EquipmentSlot.WEAPON)
+    assert 'skill:danshou' not in play_options(s.state,'p1',s.skills,s.definitions)
+    cost=put(s,'basic.slash')
+    assert 'skill:danshou' in play_options(s.state,'p1',s.skills,s.definitions)
+    s.engine.start_action(YJ2013Action('cost-range','p1','danshou'))
+    assert weapon not in s.engine.pending_request.eligible_card_ids
+    answer(s,(cost,));assert s.engine.pending_request.allowed_player_ids==('p3',)

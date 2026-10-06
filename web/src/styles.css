@@ -866,3 +866,13 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
  .temporary-cards .hand-card,.hidden-choice { width:clamp(60px,16vw,76px); }
  .temporary-panel header,.temporary-panel footer { padding:10px 12px; }
 }
+
+/* Selected draft portrait shares the normal video/fallback lifecycle. */
+.general-detail > .dynamic-portrait { width:130px; height:195px; border:1px solid #77542f; }
+.general-detail > .dynamic-portrait :is(img,video) { object-fit:contain; }
+
+/* Full detail keeps the complete portrait master and matching fallback. */
+.game-general-detail > .dynamic-portrait :is(img,video) { object-fit:contain; }
+.game-board :is([data-character-id="shadow_god_liubei"],[data-character-id="shadow_god_luxun"],[data-character-id="thunder_god_ganning"],[data-character-id="thunder_god_zhangliao"]) .dynamic-portrait :is(img,video) { object-fit:contain; }
+
+.game-general-detail[data-portrait-mode='dynamic'] > .dynamic-portrait { height:auto; aspect-ratio:9/16; max-height:min(62vh,560px); }

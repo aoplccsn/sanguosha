@@ -136,7 +136,7 @@ def project_for_human(
                                             *player.granted_skills,
                                             *((player.transformation_skill,) if player.transformation_skill else ()))))
             if player.character_id in skills.characters else (),
-            player.face_up, {key:(1 if key in ('yj_gongqi','yj_zishou') else value)
+            player.face_up, {key:(1 if key in ('yj_gongqi','yj_zishou','qiaoshui_success','qiaoshui_trick_lock','zhuikong_self_only') else value)
                              for key,value in player.marks.items() if key!='quan'},
             {ref.special_key: tuple(
                 card_view(cid) if ((not ref.special_key.startswith('committed:')

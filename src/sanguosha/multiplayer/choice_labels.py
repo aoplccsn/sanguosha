@@ -7,6 +7,7 @@ from sanguosha.content.characters.remaining import REMAINING_DEV_GENERALS, REMAI
 GENERAL_NAMES = {str(item.id): item.name for item in (*ALL_GENERAL_POOL,*REMAINING_DEV_GENERALS)}
 SKILL_NAMES = {str(item.id): item.name for item in (*ALL_SKILL_CATALOGUE,*REMAINING_DEV_SKILLS)}
 CHOICE_NAMES = {
+    'cancel':'放弃', 'add':'增加目标', 'remove':'减少目标',
     'default':'正常摸牌', 'jiang':'多摸一张，本回合不能用或打出杀',
     'chi':'少摸一张，杀无距离限制且可多用一次',
     'continue':'继续选牌', 'finish':'结束选牌',

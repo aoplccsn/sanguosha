@@ -12,7 +12,7 @@ from .resources import RESOURCES
 TYPE_LABELS = {
     SkillType.ACTIVE: '主动', SkillType.TRIGGERED: '触发',
     SkillType.LOCKED: '锁定', SkillType.VIEW_AS: '转化',
-    SkillType.LIMITED: '限定', SkillType.RULE_MODIFIER: '规则',
+    SkillType.LIMITED: '限定', SkillType.AWAKENING: '觉醒', SkillType.RULE_MODIFIER: '规则',
 }
 IMPLEMENTED_SKILL_IDS = {skill.id for skill in IMPLEMENTED_SKILLS}
 IMPLEMENTED_SKILL_IDS.update((
@@ -24,7 +24,17 @@ IMPLEMENTED_SKILL_IDS.update((
 ))
 
 
+# The existing accepted roster and all 50 new skills have executable handlers.
+from sanguosha.content.characters.standard import ALL_SKILL_CATALOGUE
+from sanguosha.content.characters.remaining import REMAINING_DEV_SKILLS
+IMPLEMENTED_SKILL_IDS.update(s.id for s in (*ALL_SKILL_CATALOGUE,*REMAINING_DEV_SKILLS))
+
+
 def skill_status(skill, player, state, choices=()):
+    from sanguosha.engine.skill_leases import suppressed
+    if skill.id in player.disabled_skills or suppressed(state,player.player_id,skill.id):return '已失去'
+    if skill.skill_type is SkillType.AWAKENING:return '已觉醒' if player.marks.get(str(skill.id)+'_awakened') else '等待觉醒'
+    if skill.skill_type is SkillType.LIMITED and player.marks.get(str(skill.id)+'_used'):return '限定技已用'
     if skill.id not in IMPLEMENTED_SKILL_IDS:
         return '规则开发中'
     if skill.metadata.get('lord') and player.identity is not Identity.LORD:
@@ -91,7 +101,7 @@ class SkillBar(QWidget):
         self.buttons = {}
         self.row.addStretch()
         if character is not None:
-            for sid in character.skill_ids:
+            for sid in dict.fromkeys((*character.skill_ids,*player.granted_skills,*((player.transformation_skill,) if player.transformation_skill else ()))):
                 skill = skills[sid]
                 status = skill_status(skill, player, state, choices)
                 button = QPushButton(skill.name)

@@ -35,8 +35,11 @@ def test_room_skips_only_pass_only_human_responses(eligible, auto_pass):
                                    clear_finished_nullification_windows=lambda: None,
                                    nullification_window_id=lambda request: None)
     room.network_decisions.dispatch = dispatched.append
+    syncs=[]
+    room._sync=lambda:syncs.append(True)
     room.suspend_on_budget = True
     room.pump(max_steps=1)
+    assert syncs==([True] if auto_pass else [])
     if auto_pass:
         assert submitted == [Decision("response-1", player, PASS_RESPONSE)]
         assert not dispatched

@@ -16,11 +16,11 @@ from test_t6_military_basics import put
 
 
 def test_production_76_registry_catalog_and_locked_11():
-    assert len(ALL_GENERAL_POOL)==len(PLAYABLE_GENERAL_POOL)==76
-    assert len(ALL_65_GENERAL_POOL)==65 and len(ORDINARY_GENERAL_POOL)==68
+    assert len(ALL_GENERAL_POOL)==len(PLAYABLE_GENERAL_POOL)==103
+    assert len(ALL_65_GENERAL_POOL)==65 and len(ORDINARY_GENERAL_POOL)==91
     registry=SkillRegistry(); ids={str(c.id) for c in YJ2011_GENERAL_POOL}
     catalog=TestClient(app).get('/api/catalog/generals').json()
-    assert len(catalog)==76 and len({c['id'] for c in catalog})==76
+    assert len(catalog)==103 and len({c['id'] for c in catalog})==103
     skills={str(s.id):s for s in ALL_SKILL_CATALOGUE}
     yj=[s.id for s in ALL_SKILL_CATALOGUE if s.metadata.get('pack')=='yj2011']
     assert len(yj)==len(set(yj))==19
@@ -33,7 +33,7 @@ def test_production_76_registry_catalog_and_locked_11():
             c=registry.characters[row['id']]
             assert c.metadata['implemented'] and c.metadata['playable'] and not c.metadata['development_only']
             assert [s['description'] for s in row['skills']]==[skills[str(sid)].description for sid in c.skill_ids]
-    assert not any(c['id'].startswith(('yj2012','yj2013')) for c in catalog)
+    assert len([c for c in catalog if c['id'].startswith(('yj2012','yj2013'))])==23
 
 
 @pytest.mark.parametrize('mode',['military-five','military-eight'])

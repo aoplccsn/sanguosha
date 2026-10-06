@@ -19,6 +19,9 @@ def wire(kind: str, **fields):
 
 def choose(request: dict):
     kind = request["request_type"]
+    if kind == "choose_cards" and request.get("legal_card_sets"):
+        return request["legal_card_sets"][0]
+
     if kind == "choose_option":
         usable = next((item for item in request["choices"] if item.startswith("use:")), None)
         return usable or ("end_play_phase" if "end_play_phase" in request["choices"] else request["choices"][0])

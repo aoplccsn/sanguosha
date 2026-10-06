@@ -1,0 +1,19 @@
+
+Running 11 tests using 1 worker
+
+
+
+(node:33208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/11] [installed-edge] › e2e\t18b-acceptance.spec.ts:13:1 › 103 production portraits, 43 card arts and all 13 dynamic sets use production HTTP
+[2/11] [installed-edge] › e2e\t18b-acceptance.spec.ts:23:2 › all 23 new ordinary details on mobile 390
+[3/11] [installed-edge] › e2e\t18b-acceptance.spec.ts:32:2 › four god videos, resize and reduced-motion fallbacks 390
+[4/11] [installed-edge] › e2e\t18b-acceptance.spec.ts:46:2 › Zongxuan private choice, ordered submission and reconnect 390
+[5/11] [installed-edge] › e2e\t18b-acceptance.spec.ts:52:2 › Poxi authorized hand and Duorui equipment choices 390
+[6/11] [installed-edge] › e2e\t18b-acceptance.spec.ts:60:2 › new god draft selection and native dynamic detail 390
+[7/11] [installed-edge] › e2e\t18b-acceptance.spec.ts:23:2 › all 23 new ordinary details on mobile 430
+[8/11] [installed-edge] › e2e\t18b-acceptance.spec.ts:32:2 › four god videos, resize and reduced-motion fallbacks 430
+[9/11] [installed-edge] › e2e\t18b-acceptance.spec.ts:46:2 › Zongxuan private choice, ordered submission and reconnect 430
+[10/11] [installed-edge] › e2e\t18b-acceptance.spec.ts:52:2 › Poxi authorized hand and Duorui equipment choices 430
+[11/11] [installed-edge] › e2e\t18b-acceptance.spec.ts:60:2 › new god draft selection and native dynamic detail 430
+  11 passed (1.1m)

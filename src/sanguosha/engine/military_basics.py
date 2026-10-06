@@ -412,7 +412,12 @@ class WineAction(Action):
 
 class WineHandler:
     def step(self, state, frame):
-        state.players[frame.action.player_id].marks['wine'] = 1
+        from .qiaoshui import take_targets
+        for pid in take_targets(state,frame.action.action_id,(frame.action.player_id,)):
+            if state.players[pid].is_alive:
+                state.players[pid].marks['wine'] = 1
+                if pid!=frame.action.player_id:
+                    state.metadata.setdefault('qiaoshui_wine_targets',{})[pid]={'source':state.current_player_id,'turn':state.turn_number}
         return StepResult.complete()
 
 class WineRule:
@@ -460,7 +465,8 @@ class MilitarySlashRule(SlashRule):
     def target_candidates(self, state, user):
         from .yj2011_tier3 import scoped_target
         marks = state.players[user].marks
-        if not self.can_use(state, user):
+        from .fuhuanghou import target_allowed
+        if not self.can_use(state,user) or any(not target_allowed(state,user,q) for q in state.seat_order if q!=user):
             return ()
         candidates = (tuple(pid for pid in state.seat_order if pid != user
                            and state.players[pid].is_alive)
@@ -495,6 +501,7 @@ class MilitarySlashRule(SlashRule):
 class MilitaryStrike(SlashEffectAction):
     wine_bonus: int = 0
     virtual_card: VirtualCard | None = None
+    root_action_id: str = ""
 
 @dataclass(frozen=True,slots=True)
 class SlashSequence(Action):
@@ -502,21 +509,27 @@ class SlashSequence(Action):
     card_id: str
     targets: tuple[str,...]
     virtual_card: VirtualCard | None = None
+    wine_bonus: int | None = None
+    known_targets: tuple[str,...] = ()
 
 class SlashSequenceHandler:
     def step(self,state,f):
+        from .fuhuanghou import slash_window
         a=f.action
         if f.step_index==0:
-            f.local['wine']=state.players[a.source_id].marks.pop('wine',0)
+            f.local['wine']=state.players[a.source_id].marks.pop('wine',0) if a.wine_bonus is None else a.wine_bonus
+            from .qiaoshui import take_targets
+            slash_window(state,a.action_id,take_targets(state,a.action_id,a.targets),a.known_targets)
             f.step_index=1
-        if f.cursor>=len(a.targets) or state.status is GameStatus.FINISHED:
+        window=slash_window(state,a.action_id)
+        if f.cursor>=len(window['targets']) or state.status is GameStatus.FINISHED:
+            state.metadata.get('slash_target_windows',{}).pop(a.action_id,None)
             return StepResult.complete()
-        target=a.targets[f.cursor]
-        f.cursor+=1
-        if not state.players[target].is_alive:
-            return StepResult.continue_()
+        target=window['targets'][f.cursor]
+        f.cursor+=1;window['cursor']=f.cursor
+        if not state.players[target].is_alive:return StepResult.continue_()
         return StepResult.push(MilitaryStrike(f'{a.action_id}:target:{f.cursor}',a.source_id,target,a.card_id,
-            'basic.dodge',int(f.local['wine']),a.virtual_card))
+            'basic.dodge',int(f.local['wine']),a.virtual_card,a.action_id))
 
 class MilitarySlashHandler:
     def liuli_targets(self, state, action, cost):
@@ -528,7 +541,22 @@ class MilitarySlashHandler:
                      if pid not in (action.source_id, owner) and state.players[pid].is_alive
                      and self.distance.distance_between(state, owner, pid) + int(loses_horse) <= reach)
 
-    def step(self, state, frame):
+    def step(self,state,frame):
+        from .actions import StepKind
+        from .fuhuanghou import slash_window
+        a=frame.action
+        root=getattr(a,'root_action_id','')
+        if frame.step_index==34:return StepResult.complete(frame.local.get('standalone_result'))
+        if not root:slash_window(state,a.action_id,known=(a.target_id,))
+        outcome=self._step(state,frame)
+        if outcome.kind is StepKind.COMPLETE and not root:
+            window=state.metadata.get('slash_target_windows',{}).pop(a.action_id,None)
+            if window and window['targets'] and state.status is not GameStatus.FINISHED:
+                frame.local['standalone_result']=outcome.value;frame.step_index=34
+                return StepResult.push(SlashSequence(a.action_id+':qiuyuan-extra',a.source_id,a.card_id,tuple(window['targets']),getattr(a,'virtual_card',None),max(0,int(frame.local.get('amount',1))-1),tuple(window['known'])))
+        return outcome
+
+    def _step(self, state, frame):
         action = frame.action
         if state.status is GameStatus.FINISHED or not state.players[action.target_id].is_alive:
             return StepResult.complete('prevented')
@@ -547,7 +575,15 @@ class MilitarySlashHandler:
             state.players[action.target_id].marks.get('wuwei_target_' + action.source_id))
         from .yj2011_tier3 import scoped_target, protected
         ignore = ignore or scoped_target(state, action.source_id, action.target_id)
+        if frame.step_index==33:
+            frame.step_index=0
+            return StepResult.continue_()
         if frame.step_index == 0:
+            if self.skills is not None and self.skills.has(state,action.target_id,'qiuyuan') and not frame.local.get('qiuyuan_checked'):
+                from .yj2013 import YJ2013Action
+                frame.local['qiuyuan_checked']=True;frame.step_index=33
+                root=getattr(action,'root_action_id','') or action.action_id
+                return StepResult.push(YJ2013Action(action.action_id+':qiuyuan',action.target_id,'qiuyuan',action.source_id,card_id=action.card_id,event_id=root))
             if protected(state, action.target_id):
                 return StepResult.complete('prevented')
             from .yj2011 import slash_ineffective
@@ -713,10 +749,13 @@ class MilitarySlashHandler:
             source = next(ref for ref, zone in state.zones.items() if cost in zone.card_ids)
             self.moves.move(state, CardMove(action.action_id+':liuli-cost', (cost,), source,
                 ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.DISCARD, action.target_id))
+            from .fuhuanghou import slash_window
+            known=slash_window(state,getattr(action,'root_action_id','') or action.action_id)['known']
+            if target not in known:known.append(target)
             frame.step_index = 24
             return StepResult.push(MilitaryStrike(action.action_id+':liuli-strike', action.source_id,
                 target, action.card_id, action.dodge_definition_id,
-                int(frame.local['amount'])-1, virtual))
+                int(frame.local['amount'])-1, virtual,getattr(action,'root_action_id','') or action.action_id))
         if frame.step_index == 24:
             return StepResult.complete(frame.child_result)
         if frame.step_index == 20:
@@ -880,6 +919,8 @@ class MilitaryResponseHandler(RespondWithCardHandler):
 
     def step(self, state, frame):
         action = frame.action
+        from .qiaoshui import prohibited
+        if prohibited(state,action.player_id,str(action.required_definition_id)):return StepResult.complete()
         if frame.step_index == 30:
             return StepResult.complete(frame.local['leiji_response'])
         result = self._step_response(state, frame)

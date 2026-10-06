@@ -79,6 +79,9 @@ class MilitaryTrickRule:
         self.requires_target_selection = definition not in ('trick.ex_nihilo','trick.savage_assault',
             'trick.archery_attack','trick.god_salvation','trick.amazing_grace','delayed.lightning')
     def can_use(self, state, user):
+        from .qiaoshui import prohibited
+        if prohibited(state,user,self.definition):return False
+        if state.players[user].marks.get('zhuikong_self_only')==state.turn_number and self.definition in ('trick.savage_assault','trick.archery_attack'):return False
         if (state.current_phase is Phase.PLAY and state.players[user].marks.get('yj_zishou') == state.turn_number
                 and self.definition in ('trick.savage_assault', 'trick.archery_attack', 'trick.god_salvation', 'trick.amazing_grace')):
             return False
@@ -93,6 +96,8 @@ class MilitaryTrickRule:
     def target_candidates(self, state, user):
         d = self.definition
         def valid(pid):
+            from .fuhuanghou import target_allowed
+            if not target_allowed(state,user,pid):return False
             if (pid != user and state.current_phase is Phase.PLAY
                     and state.players[user].marks.get('yj_zishou') == state.turn_number):
                 return False
@@ -177,6 +182,11 @@ class TrickHandler:
                     equipped(state, pid, EquipmentSlot.ARMOR) != 'equipment.armor.vine'
                     and not protected(state, pid)
                     and not (d == 'trick.savage_assault' and savage_effect_immune(state, pid, self.skills)))
+            from .fuhuanghou import target_allowed
+            targets=tuple(pid for pid in targets if target_allowed(state,a.source_id,pid))
+            from .qiaoshui import take_targets
+            adjusted=take_targets(state,a.action_id,targets)
+            targets=tuple(q for q in adjusted if q in targets) if d in ('trick.savage_assault','trick.archery_attack','trick.god_salvation','trick.amazing_grace') else adjusted
             frame.local['targets']='|'.join(targets)
             if not a.targets and d in ('trick.savage_assault', 'trick.archery_attack', 'trick.god_salvation', 'trick.amazing_grace'):
                 self.recorder.record(TrickTargetsDeclaredEvent(a.action_id+':targets',

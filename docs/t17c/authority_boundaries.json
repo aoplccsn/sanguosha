@@ -13,6 +13,10 @@
     "shiyong": "Damaged checks Slash and red/drank without chain/transfer exclusion",
     "anjian": "DamageCaused excludes chain and transfer, then checks reversed attack range",
     "duodao": "May discard after Slash damage even when no source weapon exists",
-    "longyin": "CardUsed source must be in its own Play phase; m_addHistory removed only once"
+    "longyin": "CardUsed source must be in its own Play phase; m_addHistory removed only once",
+    "qiaoshui": "Frozen PreCardUsed rule consumes next basic/ND trick, including rescue/counter use; ordinary responses and IronChain recast preserve flag. Add/remove uses shared authoritative effects.",
+    "zongxuan": "Frozen BeforeCardsMove: own hand/equipment discard is intercepted before discard-pile reactions; ordered chosen cards move to draw top.",
+    "zhuikong": "Frozen RoundStart: wounded owner may Pindian with active player; win restricts ordinary-card targets to self, loss/tie fixes directed distance to owner at 1 until turn end.",
+    "qiuyuan": "Frozen TargetConfirming: ask another living non-source player for Dodge with MethodNone; give underlying material or join shared Slash target queue, ignoring distance while respecting prohibitions."
   }
 }

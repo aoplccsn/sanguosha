@@ -18,6 +18,9 @@ from sanguosha.multiplayer.transport import GameClient, GameServer
 
 def choose(payload):
     kind = payload["request_type"]
+    if kind == "choose_cards" and payload.get("legal_card_sets"):
+        return tuple(payload["legal_card_sets"][0])
+
     if kind == "choose_option":
         usable = next((c for c in payload["choices"] if c.startswith("use:")), None)
         return usable or ("end_play_phase" if "end_play_phase" in payload["choices"] else payload["choices"][0])

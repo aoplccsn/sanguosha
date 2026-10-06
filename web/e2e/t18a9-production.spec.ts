@@ -20,8 +20,8 @@ async function images(page: Page, selector: string) {
  expect(urls.every(u => !u.includes('default_card'))).toBeTruthy()
 }
 test('76 catalog portraits and every registered card art load over production HTTP', async ({request}) => {
- const catalog = await (await request.get('/api/catalog/generals')).json(); expect(catalog).toHaveLength(76)
- const urls = catalog.map((g:any) => g.portrait); expect(new Set(urls).size).toBe(76)
+ const catalog = await (await request.get('/api/catalog/generals')).json(); expect(catalog).toHaveLength(103)
+ const urls = catalog.map((g:any) => g.portrait); expect(new Set(urls).size).toBe(103)
  const manifest = await (await request.get('/assets/manifest.json')).json()
  const cardPaths = [...new Set(Object.entries(manifest).filter(([key]) => /^(basic|trick|delayed|equipment)\./.test(key)).map(([,v]) => '/assets/' + v))]
  for (const url of [...urls, ...cardPaths]) {

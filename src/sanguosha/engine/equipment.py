@@ -41,7 +41,7 @@ class EquipCardHandler:
         if old:
             self.moves.move(state, CardMove(
                 f"{action.action_id}:replace", old, destination, ZoneRef(ZoneType.DISCARD_PILE),
-                CardMoveReason.DISCARD, action.player_id, action.action_id,
+                CardMoveReason.SYSTEM, action.player_id, action.action_id,
             ))
         self.moves.move(state, CardMove(
             f"{action.action_id}:equip", (action.card_id,), processing, destination,

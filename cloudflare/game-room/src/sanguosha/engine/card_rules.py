@@ -94,6 +94,8 @@ class CardUseValidator:
                 and not (self.skills.has(state,q,'kongcheng') and not hand(state,q)))
         if (state.current_phase is Phase.PLAY and state.players[user_id].marks.get('yj_zishou') == state.turn_number):
             candidates = tuple(pid for pid in candidates if pid == user_id)
+        from .fuhuanghou import target_allowed
+        candidates=tuple(q for q in candidates if target_allowed(state,user_id,q))
         if self.skills is None:
             return candidates
         from .forest import weimu_blocks
@@ -126,6 +128,11 @@ class CardUseValidator:
         if not card_allowed(state, user_id, (card_id,)):
             raise InvalidCardUse("card color is prohibited by Qianxi")
         rule = self.rule_for(state, card_id, user_id)
+        from .forest import weimu_blocks
+        from .yj2011_tier3 import canonical_definition
+        definition=canonical_definition(state,self.skills,user_id,state.cards[card_id].definition_id,card_id)
+        if definition in ('delayed.lightning','trick.ex_nihilo') and weimu_blocks(state,user_id,card_id,definition,user_id,self.skills):
+            raise InvalidCardUse('帷幕禁止此牌指定自己')
         usage = state.play_usage
         if usage is None or usage.player_id != user_id or usage.turn_number != state.turn_number:
             raise InvalidCardUse("play phase usage state is missing")

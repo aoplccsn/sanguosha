@@ -221,6 +221,10 @@ class PhaseActionHandler:
         if state.status is GameStatus.FINISHED or not state.players[action.player_id].is_alive:
             frame.step_index = 4
             return StepResult.continue_()
+        if action.phase is Phase.PLAY and self.skills is not None and self.skills.has(state,action.player_id,'qiaoshui') and not frame.local.get('qiaoshui_offered'):
+            from .yj2013 import YJ2013Action
+            frame.local['qiaoshui_offered']=True
+            return StepResult.push(YJ2013Action(action.action_id+':qiaoshui',action.player_id,'qiaoshui'))
         if action.phase is Phase.PLAY and self.skills is not None and self.skills.has(state,action.player_id,'longnu') and not frame.local.get('longnu_started'):
             from .remaining_gods import RemainingGodAction
             frame.local['longnu_started']=True

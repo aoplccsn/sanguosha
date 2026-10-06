@@ -65,6 +65,8 @@ class DistanceSystem:
         return base
 
     def distance_between(self, state: GameState, source: PlayerId, target: PlayerId) -> int:
+        from .fuhuanghou import fixed_distance
+        if fixed_distance(state,source,target) and state.players[source].is_alive and state.players[target].is_alive:return 1
         from .yj2011_tier3 import scoped_target
         if scoped_target(state, source, target) and state.players[target].is_alive:
             return 1

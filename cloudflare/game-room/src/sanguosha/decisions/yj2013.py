@@ -5,6 +5,30 @@ from sanguosha.engine.yj2011_tier3 import hand
 def decide(provider,state,r):
     pid=r.player_id;kind=r.request_type;prompt=r.prompt
     def keep(c):return {'basic.peach':9,'basic.dodge':6,'trick.nullification':7}.get(state.cards[c].definition_id,2)
+    if '【巧说】' in prompt:
+        if kind is RequestType.YES_NO:value=max((state.cards[c].rank for c in hand(state,pid)),default=0)>=10
+        elif kind is RequestType.CHOOSE_OPTION:value='add' if 'add' in r.choices else 'remove' if 'remove' in r.choices else 'cancel'
+        elif kind is RequestType.CHOOSE_PLAYER:
+            beneficial=any(name in prompt for name in ('〔桃〕','〔酒〕','〔无中生有〕','〔桃园结义〕','〔五谷丰登〕'))
+            prefer_friend=beneficial != ('移除' in prompt)
+            choose=min if prefer_friend else max
+            candidates=tuple(q for q in r.allowed_player_ids if not (beneficial and '移除' in prompt and q==pid))
+            value=choose(candidates,key=lambda q:provider._priority(state,pid,q))
+        else:return None
+        return Decision(r.request_id,pid,value)
+    if '【纵玄】' in prompt:
+        cards=sorted(r.eligible_card_ids,key=keep)
+        value=tuple(cards[-1:]) if cards and keep(cards[-1])>=6 else ()
+        return Decision(r.request_id,pid,value)
+    if '【惴恐】' in prompt and kind is RequestType.YES_NO:
+        value=provider._priority(state,pid,r.subject_player_id)>0 and max((state.cards[c].rank for c in hand(state,pid)),default=0)>=10
+        return Decision(r.request_id,pid,value)
+    if '【求援】' in prompt:
+        if kind is RequestType.YES_NO:value=True
+        elif kind is RequestType.CHOOSE_PLAYER:value=max(r.allowed_player_ids,key=lambda q:(provider._priority(state,pid,q),-state.players[q].hp))
+        elif kind is RequestType.CHOOSE_CARDS:value=(r.eligible_card_ids[0],) if provider._priority(state,pid,r.subject_player_id)<0 else ()
+        else:return None
+        r.validate(value);return Decision(r.request_id,pid,value)
     if '【纵适】' in prompt and kind is RequestType.YES_NO:
         return Decision(r.request_id,pid,True)
     if kind is RequestType.CHOOSE_OPTION:
@@ -47,7 +71,12 @@ def decide(provider,state,r):
         value=tuple(ordered[:n]) if state.players[pid].hp<=2 or n<=2 and sum(keep(c) for c in ordered[:n])<=5 else ()
         r.validate(value);return Decision(r.request_id,pid,value)
     if '【胆守】' in prompt:
-        if kind is RequestType.CHOOSE_CARDS:value=tuple(sorted(r.eligible_card_ids,key=keep)[:r.min_count])
+        if kind is RequestType.CHOOSE_CARDS:
+            selected=[]
+            for c in sorted(r.eligible_card_ids,key=keep):
+                if all(c not in group or not any(q in group for q in selected) for group in r.exclusive_card_groups):selected.append(c)
+                if len(selected)==r.min_count:break
+            value=tuple(selected)
         elif kind is RequestType.CHOOSE_PLAYER:value=max(r.allowed_player_ids,key=lambda q:provider._priority(state,pid,q))
         elif kind is RequestType.CHOOSE_CARD:
             own=[c for c in r.eligible_card_ids if c in hand(state,pid)]

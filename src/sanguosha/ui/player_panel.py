@@ -286,7 +286,8 @@ class PlayerPanel(QPushButton):
         if v.marks:
             p.setPen(QColor("#f0d18c"))
             p.setFont(QFont("Microsoft YaHei UI", 7, QFont.Bold))
-            marks = "  ".join(f"{key} {value}" for key, value in v.marks.items() if value)
+            names={'qiaoshui_success':'巧说待用','qiaoshui_trick_lock':'巧说禁锦囊','zhuikong_self_only':'惴恐限自身','junlve':'军略','zhanhuo_used':'绽火已用','longnu_form':'龙怒形态','longnu_next':'下次龙怒','poxi_hand_limit':'魄袭减上限','camp':'营','wine':'酒','quan':'权','zili_awakened':'自立已觉醒'}
+            marks = "  ".join(f"{names.get(key,'标记')} {value}" for key, value in v.marks.items() if value)
             if marks:
                 p.drawText(QRectF(x, h-42, rw, 14), Qt.AlignRight, marks)
         if v.active:

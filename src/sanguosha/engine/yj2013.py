@@ -38,6 +38,81 @@ class YJ2013Handler(YJSkillHandler):
             return StepResult.complete()
         return super().step(state,frame)
 
+    def qiaoshui(self,state,f):
+        from .yj2011_tier3 import hand
+        from .pindian import PindianAction
+        a=f.action;pid=a.player_id
+        targets=tuple(q for q in state.seat_order if q!=pid and state.players[q].is_alive and hand(state,q))
+        if f.step_index==0:
+            if not hand(state,pid) or not targets:return StepResult.complete()
+            f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【巧说】是否与另一名角色拼点？')
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted:return StepResult.complete()
+            f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_PLAYER,'【巧说】选择拼点目标',allowed_player_ids=targets)
+        if f.step_index==2:
+            target,f.decision=f.decision,None;f.step_index=3
+            return StepResult.push(PindianAction(a.action_id+':pindian',pid,target))
+        key='qiaoshui_success' if f.child_result is True else 'qiaoshui_trick_lock'
+        state.players[pid].marks[key]=state.turn_number
+        return StepResult.complete()
+
+    def zhuikong(self,state,f):
+        from .yj2011_tier3 import hand
+        from .pindian import PindianAction
+        a=f.action;pid=a.player_id;target=a.opponent_id;p=state.players[pid]
+        if target not in state.players or not state.players[target].is_alive or pid==target:return StepResult.complete()
+        if f.step_index==0:
+            if p.hp>=p.max_hp or not hand(state,pid) or not hand(state,target):return StepResult.complete()
+            f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【惴恐】是否与回合角色拼点？',subject_player_id=target)
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted:return StepResult.complete()
+            f.step_index=2
+            return StepResult.push(PindianAction(a.action_id+':pindian',pid,target))
+        if f.child_result is True:
+            state.players[target].marks['zhuikong_self_only']=state.turn_number
+        else:
+            state.metadata.setdefault('zhuikong_distance',{})[target+':'+pid]={'source':target,'target':pid,'turn':state.turn_number}
+        return StepResult.complete()
+
+    def qiuyuan(self,state,f):
+        from .yj2011_tier3 import hand,canonical_definition
+        from .fuhuanghou import add_slash_target,slash_window
+        from .events import Event
+        a=f.action;pid=a.player_id;source=a.opponent_id
+        targets=tuple(q for q in state.seat_order if q not in (pid,source) and state.players[q].is_alive)
+        if f.step_index==0:
+            if not targets:return StepResult.complete()
+            f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【求援】是否令另一名角色交给你闪，否则成为此杀的目标？')
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted:return StepResult.complete()
+            f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_PLAYER,'【求援】选择除杀使用者和你以外的一名角色',allowed_player_ids=targets,min_count=1,max_count=1)
+        if f.step_index==2:
+            target,f.decision=f.decision,None;f.local['asked']=target
+            from .response import dodge_gift_options
+            cards=tuple(dodge_gift_options(state,self.skills,target))
+            f.step_index=3
+            if cards:return self.ask(f,RequestType.CHOOSE_CARDS,'【求援】交出一张闪，或空选成为杀的目标',player=target,subject_player_id=pid,eligible_card_ids=cards,min_count=0,max_count=1)
+            f.decision=()
+        target=f.local['asked'];cards,f.decision=tuple(f.decision),None
+        if cards:
+            from sanguosha.model.zones import ZoneRef,ZoneType
+            from .response import dodge_gift_options
+            options=dodge_gift_options(state,self.skills,target)
+            if cards[0] not in options:raise ValueError('求援的闪材料已不可用')
+            self.transfer(state,a,options[cards[0]],ZoneRef(ZoneType.HAND,pid),actor=target)
+        elif add_slash_target(state,a.event_id,source,target,self.skills):
+            w=slash_window(state,a.event_id)
+            self.moves.recorder.record(Event(a.action_id+':added','slash_target_added',pid,(target,),metadata={'skill_id':'qiuyuan','root_action_id':a.event_id}))
+        return StepResult.complete()
+
     def xiansi(self,state,f):
         from .military_equipment import discardable
         from sanguosha.model.zones import ZoneRef,ZoneType
@@ -155,10 +230,10 @@ class YJ2013Handler(YJSkillHandler):
         a=f.action;pid=a.player_id
         if f.step_index==0:
             if state.current_player_id!=pid or state.current_phase is not Phase.PLAY:raise InvalidCardUse('胆守仅出牌阶段发动')
-            n=state.play_usage.count('skill.danshou')+1;cards=discardable(state,pid)
-            if len(cards)<n:raise InvalidCardUse('胆守成本不足')
+            n=state.play_usage.count('skill.danshou')+1;cards,groups=danshou_cost_choices(state,pid,self.definitions)
+            if len(cards)-sum(len(group)-1 for group in groups)<n:raise InvalidCardUse('胆守无合法成本或目标')
             f.local['n']=n;f.step_index=1
-            return self.ask(f,RequestType.CHOOSE_CARDS,f'【胆守】弃置{n}张手牌或装备',eligible_card_ids=cards,min_count=n,max_count=n)
+            return self.ask(f,RequestType.CHOOSE_CARDS,f'【胆守】弃置{n}张手牌或装备',eligible_card_ids=cards,min_count=n,max_count=n,exclusive_card_groups=groups)
         if f.step_index==1:
             cards,f.decision=tuple(f.decision),None;f.local['cards']=cards
             after=deepcopy(state)
@@ -481,6 +556,10 @@ class LongyinWindowHandler:
             e.event_id,e.slash_counted,e.virtual_card))
 
 def register(registry, skills, moves, definitions, deck):
+    from .zongxuan import PendingDiscard,PendingDiscardHandler
+    registry.register(PendingDiscard,PendingDiscardHandler(moves,skills))
+    from .qiaoshui import QiaoshuiTargets,QiaoshuiTargetsHandler
+    registry.register(QiaoshuiTargets,QiaoshuiTargetsHandler(skills,definitions,moves.recorder))
     registry.register(YJ2013Action, YJ2013Handler(skills, moves, definitions, deck))
     registry.register(LongyinWindow,LongyinWindowHandler())
     registry.register(XiansiSlashAction,XiansiSlashHandler(skills,moves,definitions,deck))
@@ -504,7 +583,32 @@ def damage_reaction(state,frame,skills):
     return None
 
 
-def play_options(state,pid,skills):
+
+def danshou_cost_choices(state,pid,definitions):
+    """Cost choices must leave a living target in the post-cost attack range."""
+    from copy import copy
+    from .distance import DistanceSystem
+    from .military_equipment import discardable
+    from sanguosha.model.enums import EquipmentSlot
+    from sanguosha.model.zones import ZoneType
+    distance=DistanceSystem(definitions)
+    cards=discardable(state,pid)
+    relevant=tuple(c for ref,zone in state.zones.items() if ref.player_id==pid and ref.zone_type is ZoneType.EQUIPMENT
+        and ref.equipment_slot in (EquipmentSlot.WEAPON,EquipmentSlot.OFFENSIVE_HORSE) for c in zone.card_ids if c in cards)
+    def reachable(removed):
+        after=copy(state);after.zones=dict(state.zones)
+        for ref,zone in state.zones.items():
+            if ref.player_id==pid and ref.zone_type is ZoneType.EQUIPMENT and any(c in removed for c in zone.card_ids):
+                after.zones[ref]=copy(zone);after.zones[ref].card_ids=[c for c in zone.card_ids if c not in removed]
+        return any(q!=pid and state.players[q].is_alive and distance.can_reach_with_slash(after,pid,q) for q in state.seat_order)
+    if not reachable(()):return (),()
+    protected={c for c in relevant if not reachable((c,))}
+    cards=tuple(c for c in cards if c not in protected)
+    optional=tuple(c for c in relevant if c not in protected)
+    groups=(optional,) if len(optional)>1 and not reachable(optional) else ()
+    return cards,groups
+
+def play_options(state,pid,skills,definitions=None):
     from .yj2011_tier3 import hand
     from .military_equipment import discardable
     options=[]
@@ -512,7 +616,10 @@ def play_options(state,pid,skills):
     from .suits import effective_color
     if skills.has(state,pid,'mieji') and not state.play_usage.count('skill.mieji') and any(q!=pid and state.players[q].is_alive and hand(state,q) for q in state.seat_order) and any(state.cards[c].definition_id.startswith(('trick.','delayed.')) and effective_color(state,c,pid) is Color.BLACK for c in hand(state,pid)):options.append('skill:mieji')
     if skills.has(state,pid,'fencheng') and not state.players[pid].marks.get('fencheng_used'):options.append('skill:fencheng')
-    if skills.has(state,pid,'danshou') and len(discardable(state,pid))>=state.play_usage.count('skill.danshou')+1:options.append('skill:danshou')
+    if skills.has(state,pid,'danshou'):
+        cards,groups=danshou_cost_choices(state,pid,definitions)
+        capacity=len(cards)-sum(len(group)-1 for group in groups)
+        if capacity>=state.play_usage.count('skill.danshou')+1:options.append('skill:danshou')
     return options + (['skill:junxing'] if (skills.has(state,pid,'junxing') and state.play_usage is not None
         and not state.play_usage.count('skill.junxing') and hand(state,pid)
         and any(q!=pid and state.players[q].is_alive for q in state.seat_order)) else [])

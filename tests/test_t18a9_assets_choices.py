@@ -15,7 +15,7 @@ def test_production_dist_catalog_and_all_card_art():
     manifest=json.loads((root/'web/dist/assets/manifest.json').read_text(encoding='utf-8'))
     client=TestClient(create_app())
     catalog=client.get('/api/catalog/generals').json()
-    assert len(catalog)==76 and len({row['portrait'] for row in catalog})==76
+    assert len(catalog)==103 and len({row['portrait'] for row in catalog})==103
     paths=[row['portrait'] for row in catalog]+['/assets/'+value for key,value in manifest.items() if key.startswith(('basic.','trick.','delayed.','equipment.'))]
     for path in paths:
         response=client.get(path)

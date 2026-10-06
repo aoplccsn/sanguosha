@@ -31,8 +31,8 @@ class SkillRegistry:
         self.skills.update({s.id: s for s in YJ2011_DEV_SKILLS if s.id not in self.skills})
 
         from sanguosha.content.characters.remaining import REMAINING_DEV_GENERALS, REMAINING_DEV_SKILLS
-        self.characters.update({c.id: c for c in REMAINING_DEV_GENERALS})
-        self.skills.update({s.id: s for s in REMAINING_DEV_SKILLS})
+        self.characters.update({c.id: c for c in REMAINING_DEV_GENERALS if c.id not in self.characters})
+        self.skills.update({s.id: s for s in REMAINING_DEV_SKILLS if s.id not in self.skills})
 
     def has(self, state, player_id, skill_id):
         player = state.players[player_id]
@@ -1176,7 +1176,7 @@ class SkillPlayOptions:
         from .yj2012 import play_options as yj2012_play_options
         extra.extend(yj2012_play_options(state, pid, self.skills))
         from .yj2013 import play_options as yj2013_play_options
-        extra.extend(yj2013_play_options(state,pid,self.skills))
+        extra.extend(yj2013_play_options(state,pid,self.skills,self.validator.definitions))
         from .yj2013 import XiansiSlashHandler
         xiansi=XiansiSlashHandler(self.skills,None,self.validator.definitions,None)
         extra.extend('skill:xiansi_slash:'+q for q in state.seat_order if xiansi.available(state,pid,q))

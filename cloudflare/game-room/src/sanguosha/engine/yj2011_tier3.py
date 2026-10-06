@@ -52,7 +52,7 @@ def clear_turn(state):
     state.metadata.pop('longyin_ignored_events',None)
     for player in state.players.values():
         for key in tuple(player.marks):
-            if key.startswith('yj_xianzhen:') or key in ('yj_zhichi', 'yj_xianzhen_loss'):
+            if key.startswith('yj_xianzhen:') or key in ('yj_zhichi', 'yj_xianzhen_loss','qiaoshui_success','qiaoshui_trick_lock'):
                 player.marks.pop(key)
 
 
@@ -89,7 +89,8 @@ class AuthorizedVirtualUseHandler:
             return ()
         if state.players[pid].marks.get('yj_xianzhen_loss') == state.turn_number:
             return ()
-        return tuple(q for q in state.seat_order if q != pid and state.players[q].is_alive
+        from .fuhuanghou import target_allowed
+        return tuple(q for q in state.seat_order if q != pid and state.players[q].is_alive and target_allowed(state,pid,q)
                      and self.distance.can_reach_with_slash(state, pid, q)
                      and not (self.skills.has(state, q, 'kongcheng') and not hand(state, q)))
 

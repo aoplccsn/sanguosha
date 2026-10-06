@@ -45,6 +45,7 @@ class MainWindow(QMainWindow):
         self.session: GameSession | None = None
         self._seen_events = 0
         self._selected_cards: set[str] = set()
+        self._selected_card_order: list[str] = []
         self._selected_players: set[str] = set()
         self._selected_shared_card: str | None = None
         self._skill_mode: str | None = None
@@ -161,7 +162,7 @@ class MainWindow(QMainWindow):
         self._tick_scheduled = False
         self.session = session
         self._seen_events = 0
-        self._selected_cards.clear()
+        self._selected_cards.clear(); self._selected_card_order.clear()
         self._selected_players.clear()
         self._selected_shared_card = None
         self._skill_mode = None
@@ -214,7 +215,7 @@ class MainWindow(QMainWindow):
             return
         if value == "ui.cancel":
             self._selected_players.clear()
-            self._selected_cards.clear()
+            self._selected_cards.clear(); self._selected_card_order.clear()
             request = self.session.engine.pending_request if self.session else None
             mode = UiMode.RESPONDING_WITH_CARD if request and request.request_type is RequestType.RESPOND_WITH_CARD else UiMode.IDLE
             self.interaction.reset(request.request_id if request else None, mode)
@@ -260,7 +261,7 @@ class MainWindow(QMainWindow):
             self.decision.render(f"选择无效：{exc}", [])
             self._render()
             return
-        self._selected_cards.clear()
+        self._selected_cards.clear(); self._selected_card_order.clear()
         self._selected_players.clear()
         self._selected_shared_card = None
         self.interaction.reset()
@@ -322,7 +323,7 @@ class MainWindow(QMainWindow):
             self.decision.prompt_label.setText(f"出牌未完成：{exc}")
             return
         self.interaction.reset()
-        self._selected_cards.clear()
+        self._selected_cards.clear(); self._selected_card_order.clear()
         self._selected_players.clear()
         self._render()
         self._schedule_tick()
@@ -345,7 +346,7 @@ class MainWindow(QMainWindow):
                     choice = next((value for value in options if value in request.choices), None)
                     if choice:
                         self._skill_mode = None
-                        self._selected_cards.clear()
+                        self._selected_cards.clear(); self._selected_card_order.clear()
                         self._submit_value(choice)
                         return
                 self._render()
@@ -383,8 +384,10 @@ class MainWindow(QMainWindow):
             if CardInstanceId(card_id) in request.eligible_card_ids:
                 if card_id in self._selected_cards:
                     self._selected_cards.remove(card_id)
+                    if card_id in self._selected_card_order:self._selected_card_order.remove(card_id)
                 elif len(self._selected_cards) < request.max_count:
                     self._selected_cards.add(card_id)
+                    self._selected_card_order.append(card_id)
                 self._render()
 
     def _player_clicked(self, player_id: str) -> None:
@@ -744,8 +747,8 @@ class MainWindow(QMainWindow):
         elif kind is RequestType.CHOOSE_CARDS:
             count = len(self._selected_cards)
             prompt = request.prompt + f"：已选 {count}/{request.min_count} 张。"
-            ordered = tuple(card_id for card_id in request.eligible_card_ids if str(card_id) in self._selected_cards)
-            verb = '确认选择' if '仁德' in request.prompt or '制衡' in request.prompt else '确认弃置'
+            ordered = tuple(dict.fromkeys((*[c for c in self._selected_card_order if c in self._selected_cards and c in request.eligible_card_ids],*[c for c in request.eligible_card_ids if str(c) in self._selected_cards])))
+            verb = '确认置顶' if '【纵玄】' in request.prompt else '确认选择' if '仁德' in request.prompt or '制衡' in request.prompt else '确认弃置'
             from sanguosha.engine.errors import InvalidDecision
             try:
                 request.validate(ordered)
@@ -778,7 +781,7 @@ class MainWindow(QMainWindow):
             prompt = request.prompt
         self.decision.render(prompt, actions)
         public={str(card.card_id):card for card in (*view.shared_cards,
-            *(card for player in view.players for card in (*player.equipment,*player.judgments,*player.revealed_hand,*(card for key,cards in player.special_piles.items() if key!='star' and not key.startswith('committed:') for card in cards))))}
+            *(card for player in view.players for card in (*player.equipment,*player.judgments,*player.revealed_hand,*(card for key,cards in player.special_piles.items() if player.player_id==self.session.human_id or key!='star' and not key.startswith('committed:') for card in cards))))}
         for button,(_,value,_) in zip(self.decision.buttons,actions):
             cid=value[1] if isinstance(value,tuple) and len(value)==2 and value[0]=='ui.toggle_card' else value
             card=public.get(cid) if isinstance(cid,str) else None
@@ -789,6 +792,6 @@ class MainWindow(QMainWindow):
                 button.hide()
 
     def _public_card_label(self,cid,view):
-        public=(*view.shared_cards,*(card for player in view.players for card in (*player.equipment,*player.judgments,*player.revealed_hand,*(card for key,cards in player.special_piles.items() if key!='star' and not key.startswith('committed:') for card in cards))))
+        public=(*view.shared_cards,*(card for player in view.players for card in (*player.equipment,*player.judgments,*player.revealed_hand,*(card for key,cards in player.special_piles.items() if player.player_id==self.session.human_id or key!='star' and not key.startswith('committed:') for card in cards))))
         card=next((card for card in public if str(card.card_id)==str(cid)),None)
         return f'{card.name} {card.suit}{card.rank}' if card else '目标背面手牌'

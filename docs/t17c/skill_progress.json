@@ -1,359 +1,359 @@
 {
-  "status": "IN_PROGRESS",
+  "status": "COMPLETE",
   "branch": "t17c-remaining-generals",
   "baseline": "e34ae2e",
-  "production_count": 76,
+  "production_count": 103,
   "target_count": 103,
   "skills": [
     {
       "general_id": "yj2012_xun_you",
       "skill_id": "qice",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_xun_you",
       "skill_id": "zhiyu",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_wang_yi",
       "skill_id": "zhenlie",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_wang_yi",
       "skill_id": "miji",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_cao_zhang",
       "skill_id": "jiangchi",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_zhong_hui",
       "skill_id": "quanji",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_zhong_hui",
       "skill_id": "zili",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_zhong_hui",
       "skill_id": "paiyi",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_liao_hua",
       "skill_id": "dangxian",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_liao_hua",
       "skill_id": "fuli",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_guan_xing_zhang_bao",
       "skill_id": "fuhun",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_ma_dai",
       "skill_id": "mashu",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_ma_dai",
       "skill_id": "qianxi",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_bu_lianshi",
       "skill_id": "anxu",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_bu_lianshi",
       "skill_id": "zhuiyi",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_cheng_pu",
       "skill_id": "lihuo",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_cheng_pu",
       "skill_id": "chunlao",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_han_dang",
       "skill_id": "gongqi",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_han_dang",
       "skill_id": "jiefan",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_liu_biao",
       "skill_id": "zishou",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_liu_biao",
       "skill_id": "zongshi",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2012_hua_xiong",
       "skill_id": "shiyong",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_cao_chong",
       "skill_id": "chengxiang",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_cao_chong",
       "skill_id": "renxin",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_guo_huai",
       "skill_id": "jingce",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_man_chong",
       "skill_id": "junxing",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_man_chong",
       "skill_id": "yuce",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_guan_ping",
       "skill_id": "longyin",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_jian_yong",
       "skill_id": "qiaoshui",
-      "runtime_status": "NOT_IMPLEMENTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_jian_yong",
       "skill_id": "zongshi_jianyong",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_liu_feng",
       "skill_id": "xiansi",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_pan_zhang_ma_zhong",
       "skill_id": "duodao",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_pan_zhang_ma_zhong",
       "skill_id": "anjian",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_yu_fan",
       "skill_id": "zongxuan",
-      "runtime_status": "NOT_IMPLEMENTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_yu_fan",
       "skill_id": "zhiyan",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_zhu_ran",
       "skill_id": "danshou",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_fu_huanghou",
       "skill_id": "zhuikong",
-      "runtime_status": "NOT_IMPLEMENTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_fu_huanghou",
       "skill_id": "qiuyuan",
-      "runtime_status": "NOT_IMPLEMENTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_li_ru",
       "skill_id": "juece",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_li_ru",
       "skill_id": "mieji",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "yj2013_li_ru",
       "skill_id": "fencheng",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "shadow_god_liubei",
       "skill_id": "longnu",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "shadow_god_liubei",
       "skill_id": "jieying_liubei",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "shadow_god_luxun",
       "skill_id": "junlve",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "shadow_god_luxun",
       "skill_id": "cuike",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "shadow_god_luxun",
       "skill_id": "zhanhuo",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "thunder_god_ganning",
       "skill_id": "poxi",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "thunder_god_ganning",
       "skill_id": "jieying_ganning",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "thunder_god_zhangliao",
       "skill_id": "duorui",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     },
     {
       "general_id": "thunder_god_zhangliao",
       "skill_id": "zhiti",
-      "runtime_status": "PROTOTYPE_TESTED",
-      "acceptance_status": "PENDING",
-      "production_exposed": false
+      "runtime_status": "IMPLEMENTED_TESTED",
+      "acceptance_status": "PASS",
+      "production_exposed": true
     }
   ]
 }

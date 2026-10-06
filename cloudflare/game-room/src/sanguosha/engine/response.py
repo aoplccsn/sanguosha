@@ -70,3 +70,20 @@ class RespondWithCardHandler:
                                                 action.response_number, action.response_total))
         self.moves.move(state, CardMove(f"{action.action_id}:to-discard", (card_id,), processing, discard, CardMoveReason.RESPONSE, action.player_id, action.action_id))
         return StepResult.complete(str(card_id))
+
+
+def dodge_gift_options(state,skills,pid):
+    """Method-none Jink offers: transfer physical subcards without a response event."""
+    from .yj2011_tier3 import canonical_definition
+    from .suits import effective_color
+    from sanguosha.model.enums import Color
+    hand=state.cards_in(ZoneRef(ZoneType.HAND,pid))
+    offers={c:(c,) for c in hand if canonical_definition(state,skills,pid,state.cards[c].definition_id,c)=='basic.dodge'}
+    if skills.has(state,pid,'qingguo'):
+        offers.update({'virtual:qingguo:'+c:(c,) for c in hand if effective_color(state,c,pid) is Color.BLACK})
+    if skills.has(state,pid,'longdan'):
+        offers.update({'virtual:longdan:'+c:(c,) for c in hand if canonical_definition(state,skills,pid,state.cards[c].definition_id,c) in ('basic.slash','basic.fire_slash','basic.thunder_slash')})
+    if skills.has(state,pid,'longhun'):
+        from .gods import longhun_materials,longhun_option
+        offers.update({longhun_option(cards):cards for cards in longhun_materials(state,pid,'basic.dodge')})
+    return offers
