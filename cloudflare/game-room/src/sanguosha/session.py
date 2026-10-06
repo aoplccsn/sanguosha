@@ -138,6 +138,8 @@ class GameSession:
             revealed_identities={setup.lord_id} if setup is not None else {ids[0]},
         )
         for player in players.values():
+            if skills is not None and skills.has(state,player.player_id,'jieying_liubei'):
+                player.chained=True
             if player.character_id == 'forest_god_lvbu':
                 player.marks['rage'] = 2
             if skills is not None and player.character_id == 'mountain_zuoci':

@@ -131,7 +131,8 @@ class MilitaryDamageHandler(DamageActionHandler):
             frame.local['amount'] = amount
             chain = ()
             if action.nature is not DamageNature.NORMAL and target.chained:
-                target.chained = False
+                from .chaining import set_chained
+                set_chained(state,action.target_id,False,self.skills)
                 if not getattr(action, 'propagated', False):
                     start = state.seat_order.index(action.target_id)
                     order = state.seat_order[start + 1:] + state.seat_order[:start]

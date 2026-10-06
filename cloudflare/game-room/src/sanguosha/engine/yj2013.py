@@ -38,6 +38,35 @@ class YJ2013Handler(YJSkillHandler):
             return StepResult.complete()
         return super().step(state,frame)
 
+    def xiansi(self,state,f):
+        from .military_equipment import discardable
+        from sanguosha.model.zones import ZoneRef,ZoneType
+        a=f.action;pid=a.player_id
+        if f.step_index==0:
+            targets=tuple(q for q in state.seat_order if state.players[q].is_alive and discardable(state,q))
+            if not targets:return StepResult.complete()
+            f.local['targets']=targets;f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【陷嗣】是否将一至两名角色的牌置为逆？')
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted:return StepResult.complete()
+            f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_PLAYERS,'【陷嗣】选择一至两名有手牌或装备的角色',allowed_player_ids=f.local['targets'],min_count=1,max_count=2)
+        if f.step_index==2:
+            chosen,f.decision=tuple(f.decision),None
+            f.local['chosen']=tuple(q for q in state.seat_order if q in chosen);f.step_index=3
+        if f.step_index==4:
+            card,f.decision=f.decision,None
+            self.transfer(state,a,(card,),counter_zone(pid))
+            f.cursor+=1;f.step_index=3
+            return StepResult.continue_()
+        while f.cursor<len(f.local['chosen']):
+            target=f.local['chosen'][f.cursor];cards=discardable(state,target)
+            if not state.players[target].is_alive or not cards:f.cursor+=1;continue
+            f.step_index=4
+            return self.ask(f,RequestType.CHOOSE_CARD,'【陷嗣】选择一张牌置为逆',eligible_card_ids=cards,subject_player_id=target)
+        return StepResult.complete()
+
     def mieji(self,state,f):
         from itertools import combinations
         from sanguosha.model.enums import CardCategory,Color
@@ -454,6 +483,7 @@ class LongyinWindowHandler:
 def register(registry, skills, moves, definitions, deck):
     registry.register(YJ2013Action, YJ2013Handler(skills, moves, definitions, deck))
     registry.register(LongyinWindow,LongyinWindowHandler())
+    registry.register(XiansiSlashAction,XiansiSlashHandler(skills,moves,definitions,deck))
 
 
 def damage_reaction(state,frame,skills):
@@ -496,3 +526,67 @@ def event_reactions(state,event,skills):
     if definition not in ('basic.slash','basic.fire_slash','basic.thunder_slash'):return ()
     owners=tuple(q for q in state.seat_order if state.players[q].is_alive and skills.has(state,q,'longyin'))
     return (LongyinWindow(event.event_id+':longyin-window',event.player_id,event,owners),) if owners else ()
+
+
+def counter_zone(pid):
+    from sanguosha.model.zones import ZoneRef,ZoneType
+    return ZoneRef(ZoneType.SPECIAL,pid,special_key='counter')
+
+@dataclass(frozen=True,slots=True)
+class XiansiSlashAction(Action):
+    player_id: str
+    opponent_id: str
+
+class XiansiSlashHandler(YJSkillHandler):
+    def __init__(self,skills,moves,definitions,deck):
+        from .yj2011_tier3 import AuthorizedVirtualUseHandler
+        self.skills,self.moves,self.definitions,self.deck=skills,moves,definitions,deck
+        self.authorized=AuthorizedVirtualUseHandler(skills,definitions,moves.recorder if moves is not None else None)
+
+    def rule(self):
+        from .military_basics import MilitarySlashRule
+        return MilitarySlashRule(self.authorized.distance,self.skills)
+
+    def available(self,state,pid,target):
+        from sanguosha.model.enums import Phase
+        return (state.players[pid].is_alive and state.current_player_id==pid and state.current_phase is Phase.PLAY
+            and state.play_usage is not None and target!=pid and state.players[target].is_alive
+            and self.skills.has(state,target,'xiansi') and len(state.cards_in(counter_zone(target)))>=2
+            and target in self.rule().target_candidates(state,pid))
+
+    def validate_start(self,state,a):
+        from .card_rules import InvalidCardUse
+        if not self.available(state,a.player_id,a.opponent_id):raise InvalidCardUse('陷嗣杀不可用')
+
+    def step(self,state,f):
+        from .card_rules import InvalidCardUse
+        from .card_moves import CardMoveReason
+        from sanguosha.model.zones import ZoneRef,ZoneType
+        from .military_basics import SlashSequence
+        from .yj2011_tier3 import record_slash_use
+        a=f.action;pid=a.player_id;target=a.opponent_id
+        if f.step_index==0:
+            self.validate_start(state,a);f.step_index=1
+            return self.ask(f,RequestType.CHOOSE_CARDS,'【陷嗣】移去两张逆，视为对其使用杀',eligible_card_ids=state.cards_in(counter_zone(target)),subject_player_id=target,min_count=2,max_count=2)
+        if f.step_index==1:
+            f.local['cards'],f.decision=tuple(f.decision),None
+            # The counter cards are costs, not virtual Slash materials. Halberd and Lihuo do not add targets.
+            extra=max(0,state.players[pid].marks.get('slash_extra_targets',0))
+            candidates=tuple(q for q in self.rule().target_candidates(state,pid) if q!=target)
+            f.step_index=2
+            if extra and candidates:
+                return self.ask(f,RequestType.CHOOSE_PLAYERS,'【陷嗣】选择杀的额外目标（可不选）',allowed_player_ids=candidates,min_count=0,max_count=min(extra,len(candidates)))
+            f.decision=()
+        if f.step_index==2:
+            if not self.available(state,pid,target):raise InvalidCardUse('陷嗣杀目标已失效')
+            cards=f.local['cards']
+            if any(c not in state.cards_in(counter_zone(target)) for c in cards):raise InvalidCardUse('逆已失效')
+            additional,f.decision=tuple(f.decision),None
+            targets=tuple(q for q in state.seat_order if q==target or q in additional)
+            self.transfer(state,a,cards,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM)
+            virtual=VirtualCard('basic.slash',(),None,None,'xiansi')
+            counted=record_slash_use(state,pid,targets)
+            self.moves.recorder.record(CardUsedEvent(a.action_id+':used',pid,a.action_id,targets,'basic.slash',slash_counted=counted,virtual_card=virtual))
+            f.step_index=3
+            return StepResult.push(SlashSequence(a.action_id+':slash',pid,a.action_id,targets,virtual))
+        return StepResult.complete(f.child_result)

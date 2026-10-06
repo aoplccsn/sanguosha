@@ -6,6 +6,9 @@ from sanguosha.engine.yj2011_tier3 import hand
 def decide(provider,state,r):
     pid=r.player_id;kind=r.request_type
     def enemy(q):return provider._priority(state,pid,q)>0
+    if '【结营】' in r.prompt and kind is RequestType.CHOOSE_PLAYER:
+        value=max(r.allowed_player_ids,key=lambda q:(enemy(q),-state.players[q].hp))
+        r.validate(value);return Decision(r.request_id,pid,value)
     if '【劫营】' in r.prompt:
         if kind is RequestType.YES_NO:
             value=any(q!=pid and state.players[q].is_alive and enemy(q) for q in state.seat_order)

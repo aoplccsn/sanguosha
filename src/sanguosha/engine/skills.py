@@ -108,6 +108,10 @@ class FinishSkillBody:
     def step(self, state, frame):
         actor = frame.action.player_id
         if frame.step_index == 1:
+            if not frame.local.get('liubei_jieying_offered') and self.skills.has(state,actor,'jieying_liubei'):
+                from .remaining_gods import RemainingGodAction
+                frame.local['liubei_jieying_offered']=True
+                return StepResult.push(RemainingGodAction(frame.action.action_id+':jieying',actor,'jieying_liubei'))
             if not frame.local.get('camp_transfer_offered') and self.skills.has(state,actor,'jieying_ganning'):
                 from .remaining_gods import RemainingGodAction
                 frame.local['camp_transfer_offered']=True
@@ -187,6 +191,10 @@ class PreparationSkillBody:
         actor = frame.action.player_id
         if not state.players[actor].is_alive:
             return StepResult.complete()
+        if frame.step_index == 1 and not frame.local.get('yj2013_xiansi') and self.skills.has(state,actor,'xiansi'):
+            from .yj2013 import YJ2013Action
+            frame.local['yj2013_xiansi']=True;frame.step_index=20
+            return StepResult.push(YJ2013Action(frame.action.action_id+':xiansi',actor,'xiansi'))
         if frame.step_index == 1 and not frame.local.get('yj2012_qianxi') and self.skills.has(state, actor, 'qianxi'):
             from .yj2012 import YJ2012Action
             frame.local['yj2012_qianxi'] = True
@@ -1167,6 +1175,9 @@ class SkillPlayOptions:
         extra.extend(yj2012_play_options(state, pid, self.skills))
         from .yj2013 import play_options as yj2013_play_options
         extra.extend(yj2013_play_options(state,pid,self.skills))
+        from .yj2013 import XiansiSlashHandler
+        xiansi=XiansiSlashHandler(self.skills,None,self.validator.definitions,None)
+        extra.extend('skill:xiansi_slash:'+q for q in state.seat_order if xiansi.available(state,pid,q))
         hand = state.cards_in(ZoneRef(ZoneType.HAND,pid))
         materials = tuple(cid for ref, zone in state.zones.items()
                           if ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
@@ -1325,6 +1336,9 @@ class SkillPlayOptions:
     def build_action(self, state, pid, option, aid):
         if option not in self.options(state,pid):
             raise InvalidCardUse('skill option is no longer legal')
+        if option.startswith('skill:xiansi_slash:'):
+            from .yj2013 import XiansiSlashAction
+            return XiansiSlashAction(aid+':xiansi',pid,option.split(':',2)[2])
         if option in ('skill:zhanhuo','skill:poxi'):
             from .remaining_gods import RemainingGodAction
             return RemainingGodAction(aid+':god',pid,option.split(':')[1])

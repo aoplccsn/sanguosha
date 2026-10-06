@@ -5,6 +5,22 @@ from sanguosha.engine.yj2011_tier3 import hand
 def decide(provider,state,r):
     pid=r.player_id;kind=r.request_type;prompt=r.prompt
     def keep(c):return {'basic.peach':9,'basic.dodge':6,'trick.nullification':7}.get(state.cards[c].definition_id,2)
+    if kind is RequestType.CHOOSE_OPTION:
+        attacks=[o for o in r.choices if o.startswith('skill:xiansi_slash:') and provider._priority(state,pid,o.split(':',2)[2])>0]
+        if attacks:return Decision(r.request_id,pid,attacks[0])
+    if '【陷嗣】' in prompt:
+        if kind is RequestType.YES_NO:value=True
+        elif kind is RequestType.CHOOSE_PLAYERS:
+            targets=sorted(r.allowed_player_ids,key=lambda q:provider._priority(state,pid,q),reverse=True)
+            value=tuple(q for q in targets if provider._priority(state,pid,q)>0)[:r.max_count]
+            if len(value)<r.min_count:value=tuple(targets[:r.min_count])
+        elif kind is RequestType.CHOOSE_CARD:
+            own=hand(state,pid)
+            public=[c for c in r.eligible_card_ids if c not in hand(state,r.subject_player_id)]
+            value=min(r.eligible_card_ids,key=keep) if r.subject_player_id==pid else public[0] if public else r.eligible_card_ids[0]
+        elif kind is RequestType.CHOOSE_CARDS:value=tuple(sorted(r.eligible_card_ids,key=keep)[:2])
+        else:return None
+        r.validate(value);return Decision(r.request_id,pid,value)
     if kind is RequestType.CHOOSE_OPTION and 'skill:mieji' in r.choices:
         if any(provider._priority(state,pid,q)>0 for q in state.seat_order if q!=pid and state.players[q].is_alive):return Decision(r.request_id,pid,'skill:mieji')
     if '【灭计】' in prompt:

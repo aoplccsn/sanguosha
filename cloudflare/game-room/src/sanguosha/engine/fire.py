@@ -312,7 +312,8 @@ class NiepanHandler:
                         tuple(zone.card_ids), ref, ZoneRef(ZoneType.DISCARD_PILE),
                         CardMoveReason.DISCARD, player_id))
             player.face_up = True
-            player.chained = False
+            from .chaining import set_chained
+            set_chained(state,player_id,False,getattr(self.moves,'skills',None))
             frame.step_index = 2
             return StepResult.push(DrawCardsAction(action.action_id + ':draw', player_id, 3))
         if frame.step_index == 2:
@@ -526,6 +527,8 @@ class FireHandLimit:
                              and self.skills.faction(state, pid) is Kingdom.QUN)
         from .remaining_gods import camp_bonus
         value += camp_bonus(state,player_id,self.skills)
+        from .chaining import jieying_hand_bonus
+        value += jieying_hand_bonus(state,player_id,self.skills)
         value -= int(state.players[player_id].marks.get('poxi_hand_limit')==state.turn_number)
         return max(0,value)
 

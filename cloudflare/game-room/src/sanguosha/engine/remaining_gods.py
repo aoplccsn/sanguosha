@@ -55,6 +55,21 @@ def clear_camp(state,holder):
 
 
 class RemainingGodHandler(YJSkillHandler):
+    def jieying_liubei(self,state,f):
+        from .chaining import set_chained
+        a=f.action;pid=a.player_id
+        targets=tuple(q for q in state.seat_order if q!=pid and state.players[q].is_alive and not state.players[q].chained)
+        if f.step_index==0:
+            set_chained(state,pid,True,self.skills)
+            if not targets:return StepResult.complete()
+            f.step_index=1
+            return self.ask(f,RequestType.CHOOSE_PLAYER,'【结营】选择一名其他未连环角色',allowed_player_ids=targets,min_count=1,max_count=1)
+        target,f.decision=f.decision,None
+        if target in targets:
+            set_chained(state,target,True,self.skills)
+            self.moves.recorder.record(Event(a.action_id+':chain','player_chained',pid,target,metadata={'skill_id':'jieying_liubei'}))
+        return StepResult.complete()
+
     def validate_start(self,state,a):
         if a.skill in ('poxi','zhanhuo'):
             if not self.skills.has(state,a.player_id,a.skill):raise InvalidCardUse('角色不具有该技能')

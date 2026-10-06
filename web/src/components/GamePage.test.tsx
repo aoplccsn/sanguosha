@@ -38,6 +38,23 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
+  it('shows public counter cards in the Xiansi modal and requires exactly two', async () => {
+    ;(players[1] as any).special_piles = {counter:[
+      {...card,card_id:'counter-1'},
+      {...card,card_id:'counter-2',name:'闪',definition_id:'basic.dodge'},
+    ]}
+    request = {request_id:'xiansi',player_id:'p1',request_type:'choose_cards',subject_player_id:'p2',
+      prompt:'【陷嗣】移去两张逆，视为对其使用杀',choices:[],allowed_player_ids:[],eligible_card_ids:['counter-1','counter-2'],min_count:2,max_count:2,remaining_ms:60000}
+    render(<GamePage />)
+    const panel=within(screen.getByRole('dialog',{name:'陷嗣'}))
+    expect(panel.getByText('逆')).toBeInTheDocument()
+    await userEvent.click(panel.getByRole('button',{name:/^杀 /}))
+    expect(panel.getByRole('button',{name:'确定'})).toBeDisabled()
+    await userEvent.click(panel.getByRole('button',{name:/^闪 /}))
+    await userEvent.click(panel.getByRole('button',{name:'确定'}))
+    expect(submitDecision).toHaveBeenCalledWith('xiansi',['counter-1','counter-2'])
+    delete (players[1] as any).special_piles
+  })
   it('shows authorized Poxi hand faces and rejects four cards with duplicate suits', async () => {
     extraCards = [
       { ...card, card_id: 'dodge-2', name: '闪', suit: '♥', definition_id: 'basic.dodge' },

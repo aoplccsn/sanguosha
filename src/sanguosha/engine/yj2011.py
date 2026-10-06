@@ -266,6 +266,7 @@ class JujianHandler:
             if choice=='recover':
                 from .recovery import RecoverAction
                 return StepResult.push(RecoverAction(a.action_id+':recover',a.player_id,target,1))
-            p.chained=False
+            from .chaining import set_chained
+            set_chained(state,target,False,self.skills)
             if not p.face_up: return StepResult.push(TurnoverAction(a.action_id+':reset',target))
         return StepResult.complete()

@@ -218,7 +218,7 @@
     {
       "general_id": "yj2013_liu_feng",
       "skill_id": "xiansi",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
@@ -302,7 +302,7 @@
     {
       "general_id": "shadow_god_liubei",
       "skill_id": "jieying_liubei",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },

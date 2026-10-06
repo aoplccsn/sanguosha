@@ -35,7 +35,7 @@ def choice_labels(room, request):
         if ref is None:
             return None
         from sanguosha.engine.private_hands import can_view_hand
-        if ref.zone_type in (ZoneType.HAND, ZoneType.SPECIAL) and ref.player_id != request.player_id and not (ref.zone_type is ZoneType.HAND and can_view_hand(session.state,request.player_id,ref.player_id)):
+        if ref.player_id != request.player_id and ((ref.zone_type is ZoneType.HAND and not can_view_hand(session.state,request.player_id,ref.player_id)) or (ref.zone_type is ZoneType.SPECIAL and (ref.special_key == 'star' or ref.special_key.startswith('committed:')))):
             return '背面手牌' if ref.zone_type is ZoneType.HAND else '特殊区牌'
         if ref.zone_type is ZoneType.DRAW_PILE:
             return '背面牌'
@@ -70,6 +70,8 @@ def choice_labels(room, request):
             return f'受到 {suffix} 点伤害' if suffix.isdigit() else '受到伤害'
         if prefix == 'current':
             return '保留当前判定'
+        if value.startswith('skill:xiansi_slash:'):
+            return '陷嗣 · 对' + (room.seats.get(value.split(':',2)[2]).name if room.seats.get(value.split(':',2)[2]) else '该角色') + '使用杀'
         if prefix in ('skill', 'virtual'):
             skill_id = suffix.partition(':')[0]
             return SKILL_NAMES.get(skill_id, '丈八蛇矛' if skill_id == 'spear' else '技能选项')

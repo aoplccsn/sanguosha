@@ -255,7 +255,8 @@ class TargetTrickHandler:
             if d == 'trick.god_salvation':
                 return StepResult.push(RecoverAction(a.action_id+':heal',a.source_id,a.target_id,1))
             if d == 'trick.iron_chain':
-                state.players[a.target_id].chained=not state.players[a.target_id].chained
+                from .chaining import set_chained
+                set_chained(state,a.target_id,not state.players[a.target_id].chained,self.skills)
                 return StepResult.complete()
             if d in ('trick.dismantlement','trick.snatch'):
                 eligible=personal_cards(state,a.target_id)

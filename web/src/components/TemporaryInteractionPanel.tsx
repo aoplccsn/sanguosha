@@ -19,6 +19,7 @@ export function TemporaryInteractionPanel({ projection, request, seatId, connect
   const groups = harvest ? [{ name: '公共牌池', cards: projection.shared_cards }] : [
     { name: '手牌', cards: (target?.revealed_hand ?? []).filter(c => eligible.has(c.card_id)) },
     { name: '装备', cards: target?.equipment ?? [] }, { name: '判定', cards: target?.judgments ?? [] },
+    ...Object.entries(target?.special_piles ?? {}).map(([key,cards]) => ({name:key === 'counter' ? '逆' : '特殊牌堆',cards:cards.filter(c=>eligible.has(c.card_id))})).filter(group=>group.cards.length>0),
   ]
   if (requestControls) groups.push({name:'当前响应手牌', cards:projection.hand.filter(c=>eligible.has(c.card_id))})
   return <div className="temporary-backdrop"><section role="dialog" aria-modal="true" aria-label={title} className="temporary-panel">
