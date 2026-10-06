@@ -1,0 +1,193 @@
+FFFFFFFFFF                                                               [100%]
+================================== FAILURES ===================================
+_ test_view_as_cannot_use_qianxi_forbidden_hand_color[qixi-ganning-club-basic.slash] _
+
+skill = 'qixi', general = 'ganning', suit = <Suit.CLUB: 'club'>
+definition = 'basic.slash'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',CASES)
+    def test_view_as_cannot_use_qianxi_forbidden_hand_color(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        if skill=='longhun':s.state.players['p1'].hp=1;s.state.players['p1'].max_hp=2
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'red' if suit in (Suit.HEART,Suit.DIAMOND) else 'black','turn':s.state.turn_number}}
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(action(skill,cid))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:34: Failed
+_ test_view_as_cannot_use_qianxi_forbidden_hand_color[guose-daqiao-diamond-basic.slash] _
+
+skill = 'guose', general = 'daqiao', suit = <Suit.DIAMOND: 'diamond'>
+definition = 'basic.slash'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',CASES)
+    def test_view_as_cannot_use_qianxi_forbidden_hand_color(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        if skill=='longhun':s.state.players['p1'].hp=1;s.state.players['p1'].max_hp=2
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'red' if suit in (Suit.HEART,Suit.DIAMOND) else 'black','turn':s.state.turn_number}}
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(action(skill,cid))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:34: Failed
+_ test_view_as_cannot_use_qianxi_forbidden_hand_color[longdan-zhaoyun-heart-basic.dodge] _
+
+skill = 'longdan', general = 'zhaoyun', suit = <Suit.HEART: 'heart'>
+definition = 'basic.dodge'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',CASES)
+    def test_view_as_cannot_use_qianxi_forbidden_hand_color(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        if skill=='longhun':s.state.players['p1'].hp=1;s.state.players['p1'].max_hp=2
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'red' if suit in (Suit.HEART,Suit.DIAMOND) else 'black','turn':s.state.turn_number}}
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(action(skill,cid))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:34: Failed
+_ test_view_as_cannot_use_qianxi_forbidden_hand_color[huoji-fire_wolong-heart-basic.slash] _
+
+skill = 'huoji', general = 'fire_wolong', suit = <Suit.HEART: 'heart'>
+definition = 'basic.slash'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',CASES)
+    def test_view_as_cannot_use_qianxi_forbidden_hand_color(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        if skill=='longhun':s.state.players['p1'].hp=1;s.state.players['p1'].max_hp=2
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'red' if suit in (Suit.HEART,Suit.DIAMOND) else 'black','turn':s.state.turn_number}}
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(action(skill,cid))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:34: Failed
+_ test_view_as_cannot_use_qianxi_forbidden_hand_color[duanliang-forest_xuhuang-club-basic.slash] _
+
+skill = 'duanliang', general = 'forest_xuhuang', suit = <Suit.CLUB: 'club'>
+definition = 'basic.slash'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',CASES)
+    def test_view_as_cannot_use_qianxi_forbidden_hand_color(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        if skill=='longhun':s.state.players['p1'].hp=1;s.state.players['p1'].max_hp=2
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'red' if suit in (Suit.HEART,Suit.DIAMOND) else 'black','turn':s.state.turn_number}}
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(action(skill,cid))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:34: Failed
+_ test_view_as_cannot_use_qianxi_forbidden_hand_color[longhun-mountain_god_zhaoyun-heart-basic.slash] _
+
+skill = 'longhun', general = 'mountain_god_zhaoyun'
+suit = <Suit.HEART: 'heart'>, definition = 'basic.slash'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',CASES)
+    def test_view_as_cannot_use_qianxi_forbidden_hand_color(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        if skill=='longhun':s.state.players['p1'].hp=1;s.state.players['p1'].max_hp=2
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'red' if suit in (Suit.HEART,Suit.DIAMOND) else 'black','turn':s.state.turn_number}}
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(action(skill,cid))
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_t18a11_view_as_system.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\sanguosha\engine\engine.py:56: in start_action
+    return self.run_until_blocked()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+src\sanguosha\engine\engine.py:97: in run_until_blocked
+    outcome = self.registry.handler_for(frame.action).step(self.state, frame)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\sanguosha\engine\gods.py:639: in step
+    if not self.available(state, actor, action.definition_id, action.material_ids):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\sanguosha\engine\gods.py:623: in available
+    or tuple(materials) not in longhun_materials(state, actor, definition_id)):
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='mountain_god...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None)
+actor = 'p1', definition_id = ('std-club-04-2',)
+
+    def longhun_materials(state, actor, definition_id):
+>       suit = LONGHUN_SUIT[definition_id]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: ('std-club-04-2',)
+
+src\sanguosha\engine\gods.py:595: KeyError
+_ test_view_as_trick_cannot_bypass_qiaoshui_lock[qixi-ganning-club-basic.slash] _
+
+skill = 'qixi', general = 'ganning', suit = <Suit.CLUB: 'club'>
+definition = 'basic.slash'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',[c for c in CASES if c[0] in ('qixi','guose','huoji','duanliang')])
+    def test_view_as_trick_cannot_bypass_qiaoshui_lock(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.state.players['p1'].marks['qiaoshui_trick_lock']=s.state.turn_number
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(action(skill,cid))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:42: Failed
+_ test_view_as_trick_cannot_bypass_qiaoshui_lock[guose-daqiao-diamond-basic.slash] _
+
+skill = 'guose', general = 'daqiao', suit = <Suit.DIAMOND: 'diamond'>
+definition = 'basic.slash'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',[c for c in CASES if c[0] in ('qixi','guose','huoji','duanliang')])
+    def test_view_as_trick_cannot_bypass_qiaoshui_lock(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.state.players['p1'].marks['qiaoshui_trick_lock']=s.state.turn_number
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(action(skill,cid))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:42: Failed
+_ test_view_as_trick_cannot_bypass_qiaoshui_lock[huoji-fire_wolong-heart-basic.slash] _
+
+skill = 'huoji', general = 'fire_wolong', suit = <Suit.HEART: 'heart'>
+definition = 'basic.slash'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',[c for c in CASES if c[0] in ('qixi','guose','huoji','duanliang')])
+    def test_view_as_trick_cannot_bypass_qiaoshui_lock(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.state.players['p1'].marks['qiaoshui_trick_lock']=s.state.turn_number
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(action(skill,cid))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:42: Failed
+_ test_view_as_trick_cannot_bypass_qiaoshui_lock[duanliang-forest_xuhuang-club-basic.slash] _
+
+skill = 'duanliang', general = 'forest_xuhuang', suit = <Suit.CLUB: 'club'>
+definition = 'basic.slash'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',[c for c in CASES if c[0] in ('qixi','guose','huoji','duanliang')])
+    def test_view_as_trick_cannot_bypass_qiaoshui_lock(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.state.players['p1'].marks['qiaoshui_trick_lock']=s.state.turn_number
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(action(skill,cid))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:42: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_cannot_use_qianxi_forbidden_hand_color[qixi-ganning-club-basic.slash]
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_cannot_use_qianxi_forbidden_hand_color[guose-daqiao-diamond-basic.slash]
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_cannot_use_qianxi_forbidden_hand_color[longdan-zhaoyun-heart-basic.dodge]
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_cannot_use_qianxi_forbidden_hand_color[huoji-fire_wolong-heart-basic.slash]
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_cannot_use_qianxi_forbidden_hand_color[duanliang-forest_xuhuang-club-basic.slash]
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_cannot_use_qianxi_forbidden_hand_color[longhun-mountain_god_zhaoyun-heart-basic.slash]
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_trick_cannot_bypass_qiaoshui_lock[qixi-ganning-club-basic.slash]
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_trick_cannot_bypass_qiaoshui_lock[guose-daqiao-diamond-basic.slash]
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_trick_cannot_bypass_qiaoshui_lock[huoji-fire_wolong-heart-basic.slash]
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_trick_cannot_bypass_qiaoshui_lock[duanliang-forest_xuhuang-club-basic.slash]
+10 failed in 0.34s

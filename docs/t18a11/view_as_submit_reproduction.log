@@ -1,0 +1,26 @@
+..F..                                                                    [100%]
+================================== FAILURES ===================================
+_ test_view_as_target_submission_rechecks_skill_without_paying[longdan-zhaoyun-heart-basic.dodge] _
+
+skill = 'longdan', general = 'zhaoyun', suit = <Suit.HEART: 'heart'>
+definition = 'basic.dodge'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',[c for c in CASES if c[0]!='longhun'])
+    def test_view_as_target_submission_rechecks_skill_without_paying(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.engine.start_action(action(skill,cid));s=restore(s)
+        r=s.engine.pending_request
+        assert r is not None
+        s.state.players['p1'].disabled_skills.add(skill)
+        choice=r.allowed_player_ids[0]
+        from sanguosha.engine.requests import RequestType
+        if r.request_type is RequestType.CHOOSE_PLAYERS:choice=(choice,)
+>       with pytest.raises(InvalidCardUse):answer(s,choice)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:110: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_target_submission_rechecks_skill_without_paying[longdan-zhaoyun-heart-basic.dodge]
+1 failed, 4 passed, 23 deselected in 0.31s

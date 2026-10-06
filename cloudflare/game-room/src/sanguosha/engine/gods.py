@@ -59,6 +59,9 @@ class WushenHandler:
 
     def step(self, state, frame):
         action = frame.action
+        if frame.step_index in (0, 1):
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, action.player_id, (action.material_id,), 'basic.slash', skills=self.skills, skill_id='wushen')
         actor = action.player_id
         if frame.step_index == 0:
             if not self.available(state, actor, action.material_id):
@@ -632,6 +635,9 @@ class LonghunUseHandler:
 
     def step(self, state, frame):
         action = frame.action
+        if frame.step_index in (0, 1):
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, action.player_id, action.material_ids, action.definition_id, skills=self.skills, skill_id='longhun')
         actor = action.player_id
         hand = ZoneRef(ZoneType.HAND, actor)
         processing = ZoneRef(ZoneType.PROCESSING)

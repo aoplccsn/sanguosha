@@ -1,0 +1,21 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_view_as_cannot_use_qianxi_forbidden_hand_color[longhun-mountain_god_zhaoyun-heart-basic.slash] _
+
+skill = 'longhun', general = 'mountain_god_zhaoyun'
+suit = <Suit.HEART: 'heart'>, definition = 'basic.slash'
+
+    @pytest.mark.parametrize('skill,general,suit,definition',CASES)
+    def test_view_as_cannot_use_qianxi_forbidden_hand_color(skill,general,suit,definition):
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        if skill=='longhun':s.state.players['p1'].hp=1;s.state.players['p1'].max_hp=2
+        cid=put(s,definition);s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'red' if suit in (Suit.HEART,Suit.DIAMOND) else 'black','turn':s.state.turn_number}}
+>       with pytest.raises(InvalidCardUse):s.engine.start_action(action(skill,cid))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:34: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_view_as_system.py::test_view_as_cannot_use_qianxi_forbidden_hand_color[longhun-mountain_god_zhaoyun-heart-basic.slash]
+1 failed, 9 deselected in 0.36s

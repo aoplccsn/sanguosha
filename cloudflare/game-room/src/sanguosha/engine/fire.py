@@ -391,6 +391,9 @@ class FireViewAsTrickHandler:
         if definition is None:
             raise InvalidCardUse('未知转化锦囊技能')
         rule = self.rules.get(definition)
+        if frame.step_index == 0 and action.skill_id != 'lianhuan':
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, player_id, (action.material_id,), definition, skills=self.skills, skill_id=action.skill_id)
         if frame.step_index == 0:
             if not self.available(state, player_id, action.skill_id, action.material_id):
                 raise InvalidCardUse('转化锦囊当前不可用')
@@ -408,6 +411,8 @@ class FireViewAsTrickHandler:
             targets = tuple(choice) if isinstance(choice, tuple) else (choice,)
             if not self.available(state, player_id, action.skill_id, action.material_id):
                 raise InvalidCardUse('转化锦囊材料已不可用')
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, player_id, (action.material_id,), definition, recast=not targets, skills=self.skills, skill_id=action.skill_id)
             rule.validate_targets(state, player_id, targets)
             if any(pid not in self.targets(state, player_id, action.skill_id,
                                            action.material_id) for pid in targets):

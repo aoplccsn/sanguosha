@@ -1,0 +1,21 @@
+F.                                                                       [100%]
+================================== FAILURES ===================================
+______ test_lianhuan_qianxi_banned_color_still_allows_only_recast[False] ______
+
+recast = False
+
+    @pytest.mark.parametrize('recast',[False,True])
+    def test_lianhuan_qianxi_banned_color_still_allows_only_recast(recast):
+        s=setup('xun_you');s.state.players['p1'].character_id='fire_pang_tong';clear_hand(s)
+        cid=put(s,'basic.slash');s.state.cards[cid]=replace(s.state.cards[cid],suit=Suit.CLUB)
+        s.state.metadata['qianxi_limits']={'p2':{'target':'p1','color':'black','turn':s.state.turn_number}}
+        s.engine.start_action(FireViewAsTrick('audit-lianhuan-limit','p1',cid,'lianhuan'));s=restore(s)
+        if not recast:
+>           with pytest.raises(InvalidCardUse):answer(s,('p2',))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_view_as_system.py:164: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_view_as_system.py::test_lianhuan_qianxi_banned_color_still_allows_only_recast[False]
+1 failed, 1 passed, 38 deselected in 0.31s

@@ -35,3 +35,22 @@ def clear_source(state, source):
     if effect and effect['target'] in state.players:
         target = state.players[effect['target']]
         target.marks.pop('qianxi_' + effect['color'] + '_' + source, None)
+
+
+def validate_view_as_limits(state, player_id, material_ids, definition_id, *, recast=False, skills=None, skill_id=None):
+    """Apply final-card use limits before a view-as material leaves its zone."""
+    from .card_rules import InvalidCardUse
+    from .qiaoshui import prohibited
+    from sanguosha.model.enums import Phase
+    usage = state.play_usage
+    if (player_id not in state.players or not state.players[player_id].is_alive
+            or state.current_player_id != player_id or state.current_phase is not Phase.PLAY
+            or usage is None or usage.player_id != player_id or usage.turn_number != state.turn_number
+            or skill_id is not None and (skills is None or not skills.has(state, player_id, skill_id))):
+        raise InvalidCardUse('view-as actor or skill is no longer available')
+    if recast and definition_id == 'trick.iron_chain':
+        return
+    if prohibited(state, player_id, definition_id):
+        raise InvalidCardUse('view-as card use is prohibited')
+    if not card_allowed(state, player_id, material_ids):
+        raise InvalidCardUse('view-as hand color is prohibited')

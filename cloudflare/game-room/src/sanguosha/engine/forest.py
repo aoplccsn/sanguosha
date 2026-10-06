@@ -288,6 +288,9 @@ class DuanliangHandler:
     def step(self, state, frame):
         from .military_tricks import TrickAction
         action = frame.action
+        if frame.step_index in (0, 1):
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, action.player_id, (action.material_id,), 'delayed.supply_shortage', skills=self.skills, skill_id='duanliang')
         if frame.step_index == 0:
             self.validate_start(state, action)
             frame.step_index = 1
@@ -797,6 +800,9 @@ class JiuchiHandler:
     def step(self, state, frame):
         from .military_basics import WineAction
         action = frame.action
+        if frame.step_index in (0, 1):
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, action.player_id, (action.material_id,), 'basic.wine', skills=self.skills, skill_id='jiuchi')
         if frame.step_index == 0:
             if not self.available(state, action.player_id, action.material_id):
                 raise InvalidCardUse('酒池当前不可用')

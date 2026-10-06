@@ -1,0 +1,76 @@
+F..F....                                                                 [100%]
+================================== FAILURES ===================================
+_ test_basic_view_as_material_permissions_cost_and_response_number[False-wusheng-guanyu-basic.slash-heart-equipment.weapon.crossbow-equipment] _
+
+skill = 'wusheng', general = 'guanyu', required = 'basic.slash'
+suit = <Suit.HEART: 'heart'>, definition = 'equipment.weapon.crossbow'
+zone = 'equipment', suppressed = False
+
+    @pytest.mark.parametrize('skill,general,required,suit,definition,zone',[
+        ('wusheng','guanyu','basic.slash',Suit.HEART,'equipment.weapon.crossbow','equipment'),
+        ('qingguo','zhenji','basic.dodge',Suit.CLUB,'basic.slash','hand'),
+        ('longdan','zhaoyun','basic.slash',Suit.HEART,'basic.dodge','hand'),
+        ('jijiu','huatuo','basic.peach',Suit.HEART,'equipment.weapon.crossbow','equipment'),
+    ])
+    @pytest.mark.parametrize('suppressed',[False,True])
+    def test_basic_view_as_material_permissions_cost_and_response_number(skill,general,required,suit,definition,zone,suppressed):
+        from sanguosha.engine.response import RespondWithCardAction
+        from sanguosha.engine.events import CardRespondedEvent
+        from sanguosha.model.enums import EquipmentSlot
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        if skill=='jijiu':s.state.current_player_id='p2';s.state.players['p2'].hp=0
+        cid=put(s,definition,'p1',ZoneType.EQUIPMENT if zone=='equipment' else ZoneType.HAND,EquipmentSlot.WEAPON if zone=='equipment' else None)
+        s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        if suppressed:s.state.players['p1'].disabled_skills.add(skill)
+        s.engine.start_action(RespondWithCardAction('audit-basic-view-response','p1',required,'source',subject_player_id='p2',response_number=2,response_total=2))
+        option='virtual:'+skill+':'+cid
+        assert (option in s.engine.pending_request.eligible_card_ids)==(not suppressed)
+        if suppressed:return
+        s=restore(s);answer(s,option)
+        assert cid in s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+        events=[e for e in s.events.events if isinstance(e,CardRespondedEvent) and e.source_action_id=='source']
+        assert len(events)==1 and events[0].response_definition_id==required
+>       assert events[0].response_number==2 and events[0].response_total==2
+E       AssertionError: assert (1 == 2)
+E        +  where 1 = CardRespondedEvent(event_id='audit-basic-view-response:wusheng-responded', player_id='p1', card_id='std-club-04-2', source_action_id='source', response_definition_id='basic.slash', response_number=1, response_total=1).response_number
+
+tests\test_t18a11_view_as_system.py:80: AssertionError
+_ test_basic_view_as_material_permissions_cost_and_response_number[False-jijiu-huatuo-basic.peach-heart-equipment.weapon.crossbow-equipment] _
+
+skill = 'jijiu', general = 'huatuo', required = 'basic.peach'
+suit = <Suit.HEART: 'heart'>, definition = 'equipment.weapon.crossbow'
+zone = 'equipment', suppressed = False
+
+    @pytest.mark.parametrize('skill,general,required,suit,definition,zone',[
+        ('wusheng','guanyu','basic.slash',Suit.HEART,'equipment.weapon.crossbow','equipment'),
+        ('qingguo','zhenji','basic.dodge',Suit.CLUB,'basic.slash','hand'),
+        ('longdan','zhaoyun','basic.slash',Suit.HEART,'basic.dodge','hand'),
+        ('jijiu','huatuo','basic.peach',Suit.HEART,'equipment.weapon.crossbow','equipment'),
+    ])
+    @pytest.mark.parametrize('suppressed',[False,True])
+    def test_basic_view_as_material_permissions_cost_and_response_number(skill,general,required,suit,definition,zone,suppressed):
+        from sanguosha.engine.response import RespondWithCardAction
+        from sanguosha.engine.events import CardRespondedEvent
+        from sanguosha.model.enums import EquipmentSlot
+        s=setup('xun_you');s.state.players['p1'].character_id=general;clear_hand(s)
+        if skill=='jijiu':s.state.current_player_id='p2';s.state.players['p2'].hp=0
+        cid=put(s,definition,'p1',ZoneType.EQUIPMENT if zone=='equipment' else ZoneType.HAND,EquipmentSlot.WEAPON if zone=='equipment' else None)
+        s.state.cards[cid]=replace(s.state.cards[cid],suit=suit)
+        if suppressed:s.state.players['p1'].disabled_skills.add(skill)
+        s.engine.start_action(RespondWithCardAction('audit-basic-view-response','p1',required,'source',subject_player_id='p2',response_number=2,response_total=2))
+        option='virtual:'+skill+':'+cid
+        assert (option in s.engine.pending_request.eligible_card_ids)==(not suppressed)
+        if suppressed:return
+        s=restore(s);answer(s,option)
+        assert cid in s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+        events=[e for e in s.events.events if isinstance(e,CardRespondedEvent) and e.source_action_id=='source']
+        assert len(events)==1 and events[0].response_definition_id==required
+>       assert events[0].response_number==2 and events[0].response_total==2
+E       AssertionError: assert (1 == 2)
+E        +  where 1 = CardRespondedEvent(event_id='audit-basic-view-response:jijiu-responded', player_id='p1', card_id='std-club-04-2', source_action_id='source', response_definition_id='basic.peach', response_number=1, response_total=1).response_number
+
+tests\test_t18a11_view_as_system.py:80: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_view_as_system.py::test_basic_view_as_material_permissions_cost_and_response_number[False-wusheng-guanyu-basic.slash-heart-equipment.weapon.crossbow-equipment]
+FAILED tests/test_t18a11_view_as_system.py::test_basic_view_as_material_permissions_cost_and_response_number[False-jijiu-huatuo-basic.peach-heart-equipment.weapon.crossbow-equipment]
+2 failed, 6 passed, 13 deselected in 0.32s

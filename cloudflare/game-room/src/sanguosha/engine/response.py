@@ -72,6 +72,19 @@ class RespondWithCardHandler:
         return StepResult.complete(str(card_id))
 
 
+def longdan_materials(state, skills, player_id, required_definition_id):
+    """Use the effective Slash family for both response and method-none offers."""
+    from .yj2011_tier3 import canonical_definition
+    if skills is None or not skills.has(state, player_id, 'longdan'):
+        return ()
+    opposite = (('basic.slash', 'basic.fire_slash', 'basic.thunder_slash')
+                if required_definition_id == 'basic.dodge' else
+                ('basic.dodge',) if required_definition_id == 'basic.slash' else ())
+    return tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND, player_id))
+                 if canonical_definition(state, skills, player_id,
+                     state.cards[cid].definition_id, cid) in opposite)
+
+
 def dodge_gift_options(state,skills,pid):
     """Method-none Jink offers: transfer physical subcards without a response event."""
     from .yj2011_tier3 import canonical_definition
@@ -82,7 +95,7 @@ def dodge_gift_options(state,skills,pid):
     if skills.has(state,pid,'qingguo'):
         offers.update({'virtual:qingguo:'+c:(c,) for c in hand if effective_color(state,c,pid) is Color.BLACK})
     if skills.has(state,pid,'longdan'):
-        offers.update({'virtual:longdan:'+c:(c,) for c in hand if canonical_definition(state,skills,pid,state.cards[c].definition_id,c) in ('basic.slash','basic.fire_slash','basic.thunder_slash')})
+        offers.update({'virtual:longdan:'+c:(c,) for c in longdan_materials(state,skills,pid,'basic.dodge')})
     if skills.has(state,pid,'longhun'):
         from .gods import longhun_materials,longhun_option
         offers.update({longhun_option(cards):cards for cards in longhun_materials(state,pid,'basic.dodge')})

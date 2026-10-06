@@ -700,6 +700,9 @@ class QixiUseHandler:
     def step(self, state, frame):
         from .military_tricks import TrickAction
         action = frame.action
+        if frame.step_index in (0, 1):
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, action.player_id, (action.material_id,), 'trick.dismantlement', skills=self.skills, skill_id='qixi')
         if frame.step_index == 0:
             self.validate_start(state, action)
             frame.step_index = 1
@@ -756,6 +759,9 @@ class GuoseUseHandler:
     def step(self, state, frame):
         from .military_tricks import TrickAction
         action = frame.action
+        if frame.step_index in (0, 1):
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, action.player_id, (action.material_id,), 'delayed.indulgence', skills=self.skills, skill_id='guose')
         if frame.step_index == 0:
             self.validate_start(state, action)
             frame.step_index = 1
@@ -794,6 +800,9 @@ class LongdanUseHandler:
 
     def step(self, state, frame):
         action = frame.action
+        if frame.step_index in (0, 1):
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, action.player_id, (action.material_id,), 'basic.slash', skills=self.skills, skill_id='longdan')
         hand = ZoneRef(ZoneType.HAND, action.player_id)
         if frame.step_index == 0:
             limit = self.slash_rule.usage_limit(state, action.player_id)
@@ -1097,6 +1106,9 @@ class WushengUseHandler:
 
     def step(self, state, frame):
         action = frame.action
+        if frame.step_index in (0, 1):
+            from .card_limits import validate_view_as_limits
+            validate_view_as_limits(state, action.player_id, (action.material_id,), 'basic.slash', skills=self.skills, skill_id='wusheng')
         if frame.step_index == 0:
             limit = self.slash_rule.usage_limit(state,action.player_id)
             if (state.current_phase is not Phase.PLAY or state.current_player_id != action.player_id or
