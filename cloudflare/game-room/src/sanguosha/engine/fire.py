@@ -32,12 +32,15 @@ class QiangxiHandler:
     def targets(self, state, player_id, weapon_cost=None):
         if not state.players[player_id].is_alive:
             return ()
+        from copy import deepcopy
+        probe = state
         equipped_weapon = state.cards_in(ZoneRef(ZoneType.EQUIPMENT, player_id, EquipmentSlot.WEAPON))
-        attack_range = (1 if weapon_cost in equipped_weapon
-                        else self.distance.attack_range(state, player_id))
-        return tuple(pid for pid in state.seat_order if pid != player_id
-                     and state.players[pid].is_alive
-                     and self.distance.distance_between(state, player_id, pid) <= attack_range)
+        if weapon_cost in equipped_weapon:
+            probe = deepcopy(state)
+            probe.zones[ZoneRef(ZoneType.EQUIPMENT, player_id, EquipmentSlot.WEAPON)].card_ids.remove(weapon_cost)
+        return tuple(pid for pid in probe.seat_order if pid != player_id
+                     and probe.players[pid].is_alive
+                     and self.distance.can_reach_with_slash(probe, player_id, pid))
 
     def weapons(self, state, player_id):
         return tuple(cid for ref, zone in state.zones.items()

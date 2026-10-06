@@ -41,6 +41,16 @@ def required_dodge_count(state, source_id, target_id, skills):
                          and skills.gender(state, source_id) is Gender.FEMALE)
     return 2 if doubled else 1
 
+def slash_target_allowed(state,source,target,skills=None):
+    """Target prohibitions shared by ordinary and weapon-generated Slash."""
+    from .fuhuanghou import target_allowed
+    return (source in state.players and target in state.players and source!=target
+            and state.players[source].is_alive and state.players[target].is_alive
+            and target_allowed(state,source,target)
+            and not (skills is not None and skills.has(state,target,'kongcheng')
+                     and not state.cards_in(ZoneRef(ZoneType.HAND,target))))
+
+
 def equipped(state, player, slot):
     cards = state.cards_in(ZoneRef(ZoneType.EQUIPMENT, player, slot))
     return state.cards[cards[0]].definition_id if cards else None
@@ -78,6 +88,16 @@ class MilitaryDamageHandler(DamageActionHandler):
 
     def step(self, state, frame):
         from .damage_cards import damage_definition
+        if frame.step_index==40:
+            wanted=frame.decision is True;frame.decision=None
+            frame.step_index=41 if wanted else 0
+            if wanted:
+                from .military_equipment import WeaponChoice
+                return StepResult.push(WeaponChoice(frame.action.action_id+':kylin-choice',
+                    frame.action.source_id,frame.action.target_id,'kylin_bow'))
+            return StepResult.continue_()
+        if frame.step_index==41:
+            frame.step_index=0
         action = frame.action
         if frame.step_index == 0:
             from .damage import normalize_damage_source
@@ -107,6 +127,18 @@ class MilitaryDamageHandler(DamageActionHandler):
                 if amount != action.amount:
                     from dataclasses import replace
                     action = frame.action = replace(action, amount=amount)
+            if not frame.local.get('kylin_checked'):
+                frame.local['kylin_checked']=True
+                source=action.source_id
+                horses=any(state.cards_in(ZoneRef(ZoneType.EQUIPMENT,action.target_id,slot))
+                           for slot in (EquipmentSlot.OFFENSIVE_HORSE,EquipmentSlot.DEFENSIVE_HORSE))
+                if (source is not None and state.players[source].is_alive and horses
+                        and equipped(state,source,EquipmentSlot.WEAPON)=='equipment.weapon.kylin_bow'
+                        and damage_definition(state,action) in SLASH_IDS
+                        and not getattr(action,'propagated',False) and not getattr(action,'redirected',False)):
+                    frame.step_index=40
+                    return StepResult.ask(PendingRequest(action.action_id+':kylin',source,RequestType.YES_NO,
+                        '\u662f\u5426\u53d1\u52a8\u9e92\u9e9f\u5f13\uff0c\u5f03\u7f6e\u76ee\u6807\u4e00\u5f20\u9a6c\uff1f',action.action_id,frame.frame_id))
             if (action.nature is not DamageNature.THUNDER
                     and any(key.startswith('fog:') for key in target.marks)):
                 self.recorder.record(Event(action.action_id + ':fog', 'damage_prevented',
@@ -503,9 +535,7 @@ class MilitarySlashRule(SlashRule):
             candidates = scoped
         if self.skills is None:
             return candidates
-        return tuple(pid for pid in candidates if not (
-            self.skills.has(state, pid, 'kongcheng') and
-            not state.cards_in(ZoneRef(ZoneType.HAND, pid))))
+        return tuple(pid for pid in candidates if slash_target_allowed(state,user,pid,self.skills))
     def target_bounds(self,state,user,card):
         from .yj2011_tier3 import canonical_definition
         maximum = 3 if equipped(state,user,EquipmentSlot.WEAPON)=='equipment.weapon.halberd' and len(state.cards_in(ZoneRef(ZoneType.HAND,user)))==1 else 1
@@ -525,6 +555,7 @@ class MilitaryStrike(SlashEffectAction):
     virtual_card: VirtualCard | None = None
     root_action_id: str = ""
     required_dodges: int | None = None
+    qinggang_applied: bool | None = None
 
 @dataclass(frozen=True,slots=True)
 class SlashSequence(Action):
@@ -543,6 +574,7 @@ class SlashSequenceHandler:
         from .fuhuanghou import slash_window
         a=f.action
         if f.step_index==0:
+            f.local['qinggang']=equipped(state,a.source_id,EquipmentSlot.WEAPON)=='equipment.weapon.qinggang_sword'
             f.local['wine']=state.players[a.source_id].marks.pop('wine',0) if a.wine_bonus is None else a.wine_bonus
             from .qiaoshui import take_targets
             window=slash_window(state,a.action_id,take_targets(state,a.action_id,a.targets),a.known_targets)
@@ -560,7 +592,7 @@ class SlashSequenceHandler:
         if target not in counts:
             counts[target]=required_dodge_count(state,a.source_id,target,self.skills)
         return StepResult.push(MilitaryStrike(f'{a.action_id}:target:{f.cursor}',a.source_id,target,a.card_id,
-            'basic.dodge',int(f.local['wine']),a.virtual_card,a.action_id,int(counts[target])))
+            'basic.dodge',int(f.local['wine']),a.virtual_card,a.action_id,int(counts[target]),bool(f.local.get('qinggang'))))
 
 class MilitarySlashHandler:
     def liuli_targets(self, state, action, cost):
@@ -602,6 +634,13 @@ class MilitarySlashHandler:
             fixed=getattr(action,'required_dodges',None)
             frame.local['required_dodges'] = fixed if fixed is not None else required_dodge_count(state, action.source_id, action.target_id, self.skills)
         if state.status is GameStatus.FINISHED or not state.players[action.target_id].is_alive:
+            packet=frame.child_result if frame.step_index==14 else None
+            materials=(packet.material_ids if isinstance(packet,VirtualCard) else (packet,) if isinstance(packet,str) else ())
+            materials=(*materials,*frame.local.get('green_materials',()))
+            remaining=tuple(dict.fromkeys(cid for cid in materials if cid in state.cards_in(ZoneRef(ZoneType.PROCESSING))))
+            if remaining:
+                self.moves.move(state,CardMove(action.action_id+':green-cancelled-cleanup',remaining,
+                    ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.USE,action.source_id))
             return StepResult.complete('prevented')
         from .fire import effective_armor
         armor = effective_armor(state, action.target_id, self.skills)
@@ -613,7 +652,10 @@ class MilitarySlashHandler:
             state, self.skills, action.source_id, card.definition_id,action.card_id)
         color=virtual.color if virtual else effective_color(state, action.card_id, action.source_id)
         nature = DamageNature.FIRE if frame.local.get('fan_fire') else {'basic.fire_slash': DamageNature.FIRE, 'basic.thunder_slash': DamageNature.THUNDER}.get(definition, DamageNature.NORMAL)
-        ignore = weapon == 'equipment.weapon.qinggang_sword' or bool(
+        qinggang=frame.local.setdefault('qinggang',
+            getattr(action,'qinggang_applied',None) if getattr(action,'qinggang_applied',None) is not None
+            else weapon == 'equipment.weapon.qinggang_sword')
+        ignore = qinggang or bool(
             state.players[action.source_id].marks.get('wuwei') and
             state.players[action.target_id].marks.get('wuwei_target_' + action.source_id))
         from .yj2011_tier3 import scoped_target, protected
@@ -838,13 +880,13 @@ class MilitarySlashHandler:
                         frame.step_index = 26
                         return StepResult.push(MengjinAction(action.action_id + ':mengjin',
                             action.source_id, action.target_id))
-                if weapon=='equipment.weapon.green_dragon_blade':
+                if weapon=='equipment.weapon.green_dragon_blade' and slash_target_allowed(state,action.source_id,action.target_id,self.skills):
                     frame.step_index=14
                     return StepResult.push(RespondWithCardAction(action.action_id+':green-dragon',action.source_id,
-                        'basic.slash',action.action_id,'青龙偃月刀：继续对同一目标出杀，或放弃',action.target_id))
+                        'basic.slash',action.action_id,'青龙偃月刀：继续对同一目标出杀，或放弃',action.target_id,use_card=True))
                 if weapon=='equipment.weapon.rock_cleaving_axe':
-                    from .military_equipment import discardable
-                    costs=discardable(state,action.source_id)
+                    from .military_equipment import axe_materials
+                    costs=axe_materials(state,action.source_id)
                     if len(costs)>=2:
                         frame.step_index=12
                         return StepResult.ask(PendingRequest(action.action_id+':axe-option',action.source_id,RequestType.YES_NO,
@@ -887,11 +929,6 @@ class MilitarySlashHandler:
                 frame.step_index = 27
                 return StepResult.push(LierenAction(action.action_id + ':lieren',
                                                     action.source_id, action.target_id))
-            horses=any(state.cards_in(ZoneRef(ZoneType.EQUIPMENT,action.target_id,slot)) for slot in (EquipmentSlot.OFFENSIVE_HORSE,EquipmentSlot.DEFENSIVE_HORSE))
-            if weapon=='equipment.weapon.kylin_bow' and horses and state.players[action.target_id].is_alive and state.status is not GameStatus.FINISHED:
-                frame.step_index=15
-                return StepResult.ask(PendingRequest(action.action_id+':kylin',action.source_id,RequestType.YES_NO,
-                    '是否发动麒麟弓，弃置目标一张马？',action.action_id,frame.frame_id))
         if frame.step_index == 27:
             frame.step_index = 4
             return StepResult.continue_()
@@ -928,11 +965,14 @@ class MilitarySlashHandler:
             if frame.decision is not True:
                 return StepResult.complete('avoided')
             frame.decision=None
-            from .military_equipment import discardable
+            from .military_equipment import axe_materials
             frame.step_index=17
             return StepResult.ask(PendingRequest(action.action_id+':axe-cost',action.source_id,RequestType.CHOOSE_CARDS,
-                '贯石斧：选择弃置两张牌',action.action_id,frame.frame_id,eligible_card_ids=discardable(state,action.source_id),min_count=2,max_count=2))
+                '贯石斧：选择弃置两张牌',action.action_id,frame.frame_id,eligible_card_ids=axe_materials(state,action.source_id),min_count=2,max_count=2))
         if frame.step_index==17:
+            from .military_equipment import axe_materials
+            if any(cid not in axe_materials(state,action.source_id) for cid in frame.decision):
+                raise InvalidCardUse('axe material is unavailable')
             for cid in frame.decision:
                 ref=next(ref for ref,z in state.zones.items() if cid in z.card_ids)
                 self.moves.move(state,CardMove(action.action_id+':axe:'+cid,(cid,),ref,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,action.source_id))
@@ -944,8 +984,21 @@ class MilitarySlashHandler:
                 return StepResult.complete('avoided')
             result=frame.child_result
             cid=result.material_ids[0] if isinstance(result,VirtualCard) else str(result)
+            materials=result.material_ids if isinstance(result,VirtualCard) else (cid,)
+            frame.local['green_materials']=materials
+            from .events import CardUsedEvent
+            self.recorder.record(CardUsedEvent(action.action_id+':green-dragon-used',action.source_id,cid,
+                (action.target_id,),result.definition_id if isinstance(result,VirtualCard) else '',
+                False,result if isinstance(result,VirtualCard) else None))
             frame.step_index=16
-            return StepResult.push(MilitaryStrike(action.action_id+':green-dragon-strike',action.source_id,action.target_id,cid,action.dodge_definition_id,virtual_card=result if isinstance(result,VirtualCard) else None))
+            return StepResult.push(SlashSequence(action.action_id+':green-dragon-use',action.source_id,cid,
+                (action.target_id,),result if isinstance(result,VirtualCard) else None,wine_bonus=0))
+        if frame.step_index==16:
+            remaining=tuple(cid for cid in frame.local.get('green_materials',())
+                            if cid in state.cards_in(ZoneRef(ZoneType.PROCESSING)))
+            if remaining:
+                self.moves.move(state,CardMove(action.action_id+':green-dragon-discard',remaining,
+                    ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.USE,action.source_id))
         return StepResult.complete('hit')
 
     def __init__(self,moves, skills=None, distance=None, recorder=None):
@@ -979,7 +1032,16 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             return StepResult.push(LeijiAction(action.action_id + ':leiji', action.player_id))
         return result
 
+    def _move_response(self,state,action,move):
+        if action.use_card:
+            if move.from_zone.zone_type is ZoneType.PROCESSING and move.to_zone.zone_type is ZoneType.DISCARD_PILE:
+                return
+            from dataclasses import replace
+            move=replace(move,reason=CardMoveReason.USE)
+        self.moves.move(state,move)
+
     def _record_material_response(self, action, event_id, card_id, definition_id):
+        if action.use_card:return
         from .events import CardRespondedEvent
         self.recorder.record(CardRespondedEvent(event_id, action.player_id, card_id,
             action.source_action_id, definition_id, action.response_number, action.response_total))
@@ -1119,17 +1181,17 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             if not card_allowed(state, action.player_id, materials, virtual):
                 raise InvalidCardUse('two-card response color is prohibited')
             processing = ZoneRef(ZoneType.PROCESSING)
-            self.moves.move(state, CardMove(action.action_id + ':virtual-processing', materials,
+            self._move_response(state,action, CardMove(action.action_id + ':virtual-processing', materials,
                 ZoneRef(ZoneType.HAND, action.player_id), processing, CardMoveReason.RESPONSE, action.player_id))
             self._record_material_response(action, action.action_id + ':virtual-responded', materials[0], 'basic.slash')
-            self.moves.move(state, CardMove(action.action_id + ':virtual-discard', materials,
+            self._move_response(state,action, CardMove(action.action_id + ':virtual-discard', materials,
                 processing, ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.RESPONSE, action.player_id))
             return StepResult.complete(virtual)
         if isinstance(choice,str) and choice.startswith('virtual:chunlao:'):
             cid=choice.split(':',2)[2];wine=ZoneRef(ZoneType.SPECIAL,action.player_id,special_key='wine')
             target=action.subject_player_id
             if cid not in state.cards_in(wine) or not self.skills.has(state,action.player_id,'chunlao') or target not in state.players or state.players[target].hp>0:raise InvalidCardUse('醇醪救援不可用')
-            self.moves.move(state,CardMove(action.action_id+':chunlao',(cid,),wine,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM,action.player_id))
+            self._move_response(state,action,CardMove(action.action_id+':chunlao',(cid,),wine,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM,action.player_id))
             from .events import CardUsedEvent
             virtual=VirtualCard('basic.wine',(),None,None,'chunlao')
             self.recorder.record(CardUsedEvent(action.action_id+':wine-used',target,action.action_id,(target,),'basic.wine',virtual_card=virtual))
@@ -1170,10 +1232,10 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                                 effective_suit(state, material, action.player_id),
                                 effective_color(state, material, action.player_id))
             source=next(ref for ref,zone in state.zones.items() if material in zone.card_ids)
-            self.moves.move(state,CardMove(action.action_id+':wusheng-processing',(material,),
+            self._move_response(state,action,CardMove(action.action_id+':wusheng-processing',(material,),
                 source,ZoneRef(ZoneType.PROCESSING),CardMoveReason.RESPONSE,action.player_id))
             self._record_material_response(action, action.action_id+':wusheng-responded', material, 'basic.slash')
-            self.moves.move(state,CardMove(action.action_id+':wusheng-discard',(material,),
+            self._move_response(state,action,CardMove(action.action_id+':wusheng-discard',(material,),
                 ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.RESPONSE,action.player_id))
             return StepResult.complete(virtual)
         if isinstance(choice,str) and choice.startswith('virtual:qingguo:'):
@@ -1187,11 +1249,11 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             virtual=VirtualCard('basic.dodge',(material,),
                                 effective_suit(state, material, action.player_id),
                                 effective_color(state, material, action.player_id))
-            self.moves.move(state,CardMove(action.action_id+':qingguo-processing',(material,),
+            self._move_response(state,action,CardMove(action.action_id+':qingguo-processing',(material,),
                 ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.RESPONSE,action.player_id))
             self._record_material_response(action, action.action_id+':qingguo-responded', material, 'basic.dodge')
-            self.moves.move(state,CardMove(action.action_id+':qingguo-discard',(material,),
+            self._move_response(state,action,CardMove(action.action_id+':qingguo-discard',(material,),
                 ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE,action.player_id))
             return StepResult.complete(virtual)
@@ -1205,11 +1267,11 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             virtual = VirtualCard('trick.nullification', (material,),
                 effective_suit(state, material, action.player_id),
                 effective_color(state, material, action.player_id))
-            self.moves.move(state, CardMove(action.action_id + ':kanpo-processing', (material,),
+            self._move_response(state,action, CardMove(action.action_id + ':kanpo-processing', (material,),
                 ZoneRef(ZoneType.HAND, action.player_id), ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.RESPONSE, action.player_id))
             self._record_material_response(action, action.action_id + ':kanpo-responded', material, 'trick.nullification')
-            self.moves.move(state, CardMove(action.action_id + ':kanpo-discard', (material,),
+            self._move_response(state,action, CardMove(action.action_id + ':kanpo-discard', (material,),
                 ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE, action.player_id))
             return StepResult.complete(virtual)
@@ -1223,11 +1285,11 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             virtual = VirtualCard('basic.slash', (material,),
                 effective_suit(state, material, action.player_id),
                 effective_color(state, material, action.player_id))
-            self.moves.move(state, CardMove(action.action_id + ':wushen-processing', (material,),
+            self._move_response(state,action, CardMove(action.action_id + ':wushen-processing', (material,),
                 ZoneRef(ZoneType.HAND, action.player_id), ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.RESPONSE, action.player_id))
             self._record_material_response(action, action.action_id + ':wushen-responded', material, 'basic.slash')
-            self.moves.move(state, CardMove(action.action_id + ':wushen-discard', (material,),
+            self._move_response(state,action, CardMove(action.action_id + ':wushen-discard', (material,),
                 ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE, action.player_id))
             return StepResult.complete(virtual)
@@ -1244,11 +1306,11 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             virtual = VirtualCard(transformed, materials,
                 effective_suit(state, materials[0], action.player_id),
                 effective_color(state, materials[0], action.player_id))
-            self.moves.move(state, CardMove(action.action_id + ':longhun-processing', materials,
+            self._move_response(state,action, CardMove(action.action_id + ':longhun-processing', materials,
                 ZoneRef(ZoneType.HAND, action.player_id), ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.RESPONSE, action.player_id))
             self._record_material_response(action, action.action_id + ':longhun-responded', materials[0], str(transformed))
-            self.moves.move(state, CardMove(action.action_id + ':longhun-discard', materials,
+            self._move_response(state,action, CardMove(action.action_id + ':longhun-discard', materials,
                 ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE, action.player_id))
             return StepResult.complete(virtual)
@@ -1262,10 +1324,10 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                                 effective_suit(state, material, action.player_id),
                                 effective_color(state, material, action.player_id))
             source=next(ref for ref,zone in state.zones.items() if material in zone.card_ids)
-            self.moves.move(state,CardMove(action.action_id+':jijiu-processing',(material,),
+            self._move_response(state,action,CardMove(action.action_id+':jijiu-processing',(material,),
                 source,ZoneRef(ZoneType.PROCESSING),CardMoveReason.RESPONSE,action.player_id))
             self._record_material_response(action, action.action_id+':jijiu-responded', material, 'basic.peach')
-            self.moves.move(state,CardMove(action.action_id+':jijiu-discard',(material,),
+            self._move_response(state,action,CardMove(action.action_id+':jijiu-discard',(material,),
                 ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE,action.player_id))
             return StepResult.complete(virtual)
@@ -1281,11 +1343,11 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             virtual = VirtualCard('basic.wine', (material,),
                 effective_suit(state, material, action.player_id),
                 effective_color(state, material, action.player_id))
-            self.moves.move(state, CardMove(action.action_id + ':jiuchi-processing',
+            self._move_response(state,action, CardMove(action.action_id + ':jiuchi-processing',
                 (material,), ZoneRef(ZoneType.HAND, action.player_id),
                 ZoneRef(ZoneType.PROCESSING), CardMoveReason.RESPONSE, action.player_id))
             self._record_material_response(action, action.action_id + ':jiuchi-responded', material, 'basic.wine')
-            self.moves.move(state, CardMove(action.action_id + ':jiuchi-discard',
+            self._move_response(state,action, CardMove(action.action_id + ':jiuchi-discard',
                 (material,), ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE, action.player_id))
             return StepResult.complete(virtual)
@@ -1299,11 +1361,11 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             virtual=VirtualCard(action.required_definition_id,(material,),
                                 effective_suit(state, material, action.player_id),
                                 effective_color(state, material, action.player_id))
-            self.moves.move(state,CardMove(action.action_id+':longdan-processing',(material,),
+            self._move_response(state,action,CardMove(action.action_id+':longdan-processing',(material,),
                 ZoneRef(ZoneType.HAND,action.player_id),ZoneRef(ZoneType.PROCESSING),
                 CardMoveReason.RESPONSE,action.player_id))
             self._record_material_response(action, action.action_id+':longdan-responded', material, action.required_definition_id)
-            self.moves.move(state,CardMove(action.action_id+':longdan-discard',(material,),
+            self._move_response(state,action,CardMove(action.action_id+':longdan-discard',(material,),
                 ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.RESPONSE,action.player_id))
             return StepResult.complete(virtual)
@@ -1314,19 +1376,23 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                 raise InvalidCardUse('主公技响应不合法')
             frame.step_index=11
             return StepResult.push(AllianceResponse(action.action_id+':alliance',action.player_id,
-                action.required_definition_id,action.source_action_id,faction))
+                action.required_definition_id,action.source_action_id,faction,use_card=action.use_card))
         if choice is PASS_RESPONSE:
             return StepResult.complete()
         if choice not in str(frame.local['eligible']).split('|') or choice not in state.cards_in(ZoneRef(ZoneType.HAND, action.player_id)):
             raise InvalidCardUse('response no longer eligible')
         card = CardInstanceId(choice)
         processing = ZoneRef(ZoneType.PROCESSING)
-        self.moves.move(state, CardMove(action.action_id + ':processing', (card,),
+        self._move_response(state,action, CardMove(action.action_id + ':processing', (card,),
             ZoneRef(ZoneType.HAND, action.player_id), processing, CardMoveReason.RESPONSE, action.player_id))
         from .yj2011_tier3 import canonical_definition
         self._record_material_response(action, action.action_id + ':responded', card, canonical_definition(state, self.skills, action.player_id, state.cards[card].definition_id,card))
-        self.moves.move(state, CardMove(action.action_id + ':discard', (card,), processing,
+        self._move_response(state,action, CardMove(action.action_id + ':discard', (card,), processing,
             ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.RESPONSE, action.player_id))
+        identity=canonical_definition(state,self.skills,action.player_id,state.cards[card].definition_id,card)
+        if action.use_card and identity!=state.cards[card].definition_id:
+            return StepResult.complete(VirtualCard(identity,(card,),effective_suit(state,card,action.player_id),
+                                                  effective_color(state,card,action.player_id)))
         return StepResult.complete(str(card))
 
 class MilitaryFinishBody:

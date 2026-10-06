@@ -427,3 +427,18 @@ it('restores delayed outcome text from projection history without live events',(
   expect(container.querySelector('.public-card-history')).toHaveTextContent('\u4f20\u9012\u81f3\u4e0b\u4e00\u5408\u6cd5\u89d2\u8272')
  } finally { publicHistory=[] }
 })
+
+
+it('shows signed horse faces and authoritative abolished slots',()=>{
+ const player=players[0] as any
+ const oldEquipment=player.equipment;const oldSlots=player.abolished_equipment_slots
+ const offensive={...card,card_id:'horse-hand',name:'\u8d64\u5154',definition_id:'equipment.horse.chitu',category:'equipment',equipment_slot:'offensive_horse'}
+ const defensive={...card,card_id:'horse-equipped',name:'\u7edd\u5f71',definition_id:'equipment.horse.jueying',category:'equipment',equipment_slot:'defensive_horse'}
+ extraCards=[offensive];player.equipment=[defensive];player.abolished_equipment_slots=['weapon']
+ try {
+  const {container}=render(<GamePage />)
+  expect(container.querySelector('.equipment-token')).toHaveTextContent('\u7edd\u5f71 +1')
+  expect(screen.getByText('\u8d64\u5154 -1')).toBeInTheDocument()
+  expect(screen.getByText('\u5df2\u5e9f\u9664 \u6b66\u5668\u680f')).toBeInTheDocument()
+ } finally {extraCards=[];player.equipment=oldEquipment;player.abolished_equipment_slots=oldSlots}
+})

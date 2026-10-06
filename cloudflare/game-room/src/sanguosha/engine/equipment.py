@@ -38,11 +38,13 @@ class EquipCardHandler:
             raise InvalidCardUse("equipment card is not processing")
         destination = ZoneRef(ZoneType.EQUIPMENT, action.player_id, slot)
         old = state.cards_in(destination)
-        if old:
+        if frame.step_index==0 and old:
+            frame.step_index=1
             self.moves.move(state, CardMove(
                 f"{action.action_id}:replace", old, destination, ZoneRef(ZoneType.DISCARD_PILE),
                 CardMoveReason.SYSTEM, action.player_id, action.action_id,
             ))
+            return StepResult.continue_()
         self.moves.move(state, CardMove(
             f"{action.action_id}:equip", (action.card_id,), processing, destination,
             CardMoveReason.USE, action.player_id, action.action_id,

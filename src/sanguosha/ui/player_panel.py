@@ -6,6 +6,7 @@ from sanguosha.projection import PlayerView
 from .resources import RESOURCES
 from .theme import Theme
 from .equipment_preview import EquipmentPreview
+from .card_widget import equipment_label
 
 
 class PlayerPanel(QPushButton):
@@ -48,11 +49,11 @@ class PlayerPanel(QPushButton):
             self.update()
 
     def _equipped_slots(self):
-        equipment = {"武":None, "甲":None, "+马":None, "-马":None}
+        equipment = {"武":None, "甲":None, "+1马":None, "-1马":None}
         if self.view:
             for card in self.view.equipment:
-                slot = {"weapon":"武", "armor":"甲", "defensive_horse":"+马",
-                        "offensive_horse":"-马"}.get(card.equipment_slot)
+                slot = {"weapon":"武", "armor":"甲", "defensive_horse":"+1马",
+                        "offensive_horse":"-1马"}.get(card.equipment_slot)
                 if slot is not None:
                     equipment[slot] = card
         return equipment
@@ -252,14 +253,14 @@ class PlayerPanel(QPushButton):
         equipment = self._equipped_slots()
         cell = rw/4
         for i, (slot, card) in enumerate(equipment.items()):
-            abolished={'武':'weapon','甲':'armor','+马':'defensive_horse','-马':'offensive_horse'}[slot] in v.abolished_equipment_slots
+            abolished={'武':'weapon','甲':'armor','+1马':'defensive_horse','-1马':'offensive_horse'}[slot] in v.abolished_equipment_slots
             box = QRectF(x+i*cell, 98, cell-2, 21)
             p.setBrush(QColor("#8e6963" if abolished else "#e2d0ab" if card else "#b3a084"))
             p.setPen(QPen(QColor("#8a6c48"), 1))
             p.drawRoundedRect(box, 2, 2)
             p.setPen(QColor("#3b3027" if card else "#756653"))
             p.setFont(QFont("Microsoft YaHei UI", 7, QFont.Bold if card else QFont.Normal))
-            p.drawText(box, Qt.AlignCenter, "废"+slot if abolished else card.name[:3] if card else slot)
+            p.drawText(box, Qt.AlignCenter, "废"+slot if abolished else equipment_label(card, compact=True) if card else slot)
         p.setPen(QColor("#624b34"))
         if v.judgments:
             step = min(31, (rw*.72)/max(1, len(v.judgments)))

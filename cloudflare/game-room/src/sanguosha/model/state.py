@@ -6,7 +6,7 @@ from .card import CardInstance
 from .enums import Phase
 from .ids import CardInstanceId, PlayerId
 from .player import PlayerState
-from .zones import CardZone, ZoneRef
+from .zones import CardZone, ZoneRef, ZoneType
 from .usage import PlayUsageState
 from .victory import VictoryResult
 
@@ -62,6 +62,11 @@ class GameState:
                 raise ValueError("zone keys must match their references")
             if ref.player_id is not None and ref.player_id not in self.players:
                 raise ValueError("zone player must exist")
+            if ref.zone_type is ZoneType.EQUIPMENT:
+                if len(zone.card_ids) > 1:
+                    raise ValueError("equipment slot capacity exceeded")
+                if zone.card_ids and ref.equipment_slot in self.players[ref.player_id].abolished_equipment_slots:
+                    raise ValueError("abolished equipment slot must be empty")
             located.extend(zone.card_ids)
         if len(located) != len(set(located)) or set(located) != set(self.cards):
             raise ValueError("every card must be in exactly one zone")

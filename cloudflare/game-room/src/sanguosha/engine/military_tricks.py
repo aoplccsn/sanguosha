@@ -126,7 +126,7 @@ class MilitaryTrickRule:
                 return bool(state.cards_in(ZoneRef(ZoneType.HAND,pid)))
             if d.startswith('delayed.'):
                 supply_range = (2 if self.skills is not None and self.skills.has(state, user, 'duanliang') else 1)
-                return not self._duplicate(state,pid) and (d != 'delayed.supply_shortage' or self.distance.distance_between(state,user,pid) <= supply_range)
+                return not self._duplicate(state,pid) and (d != 'delayed.supply_shortage' or self.skills is not None and self.skills.has(state,user,'qicai') or self.distance.distance_between(state,user,pid) <= supply_range)
             return True
         return tuple(pid for pid in state.seat_order if valid(pid))
     def target_bounds(self, state, user, card):

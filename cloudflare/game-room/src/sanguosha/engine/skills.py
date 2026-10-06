@@ -969,6 +969,7 @@ class AllianceResponse(Action):
     required_definition_id: str
     source_action_id: str
     faction: Kingdom
+    use_card: bool = False
 
 
 class AllianceResponseHandler:
@@ -990,7 +991,7 @@ class AllianceResponseHandler:
         return StepResult.push(RespondWithCardAction(
             f'{action.action_id}:ally:{frame.cursor}', ally, action.required_definition_id,
             action.source_action_id, f'是否为同势力主公提供【{"闪" if action.required_definition_id == "basic.dodge" else "杀"}】？',
-            action.lord_id))
+            action.lord_id, use_card=action.use_card))
 
 
 @dataclass(frozen=True, slots=True)

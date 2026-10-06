@@ -28,6 +28,7 @@ class RespondWithCardAction(Action):
     allow_armor: bool = True
     response_number: int = 1
     response_total: int = 1
+    use_card: bool = False
 
 
 class RespondWithCardHandler:

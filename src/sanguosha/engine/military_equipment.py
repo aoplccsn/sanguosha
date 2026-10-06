@@ -162,6 +162,22 @@ class WeaponChoiceHandler:
                 self.moves.move(state,CardMove(a.action_id+':move',(cid,),ZoneRef(ZoneType.HAND,a.target_id),
                     ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,a.target_id))
             return StepResult.complete()
+        if a.weapon=='ice_sword':
+            if not state.players[a.target_id].is_alive or not state.players[a.owner_id].is_alive:
+                return StepResult.complete()
+            if f.step_index==1:
+                cid=f.decision;f.decision=None
+                ref=next(ref for ref,z in state.zones.items() if cid in z.card_ids)
+                self.moves.move(state,CardMove(a.action_id+':move:'+str(f.cursor),(cid,),ref,
+                    ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,a.owner_id))
+                f.cursor+=1;f.step_index=0
+                return StepResult.continue_()
+            cards=discardable(state,a.target_id)
+            if f.cursor>=2 or not cards:return StepResult.complete()
+            f.step_index=1
+            return StepResult.ask(PendingRequest(a.action_id+':card:'+str(f.cursor),a.owner_id,RequestType.CHOOSE_CARD,
+                '\u5bd2\u51b0\u5251\uff1a\u5f03\u7f6e\u76ee\u6807\u4e00\u5f20\u724c',a.action_id,f.frame_id,
+                eligible_card_ids=cards,subject_player_id=a.target_id))
         if f.step_index==0:
             cards=discardable(state,a.target_id)
             if a.weapon=='kylin_bow':
@@ -179,3 +195,10 @@ class WeaponChoiceHandler:
             self.moves.move(state,CardMove(a.action_id+':move:'+cid,(cid,),ref,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,a.owner_id))
         f.decision=None
         return StepResult.complete()
+
+
+
+def axe_materials(state,pid):
+    """Axe's own equipped physical card cannot pay its two-card cost."""
+    axe=state.cards_in(ZoneRef(ZoneType.EQUIPMENT,pid,EquipmentSlot.WEAPON))
+    return tuple(cid for cid in discardable(state,pid) if cid not in axe)

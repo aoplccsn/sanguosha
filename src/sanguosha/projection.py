@@ -105,7 +105,7 @@ def project_for_human(
             summary = definition.metadata.get("effect_summary", "暂无效果说明")
             detail += f"\n效果：{summary}"
         return CardView(cid,definition.name,SUIT_SYMBOLS[effective_suit(state, cid)],RANK_LABELS.get(card.rank,str(card.rank)),
-                        str(definition_id),definition.category.value, equipment_slot, detail)
+                        str(definition_id),definition.category.value, equipment_slot or (definition.equipment_slot.value if definition.equipment_slot is not None else ""), detail)
     players = []
     distance = DistanceSystem(definitions)
     from sanguosha.engine.skills import SkillRegistry

@@ -6,19 +6,25 @@ from sanguosha.projection import CardView
 from .resources import RESOURCES
 from .theme import Theme
 
+def equipment_label(card, compact=False):
+    name = card.name[:3] if compact else card.name
+    sign = {'defensive_horse': '+1', 'offensive_horse': '-1'}.get(card.equipment_slot, '')
+    return name + (' ' + sign if sign else '')
+
+
 class CardWidget(QPushButton):
     card_selected = Signal(str)
     def __init__(self, card: CardView) -> None:
         super().__init__()
         self.card = card
         self.card_id = str(card.card_id)
-        self.card_name = card.name
+        self.card_name = equipment_label(card)
         self.suit = card.suit
         self.setObjectName(f"card-{self.card_id}")
         self.setFixedSize(Theme.card_width, Theme.card_height)
         self.category_label = {"basic":"基础牌", "trick":"锦囊牌", "delayed_trick":"延时锦囊", "equipment":"装备牌"}.get(card.category, "卡牌")
         self.setToolTip(card.details or f"{card.suit} {card.rank} · {card.name} · {self.category_label}")
-        self.setText(card.name)
+        self.setText(self.card_name)
         self.clicked.connect(lambda: self.card_selected.emit(self.card_id))
         self._selected = False
         self._selectable = False
@@ -139,7 +145,7 @@ class CardWidget(QPushButton):
         p.drawText(QRectF(30, y+5, 67, 21), Qt.AlignLeft, str(self.card.rank))
         p.setPen(QColor(Theme.shade_322720))
         p.setFont(QFont("Microsoft YaHei UI", 17, QFont.Bold))
-        p.drawText(QRectF(12, y+113, 89, 26), Qt.AlignCenter, self.card.name)
+        p.drawText(QRectF(12, y+113, 89, 26), Qt.AlignCenter, self.card_name)
         p.setPen(QColor(accent))
         p.drawLine(18, int(y+138), 98, int(y+138))
         p.setFont(QFont("Microsoft YaHei UI", 8))

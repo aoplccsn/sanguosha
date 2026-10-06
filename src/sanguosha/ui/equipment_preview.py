@@ -4,6 +4,7 @@ from PySide6.QtGui import QColor, QFont, QPainter, QPen
 from PySide6.QtWidgets import QWidget
 from sanguosha.projection import CardView
 from .resources import RESOURCES
+from .card_widget import equipment_label
 
 
 class EquipmentPreview(QWidget):
@@ -33,7 +34,7 @@ class EquipmentPreview(QWidget):
         p.drawPixmap(13, 37, 100, 140, RESOURCES.card_art(self.card.definition_id))
         p.setPen(QColor("#392c22"))
         p.setFont(QFont("Microsoft YaHei UI", 14, QFont.Bold))
-        p.drawText(QRectF(13, 8, 254, 28), Qt.AlignCenter, self.card.name)
+        p.drawText(QRectF(13, 8, 254, 28), Qt.AlignCenter, equipment_label(self.card))
         p.setFont(QFont("Microsoft YaHei UI", 10))
         p.drawText(QRectF(123, 40, 143, 205), Qt.AlignLeft | Qt.TextWordWrap,
                    self.card.details or f"{self.card.name}\n装备\n暂无效果说明")
