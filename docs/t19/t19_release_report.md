@@ -13,7 +13,7 @@
 - 资源脚本：scripts/prepare_t19_portraits.py。状态及hash：portrait_preparation.json。候选资产：prepared_portraits/。
 - 必要抽样测试：tests/test_t19_draft.py，14 PASS（概率边界、所有权重边界、seed复现、去重、占用排除、最多一名、鲁肃普通池和超标池空时回退）。
 - 六将targeted及最终综合验收均未运行；AI40场未运行。没有用基线测试冒充T19通过。
-- GitHub：准备提交分支的部分进度；这不是完成checkpoint。
+- GitHub：部分进度已提交并成功推送origin/t19-overpowered-generals；这不是完成checkpoint。
 - GHCR：未构建T19 image。Sealos：未更新。公网T19 health/smoke：未执行。
 
 唯一阻塞：无法完成用户要求的“当前移动版正式服规则”锁定与可靠交叉核对。官网详情滞后/矛盾，移动版百科被HTTP567拦截，最新解析正文不可读取。已经尝试搜索、公开实现核对及正常浏览器访问。
