@@ -70,6 +70,8 @@ class TargetTrick(Action):
     card_id: str
     definition_id: str
     pool_key: str = ''
+    savage_source_id: str | None = None
+    virtual_card: VirtualCard | None = None
 
 class MilitaryTrickRule:
     def __init__(self, definition, distance, skills=None):
@@ -175,6 +177,12 @@ class TrickHandler:
                 targets=tuple(pid for pid in order if state.players[pid].is_alive)
             targets=tuple(pid for pid in targets if not weimu_blocks(
                 state, pid, a.card_id, d, a.source_id, self.skills, a.virtual_card))
+            from .fuhuanghou import target_allowed
+            targets=tuple(pid for pid in targets if target_allowed(state,a.source_id,pid))
+            from .qiaoshui import take_targets
+            adjusted=take_targets(state,a.action_id,targets)
+            targets=tuple(q for q in adjusted if q in targets) if d in ('trick.savage_assault','trick.archery_attack','trick.god_salvation','trick.amazing_grace') else adjusted
+            frame.local['confirmed_targets'] = tuple(targets)
             if d in ('trick.savage_assault', 'trick.archery_attack'):
                 from .forest import savage_effect_immune
                 from .yj2011_tier3 import protected
@@ -182,11 +190,10 @@ class TrickHandler:
                     equipped(state, pid, EquipmentSlot.ARMOR) != 'equipment.armor.vine'
                     and not protected(state, pid)
                     and not (d == 'trick.savage_assault' and savage_effect_immune(state, pid, self.skills)))
-            from .fuhuanghou import target_allowed
-            targets=tuple(pid for pid in targets if target_allowed(state,a.source_id,pid))
-            from .qiaoshui import take_targets
-            adjusted=take_targets(state,a.action_id,targets)
-            targets=tuple(q for q in adjusted if q in targets) if d in ('trick.savage_assault','trick.archery_attack','trick.god_salvation','trick.amazing_grace') else adjusted
+            if d == 'trick.savage_assault':
+                from .forest import savage_damage_source
+                # Fix attribution for this use before nested target effects.
+                frame.local['savage_source'] = savage_damage_source(state, a.source_id, self.skills)
             frame.local['targets']='|'.join(targets)
             if not a.targets and d in ('trick.savage_assault', 'trick.archery_attack', 'trick.god_salvation', 'trick.amazing_grace'):
                 self.recorder.record(TrickTargetsDeclaredEvent(a.action_id+':targets',
@@ -194,11 +201,14 @@ class TrickHandler:
             frame.local['pool']=a.action_id
             if d == 'trick.amazing_grace':
                 pool=ZoneRef(ZoneType.SPECIAL,special_key=a.action_id)
-                count=self.deck.draw(state,a.source_id,len(targets),a.action_id+':reveal')
-                hand=state.cards_in(ZoneRef(ZoneType.HAND,a.source_id))
-                drawn=hand[-count:] if count else ()
-                if drawn:
-                    self.moves.move(state,CardMove(a.action_id+':pool',drawn,ZoneRef(ZoneType.HAND,a.source_id),pool,CardMoveReason.SYSTEM))
+                count = sum(state.players[pid].is_alive for pid in state.seat_order)
+                for index in range(count):
+                    if not self.deck.ensure_draw(state, f'{a.action_id}:reveal:{index}'):
+                        break
+                    card_id = state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+                    self.moves.move(state,CardMove(f'{a.action_id}:pool:{index}',(card_id,),
+                        ZoneRef(ZoneType.DRAW_PILE),pool,CardMoveReason.SYSTEM,
+                        related_action_id=a.action_id))
             frame.step_index=1
         targets=str(frame.local['targets']).split('|') if frame.local['targets'] else []
         if frame.step_index==5:
@@ -206,9 +216,10 @@ class TrickHandler:
                 frame.local['zhenlie_cancelled']=(*frame.local.get('zhenlie_cancelled',()),frame.local['zhenlie_target'])
             frame.step_index=1
         if frame.step_index==1 and state.status is not GameStatus.FINISHED:
+            confirmed = frame.local.get('confirmed_targets', targets)
             index=frame.local.get('zhenlie_cursor',0)
-            while index<len(targets):
-                target=targets[index];index+=1;frame.local['zhenlie_cursor']=index
+            while index<len(confirmed):
+                target=confirmed[index];index+=1;frame.local['zhenlie_cursor']=index
                 if (target!=a.source_id and state.players[target].is_alive and self.skills is not None
                         and self.skills.has(state,target,'zhenlie')):
                     frame.local['zhenlie_target']=target;frame.step_index=5
@@ -219,7 +230,8 @@ class TrickHandler:
             frame.step_index=3
             if not frame.child_result:
                 return StepResult.push(TargetTrick(f'{a.action_id}:effect:{frame.cursor}',a.source_id,
-                    targets[frame.cursor-1],a.card_id,d,str(frame.local['pool'])))
+                    targets[frame.cursor-1],a.card_id,d,str(frame.local['pool']),
+                    frame.local.get('savage_source'),a.virtual_card))
         if frame.step_index == 3:
             frame.step_index=1
         if state.status is GameStatus.FINISHED or frame.cursor >= len(targets):
@@ -341,8 +353,15 @@ class TargetTrickHandler:
                 if d == 'trick.duel':f.local['duel_winner']=source;f.local['duel_loser']=who
                 if d == 'trick.savage_assault':
                     from .forest import savage_damage_source
-                    source = savage_damage_source(state, a.source_id, self.skills)
-                return StepResult.push(MilitaryDamageAction(a.action_id+':damage',source,who,1,card_id=a.card_id))
+                    fixed = a.savage_source_id
+                    if fixed is None:
+                        source = savage_damage_source(state, a.source_id, self.skills)
+                    else:
+                        source = fixed if state.players[fixed].is_alive else None
+                return StepResult.push(MilitaryDamageAction(a.action_id+':damage',source,who,1,
+                    card_id=a.card_id, card_kind='duel' if d == 'trick.duel' else 'trick',
+                    material_card_ids=a.virtual_card.material_ids if a.virtual_card else (),
+                    virtual_card=a.virtual_card))
             return StepResult.complete()
         if f.step_index == 2:
             f.step_index=3
@@ -353,7 +372,10 @@ class TargetTrickHandler:
                     self.moves.recorder.record(Event(a.action_id+':no-damage','fire_attack_result',a.source_id,(a.target_id,),metadata={'suit':f.local.get('revealed_suit',''),'dealt_damage':False}))
                     return StepResult.complete()
                 self.move(state,a,choice,ZoneRef(ZoneType.DISCARD_PILE))
-                return StepResult.push(MilitaryDamageAction(a.action_id+':fire',a.source_id,a.target_id,1,DamageNature.FIRE,a.card_id))
+                return StepResult.push(MilitaryDamageAction(a.action_id+':fire',a.source_id,a.target_id,1,
+                    DamageNature.FIRE,a.card_id,card_kind='trick',
+                    material_card_ids=a.virtual_card.material_ids if a.virtual_card else (),
+                    virtual_card=a.virtual_card))
             if d == 'trick.borrowed_sword':
                 if f.child_result is not None:
                     result=f.child_result
@@ -373,9 +395,10 @@ class ResolveDelayed(Action):
     card_id: str
 
 class DelayedHandler:
-    def __init__(self,moves,definitions=None):
+    def __init__(self,moves,definitions=None,skills=None):
         self.moves=moves
         self.definitions=definitions
+        self.skills=skills
     def step(self,state,f):
         a=f.action
         d=delayed_definition(state, a.card_id)
@@ -410,7 +433,11 @@ class DelayedHandler:
                 start=state.seat_order.index(a.player_id)
                 order=state.seat_order[start+1:]+state.seat_order[:start]
                 for pid in order:
-                    if state.players[pid].is_alive and not any(state.cards[cid].definition_id == d for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid))):
+                    from .forest import weimu_blocks
+                    if (state.players[pid].is_alive
+                            and not weimu_blocks(state,pid,a.card_id,d,a.player_id,self.skills)
+                            and not any(delayed_definition(state,cid) == d
+                                        for cid in state.cards_in(ZoneRef(ZoneType.JUDGMENT,pid)))):
                         dest=ZoneRef(ZoneType.JUDGMENT,pid)
                         break
             self.moves.move(state,CardMove(a.action_id+':move',(a.card_id,),locate(state,a.card_id),dest,CardMoveReason.SYSTEM))
@@ -442,5 +469,5 @@ def register_military_tricks(definitions,rules,registry,moves,events,deck,bodies
     registry.register(NullificationWindow,NullificationHandler())
     registry.register(TrickAction,TrickHandler(moves,deck,events,skills,definitions))
     registry.register(TargetTrick,TargetTrickHandler(moves,distance,skills))
-    registry.register(ResolveDelayed,DelayedHandler(moves,definitions))
+    registry.register(ResolveDelayed,DelayedHandler(moves,definitions,skills))
     bodies.register(Phase.JUDGMENT,JudgmentPhaseBody())

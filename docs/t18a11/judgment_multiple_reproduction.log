@@ -1,0 +1,30 @@
+.........F.                                                              [100%]
+================================== FAILURES ===================================
+__________ test_multiple_guicai_holders_can_replace_in_one_judgment ___________
+
+    def test_multiple_guicai_holders_can_replace_in_one_judgment():
+        s = setup('xun_you')
+        materials = {}
+        for pid, suit in [('p2', Suit.HEART), ('p3', Suit.SPADE)]:
+            s.state.players[pid].granted_skills['guicai'] = 'audit-grant'
+            card = put(s, 'basic.slash', pid)
+            s.state.cards[card] = replace(s.state.cards[card], suit=suit)
+            materials[pid] = card
+        s.engine.start_action(JudgmentAction('audit-two-guicai', 'p1', JudgmentPattern(suit=Suit.SPADE)))
+        while s.engine.pending_request:
+            s = restore(s)
+            r = s.engine.pending_request
+            answer(s, True if r.request_type is RequestType.YES_NO else materials[r.player_id])
+        assert s.engine.last_result is True
+        assert set(materials.values()) <= set(s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE)))
+        event_ids = [event.event_id for event in s.events.events]
+>       assert len(event_ids) == len(set(event_ids))
+E       AssertionError: assert 20 == 17
+E        +  where 20 = len(['game-start', 'initial-deal:p1:draw:0', 'initial-deal:p2:draw:0', 'initial-deal:p3:draw:0', 'initial-deal:p4:draw:0', 'initial-deal:p5:draw:0', ...])
+E        +  and   17 = len({'audit-two-guicai:after', 'audit-two-guicai:after-move', 'audit-two-guicai:before', 'audit-two-guicai:guicai-new', 'audit-two-guicai:guicai-old', 'audit-two-guicai:replaced', ...})
+E        +    where {'audit-two-guicai:after', 'audit-two-guicai:after-move', 'audit-two-guicai:before', 'audit-two-guicai:guicai-new', 'audit-two-guicai:guicai-old', 'audit-two-guicai:replaced', ...} = set(['game-start', 'initial-deal:p1:draw:0', 'initial-deal:p2:draw:0', 'initial-deal:p3:draw:0', 'initial-deal:p4:draw:0', 'initial-deal:p5:draw:0', ...])
+
+tests\test_t18a11_judgment.py:126: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_judgment.py::test_multiple_guicai_holders_can_replace_in_one_judgment
+1 failed, 10 passed in 0.53s

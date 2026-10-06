@@ -1,0 +1,70 @@
+....FFF                                                                  [100%]
+================================== FAILURES ===================================
+_____ test_retrial_rejects_stale_material_when_skill_is_disabled[guicai] ______
+
+skill = 'guicai'
+
+    @pytest.mark.parametrize('skill', ['guicai', 'guidao', 'jilue'])
+    def test_retrial_rejects_stale_material_when_skill_is_disabled(skill):
+        from sanguosha.engine.card_rules import InvalidCardUse
+        s = setup('xun_you')
+        s.state.players['p2'].granted_skills[skill] = 'audit-grant'
+        s.state.players['p2'].marks['ren'] = 1
+        material = put(s, 'basic.slash', 'p2')
+        s.state.cards[material] = replace(s.state.cards[material], suit=Suit.SPADE)
+        s.engine.start_action(JudgmentAction('audit-stale-retrial', 'p1', JudgmentPattern(suit=Suit.HEART)))
+        answer(s, True)
+        s.state.players['p2'].disabled_skills.add(skill)
+        s = restore(s)
+>       with pytest.raises(InvalidCardUse):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_judgment.py:82: Failed
+_____ test_retrial_rejects_stale_material_when_skill_is_disabled[guidao] ______
+
+skill = 'guidao'
+
+    @pytest.mark.parametrize('skill', ['guicai', 'guidao', 'jilue'])
+    def test_retrial_rejects_stale_material_when_skill_is_disabled(skill):
+        from sanguosha.engine.card_rules import InvalidCardUse
+        s = setup('xun_you')
+        s.state.players['p2'].granted_skills[skill] = 'audit-grant'
+        s.state.players['p2'].marks['ren'] = 1
+        material = put(s, 'basic.slash', 'p2')
+        s.state.cards[material] = replace(s.state.cards[material], suit=Suit.SPADE)
+        s.engine.start_action(JudgmentAction('audit-stale-retrial', 'p1', JudgmentPattern(suit=Suit.HEART)))
+        answer(s, True)
+        s.state.players['p2'].disabled_skills.add(skill)
+        s = restore(s)
+>       with pytest.raises(InvalidCardUse):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_judgment.py:82: Failed
+______ test_retrial_rejects_stale_material_when_skill_is_disabled[jilue] ______
+
+skill = 'jilue'
+
+    @pytest.mark.parametrize('skill', ['guicai', 'guidao', 'jilue'])
+    def test_retrial_rejects_stale_material_when_skill_is_disabled(skill):
+        from sanguosha.engine.card_rules import InvalidCardUse
+        s = setup('xun_you')
+        s.state.players['p2'].granted_skills[skill] = 'audit-grant'
+        s.state.players['p2'].marks['ren'] = 1
+        material = put(s, 'basic.slash', 'p2')
+        s.state.cards[material] = replace(s.state.cards[material], suit=Suit.SPADE)
+        s.engine.start_action(JudgmentAction('audit-stale-retrial', 'p1', JudgmentPattern(suit=Suit.HEART)))
+        answer(s, True)
+        s.state.players['p2'].disabled_skills.add(skill)
+        s = restore(s)
+>       with pytest.raises(InvalidCardUse):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE InvalidCardUse
+
+tests\test_t18a11_judgment.py:82: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_judgment.py::test_retrial_rejects_stale_material_when_skill_is_disabled[guicai]
+FAILED tests/test_t18a11_judgment.py::test_retrial_rejects_stale_material_when_skill_is_disabled[guidao]
+FAILED tests/test_t18a11_judgment.py::test_retrial_rejects_stale_material_when_skill_is_disabled[jilue]
+3 failed, 4 passed in 0.54s

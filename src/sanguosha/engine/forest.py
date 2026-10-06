@@ -38,6 +38,29 @@ def savage_effect_immune(state, target_id, skills):
                  or skills.has(state, target_id, 'juxiang')))
 
 
+
+def collect_juxiang(state, moves, skills, user_id, card_id, definition_id,
+                    action_id, *, virtual_skill=None):
+    """Classic Juxiang intercepts a physical Savage or Guhuo's single material.
+
+    Other virtual Savage cards (including single-material Qice) are excluded.
+    Never reclaim a material already obtained during the effect.
+    """
+    if (skills is None or definition_id != 'trick.savage_assault'
+            or virtual_skill not in (None, 'guhuo')
+            or card_id not in state.cards_in(ZoneRef(ZoneType.PROCESSING))):
+        return False
+    owner = next((pid for pid in state.seat_order if pid != user_id
+                  and state.players[pid].is_alive
+                  and skills.has(state, pid, 'juxiang')), None)
+    if owner is None:
+        return False
+    moves.move(state, CardMove(action_id + ':juxiang', (card_id,),
+        ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.HAND, owner),
+        CardMoveReason.SYSTEM, owner, action_id))
+    return True
+
+
 def savage_damage_source(state, user_id, skills):
     if skills is None:
         return user_id
@@ -50,6 +73,7 @@ def weimu_blocks(state, target_id, card_id, definition_id, user_id, skills, virt
     return (skills is not None and state.players[target_id].is_alive
             and skills.has(state, target_id, 'weimu')
             and definition_id.startswith(('trick.', 'delayed.'))
+            and not (virtual_card is not None and virtual_card.skill_id == 'guhuo')
             and (virtual_card.color if virtual_card is not None else effective_color(state, card_id, user_id)) is Color.BLACK)
 
 

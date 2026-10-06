@@ -1,0 +1,60 @@
+FF..                                                                     [100%]
+================================== FAILURES ===================================
+_________ test_guhuo_true_heart_savage_is_obtained_by_juxiang[False] __________
+
+challenged = False
+
+    @pytest.mark.parametrize('challenged', [False, True])
+    def test_guhuo_true_heart_savage_is_obtained_by_juxiang(challenged):
+        s = setup('xun_you')
+        s.state.players['p1'].character_id = 'wind_yuji'
+        s.state.players['p2'].character_id = 'forest_zhurong'
+        clear_hand(s)
+        card = put(s, 'trick.savage_assault')
+        s.state.cards[card] = replace(s.state.cards[card], suit=Suit.HEART)
+        hp = s.state.players['p2'].hp
+        s.engine.start_action(GuhuoAction('audit-guhuo', 'p1'))
+        answer(s, 'trick.savage_assault')
+        answer(s, card)
+        s = drain(s, challenged)
+        assert s.state.players['p2'].hp == hp
+>       assert card in s.state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
+E       AssertionError: assert 'std-club-04-2' in ('std-heart-01-2', 'std-spade-13-1', 'mil-diamond-13', 'ex-heart-12')
+E        +  where ('std-heart-01-2', 'std-spade-13-1', 'mil-diamond-13', 'ex-heart-12') = cards_in(ZoneRef(zone_type=<ZoneType.HAND: 'hand'>, player_id='p2', equipment_slot=None, special_key=None))
+E        +    where cards_in = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='wind_yuji', ...ts={'trick.savage_assault': 1}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None).cards_in
+E        +      where GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='wind_yuji', ...ts={'trick.savage_assault': 1}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000001F62B026360>, events=<sanguosha.engine.events....A10>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000001F629EA82D0>).state
+E        +    and   ZoneRef(zone_type=<ZoneType.HAND: 'hand'>, player_id='p2', equipment_slot=None, special_key=None) = ZoneRef(<ZoneType.HAND: 'hand'>, 'p2')
+E        +      where <ZoneType.HAND: 'hand'> = ZoneType.HAND
+
+tests\test_t18a11_aoe.py:50: AssertionError
+__________ test_guhuo_true_heart_savage_is_obtained_by_juxiang[True] __________
+
+challenged = True
+
+    @pytest.mark.parametrize('challenged', [False, True])
+    def test_guhuo_true_heart_savage_is_obtained_by_juxiang(challenged):
+        s = setup('xun_you')
+        s.state.players['p1'].character_id = 'wind_yuji'
+        s.state.players['p2'].character_id = 'forest_zhurong'
+        clear_hand(s)
+        card = put(s, 'trick.savage_assault')
+        s.state.cards[card] = replace(s.state.cards[card], suit=Suit.HEART)
+        hp = s.state.players['p2'].hp
+        s.engine.start_action(GuhuoAction('audit-guhuo', 'p1'))
+        answer(s, 'trick.savage_assault')
+        answer(s, card)
+        s = drain(s, challenged)
+        assert s.state.players['p2'].hp == hp
+>       assert card in s.state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
+E       AssertionError: assert 'std-club-04-2' in ('std-heart-01-2', 'std-spade-13-1', 'mil-diamond-13', 'ex-heart-12')
+E        +  where ('std-heart-01-2', 'std-spade-13-1', 'mil-diamond-13', 'ex-heart-12') = cards_in(ZoneRef(zone_type=<ZoneType.HAND: 'hand'>, player_id='p2', equipment_slot=None, special_key=None))
+E        +    where cards_in = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='wind_yuji', ...ts={'trick.savage_assault': 1}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None).cards_in
+E        +      where GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='wind_yuji', ...ts={'trick.savage_assault': 1}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000001F629EAEC50>, events=<sanguosha.engine.events....030>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000001F629EFEB70>).state
+E        +    and   ZoneRef(zone_type=<ZoneType.HAND: 'hand'>, player_id='p2', equipment_slot=None, special_key=None) = ZoneRef(<ZoneType.HAND: 'hand'>, 'p2')
+E        +      where <ZoneType.HAND: 'hand'> = ZoneType.HAND
+
+tests\test_t18a11_aoe.py:50: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_aoe.py::test_guhuo_true_heart_savage_is_obtained_by_juxiang[False]
+FAILED tests/test_t18a11_aoe.py::test_guhuo_true_heart_savage_is_obtained_by_juxiang[True]
+2 failed, 2 passed in 0.55s

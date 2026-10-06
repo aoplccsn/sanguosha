@@ -1,0 +1,183 @@
+..............FFFFFF                                                     [100%]
+================================== FAILURES ===================================
+________ test_virtual_aoe_jianxiong_obtains_all_materials[qice-savage] ________
+
+mode = 'qice-savage'
+
+    @pytest.mark.parametrize('mode', ['qice-savage', 'qice-archery', 'luanji'])
+    def test_virtual_aoe_jianxiong_obtains_all_materials(mode):
+        from sanguosha.engine.fire import LuanjiAction
+        s = setup('xun_you')
+        s.state.players['p2'].character_id = 'caocao'
+        clear_hand(s)
+        materials = tuple(put(s, 'basic.slash') for _ in range(2))
+        for card in materials:
+            s.state.cards[card] = replace(s.state.cards[card], suit=Suit.HEART)
+        if mode == 'luanji':
+            s.state.players['p1'].character_id = 'fire_yuan_shao'
+            s.engine.start_action(LuanjiAction('audit-materials', 'p1', materials))
+        else:
+            s.engine.start_action(YJ2012Action('audit-materials', 'p1', 'qice'))
+            answer(s, 'trick.savage_assault' if mode == 'qice-savage' else 'trick.archery_attack')
+        for _ in range(150):
+            r = s.engine.pending_request
+            if r is None:
+                break
+            s = restore(s)
+            answer(s, r.request_id.endswith(':jianxiong') if r.request_type is RequestType.YES_NO else r.timeout_value())
+>       assert set(materials) <= set(s.state.cards_in(ZoneRef(ZoneType.HAND, 'p2')))
+E       AssertionError: assert {'std-club-04...d-heart-08-1'} <= {'ex-heart-12...d-spade-13-1'}
+E         
+E         Extra items in the left set:
+E         'std-heart-08-1'
+
+tests\test_t18a11_aoe.py:207: AssertionError
+_______ test_virtual_aoe_jianxiong_obtains_all_materials[qice-archery] ________
+
+mode = 'qice-archery'
+
+    @pytest.mark.parametrize('mode', ['qice-savage', 'qice-archery', 'luanji'])
+    def test_virtual_aoe_jianxiong_obtains_all_materials(mode):
+        from sanguosha.engine.fire import LuanjiAction
+        s = setup('xun_you')
+        s.state.players['p2'].character_id = 'caocao'
+        clear_hand(s)
+        materials = tuple(put(s, 'basic.slash') for _ in range(2))
+        for card in materials:
+            s.state.cards[card] = replace(s.state.cards[card], suit=Suit.HEART)
+        if mode == 'luanji':
+            s.state.players['p1'].character_id = 'fire_yuan_shao'
+            s.engine.start_action(LuanjiAction('audit-materials', 'p1', materials))
+        else:
+            s.engine.start_action(YJ2012Action('audit-materials', 'p1', 'qice'))
+            answer(s, 'trick.savage_assault' if mode == 'qice-savage' else 'trick.archery_attack')
+        for _ in range(150):
+            r = s.engine.pending_request
+            if r is None:
+                break
+            s = restore(s)
+            answer(s, r.request_id.endswith(':jianxiong') if r.request_type is RequestType.YES_NO else r.timeout_value())
+>       assert set(materials) <= set(s.state.cards_in(ZoneRef(ZoneType.HAND, 'p2')))
+E       AssertionError: assert {'std-club-04...d-heart-08-1'} <= {'ex-heart-12...d-spade-13-1'}
+E         
+E         Extra items in the left set:
+E         'std-heart-08-1'
+
+tests\test_t18a11_aoe.py:207: AssertionError
+__________ test_virtual_aoe_jianxiong_obtains_all_materials[luanji] ___________
+
+mode = 'luanji'
+
+    @pytest.mark.parametrize('mode', ['qice-savage', 'qice-archery', 'luanji'])
+    def test_virtual_aoe_jianxiong_obtains_all_materials(mode):
+        from sanguosha.engine.fire import LuanjiAction
+        s = setup('xun_you')
+        s.state.players['p2'].character_id = 'caocao'
+        clear_hand(s)
+        materials = tuple(put(s, 'basic.slash') for _ in range(2))
+        for card in materials:
+            s.state.cards[card] = replace(s.state.cards[card], suit=Suit.HEART)
+        if mode == 'luanji':
+            s.state.players['p1'].character_id = 'fire_yuan_shao'
+            s.engine.start_action(LuanjiAction('audit-materials', 'p1', materials))
+        else:
+            s.engine.start_action(YJ2012Action('audit-materials', 'p1', 'qice'))
+            answer(s, 'trick.savage_assault' if mode == 'qice-savage' else 'trick.archery_attack')
+        for _ in range(150):
+            r = s.engine.pending_request
+            if r is None:
+                break
+            s = restore(s)
+            answer(s, r.request_id.endswith(':jianxiong') if r.request_type is RequestType.YES_NO else r.timeout_value())
+>       assert set(materials) <= set(s.state.cards_in(ZoneRef(ZoneType.HAND, 'p2')))
+E       AssertionError: assert {'std-club-04...d-heart-08-1'} <= {'ex-heart-12...d-spade-13-1'}
+E         
+E         Extra items in the left set:
+E         'std-heart-08-1'
+
+tests\test_t18a11_aoe.py:207: AssertionError
+_ test_qice_aoe_damage_uses_virtual_trick_identity_not_basic_material[wuyan-target] _
+
+skill = 'wuyan-target'
+
+    @pytest.mark.parametrize('skill', ['wuyan-target', 'wuyan-source', 'luoyi'])
+    def test_qice_aoe_damage_uses_virtual_trick_identity_not_basic_material(skill):
+        s = setup('xun_you')
+        clear_hand(s)
+        put(s, 'basic.slash')
+        if skill.startswith('wuyan'):
+            owner = 'p2' if skill.endswith('target') else 'p1'
+            s.state.players[owner].granted_skills['wuyan'] = 'audit-grant'
+        else:
+            s.state.players['p1'].marks['luoyi'] = 1
+        hp = s.state.players['p2'].hp
+        s.engine.start_action(YJ2012Action('audit-type', 'p1', 'qice'))
+        answer(s, 'trick.savage_assault')
+        s = drain(s)
+>       assert s.state.players['p2'].hp == hp - (skill == 'luoyi')
+E       AssertionError: assert 3 == (4 - 'wuyan-target' == 'luoyi'
+E        +  where 3 = PlayerState(player_id='p2', seat=1, character_id='sunquan', identity=<Identity.LOYALIST: 'loyalist'>, hp=3, max_hp=4, ...rant'}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+E         
+E         - luoyi
+E         + wuyan-target)
+
+tests\test_t18a11_aoe.py:225: AssertionError
+_ test_qice_aoe_damage_uses_virtual_trick_identity_not_basic_material[wuyan-source] _
+
+skill = 'wuyan-source'
+
+    @pytest.mark.parametrize('skill', ['wuyan-target', 'wuyan-source', 'luoyi'])
+    def test_qice_aoe_damage_uses_virtual_trick_identity_not_basic_material(skill):
+        s = setup('xun_you')
+        clear_hand(s)
+        put(s, 'basic.slash')
+        if skill.startswith('wuyan'):
+            owner = 'p2' if skill.endswith('target') else 'p1'
+            s.state.players[owner].granted_skills['wuyan'] = 'audit-grant'
+        else:
+            s.state.players['p1'].marks['luoyi'] = 1
+        hp = s.state.players['p2'].hp
+        s.engine.start_action(YJ2012Action('audit-type', 'p1', 'qice'))
+        answer(s, 'trick.savage_assault')
+        s = drain(s)
+>       assert s.state.players['p2'].hp == hp - (skill == 'luoyi')
+E       AssertionError: assert 3 == (4 - 'wuyan-source' == 'luoyi'
+E        +  where 3 = PlayerState(player_id='p2', seat=1, character_id='sunquan', identity=<Identity.LOYALIST: 'loyalist'>, hp=3, max_hp=4, ...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+E         
+E         - luoyi
+E         + wuyan-source)
+
+tests\test_t18a11_aoe.py:225: AssertionError
+_ test_qice_aoe_damage_uses_virtual_trick_identity_not_basic_material[luoyi] __
+
+skill = 'luoyi'
+
+    @pytest.mark.parametrize('skill', ['wuyan-target', 'wuyan-source', 'luoyi'])
+    def test_qice_aoe_damage_uses_virtual_trick_identity_not_basic_material(skill):
+        s = setup('xun_you')
+        clear_hand(s)
+        put(s, 'basic.slash')
+        if skill.startswith('wuyan'):
+            owner = 'p2' if skill.endswith('target') else 'p1'
+            s.state.players[owner].granted_skills['wuyan'] = 'audit-grant'
+        else:
+            s.state.players['p1'].marks['luoyi'] = 1
+        hp = s.state.players['p2'].hp
+        s.engine.start_action(YJ2012Action('audit-type', 'p1', 'qice'))
+        answer(s, 'trick.savage_assault')
+        s = drain(s)
+>       assert s.state.players['p2'].hp == hp - (skill == 'luoyi')
+E       AssertionError: assert 2 == (4 - 'luoyi' == 'luoyi'
+E        +  where 2 = PlayerState(player_id='p2', seat=1, character_id='sunquan', identity=<Identity.LOYALIST: 'loyalist'>, hp=2, max_hp=4, ...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+E         
+E           luoyi)
+
+tests\test_t18a11_aoe.py:225: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_aoe.py::test_virtual_aoe_jianxiong_obtains_all_materials[qice-savage]
+FAILED tests/test_t18a11_aoe.py::test_virtual_aoe_jianxiong_obtains_all_materials[qice-archery]
+FAILED tests/test_t18a11_aoe.py::test_virtual_aoe_jianxiong_obtains_all_materials[luanji]
+FAILED tests/test_t18a11_aoe.py::test_qice_aoe_damage_uses_virtual_trick_identity_not_basic_material[wuyan-target]
+FAILED tests/test_t18a11_aoe.py::test_qice_aoe_damage_uses_virtual_trick_identity_not_basic_material[wuyan-source]
+FAILED tests/test_t18a11_aoe.py::test_qice_aoe_damage_uses_virtual_trick_identity_not_basic_material[luoyi]
+6 failed, 14 passed in 2.67s

@@ -62,11 +62,22 @@ class MilitaryDamageHandler(DamageActionHandler):
         self.moves, self.skills = moves, skills
         self.distance = DistanceSystem(definitions)
 
+    @staticmethod
+    def jianxiong_materials(state, action):
+        virtual = getattr(action, 'virtual_card', None)
+        materials = (getattr(action, 'material_card_ids', ())
+                     or (virtual.material_ids if virtual is not None else ())
+                     or ((action.card_id,) if action.card_id else ()))
+        materials = tuple(dict.fromkeys(materials))
+        table = state.cards_in(ZoneRef(ZoneType.PROCESSING))
+        return materials if materials and all(cid in table for cid in materials) else ()
+
     def validate_start(self, state, action):
         if action.amount <= 0 or action.target_id not in state.players or not state.players[action.target_id].is_alive:
             raise InvalidCardUse('damage must have positive amount and a living target')
 
     def step(self, state, frame):
+        from .damage_cards import damage_definition
         action = frame.action
         target = state.players[action.target_id]
         if state.status is GameStatus.FINISHED:
@@ -113,8 +124,7 @@ class MilitaryDamageHandler(DamageActionHandler):
             if (action.source_id is not None and state.current_player_id == action.source_id
                     and state.players[action.source_id].marks.get('luoyi')
                     and not getattr(action, 'propagated', False)
-                    and (getattr(action,'card_kind','')=='slash' or (action.card_id in state.cards
-                         and state.cards[action.card_id].definition_id in (*SLASH_IDS, 'trick.duel')))):
+                    and damage_definition(state, action) in (*SLASH_IDS, 'trick.duel')):
                 amount += 1
             if (self.skills is not None and action.source_id is not None
                     and action.source_id != action.target_id and not getattr(action, 'propagated', False)
@@ -260,12 +270,11 @@ class MilitaryDamageHandler(DamageActionHandler):
             frame.step_index = 1
             frame.local['jianxiong_offered'] = True
             if requested:
-                materials = getattr(action,'material_card_ids',()) or ((action.card_id,) if action.card_id else ())
-                for index, cid in enumerate(dict.fromkeys(materials)):
-                    ref = next((ref for ref, zone in state.zones.items() if cid in zone.card_ids), None)
-                    if ref is not None and ref.zone_type in (ZoneType.PROCESSING, ZoneType.DISCARD_PILE):
-                        self.moves.move(state,CardMove(f'{action.action_id}:jianxiong:{index}',(cid,),ref,
-                            ZoneRef(ZoneType.HAND,action.target_id),CardMoveReason.SYSTEM,action.target_id))
+                materials = self.jianxiong_materials(state, action)
+                for index, cid in enumerate(materials):
+                    self.moves.move(state,CardMove(f'{action.action_id}:jianxiong:{index}',(cid,),
+                        ZoneRef(ZoneType.PROCESSING),ZoneRef(ZoneType.HAND,action.target_id),
+                        CardMoveReason.SYSTEM,action.target_id))
         if frame.step_index == 6:
             wanted = frame.decision is True
             frame.decision = None
@@ -293,9 +302,7 @@ class MilitaryDamageHandler(DamageActionHandler):
                         destination,CardMoveReason.SYSTEM,action.target_id))
             frame.step_index = 1
         if frame.step_index == 1 and not frame.local.get('jianxiong_offered') and self.skills is not None and self.skills.has(state,action.target_id,'jianxiong') and target.is_alive:
-            materials = getattr(action,'material_card_ids',()) or ((action.card_id,) if action.card_id else ())
-            obtainable = tuple(cid for cid in dict.fromkeys(materials) if any(cid in zone.card_ids and ref.zone_type in
-                (ZoneType.PROCESSING,ZoneType.DISCARD_PILE) for ref,zone in state.zones.items()))
+            obtainable = self.jianxiong_materials(state, action)
             frame.local['jianxiong_offered'] = True
             if obtainable:
                 frame.step_index = 5

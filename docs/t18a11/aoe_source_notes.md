@@ -1,0 +1,25 @@
+# T18A.11 AOE first batch source check
+
+2026-10-06；锁定classic林包及docs/t17/version_matrix.md荀攸版本。辅助语义来源为QS-v2固定revision e8768851bd8054db9fd1b63cd6f1feca813590d7的src/package/thicket.cpp，SHA256 cf9548b90a9c8cfa240fb071f378df726dbddf57fadc7a53ff54487672b173f1。来源链接：https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/thicket.cpp 。只读核对；未复制第三方代码或长技能文字。
+
+巨象：南蛮对持有者无效。合法取得发生于使用后的处理区材料收尾，实体南蛮可收取；虚拟牌历史例外仅蛊惑单张材料，奇策即使只有一张材料也排除。已经被奸雄等取得的材料不抢回。自身使用、持有者死亡、技能失效均不取得。初步怀疑奇策遗漏收取被来源证据否定，不记录为产品缺陷。
+
+祸首：指定目标时将该次南蛮来源固定。之后持有者死亡，剩余伤害无来源；不能归回出牌者。该次来源已固定后技能失效不重新指定来源，效果免疫仍按当前有效技能检查。
+
+最小复现：aoe_reproduction.log中两个真实红桃蛊惑南蛮未取得（被质疑/无人质疑），奇策1/3张反例通过。huoshou_reproduction.log中刚烈使孟获真实死亡后，后续伤害错误来自出牌者；另一个失败为新测试使用只读is_alive属性的夹具错误，不是产品缺陷。修复后aoe_targeted.log 237 passed，含14项新增AOE边界及既有相关回归；所有新增请求路径按请求重连。没有重跑化身795项、最终全量验收或签发RC。
+
+继续首批：虚拟AOE丢失牌身份与完整材料，已由virtual_aoe_reproduction.log六个真实失败复现，修复跨TrickAction/TargetTrick/MilitaryDamageAction完整元数据传递；乱击、奇策、蛊惑、火计均沿真实声明锦囊身份。裸衣/绝情增伤判断采用有效牌定义，不能把锦囊材料的杀当成本次杀。无言按有效锦囊类型防止伤害。
+
+经典奸雄取材语义核对nostalgia.cpp NosJianxiong，SHA256 d53b1b7d51911ba8c6b832f1c2fa25f0779f5f74d514cbef723f1cfc1a431a3e。standard-generals.cpp同名Jianxiong带摸牌选项，属于不同语义，不用于升级项目经典奸雄。经典资格要求全体实体材料仍在处理区；奸雄不能从弃牌堆捞回材料或只取部分。jianxiong_reproduction.log两项失败复现后修复。奸雄伤害与濒死先后仍待优先级4核对，因此该矩阵行保留BLOCKED。
+
+五谷：固定revision standard-cards.cpp（SHA256 25af404c0beb2d094c4eee706b7a90172ed2edc7ca9713480d65a2774965efd2）独立揭示数量按存活人数，目标免疫/巧说删除不减少初始揭示牌数，余牌弃置。grace_reproduction.log确认黑色五谷遇帷幕只揭示4而非5；揭示直接牌堆到公共池，避免伪造手牌得失事件。修复后aoe_targeted.log为326 passed（含23个新增AOE用例），替代前述237/325的阶段性验证。
+
+看破：fire.cpp SHA256 be52fb19e5b4c50a892a0e269423cffcb946b6366a59f55338213318e19a3429，只用合法有效黑色手牌响应无懈；红颜、颜色限制、技能失效、装备排除和旧请求提交复核通过。nullification_targeted.log 40 passed（16个新用例），包含0–4层链奇偶、逐请求恢复、单目标AOE反制不影响其他目标，以及既有房间整次放弃作用域回归。未发现看破规则差异。
+
+继续补证：Wuyan源yjcm.cpp以TypeTrick判断而非仅普通锦囊。lightning_wuyan_reproduction.log黑桃2/9点闪电命中仍受伤两项失败，已修包含delayed.*，1/10点反例通过，相关judgment_targeted.log更新383 passed。
+
+经典蛊惑与帷幕：thicket.cpp Weimu明确排除nosguhuo；nostalgia.cpp NosGuhuoCard成功时克隆真实声明牌并附单材料。项目guhuo是此经典真伪/红桃版本，未换成现代蛊惑。guhuo_weimu_reproduction.log确认未质疑黑材料声明万箭错误被帷幕免疫；生产只对VirtualCard.skill_id=guhuo例外，实体牌/奇策仍受限制。相关回归384 passed，11项新增帷幕/谦逊禁止表单独prohibit_targeted.log 35 passed。谦逊使用nostalgia.cpp NosQianxun禁止顺手/乐不思蜀，不采用standard-generals后期暂移手牌语义。帷幕、谦逊分别已记录FIXED/PASS。
+
+多目标补核：qice_qiaoshui_reproduction.log混色奇策巧说新增目标仍按首黑材料误禁帷幕，修CardUsedEvent虚拟元数据传递，归入同一R10根因，未增加缺陷总数。全黑反例与重连通过。
+
+贞烈：项目锁docs/t17/version_matrix.md目标防御版，与固定yjcm2012.cpp Zhenlie的TargetConfirmed一致。确认早于锦囊效果，不因藤甲/祸首/巨象/智迟效果免疫删除合法目标确认窗口。zhenlie_immune_reproduction.log初版4失败含3真实行为失败和1藤甲夹具漏EquipmentSlot导入，不能称4产品失败。已将confirmed_targets与可结算targets分开，保持已有客户端有效目标提示。藤甲夹具导入修复后亦通过。multitarget_targeted.log 345 passed，zhenlie_targeted.log新增隐私/AI后60 passed（含AOE45及既有贞烈15），来源手牌卡面/ID扰动在重连后不改变请求payload。获救继续、死亡不弃来源、来源无牌仍取消、自用/延时不触发均复核，贞烈行关闭FIXED。

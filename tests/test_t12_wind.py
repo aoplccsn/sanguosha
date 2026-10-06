@@ -537,7 +537,7 @@ def test_guidao_replaces_judgment_with_black_card_from_legal_zone(zone):
     seen = drive(session, choose)
     assert any('鬼道' in request.prompt for request in seen)
     assert session.engine.last_result == material
-    assert top in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert top in session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
     assert material in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
 
 
@@ -565,7 +565,7 @@ def test_guidao_can_change_leiji_judgment_before_thunder_damage():
     seen = drive(session, choose)
     assert any('雷击判定' in request.prompt and '鬼道' in request.prompt for request in seen)
     assert session.state.players['p2'].hp == 2
-    assert top in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert top in session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1'))
     assert material in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
 
 

@@ -1,0 +1,67 @@
+.......F...F                                                             [100%]
+================================== FAILURES ===================================
+_____ test_physical_savage_juxiang_capture_boundaries[dead-discard_pile] ______
+
+condition = 'dead', expected = 'discard_pile'
+
+    @pytest.mark.parametrize('condition,expected', [
+        ('active', 'hand'), ('own', 'discard_pile'),
+        ('suppressed', 'discard_pile'), ('dead', 'discard_pile'),
+    ])
+    def test_physical_savage_juxiang_capture_boundaries(condition, expected):
+        from sanguosha.engine.events import CardMovedEvent
+        s = setup('xun_you')
+        owner = 'p1' if condition == 'own' else 'p2'
+        s.state.players[owner].character_id = 'forest_zhurong'
+        if condition == 'suppressed':
+            s.state.players[owner].disabled_skills.add('juxiang')
+        if condition == 'dead':
+>           s.state.players[owner].is_alive = False
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: property 'is_alive' of 'PlayerState' object has no setter
+
+tests\test_t18a11_aoe.py:80: AttributeError
+________ test_huoshou_death_mid_aoe_leaves_later_damage_without_source ________
+
+    def test_huoshou_death_mid_aoe_leaves_later_damage_without_source():
+        from sanguosha.engine.events import DamageDealtEvent
+        from sanguosha.model.enums import Identity
+        s = setup('xun_you')
+        s.state.players['p2'].character_id = 'xiahou_dun'
+        s.state.players['p3'].character_id = 'forest_menghuo'
+        s.state.players['p3'].hp = 1
+        s.state.players['p3'].identity = Identity.REBEL
+        card = put(s, 'trick.savage_assault')
+        top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+        s.state.cards[top] = replace(s.state.cards[top], suit=Suit.SPADE)
+        s.engine.start_action(UseCardAction('audit-huoshou', 'p1', card))
+        for _ in range(150):
+            r = s.engine.pending_request
+            if r is None:
+                break
+            s = restore(s)
+            if r.request_type is RequestType.YES_NO:
+                value = r.request_id.endswith(':ganglie:offer')
+            elif r.request_type is RequestType.CHOOSE_OPTION and r.request_id.endswith(':source-choice'):
+                value = 'damage'
+            else:
+                value = r.timeout_value()
+            answer(s, value)
+        assert not s.state.players['p3'].is_alive
+        damage = {e.target_id: e.source_id for e in s.events.events
+                  if isinstance(e, DamageDealtEvent) and e.event_id.startswith('audit-huoshou:effect:effect:')}
+        # The source is fixed when Savage is declared; death clears attribution,
+        # rather than assigning the remaining targets' damage back to the user.
+        aoe = [e for e in s.events.events if isinstance(e, DamageDealtEvent)
+               and e.target_id in ('p2', 'p4', 'p5')]
+>       assert [(e.target_id, e.source_id) for e in aoe] == [('p2', 'p3'), ('p4', None), ('p5', None)]
+E       AssertionError: assert [('p2', 'p3')... ('p5', 'p1')] == [('p2', 'p3')... ('p5', None)]
+E         
+E         At index 1 diff: ('p4', 'p1') != ('p4', None)
+E         Use -v to get more diff
+
+tests\test_t18a11_aoe.py:145: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_aoe.py::test_physical_savage_juxiang_capture_boundaries[dead-discard_pile]
+FAILED tests/test_t18a11_aoe.py::test_huoshou_death_mid_aoe_leaves_later_damage_without_source
+2 failed, 10 passed in 1.12s

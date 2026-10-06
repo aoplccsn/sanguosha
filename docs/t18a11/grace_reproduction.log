@@ -1,0 +1,23 @@
+......................F                                                  [100%]
+================================== FAILURES ===================================
+_ test_amazing_grace_reveals_for_all_living_seats_without_temporary_hand_gain _
+
+    def test_amazing_grace_reveals_for_all_living_seats_without_temporary_hand_gain():
+        from sanguosha.engine.events import CardMovedEvent
+        s = setup('xun_you')
+        s.state.players['p2'].character_id = 'forest_jia_xu'
+        card = put(s, 'trick.amazing_grace')
+        s.state.cards[card] = replace(s.state.cards[card], suit=Suit.SPADE)
+        s.engine.start_action(UseCardAction('audit-grace', 'p1', card))
+        pool = next(ref for ref in s.state.zones if ref.special_key == 'audit-grace:effect')
+>       assert len(s.state.cards_in(pool)) == 5
+E       AssertionError: assert 4 == 5
+E        +  where 4 = len(('std-heart-08-1', 'mil-club-08', 'mil-heart-07', 'std-spade-05-2'))
+E        +    where ('std-heart-08-1', 'mil-club-08', 'mil-heart-07', 'std-spade-05-2') = cards_in(ZoneRef(zone_type=<ZoneType.SPECIAL: 'special'>, player_id=None, equipment_slot=None, special_key='audit-grace:effect'))
+E        +      where cards_in = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_y...nts={'trick.amazing_grace': 1}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None).cards_in
+E        +        where GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_y...nts={'trick.amazing_grace': 1}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000026A036D0940>, events=<sanguosha.engine.events....830>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000026A0354B2F0>).state
+
+tests\test_t18a11_aoe.py:256: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_aoe.py::test_amazing_grace_reveals_for_all_living_seats_without_temporary_hand_gain
+1 failed, 22 passed in 2.33s

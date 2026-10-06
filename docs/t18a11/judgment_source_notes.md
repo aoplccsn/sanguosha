@@ -1,0 +1,22 @@
+# T18A.11 judgment and delayed-trick source check
+
+2026-10-06；沿项目classic锁定，QS-v2辅助语义固定e8768851bd8054db9fd1b63cd6f1feca813590d7，不引入现代同名改版或外部代码。
+
+- wind.cpp，SHA256 266e3ed0b657e74ee26c101b2b2e352e8240daa4ed7b5b876e7b2f613200571f：Guidao的RetrialSkill带exchange=true；黑色手牌/装备打出改判。
+- core/skill.cpp，SHA256 07972cf065db9a98d5101a97629cee57fa8660476baa13366a6f91b314834b5f：exchange参数传递room.retrial。
+- server/room.cpp，SHA256 0203c4b2e55bb93c461958d5b189fa8e44787fcbc4d6c5d97f8e7865f677a496：exchange将旧判定牌移给改判者；judge遍历getAllPlayers的存活当前回合座次，每名角色均有改判机会。当前角色NotActive时的尾移语义及同人多技能自主顺序尚未全面闭环。
+- nostalgia.cpp，SHA256 d53b1b7d51911ba8c6b832f1c2fa25f0779f5f74d514cbef723f1cfc1a431a3e：NosGuicai保留经典手牌打出，不把修订Guicai装备范围带入项目。
+- yjcm2012.cpp的Qianxi使用use,response手牌颜色限制；与项目docs/t17/version_matrix.md锁定的判定限制版一致。改判材料属于response，不能绕过潜袭。装备不是受限手牌。
+- package/standard.cpp，SHA256 f6f4f8fe3d1779ac4f9ffbf1266e74b0df90318fa21141afeb4d4eb59805f592：可移动延时锦囊传递时检查禁止目标及containsTrick；帷幕和有效转化同名闪电必须跳过。无人可接收、当前角色尾移、后续TargetConfirming等边界仍未全面闭环。
+
+来源链接根目录：https://github.com/Mogara/QSanguosha-v2/tree/e8768851bd8054db9fd1b63cd6f1feca813590d7 。以上仅语义归纳，不复制第三方实现。
+
+judgment_reproduction.log：鬼道手牌/装备两项漏取得旧牌，以及改判只第一持有者且分技能顺序错误，共3项失败。修复后旧tests/test_t12_wind.py三个断言原本期待旧牌弃堆，与独立来源冲突，校正为持有者手牌，未删除场景。请求和移动事件附加actor唯一ID；连续两鬼才及鬼才->鬼道->天妒最终牌场景逐请求重连通过。
+
+lightning_reproduction.log：未命中/被无懈两路径都漏帷幕及虚拟同名判定区检测，先失败后修。retrial_limit_reproduction.log三项潜袭禁黑手牌仍可改判，先失败后修。装备鬼道不受手牌限制的反例通过，极略无材料不扣忍标记。
+
+judgment_stale_reproduction.log保留探索记录：已确认发动后人为禁技能实验三失败，但尚无此人工介入时机的规则证据，已移除假设测试，不计产品缺陷。开发中漏DelayedHandler.skills注入曾使11回归失败，已补依赖，不计基线产品缺陷。
+
+judgment_targeted.log最终325 passed；含11个新增判定用例、AOE/无懈新增及既有相关回归。执行test_t13_mountain.py包含原有左慈AI单局smoke，未执行tests/test_t18a11_huashen.py的795专项，也未运行最终全量门禁。
+
+当前鬼才/鬼道/天妒/极略/帷幕等行补入组合证据仍保留BLOCKED，待所有触发次序/权限/判定后清理和互动边界闭环后再关闭。

@@ -1,0 +1,60 @@
+....................FF                                                   [100%]
+================================== FAILURES ===================================
+___ test_classic_jianxiong_requires_whole_virtual_card_still_on_table[hand] ___
+
+other_zone = <ZoneType.HAND: 'hand'>
+
+    @pytest.mark.parametrize('other_zone', [ZoneType.HAND, ZoneType.DISCARD_PILE])
+    def test_classic_jianxiong_requires_whole_virtual_card_still_on_table(other_zone):
+        from sanguosha.engine.military_basics import MilitaryDamageAction
+        from sanguosha.engine.card_moves import CardMove, CardMoveReason
+        from sanguosha.model.virtual_card import VirtualCard
+        s = setup('xun_you')
+        s.state.players['p2'].character_id = 'caocao'
+        cards = tuple(put(s, 'basic.slash') for _ in range(2))
+        moves = s.engine.reaction_provider.__self__
+        moves.move(s.state, CardMove('audit-one-on-table', (cards[0],), ZoneRef(ZoneType.HAND, 'p1'),
+                                   ZoneRef(ZoneType.PROCESSING), CardMoveReason.USE, 'p1'))
+        if other_zone is ZoneType.DISCARD_PILE:
+            moves.move(s.state, CardMove('audit-already-discarded', (cards[1],), ZoneRef(ZoneType.HAND, 'p1'),
+                                       ZoneRef(other_zone), CardMoveReason.USE, 'p1'))
+        virtual = VirtualCard('trick.archery_attack', cards, Suit.HEART, None, 'luanji')
+        s.engine.start_action(MilitaryDamageAction('audit-partial-card', 'p1', 'p2', 1,
+                                                  card_id=cards[0], material_card_ids=cards, virtual_card=virtual))
+>       assert s.engine.pending_request is None
+E       AssertionError: assert PendingRequest(request_id='audit-partial-card:jianxiong', player_id='p2', request_type=<RequestType.YES_NO: 'yes_no'>,..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E        +  where PendingRequest(request_id='audit-partial-card:jianxiong', player_id='p2', request_type=<RequestType.YES_NO: 'yes_no'>,..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x000001E480630680>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x000001E480630680> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000001E480630680>, events=<sanguosha.engine.events....810>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000001E48054A300>).engine
+
+tests\test_t18a11_aoe.py:244: AssertionError
+_ test_classic_jianxiong_requires_whole_virtual_card_still_on_table[discard_pile] _
+
+other_zone = <ZoneType.DISCARD_PILE: 'discard_pile'>
+
+    @pytest.mark.parametrize('other_zone', [ZoneType.HAND, ZoneType.DISCARD_PILE])
+    def test_classic_jianxiong_requires_whole_virtual_card_still_on_table(other_zone):
+        from sanguosha.engine.military_basics import MilitaryDamageAction
+        from sanguosha.engine.card_moves import CardMove, CardMoveReason
+        from sanguosha.model.virtual_card import VirtualCard
+        s = setup('xun_you')
+        s.state.players['p2'].character_id = 'caocao'
+        cards = tuple(put(s, 'basic.slash') for _ in range(2))
+        moves = s.engine.reaction_provider.__self__
+        moves.move(s.state, CardMove('audit-one-on-table', (cards[0],), ZoneRef(ZoneType.HAND, 'p1'),
+                                   ZoneRef(ZoneType.PROCESSING), CardMoveReason.USE, 'p1'))
+        if other_zone is ZoneType.DISCARD_PILE:
+            moves.move(s.state, CardMove('audit-already-discarded', (cards[1],), ZoneRef(ZoneType.HAND, 'p1'),
+                                       ZoneRef(other_zone), CardMoveReason.USE, 'p1'))
+        virtual = VirtualCard('trick.archery_attack', cards, Suit.HEART, None, 'luanji')
+        s.engine.start_action(MilitaryDamageAction('audit-partial-card', 'p1', 'p2', 1,
+                                                  card_id=cards[0], material_card_ids=cards, virtual_card=virtual))
+>       assert s.engine.pending_request is None
+E       AssertionError: assert PendingRequest(request_id='audit-partial-card:jianxiong', player_id='p2', request_type=<RequestType.YES_NO: 'yes_no'>,..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E        +  where PendingRequest(request_id='audit-partial-card:jianxiong', player_id='p2', request_type=<RequestType.YES_NO: 'yes_no'>,..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x000001E48063E200>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x000001E48063E200> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x000001E48063E200>, events=<sanguosha.engine.events....EF0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000001E480549FE0>).engine
+
+tests\test_t18a11_aoe.py:244: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_aoe.py::test_classic_jianxiong_requires_whole_virtual_card_still_on_table[hand]
+FAILED tests/test_t18a11_aoe.py::test_classic_jianxiong_requires_whole_virtual_card_still_on_table[discard_pile]
+2 failed, 20 passed in 2.42s

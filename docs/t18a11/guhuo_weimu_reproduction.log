@@ -1,0 +1,24 @@
+.......................F                                                 [100%]
+================================== FAILURES ===================================
+______ test_classic_guhuo_black_declared_aoe_is_not_prohibited_by_weimu _______
+
+    def test_classic_guhuo_black_declared_aoe_is_not_prohibited_by_weimu():
+        s = setup('xun_you')
+        s.state.players['p1'].character_id = 'wind_yuji'
+        s.state.players['p2'].character_id = 'forest_jia_xu'
+        clear_hand(s)
+        card = put(s, 'basic.slash')
+        s.state.cards[card] = replace(s.state.cards[card], suit=Suit.SPADE)
+        hp = s.state.players['p2'].hp
+        s.engine.start_action(GuhuoAction('audit-nosguhuo-weimu', 'p1'))
+        answer(s, 'trick.archery_attack')
+        answer(s, card)
+        s = drain(s)
+>       assert s.state.players['p2'].hp == hp - 1
+E       AssertionError: assert 4 == (4 - 1)
+E        +  where 4 = PlayerState(player_id='p2', seat=1, character_id='forest_jia_xu', identity=<Identity.LOYALIST: 'loyalist'>, hp=4, max_...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+
+tests\test_t18a11_aoe.py:276: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_aoe.py::test_classic_guhuo_black_declared_aoe_is_not_prohibited_by_weimu
+1 failed, 23 passed in 2.37s

@@ -1,0 +1,110 @@
+.....................................FFFF                                [100%]
+================================== FAILURES ===================================
+__ test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity[vine] ___
+
+immunity = 'vine'
+
+    @pytest.mark.parametrize('immunity', ['vine', 'huoshou', 'juxiang', 'zhichi'])
+    def test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity(immunity):
+        from sanguosha.engine.military_basics import MilitaryDamageAction
+        s = setup('xun_you')
+        s.state.players['p2'].granted_skills['zhenlie'] = 'audit-grant'
+        if immunity == 'vine':
+>           put(s, 'equipment.armor.vine', 'p2', ZoneType.EQUIPMENT, EquipmentSlot.ARMOR)
+                                                                     ^^^^^^^^^^^^^
+E           NameError: name 'EquipmentSlot' is not defined
+
+tests\test_t18a11_aoe.py:336: NameError
+_ test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity[huoshou] _
+
+immunity = 'huoshou'
+
+    @pytest.mark.parametrize('immunity', ['vine', 'huoshou', 'juxiang', 'zhichi'])
+    def test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity(immunity):
+        from sanguosha.engine.military_basics import MilitaryDamageAction
+        s = setup('xun_you')
+        s.state.players['p2'].granted_skills['zhenlie'] = 'audit-grant'
+        if immunity == 'vine':
+            put(s, 'equipment.armor.vine', 'p2', ZoneType.EQUIPMENT, EquipmentSlot.ARMOR)
+        elif immunity == 'zhichi':
+            s.state.players['p2'].granted_skills['zhichi'] = 'audit-grant'
+            s.engine.start_action(MilitaryDamageAction('audit-zhichi-first', 'p1', 'p2', 1))
+            assert s.engine.pending_request is None
+        else:
+            s.state.players['p2'].granted_skills[immunity] = 'audit-grant'
+        card = put(s, 'trick.savage_assault')
+        hp = s.state.players['p2'].hp
+        cost = put(s, 'basic.slash')
+        s.engine.start_action(UseCardAction('audit-immune-zhenlie', 'p1', card))
+        r = s.engine.pending_request
+>       assert r.player_id == 'p2' and r.request_type is RequestType.YES_NO
+E       AssertionError: assert ('p1' == 'p2'
+E         
+E         - p2
+E         + p1)
+
+tests\test_t18a11_aoe.py:348: AssertionError
+_ test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity[juxiang] _
+
+immunity = 'juxiang'
+
+    @pytest.mark.parametrize('immunity', ['vine', 'huoshou', 'juxiang', 'zhichi'])
+    def test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity(immunity):
+        from sanguosha.engine.military_basics import MilitaryDamageAction
+        s = setup('xun_you')
+        s.state.players['p2'].granted_skills['zhenlie'] = 'audit-grant'
+        if immunity == 'vine':
+            put(s, 'equipment.armor.vine', 'p2', ZoneType.EQUIPMENT, EquipmentSlot.ARMOR)
+        elif immunity == 'zhichi':
+            s.state.players['p2'].granted_skills['zhichi'] = 'audit-grant'
+            s.engine.start_action(MilitaryDamageAction('audit-zhichi-first', 'p1', 'p2', 1))
+            assert s.engine.pending_request is None
+        else:
+            s.state.players['p2'].granted_skills[immunity] = 'audit-grant'
+        card = put(s, 'trick.savage_assault')
+        hp = s.state.players['p2'].hp
+        cost = put(s, 'basic.slash')
+        s.engine.start_action(UseCardAction('audit-immune-zhenlie', 'p1', card))
+        r = s.engine.pending_request
+>       assert r.player_id == 'p2' and r.request_type is RequestType.YES_NO
+E       AssertionError: assert ('p1' == 'p2'
+E         
+E         - p2
+E         + p1)
+
+tests\test_t18a11_aoe.py:348: AssertionError
+_ test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity[zhichi] __
+
+immunity = 'zhichi'
+
+    @pytest.mark.parametrize('immunity', ['vine', 'huoshou', 'juxiang', 'zhichi'])
+    def test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity(immunity):
+        from sanguosha.engine.military_basics import MilitaryDamageAction
+        s = setup('xun_you')
+        s.state.players['p2'].granted_skills['zhenlie'] = 'audit-grant'
+        if immunity == 'vine':
+            put(s, 'equipment.armor.vine', 'p2', ZoneType.EQUIPMENT, EquipmentSlot.ARMOR)
+        elif immunity == 'zhichi':
+            s.state.players['p2'].granted_skills['zhichi'] = 'audit-grant'
+            s.engine.start_action(MilitaryDamageAction('audit-zhichi-first', 'p1', 'p2', 1))
+            assert s.engine.pending_request is None
+        else:
+            s.state.players['p2'].granted_skills[immunity] = 'audit-grant'
+        card = put(s, 'trick.savage_assault')
+        hp = s.state.players['p2'].hp
+        cost = put(s, 'basic.slash')
+        s.engine.start_action(UseCardAction('audit-immune-zhenlie', 'p1', card))
+        r = s.engine.pending_request
+>       assert r.player_id == 'p2' and r.request_type is RequestType.YES_NO
+E       AssertionError: assert ('p1' == 'p2'
+E         
+E         - p2
+E         + p1)
+
+tests\test_t18a11_aoe.py:348: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_aoe.py::test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity[vine]
+FAILED tests/test_t18a11_aoe.py::test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity[huoshou]
+FAILED tests/test_t18a11_aoe.py::test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity[juxiang]
+FAILED tests/test_t18a11_aoe.py::test_zhenlie_target_confirmation_occurs_before_aoe_effect_immunity[zhichi]
+4 failed, 37 passed in 3.74s

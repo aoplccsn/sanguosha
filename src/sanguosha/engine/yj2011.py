@@ -84,6 +84,7 @@ def replace_damage(state, frame, skills, events):
         return StepResult.complete(0)  # No damage was dealt; child handled HP/dying.
     if frame.step_index != 0 or skills is None:
         return None
+    from .damage_cards import damage_definition
     a = frame.action
     if a.source_id is not None and skills.has(state, a.source_id, 'jueqing'):
         from .events import Event
@@ -91,8 +92,7 @@ def replace_damage(state, frame, skills, events):
         source = state.players[a.source_id]
         if (state.current_player_id == a.source_id and source.marks.get('luoyi')
                 and not getattr(a, 'propagated', False)
-                and a.card_id in state.cards
-                and state.cards[a.card_id].definition_id in
+                and damage_definition(state, a) in
                     ('basic.slash','basic.fire_slash','basic.thunder_slash','trick.duel')):
             amount += 1
         events.record(Event(a.action_id + ':jueqing', 'damage_replaced_by_hp_loss',
@@ -100,8 +100,7 @@ def replace_damage(state, frame, skills, events):
         frame.step_index = 90
         return StepResult.push(LoseHpAction(a.action_id + ':hp-loss', a.target_id, amount))
     # The locked 无言 archive says trick damage, including delayed tricks.
-    is_trick = a.card_id in state.cards and str(state.cards[a.card_id].definition_id).startswith('trick.')
-    is_trick = is_trick or getattr(a, 'card_kind', '') in ('trick','duel')
+    is_trick = damage_definition(state, a).startswith(('trick.', 'delayed.'))
     if is_trick and (skills.has(state,a.target_id,'wuyan')
                      or a.source_id is not None and skills.has(state,a.source_id,'wuyan')):
         return StepResult.complete(0)

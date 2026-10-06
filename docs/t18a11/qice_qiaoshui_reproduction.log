@@ -1,0 +1,33 @@
+...................................F.                                    [100%]
+================================== FAILURES ===================================
+_ test_qice_qiaoshui_extra_target_weimu_checks_combined_virtual_color[suits0-True] _
+
+suits = (<Suit.SPADE: 'spade'>, <Suit.HEART: 'heart'>), allowed = True
+
+    @pytest.mark.parametrize('suits,allowed', [((Suit.SPADE, Suit.HEART), True), ((Suit.SPADE, Suit.CLUB), False)])
+    def test_qice_qiaoshui_extra_target_weimu_checks_combined_virtual_color(suits, allowed):
+        s = setup('xun_you')
+        s.state.players['p1'].granted_skills['qiaoshui'] = 'audit-grant'
+        s.state.players['p1'].marks['qiaoshui_success'] = s.state.turn_number
+        s.state.players['p3'].character_id = 'forest_jia_xu'
+        clear_hand(s)
+        for suit in suits:
+            card = put(s, 'basic.slash')
+            s.state.cards[card] = replace(s.state.cards[card], suit=suit)
+        s.engine.start_action(YJ2012Action('audit-qice-qiaoshui', 'p1', 'qice'))
+        answer(s, 'trick.duel')
+        answer(s, ('p2',))
+        s = restore(s)
+        assert 'add' in s.engine.pending_request.choices
+        answer(s, 'add')
+        s = restore(s)
+>       assert ('p3' in s.engine.pending_request.allowed_player_ids) is allowed
+E       AssertionError: assert ('p3' in ('p4', 'p5')) is True
+E        +  where ('p4', 'p5') = PendingRequest(request_id='audit-qice-qiaoshui:used:qiaoshui:2', player_id='p1', request_type=<RequestType.CHOOSE_PLAY..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()).allowed_player_ids
+E        +    where PendingRequest(request_id='audit-qice-qiaoshui:used:qiaoshui:2', player_id='p1', request_type=<RequestType.CHOOSE_PLAY..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x00000178F3A32C50>.pending_request
+E        +      where <sanguosha.engine.engine.GameEngine object at 0x00000178F3A32C50> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x00000178F3A32C50>, events=<sanguosha.engine.events....750>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x00000178F38BA4E0>).engine
+
+tests\test_t18a11_aoe.py:326: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_aoe.py::test_qice_qiaoshui_extra_target_weimu_checks_combined_virtual_color[suits0-True]
+1 failed, 36 passed in 3.94s

@@ -1,0 +1,50 @@
+............FF.                                                          [100%]
+================================== FAILURES ===================================
+_ test_lightning_spade_rank_boundaries_and_wuyan_prevents_delayed_trick_damage[2-True] _
+
+rank = 2, hit = True
+
+    @pytest.mark.parametrize('rank,hit', [(1, False), (2, True), (9, True), (10, False)])
+    def test_lightning_spade_rank_boundaries_and_wuyan_prevents_delayed_trick_damage(rank, hit):
+        from sanguosha.engine.military_tricks import ResolveDelayed
+        s = setup('xun_you')
+        s.state.players['p1'].granted_skills['wuyan'] = 'audit-grant'
+        card = put(s, 'delayed.lightning', 'p1', ZoneType.JUDGMENT)
+        top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+        s.state.cards[top] = replace(s.state.cards[top], suit=Suit.SPADE, rank=rank)
+        hp = s.state.players['p1'].hp
+        s.engine.start_action(ResolveDelayed('audit-lightning-wuyan', 'p1', card))
+        while s.engine.pending_request:
+            s = restore(s)
+            answer(s, s.engine.pending_request.timeout_value())
+>       assert s.state.players['p1'].hp == hp
+E       AssertionError: assert 1 == 4
+E        +  where 1 = PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_you', identity=<Identity.LORD: 'lord'>, hp=1, max_hp=4, s...rant'}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+
+tests\test_t18a11_judgment.py:155: AssertionError
+_ test_lightning_spade_rank_boundaries_and_wuyan_prevents_delayed_trick_damage[9-True] _
+
+rank = 9, hit = True
+
+    @pytest.mark.parametrize('rank,hit', [(1, False), (2, True), (9, True), (10, False)])
+    def test_lightning_spade_rank_boundaries_and_wuyan_prevents_delayed_trick_damage(rank, hit):
+        from sanguosha.engine.military_tricks import ResolveDelayed
+        s = setup('xun_you')
+        s.state.players['p1'].granted_skills['wuyan'] = 'audit-grant'
+        card = put(s, 'delayed.lightning', 'p1', ZoneType.JUDGMENT)
+        top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+        s.state.cards[top] = replace(s.state.cards[top], suit=Suit.SPADE, rank=rank)
+        hp = s.state.players['p1'].hp
+        s.engine.start_action(ResolveDelayed('audit-lightning-wuyan', 'p1', card))
+        while s.engine.pending_request:
+            s = restore(s)
+            answer(s, s.engine.pending_request.timeout_value())
+>       assert s.state.players['p1'].hp == hp
+E       AssertionError: assert 1 == 4
+E        +  where 1 = PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_you', identity=<Identity.LORD: 'lord'>, hp=1, max_hp=4, s...rant'}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+
+tests\test_t18a11_judgment.py:155: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_judgment.py::test_lightning_spade_rank_boundaries_and_wuyan_prevents_delayed_trick_damage[2-True]
+FAILED tests/test_t18a11_judgment.py::test_lightning_spade_rank_boundaries_and_wuyan_prevents_delayed_trick_damage[9-True]
+2 failed, 13 passed in 0.74s

@@ -57,3 +57,11 @@ Simulation详情见simulation_summary.json、ai_acceptance.json、random_simulat
 最终浏览器页面截图已查看底部满装备12手牌8人桌、390屏8人布局；其余输出截图并非全部逐张人工签收。未扩将、未新增卡牌、未重新生成立绘或动态、未部署Sealos或Cloudflare。既存美术和未跟踪日志保留。
 
 本次继续：补齐姜维派生观星权限、铁索/连环重铸结算分类；795项化身专项及209项基础隐藏信息专项通过。最新100 AI+100随机整局覆盖合计103将，步数和重连指标已更新simulation_summary.json。42场景浏览器控制台/pageerror断言为零，重铸卡面截图已人工查看。首次新增重铸浏览器失败来自夹具提前合并提交及对不存在prompt的否定断言，不计产品缺陷。首次构建因系统Python缺Pillow失败，使用项目现有.venv重新fresh build通过，未安装依赖。完整2477项pytest运行后仅新增140项化身权限/timeout测试，单独已通过；没有冒称合并全量2617项曾整批执行。
+
+2026-10-06继续剩余BLOCKED审计：当前3 FIXED、1 PASS、188 BLOCKED。本轮无懈/AOE首批修R08–R12，326相关AOE回归及40无懈/作用域回归通过；只属中间证据。未重跑化身795，未执行最终全量门禁，未签发RC。以上checkpoint表保留8f04076历史统计，最新详情见aoe_source_notes.md及矩阵。
+
+继续判定/延时锦囊批次新增R13–R16，judgment_targeted.log 325 passed；当前仍188 BLOCKED。没有完成总规则闭环，不签发RC。
+
+继续锦囊被动规则：无言延时锦囊及经典蛊惑帷幕例外R17/R18已修；当前186 BLOCKED、4 FIXED、2 PASS；384相关回归 + 35项禁止组合回归通过。仍不是RC。
+
+贞烈目标确认分层R19及R10用牌事件补齐完成；当前185 BLOCKED、5 FIXED、2 PASS；multitarget345及zhenlie60相关回归通过。未签发RC。

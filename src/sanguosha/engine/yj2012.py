@@ -219,7 +219,7 @@ class YJ2012Handler(YJSkillHandler):
             f.local['materials']=virtual.material_ids
             self.transfer(state,a,virtual.material_ids,ZoneRef(ZoneType.PROCESSING),CardMoveReason.USE)
             state.play_usage.record('skill.qice'); state.play_usage.record(definition)
-            self.moves.recorder.record(CardUsedEvent(a.action_id+':used',pid,virtual.material_ids[0],targets,definition))
+            self.moves.recorder.record(CardUsedEvent(a.action_id+':used',pid,virtual.material_ids[0],targets,definition,virtual_card=virtual))
             f.step_index=3
             return StepResult.push(TrickAction(a.action_id+':trick',pid,virtual.material_ids[0],definition,targets,virtual))
         cards=tuple(c for c in f.local['materials'] if c in state.cards_in(ZoneRef(ZoneType.PROCESSING)))

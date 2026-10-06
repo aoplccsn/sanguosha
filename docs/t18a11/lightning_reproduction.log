@@ -1,0 +1,66 @@
+....FF                                                                   [100%]
+================================== FAILURES ===================================
+______ test_lightning_transfer_skips_weimu_and_virtual_duplicate[False] _______
+
+cancelled = False
+
+    @pytest.mark.parametrize('cancelled', [False, True])
+    def test_lightning_transfer_skips_weimu_and_virtual_duplicate(cancelled):
+        from sanguosha.engine.military_tricks import ResolveDelayed
+        s = setup('xun_you')
+        s.state.players['p2'].character_id = 'forest_jia_xu'
+        lightning = put(s, 'delayed.lightning', 'p1', ZoneType.JUDGMENT)
+        s.state.cards[lightning] = replace(s.state.cards[lightning], suit=Suit.SPADE)
+        duplicate = put(s, 'basic.slash', 'p3', ZoneType.JUDGMENT)
+        s.state.metadata['virtual_delayed_cards'] = {duplicate: 'delayed.lightning'}
+        top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+        s.state.cards[top] = replace(s.state.cards[top], suit=Suit.HEART)
+        counter = put(s, 'trick.nullification') if cancelled else None
+        s.engine.start_action(ResolveDelayed('audit-transfer', 'p1', lightning))
+        while s.engine.pending_request:
+            s = restore(s)
+            r = s.engine.pending_request
+            answer(s, counter if counter in r.eligible_card_ids else r.timeout_value())
+>       assert lightning in s.state.cards_in(ZoneRef(ZoneType.JUDGMENT, 'p4'))
+E       AssertionError: assert 'std-club-04-2' in ()
+E        +  where () = cards_in(ZoneRef(zone_type=<ZoneType.JUDGMENT: 'judgment'>, player_id='p4', equipment_slot=None, special_key=None))
+E        +    where cards_in = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_y...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None).cards_in
+E        +      where GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_y...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000020B06810D60>, events=<sanguosha.engine.events....AD0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000020B068183B0>).state
+E        +    and   ZoneRef(zone_type=<ZoneType.JUDGMENT: 'judgment'>, player_id='p4', equipment_slot=None, special_key=None) = ZoneRef(<ZoneType.JUDGMENT: 'judgment'>, 'p4')
+E        +      where <ZoneType.JUDGMENT: 'judgment'> = ZoneType.JUDGMENT
+
+tests\test_t18a11_judgment.py:87: AssertionError
+_______ test_lightning_transfer_skips_weimu_and_virtual_duplicate[True] _______
+
+cancelled = True
+
+    @pytest.mark.parametrize('cancelled', [False, True])
+    def test_lightning_transfer_skips_weimu_and_virtual_duplicate(cancelled):
+        from sanguosha.engine.military_tricks import ResolveDelayed
+        s = setup('xun_you')
+        s.state.players['p2'].character_id = 'forest_jia_xu'
+        lightning = put(s, 'delayed.lightning', 'p1', ZoneType.JUDGMENT)
+        s.state.cards[lightning] = replace(s.state.cards[lightning], suit=Suit.SPADE)
+        duplicate = put(s, 'basic.slash', 'p3', ZoneType.JUDGMENT)
+        s.state.metadata['virtual_delayed_cards'] = {duplicate: 'delayed.lightning'}
+        top = s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+        s.state.cards[top] = replace(s.state.cards[top], suit=Suit.HEART)
+        counter = put(s, 'trick.nullification') if cancelled else None
+        s.engine.start_action(ResolveDelayed('audit-transfer', 'p1', lightning))
+        while s.engine.pending_request:
+            s = restore(s)
+            r = s.engine.pending_request
+            answer(s, counter if counter in r.eligible_card_ids else r.timeout_value())
+>       assert lightning in s.state.cards_in(ZoneRef(ZoneType.JUDGMENT, 'p4'))
+E       AssertionError: assert 'std-club-04-2' in ()
+E        +  where () = cards_in(ZoneRef(zone_type=<ZoneType.JUDGMENT: 'judgment'>, player_id='p4', equipment_slot=None, special_key=None))
+E        +    where cards_in = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_y...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None).cards_in
+E        +      where GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='yj2012_xun_y...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000020B06846150>, events=<sanguosha.engine.events....8F0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000020B0687E580>).state
+E        +    and   ZoneRef(zone_type=<ZoneType.JUDGMENT: 'judgment'>, player_id='p4', equipment_slot=None, special_key=None) = ZoneRef(<ZoneType.JUDGMENT: 'judgment'>, 'p4')
+E        +      where <ZoneType.JUDGMENT: 'judgment'> = ZoneType.JUDGMENT
+
+tests\test_t18a11_judgment.py:87: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_judgment.py::test_lightning_transfer_skips_weimu_and_virtual_duplicate[False]
+FAILED tests/test_t18a11_judgment.py::test_lightning_transfer_skips_weimu_and_virtual_duplicate[True]
+2 failed, 4 passed in 0.52s

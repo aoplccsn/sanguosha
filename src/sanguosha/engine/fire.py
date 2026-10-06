@@ -422,10 +422,10 @@ class FireViewAsTrickHandler:
             if targets:
                 state.play_usage.record(definition)
                 self.events.record(CardUsedEvent(action.action_id + ':used', player_id,
-                    action.material_id, targets, virtual.definition_id))
+                    action.material_id, targets, virtual.definition_id, virtual_card=virtual))
             frame.step_index = 2
             return StepResult.push(TrickAction(action.action_id + ':trick', player_id,
-                action.material_id, definition, targets))
+                action.material_id, definition, targets, virtual))
         if action.material_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
             self.moves.move(state, CardMove(action.action_id + ':discard',
                 (action.material_id,), ZoneRef(ZoneType.PROCESSING),
@@ -500,12 +500,15 @@ class LuanjiHandler:
                 self.moves.move(state, CardMove(action.action_id + ':processing:' + cid,
                     (cid,), ZoneRef(ZoneType.HAND, pid), ZoneRef(ZoneType.PROCESSING),
                     CardMoveReason.USE, pid, action.action_id))
+            virtual = VirtualCard('trick.archery_attack', action.card_ids,
+                effective_suit(state, action.card_ids[0], pid),
+                effective_color(state, action.card_ids[0], pid), 'luanji')
             state.play_usage.record('trick.archery_attack')
             self.events.record(CardUsedEvent(action.action_id + ':used', pid,
-                action.card_ids[0], targets, 'trick.archery_attack'))
+                action.card_ids[0], targets, 'trick.archery_attack', virtual_card=virtual))
             frame.step_index = 1
             return StepResult.push(TrickAction(action.action_id + ':trick', pid,
-                action.card_ids[0], 'trick.archery_attack', targets))
+                action.card_ids[0], 'trick.archery_attack', targets, virtual))
         for cid in action.card_ids:
             if cid in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
                 self.moves.move(state, CardMove(action.action_id + ':discard:' + cid, (cid,),

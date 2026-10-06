@@ -156,8 +156,11 @@ class GuhuoHandler:
         targets = tuple(filter(None, frame.local.get('targets', '').split('|')))
         slash_counted=getattr(rule,'usage_key',declared)=='basic.slash'
         state.play_usage.record(getattr(rule, 'usage_key', declared))
+        virtual = VirtualCard(declared, (card_id,),
+            effective_suit(state, card_id, action.player_id),
+            effective_color(state, card_id, action.player_id), 'guhuo')
         self.events.record(CardUsedEvent(action.action_id + ':used', action.player_id,
-                                         card_id, targets, declared,slash_counted=slash_counted))
+            card_id, targets, declared,slash_counted=slash_counted,virtual_card=virtual))
         if declared in ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash'):
             effect = SlashSequence(action.action_id + ':effect', action.player_id, card_id,
                 targets, VirtualCard(declared, (card_id,),
@@ -166,6 +169,10 @@ class GuhuoHandler:
         else:
             effect = rule.effect_action(action.action_id + ':effect', action.player_id,
                                         card_id, targets)
+            from .military_tricks import TrickAction
+            if isinstance(effect, TrickAction):
+                from dataclasses import replace
+                effect = replace(effect, virtual_card=virtual)
         frame.step_index = 10
         return StepResult.push(effect)
 
@@ -277,6 +284,10 @@ class GuhuoHandler:
             return self._finish(state, frame)
         if frame.step_index == 10:
             card_id = frame.local['card_id']
+            from .forest import collect_juxiang
+            collect_juxiang(state, self.moves, self.skills, action.player_id,
+                            card_id, frame.local['declared'], action.action_id,
+                            virtual_skill='guhuo')
             if card_id in state.cards_in(ZoneRef(ZoneType.PROCESSING)):
                 self.moves.move(state, CardMove(action.action_id + ':discard', (card_id,),
                     ZoneRef(ZoneType.PROCESSING), ZoneRef(ZoneType.DISCARD_PILE),

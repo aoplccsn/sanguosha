@@ -215,21 +215,14 @@ class UseCardActionHandler:
             resolved_definition=self._definition(state,action).id
             processing = ZoneRef(ZoneType.PROCESSING)
             discard = ZoneRef(ZoneType.DISCARD_PILE)
+            from .forest import collect_juxiang
+            collect_juxiang(state, self.moves, self.skills, action.user_id,
+                            action.card_id, resolved_definition, action.action_id)
             if action.card_id in state.cards_in(processing):
                 self.moves.move(state, CardMove(
                     f"{action.action_id}:to-discard", (action.card_id,), processing, discard,
                     CardMoveReason.USE, action.user_id, action.action_id,
                 ))
-                if (self.skills is not None
-                        and resolved_definition == 'trick.savage_assault'):
-                    owner = next((pid for pid in state.seat_order if pid != action.user_id
-                                  and state.players[pid].is_alive
-                                  and self.skills.has(state, pid, 'juxiang')), None)
-                    if owner is not None and action.card_id in state.cards_in(discard):
-                        self.moves.move(state, CardMove(
-                            f'{action.action_id}:juxiang', (action.card_id,), discard,
-                            ZoneRef(ZoneType.HAND, owner), CardMoveReason.SYSTEM,
-                            owner, action.action_id))
             if not frame.local.get('recast'):
                 self.recorder.record(CardResolvedEvent(f"{action.action_id}:resolved", action.user_id, action.card_id))
             return StepResult.complete(frame.child_result)
