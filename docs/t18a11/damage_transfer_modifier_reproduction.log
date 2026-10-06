@@ -1,0 +1,38 @@
+F.F                                                                      [100%]
+================================== FAILURES ===================================
+___ test_source_damage_modifier_is_frozen_before_tianxiang_transfer[anjian] ___
+
+buff = 'anjian'
+
+    @pytest.mark.parametrize('buff',['anjian','luoyi'])
+    def test_source_damage_modifier_is_frozen_before_tianxiang_transfer(buff):
+     from dataclasses import replace
+     from sanguosha.model.enums import Suit
+     s=game();s.state.current_player_id='p1'
+     s.state.players['p3'].granted_skills['tianxiang']='audit'
+     if buff=='anjian':s.state.players['p1'].granted_skills['anjian']='audit'
+     else:s.state.players['p1'].marks['luoyi']=1
+     card=put(s,'basic.slash');cost=put(s,'basic.dodge','p3');s.state.cards[cost]=replace(s.state.cards[cost],suit=Suit.HEART)
+     s.engine.start_action(MilitaryDamageAction('audit-source-transfer','p1','p3',1,card_id=card,card_kind='slash'))
+     s=restore(s);answer(s,True);s=restore(s);answer(s,cost);s=restore(s);answer(s,'p2');finish(s)
+>    assert s.state.players['p3'].hp==4 and s.state.players['p2'].hp==2
+E    AssertionError: assert (4 == 4 and 3 == 2)
+E     +  where 4 = PlayerState(player_id='p3', seat=2, character_id='sunquan', identity=<Identity.REBEL: 'rebel'>, hp=4, max_hp=4, status...udit'}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+E     +  and   3 = PlayerState(player_id='p2', seat=1, character_id='sunquan', identity=<Identity.LOYALIST: 'loyalist'>, hp=3, max_hp=4, ...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+
+tests\test_t18a11_damage_system.py:102: AssertionError
+______ test_transferred_damage_packet_does_not_repeat_source_luoyi_bonus ______
+
+    def test_transferred_damage_packet_does_not_repeat_source_luoyi_bonus():
+     s=game();s.state.players['p1'].marks['luoyi']=1
+     cid=put(s,'basic.slash')
+     s.engine.start_action(MilitaryDamageAction('audit-transferred-ready','p1','p2',2,card_id=cid,card_kind='slash',redirected=True));finish(s)
+>    assert s.state.players['p2'].hp==2
+E    AssertionError: assert 1 == 2
+E     +  where 1 = PlayerState(player_id='p2', seat=1, character_id='sunquan', identity=<Identity.LOYALIST: 'loyalist'>, hp=1, max_hp=4, ...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+
+tests\test_t18a11_damage_system.py:108: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_damage_system.py::test_source_damage_modifier_is_frozen_before_tianxiang_transfer[anjian]
+FAILED tests/test_t18a11_damage_system.py::test_transferred_damage_packet_does_not_repeat_source_luoyi_bonus
+2 failed, 1 passed, 9 deselected in 0.31s

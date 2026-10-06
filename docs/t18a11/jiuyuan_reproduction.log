@@ -1,0 +1,128 @@
+.............FFFF.....FF                                                 [100%]
+================================== FAILURES ===================================
+_ test_wansha_only_living_effective_active_turn_owner_restricts_peach[inactive] _
+
+mode = 'inactive'
+
+    @pytest.mark.parametrize('mode',['active','inactive','dead','suppressed'])
+    def test_wansha_only_living_effective_active_turn_owner_restricts_peach(mode):
+     s=game();s.state.current_player_id='p3';s.state.players['p2'].hp=0
+     s.state.players['p3'].granted_skills['wansha']='audit'
+     if mode=='inactive':s.state.current_phase=None
+     if mode=='dead':s.state.players['p3'].status=PlayerStatus.DEAD
+     if mode=='suppressed':s.state.players['p3'].granted_skills.pop('wansha')
+     s.engine.start_action(DyingAction('audit-wansha-'+mode,'p2',None))
+     seen=[]
+     while s.engine.pending_request:
+      seen.append(s.engine.pending_request.player_id);s=restore(s);answer(s,s.engine.pending_request.timeout_value())
+>    assert seen==({'active':['p3','p2'],'inactive':['p4','p1','p2','p3'],'dead':['p4','p1','p2'],'suppressed':['p3','p4','p1','p2']}[mode])
+E    AssertionError: assert ['p4', 'p5', 'p1', 'p2', 'p3'] == ['p4', 'p1', 'p2', 'p3']
+E      
+E      At index 1 diff: 'p5' != 'p1'
+E      Left contains one more item: 'p3'
+E      Use -v to get more diff
+
+tests\test_t18a11_damage_system.py:122: AssertionError
+__ test_wansha_only_living_effective_active_turn_owner_restricts_peach[dead] __
+
+mode = 'dead'
+
+    @pytest.mark.parametrize('mode',['active','inactive','dead','suppressed'])
+    def test_wansha_only_living_effective_active_turn_owner_restricts_peach(mode):
+     s=game();s.state.current_player_id='p3';s.state.players['p2'].hp=0
+     s.state.players['p3'].granted_skills['wansha']='audit'
+     if mode=='inactive':s.state.current_phase=None
+     if mode=='dead':s.state.players['p3'].status=PlayerStatus.DEAD
+     if mode=='suppressed':s.state.players['p3'].granted_skills.pop('wansha')
+     s.engine.start_action(DyingAction('audit-wansha-'+mode,'p2',None))
+     seen=[]
+     while s.engine.pending_request:
+      seen.append(s.engine.pending_request.player_id);s=restore(s);answer(s,s.engine.pending_request.timeout_value())
+>    assert seen==({'active':['p3','p2'],'inactive':['p4','p1','p2','p3'],'dead':['p4','p1','p2'],'suppressed':['p3','p4','p1','p2']}[mode])
+E    AssertionError: assert ['p4', 'p5', 'p1', 'p2'] == ['p4', 'p1', 'p2']
+E      
+E      At index 1 diff: 'p5' != 'p1'
+E      Left contains one more item: 'p2'
+E      Use -v to get more diff
+
+tests\test_t18a11_damage_system.py:122: AssertionError
+_ test_wansha_only_living_effective_active_turn_owner_restricts_peach[suppressed] _
+
+mode = 'suppressed'
+
+    @pytest.mark.parametrize('mode',['active','inactive','dead','suppressed'])
+    def test_wansha_only_living_effective_active_turn_owner_restricts_peach(mode):
+     s=game();s.state.current_player_id='p3';s.state.players['p2'].hp=0
+     s.state.players['p3'].granted_skills['wansha']='audit'
+     if mode=='inactive':s.state.current_phase=None
+     if mode=='dead':s.state.players['p3'].status=PlayerStatus.DEAD
+     if mode=='suppressed':s.state.players['p3'].granted_skills.pop('wansha')
+     s.engine.start_action(DyingAction('audit-wansha-'+mode,'p2',None))
+     seen=[]
+     while s.engine.pending_request:
+      seen.append(s.engine.pending_request.player_id);s=restore(s);answer(s,s.engine.pending_request.timeout_value())
+>    assert seen==({'active':['p3','p2'],'inactive':['p4','p1','p2','p3'],'dead':['p4','p1','p2'],'suppressed':['p3','p4','p1','p2']}[mode])
+E    AssertionError: assert ['p3', 'p4', 'p5', 'p1', 'p2'] == ['p3', 'p4', 'p1', 'p2']
+E      
+E      At index 2 diff: 'p5' != 'p1'
+E      Left contains one more item: 'p2'
+E      Use -v to get more diff
+
+tests\test_t18a11_damage_system.py:122: AssertionError
+__ test_rescuer_pass_advances_after_partial_recovery_and_self_wine_is_local ___
+
+    def test_rescuer_pass_advances_after_partial_recovery_and_self_wine_is_local():
+     s=game();s.state.current_player_id='p3';s.state.players['p2'].hp=-1
+     peach=put(s,'basic.peach','p3');other_wine=put(s,'basic.wine','p3');self_wine=put(s,'basic.wine','p2')
+     s.engine.start_action(DyingAction('audit-peach-wine','p2',None))
+     assert other_wine not in s.engine.pending_request.eligible_card_ids
+     answer(s,peach);answer(s,s.engine.pending_request.timeout_value())
+     assert s.engine.pending_request.player_id=='p4'
+     answer(s,s.engine.pending_request.timeout_value());answer(s,s.engine.pending_request.timeout_value())
+>    assert s.engine.pending_request.player_id=='p2' and self_wine in s.engine.pending_request.eligible_card_ids
+E    AssertionError: assert ('p1' == 'p2'
+E      
+E      - p2
+E      + p1)
+
+tests\test_t18a11_damage_system.py:133: AssertionError
+____ test_jiuyuan_requires_wu_rescuer_not_matching_lord_faction[sunquan-2] ____
+
+rescuer = 'sunquan', expected = 2
+
+    @pytest.mark.parametrize('rescuer,expected',[('sunquan',2),('caocao',1)])
+    def test_jiuyuan_requires_wu_rescuer_not_matching_lord_faction(rescuer,expected):
+     s=game();s.state.current_player_id='p3'
+     s.state.players['p2'].identity=Identity.LORD;s.state.players['p2'].character_id='caocao'
+     s.state.players['p2'].granted_skills['jiuyuan']='audit';s.state.players['p2'].hp=0
+     s.state.players['p3'].character_id=rescuer;cid=put(s,'basic.peach','p3')
+     s.engine.start_action(DyingAction('audit-jiuyuan','p2',None));answer(s,cid)
+>    assert s.state.players['p2'].hp==expected
+E    AssertionError: assert 1 == 2
+E     +  where 1 = PlayerState(player_id='p2', seat=1, character_id='caocao', identity=<Identity.LORD: 'lord'>, hp=1, max_hp=4, status=<P...udit'}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+
+tests\test_t18a11_damage_system.py:197: AssertionError
+____ test_jiuyuan_requires_wu_rescuer_not_matching_lord_faction[caocao-1] _____
+
+rescuer = 'caocao', expected = 1
+
+    @pytest.mark.parametrize('rescuer,expected',[('sunquan',2),('caocao',1)])
+    def test_jiuyuan_requires_wu_rescuer_not_matching_lord_faction(rescuer,expected):
+     s=game();s.state.current_player_id='p3'
+     s.state.players['p2'].identity=Identity.LORD;s.state.players['p2'].character_id='caocao'
+     s.state.players['p2'].granted_skills['jiuyuan']='audit';s.state.players['p2'].hp=0
+     s.state.players['p3'].character_id=rescuer;cid=put(s,'basic.peach','p3')
+     s.engine.start_action(DyingAction('audit-jiuyuan','p2',None));answer(s,cid)
+>    assert s.state.players['p2'].hp==expected
+E    AssertionError: assert 2 == 1
+E     +  where 2 = PlayerState(player_id='p2', seat=1, character_id='caocao', identity=<Identity.LORD: 'lord'>, hp=2, max_hp=4, status=<P...udit'}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).hp
+
+tests\test_t18a11_damage_system.py:197: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_damage_system.py::test_wansha_only_living_effective_active_turn_owner_restricts_peach[inactive]
+FAILED tests/test_t18a11_damage_system.py::test_wansha_only_living_effective_active_turn_owner_restricts_peach[dead]
+FAILED tests/test_t18a11_damage_system.py::test_wansha_only_living_effective_active_turn_owner_restricts_peach[suppressed]
+FAILED tests/test_t18a11_damage_system.py::test_rescuer_pass_advances_after_partial_recovery_and_self_wine_is_local
+FAILED tests/test_t18a11_damage_system.py::test_jiuyuan_requires_wu_rescuer_not_matching_lord_faction[sunquan-2]
+FAILED tests/test_t18a11_damage_system.py::test_jiuyuan_requires_wu_rescuer_not_matching_lord_faction[caocao-1]
+6 failed, 18 passed in 0.47s

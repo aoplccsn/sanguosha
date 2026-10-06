@@ -86,3 +86,17 @@ R30/R31后累计33项已修基线根因；本批不关闭尚缺其他时机证�
 | R36 | 转化提交权限复核 | 龙胆目标请求恢复后技能失效仍付款使用 | 共享校验再次检查角色/阶段/技能资格 | 过期请求非法使用 | view_as_submit_reproduction.log 1失败、4反例通过 | b4964e1 |
 
 本批共享根因新增5项，累计38项基线缺陷已修。版本差异、夹具错误和未核验项不计为产品bug，分类见view_as_system_audit.md。6项关闭后当前175 BLOCKED、14 FIXED、3 PASS；低于30–50项清理区间，未跑full pytest或最终七项验收。
+
+
+Damage / HP / death batch; code checkpoint 1f3f2bb:
+
+| R37 | Dying rescue seats | Target-first rescue | Rotate current seat; inactive current last | Shared rule root; details in damage_system_audit.md | rescue order; test_t18a11_damage_system.py; 302 targeted passed | 1f3f2bb |
+| R38 | Dying repeated rescue | Peach restarts the seat scan | Same rescuer repeats until saved or passes | Shared rule root; details in damage_system_audit.md | multiple Peach and snapshot; test_t18a11_damage_system.py; 302 targeted passed | 1f3f2bb |
+| R39 | Recover no-op | Full HP emits zero event; dead target raises | Full/dead silently complete without event | Shared rule root; details in damage_system_audit.md | full/dead and cap; test_t18a11_damage_system.py; 302 targeted passed | 1f3f2bb |
+| R40 | LoseMaxHP zero | Zero max HP enters Peach rescue | Direct death when max HP becomes zero | Shared rule root; details in damage_system_audit.md | zero max HP; test_t18a11_damage_system.py; 302 targeted passed | 1f3f2bb |
+| R41 | Dead damage source | Damage credits already dead source | Normalize dead source to None | Shared rule root; details in damage_system_audit.md | dead-source event; test_t18a11_damage_system.py; 302 targeted passed | 1f3f2bb |
+| R42 | Terminal resolution | Parents can create ordinary requests after victory | Engine-wide terminal gate; discard transient public cards; allow death exceptions before FINISHED | Shared rule root; details in damage_system_audit.md | parent gate; Zhuiyi/Wuhun; chain stop; public cleanup; test_t18a11_damage_system.py; 302 targeted passed | 1f3f2bb |
+| R43 | Damage source modifiers | Anjian applied after Tianxiang; transferred Luoyi repeats | Freeze source bonus before transfer and target modifiers; exclude chain/transfer | Shared rule root; details in damage_system_audit.md | transfer reproduction and negative packets; test_t18a11_damage_system.py; 302 targeted passed | 1f3f2bb |
+| R44 | Jiuyuan rescuer faction | Checks rescuer faction matches recipient | Checks Wu rescuer; lord/effective skill/other rescuer gates remain | Shared rule root; details in damage_system_audit.md | Wu vs matching Wei; self/nonlord/disabled; test_t18a11_damage_system.py; 302 targeted passed | 1f3f2bb |
+
+8 new baseline roots repaired; cumulative 46 (previous 38). Correct-but-unverified, version differences and fixture/development errors are classified separately in damage_system_audit.md. Closed 4 rows: Jiuyuan/Wansha/Anjian FIXED, Zhuiyi PASS. Current {'BLOCKED': 171, 'FIXED': 17, 'PASS': 4}. No full pytest or final acceptance gates; no RC issued.

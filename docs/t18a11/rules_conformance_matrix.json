@@ -23,7 +23,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "tests/test_t13_skill_suppression.py; tests/test_t18a11_aoe.py；aoe_targeted.log 326 passed",
+      "测试文件": "tests/test_t13_skill_suppression.py; tests/test_t18a11_aoe.py；aoe_targeted.log 326 passed; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -71,7 +71,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t17c_zhangliao.py; tests/test_t7b_ui.py",
+      "测试文件": "tests/test_t17c_zhangliao.py; tests/test_t7b_ui.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -125,26 +125,26 @@
     {
       "general_id": "sunquan",
       "武将名": "孙权",
-      "版本": "经典身份局现有版本；细项仍待独立核对",
+      "版本": "Project locked classic identity version; historical clause verified",
       "skill_id": "jiuyuan",
       "技能名": "救援",
       "技能类型": "locked",
-      "规则来源": "docs/t17/sources.md；旧包待逐技能补来源",
-      "当前项目锁定版本": "经典身份局现有版本；细项仍待独立核对",
-      "关键触发时机": "未完成独立规则核对",
-      "发动条件": "未完成独立规则核对",
-      "成本": "未完成独立规则核对",
-      "目标": "未完成独立规则核对",
-      "效果": "当前原创描述（不是规则核验结论）：濒死时其他吴势力角色用桃救援，额外恢复一点体力。",
-      "次数限制": "未完成独立规则核对",
-      "持续时间": "未完成独立规则核对",
-      "清理时点": "未完成独立规则核对",
-      "隐藏信息": "未完成独立规则核对",
+      "规则来源": "Fixed historical revision e8768851bd8054db9fd1b63cd6f1feca813590d7; standard-generals.cpp Jiuyuan / R44; damage_source_evidence.json",
+      "当前项目锁定版本": "Project locked classic identity version; historical clause verified",
+      "关键触发时机": "PreHpRecover for Peach used on dying lord",
+      "发动条件": "Effective lord skill; other rescuer belongs to Wu, regardless of recipient faction",
+      "成本": "No cost; compulsory",
+      "目标": "Dying lord",
+      "效果": "Peach recovery +1; capped by max HP",
+      "次数限制": "Each eligible Peach",
+      "持续时间": "Current recovery only",
+      "清理时点": "No persistent marker",
+      "隐藏信息": "Public HP; no extra hand disclosure",
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
-      "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
+      "reconnect要求": "Repeated rescue response, Wu qualification and lord/suppression state preserved",
       "当前实现文件": "src/sanguosha/engine/dying.py",
-      "测试文件": "tests/test_t17c_chengpu.py",
-      "审计状态": "BLOCKED"
+      "测试文件": "tests/test_t17c_chengpu.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; tests/test_t18a11_damage_system.py",
+      "审计状态": "FIXED"
     },
     {
       "general_id": "lvbu",
@@ -215,7 +215,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -263,7 +263,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -311,7 +311,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/deck.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/yj2011.py",
-      "测试文件": "tests/test_t17c_longnu.py; tests/test_t7b_rule_modifiers.py; tests/test_t18a11_aoe.py；aoe_targeted.log 326 passed",
+      "测试文件": "tests/test_t17c_longnu.py; tests/test_t7b_rule_modifiers.py; tests/test_t18a11_aoe.py；aoe_targeted.log 326 passed; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -359,7 +359,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -671,7 +671,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -719,7 +719,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; Fanjian damage clause omitted by abbreviated matrix description; remains BLOCKED",
       "审计状态": "BLOCKED"
     },
     {
@@ -839,7 +839,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -911,7 +911,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1031,7 +1031,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1055,7 +1055,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1079,7 +1079,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "tests/test_t12_wind.py",
+      "测试文件": "tests/test_t12_wind.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1127,7 +1127,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/wind.py; src/sanguosha/engine/zhangliao.py",
-      "测试文件": "tests/test_t12_wind.py",
+      "测试文件": "tests/test_t12_wind.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1151,7 +1151,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1223,7 +1223,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/wind_guhuo.py; src/sanguosha/engine/zhangliao.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1271,7 +1271,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/death.py; src/sanguosha/engine/military_equipment.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1343,7 +1343,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/fire.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1367,7 +1367,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/fire.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1391,7 +1391,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1439,7 +1439,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/fire.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1679,7 +1679,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/gods.py; src/sanguosha/engine/phases.py",
-      "测试文件": "tests/test_t13_gods.py",
+      "测试文件": "tests/test_t13_gods.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1703,7 +1703,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/gods.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1751,7 +1751,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/zhangliao.py",
-      "测试文件": "tests/test_t17c_zhangliao.py",
+      "测试文件": "tests/test_t17c_zhangliao.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1775,7 +1775,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1799,7 +1799,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/death.py; src/sanguosha/engine/forest.py",
-      "测试文件": "tests/test_t12_forest.py",
+      "测试文件": "tests/test_t12_forest.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1823,7 +1823,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "tests/test_t12_forest.py",
+      "测试文件": "tests/test_t12_forest.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1919,7 +1919,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/deck.py; src/sanguosha/engine/forest.py",
-      "测试文件": "tests/test_t12_forest.py",
+      "测试文件": "tests/test_t12_forest.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1967,7 +1967,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/forest.py; src/sanguosha/engine/military_basics.py",
-      "测试文件": "tests/test_t12_forest.py",
+      "测试文件": "tests/test_t12_forest.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -1991,7 +1991,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/forest.py; src/sanguosha/engine/mountain.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t12_forest.py; tests/test_t13_mountain.py",
+      "测试文件": "tests/test_t12_forest.py; tests/test_t13_mountain.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2045,26 +2045,26 @@
     {
       "general_id": "forest_jia_xu",
       "武将名": "贾诩",
-      "版本": "经典身份局现有版本；细项仍待独立核对",
+      "版本": "Project locked classic identity version; historical clause verified",
       "skill_id": "wansha",
       "技能名": "完杀",
       "技能类型": "locked",
-      "规则来源": "docs/t17/sources.md；旧包待逐技能补来源",
-      "当前项目锁定版本": "经典身份局现有版本；细项仍待独立核对",
-      "关键触发时机": "未完成独立规则核对",
-      "发动条件": "未完成独立规则核对",
-      "成本": "未完成独立规则核对",
-      "目标": "未完成独立规则核对",
-      "效果": "当前原创描述（不是规则核验结论）：锁定技。你的回合内有角色处于濒死状态时，除你和该角色外，其他角色不能使用桃救援。",
-      "次数限制": "未完成独立规则核对",
-      "持续时间": "未完成独立规则核对",
-      "清理时点": "未完成独立规则核对",
-      "隐藏信息": "未完成独立规则核对",
+      "规则来源": "Fixed historical revision e8768851bd8054db9fd1b63cd6f1feca813590d7; thicket.cpp Wansha; gamerule.cpp AskForPeaches / R37-R38; damage_source_evidence.json",
+      "当前项目锁定版本": "Project locked classic identity version; historical clause verified",
+      "关键触发时机": "AskForPeaches during living owner active turn",
+      "发动条件": "Effective Wansha on living current player; active phase",
+      "成本": "No cost; compulsory",
+      "目标": "Peach rescuers restricted to current player and dying player",
+      "效果": "Skip ordinary Peach prompts for other seats; self Wine remains available",
+      "次数限制": "Each dying rescue",
+      "持续时间": "Owner active turn while alive and effective",
+      "清理时点": "No persistent marker; death/inactive/disabled immediately releases restriction",
+      "隐藏信息": "Public restriction, private response candidates",
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
-      "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
+      "reconnect要求": "Seat cursor, same rescuer round, active status and suppression preserved",
       "当前实现文件": "src/sanguosha/engine/dying.py; src/sanguosha/engine/gods.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t12_forest.py; tests/test_t13_gods.py",
-      "审计状态": "BLOCKED"
+      "测试文件": "tests/test_t12_forest.py; tests/test_t13_gods.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; tests/test_t18a11_damage_system.py",
+      "审计状态": "FIXED"
     },
     {
       "general_id": "forest_jia_xu",
@@ -2087,7 +2087,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/forest.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t12_forest.py",
+      "测试文件": "tests/test_t12_forest.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2135,7 +2135,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/forest.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t12_forest.py；共享用牌/响应修复证据tests/test_t18a11_view_as_system.py及279相关回归；剩余边界见view_as_system_audit.md，继续BLOCKED",
+      "测试文件": "tests/test_t12_forest.py；共享用牌/响应修复证据tests/test_t18a11_view_as_system.py及279相关回归；剩余边界见view_as_system_audit.md，继续BLOCKED; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2183,7 +2183,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/forest.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t12_forest.py",
+      "测试文件": "tests/test_t12_forest.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2207,7 +2207,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/forest.py; src/sanguosha/engine/military_basics.py",
-      "测试文件": "tests/test_t12_forest.py",
+      "测试文件": "tests/test_t12_forest.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2231,7 +2231,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/gods.py; src/sanguosha/engine/military_basics.py",
-      "测试文件": "tests/test_t13_gods.py",
+      "测试文件": "tests/test_t13_gods.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2279,7 +2279,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "未定位显式skill id；需追踪规则修饰器",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2303,7 +2303,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/card_use.py",
-      "测试文件": "tests/test_t17c_longnu.py",
+      "测试文件": "tests/test_t17c_longnu.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2351,7 +2351,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/god_lvbu.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/zhangliao.py",
-      "测试文件": "tests/test_t11_lvbu_engine.py",
+      "测试文件": "tests/test_t11_lvbu_engine.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2423,7 +2423,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/wind.py",
-      "测试文件": "tests/test_t13_mountain.py",
+      "测试文件": "tests/test_t13_mountain.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2495,7 +2495,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/wind.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2543,7 +2543,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/wind.py",
-      "测试文件": "tests/test_t13_mountain.py",
+      "测试文件": "tests/test_t13_mountain.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2615,7 +2615,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/mountain.py; src/sanguosha/engine/wind.py",
-      "测试文件": "tests/test_t13_mountain.py",
+      "测试文件": "tests/test_t13_mountain.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2735,7 +2735,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_equipment.py; src/sanguosha/engine/mountain.py",
-      "测试文件": "tests/test_t13_mountain.py",
+      "测试文件": "tests/test_t13_mountain.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2759,7 +2759,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_equipment.py; src/sanguosha/engine/mountain.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2783,7 +2783,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/death.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2807,7 +2807,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/fire.py; src/sanguosha/engine/phases.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2831,7 +2831,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/gods.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/response.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t17c_fuhuanghou.py；共享用牌/响应修复证据tests/test_t18a11_view_as_system.py及279相关回归；剩余边界见view_as_system_audit.md，继续BLOCKED",
+      "测试文件": "tests/test_t17c_fuhuanghou.py；共享用牌/响应修复证据tests/test_t18a11_view_as_system.py及279相关回归；剩余边界见view_as_system_audit.md，继续BLOCKED; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2855,7 +2855,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/phases.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2879,7 +2879,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/gods.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t13_gods.py",
+      "测试文件": "tests/test_t13_gods.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2927,7 +2927,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2011.py",
-      "测试文件": "tests/test_t17b_tier2.py",
+      "测试文件": "tests/test_t17b_tier2.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -2951,7 +2951,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2011.py",
-      "测试文件": "tests/test_t17b_tier2.py",
+      "测试文件": "tests/test_t17b_tier2.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3023,7 +3023,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/yj2011_tier3.py",
-      "测试文件": "tests/test_t17b_tier3.py",
+      "测试文件": "tests/test_t17b_tier3.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3047,7 +3047,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2011_tier3.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3095,7 +3095,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2011_tier3.py",
-      "测试文件": "tests/test_t17b_pyside.py; tests/test_t17b_tier3.py",
+      "测试文件": "tests/test_t17b_pyside.py; tests/test_t17b_tier3.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3119,7 +3119,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/death.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3167,7 +3167,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py; src/sanguosha/engine/yj2011.py",
-      "测试文件": "tests/test_t17b_tier2.py",
+      "测试文件": "tests/test_t17b_tier2.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3215,7 +3215,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2011.py",
-      "测试文件": "tests/test_t17b_tier1.py",
+      "测试文件": "tests/test_t17b_tier1.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3239,7 +3239,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2011_tier3.py",
-      "测试文件": "tests/test_t17b_complete.py; tests/test_t17b_pyside.py; tests/test_t17b_tier3.py",
+      "测试文件": "tests/test_t17b_complete.py; tests/test_t17b_pyside.py; tests/test_t17b_tier3.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3263,7 +3263,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/dying.py; src/sanguosha/engine/yj2011_tier3.py",
-      "测试文件": "tests/test_t17b_complete.py; tests/test_t17b_edges.py; tests/test_t17b_tier3.py",
+      "测试文件": "tests/test_t17b_complete.py; tests/test_t17b_edges.py; tests/test_t17b_tier3.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3407,7 +3407,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2012.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3455,7 +3455,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3503,7 +3503,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/discard.py; src/sanguosha/engine/yj2012.py",
-      "测试文件": "tests/test_t17c_zhangliao.py",
+      "测试文件": "tests/test_t17c_zhangliao.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3527,7 +3527,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py; src/sanguosha/engine/yj2012.py",
-      "测试文件": "tests/test_t17c_first_batch.py",
+      "测试文件": "tests/test_t17c_first_batch.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3575,7 +3575,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/dying.py; src/sanguosha/engine/yj2012.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3599,7 +3599,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/fuhun.py; src/sanguosha/engine/military_basics.py",
-      "测试文件": "tests/test_t17c_fuhun.py; tests/test_t18a10_ai.py；共享用牌/响应修复证据tests/test_t18a11_view_as_system.py及279相关回归；剩余边界见view_as_system_audit.md，继续BLOCKED",
+      "测试文件": "tests/test_t17c_fuhun.py; tests/test_t18a10_ai.py；共享用牌/响应修复证据tests/test_t18a11_view_as_system.py及279相关回归；剩余边界见view_as_system_audit.md，继续BLOCKED; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3681,22 +3681,22 @@
       "skill_id": "zhuiyi",
       "技能名": "追忆",
       "技能类型": "triggered",
-      "规则来源": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/YJCM2012Package.lua",
+      "规则来源": "Fixed historical revision e8768851bd8054db9fd1b63cd6f1feca813590d7; yjcm2012.cpp Zhuiyi Death; damage_source_evidence.json",
       "当前项目锁定版本": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-      "关键触发时机": "未完成独立规则核对",
-      "发动条件": "未完成独立规则核对",
-      "成本": "未完成独立规则核对",
-      "目标": "未完成独立规则核对",
-      "效果": "当前原创描述（不是规则核验结论）：死亡时可选择除击杀者之外的一名其他角色，令其摸三张并回复1点体力。",
-      "次数限制": "未完成独立规则核对",
-      "持续时间": "未完成独立规则核对",
-      "清理时点": "未完成独立规则核对",
-      "隐藏信息": "未完成独立规则核对",
+      "关键触发时机": "Death of effective skill owner, before terminal evaluation",
+      "发动条件": "Skill effective on dead owner; at least one living non-killer beneficiary",
+      "成本": "Optional invocation; no card cost",
+      "目标": "One living player excluding damage source; source-less death may choose any living player",
+      "效果": "Draw 3 then recover 1; full HP recovery has no event",
+      "次数限制": "Once for own death",
+      "持续时间": "Current death frame",
+      "清理时点": "Frame local target; terminal gate cancels only after death exception completes",
+      "隐藏信息": "Private drawn cards; public recovered HP",
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
-      "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
+      "reconnect要求": "Dead owner invocation, beneficiary, draw/recover steps restored at requests",
       "当前实现文件": "src/sanguosha/engine/death.py; src/sanguosha/engine/yj2012.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
-      "审计状态": "BLOCKED"
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; tests/test_t18a11_damage_system.py",
+      "审计状态": "PASS"
     },
     {
       "general_id": "yj2012_cheng_pu",
@@ -3719,7 +3719,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/yj2012.py",
-      "测试文件": "tests/test_t17c_chengpu.py",
+      "测试文件": "tests/test_t17c_chengpu.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3743,7 +3743,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/dying.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t17c_chengpu.py",
+      "测试文件": "tests/test_t17c_chengpu.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3863,7 +3863,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2012.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3887,7 +3887,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2013.py",
-      "测试文件": "tests/test_t17c_caochong.py; tests/test_t17c_request_privacy.py",
+      "测试文件": "tests/test_t17c_caochong.py; tests/test_t17c_request_privacy.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3911,7 +3911,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "tests/test_t17c_caochong.py",
+      "测试文件": "tests/test_t17c_caochong.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3935,7 +3935,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/phases.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -3983,7 +3983,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2013.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4103,7 +4103,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2013.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4113,22 +4113,22 @@
       "skill_id": "anjian",
       "技能名": "暗箭",
       "技能类型": "triggered",
-      "规则来源": "https://github.com/Mogara/QSanguosha-v2/blob/e8768851bd8054db9fd1b63cd6f1feca813590d7/lang/zh_CN/Package/YJCM2013Package.lua",
+      "规则来源": "Fixed historical revision e8768851bd8054db9fd1b63cd6f1feca813590d7; yjcm2013.cpp Anjian DamageCaused / R43; damage_source_evidence.json",
       "当前项目锁定版本": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
-      "关键触发时机": "未完成独立规则核对",
-      "发动条件": "未完成独立规则核对",
-      "成本": "未完成独立规则核对",
-      "目标": "未完成独立规则核对",
-      "效果": "当前原创描述（不是规则核验结论）：你用杀造成伤害时，若目标的攻击范围不覆盖你，伤害增加1。",
-      "次数限制": "未完成独立规则核对",
-      "持续时间": "未完成独立规则核对",
-      "清理时点": "未完成独立规则核对",
-      "隐藏信息": "未完成独立规则核对",
+      "关键触发时机": "DamageCaused before transfer and target damage modifiers",
+      "发动条件": "Slash damage by source with effective skill; source outside target attack range; exclude chain and transfer",
+      "成本": "No cost",
+      "目标": "Slash damage target",
+      "效果": "Increase original damage by 1 before Tianxiang; never repeat on transferred/propagated packet",
+      "次数限制": "Each eligible original Slash packet",
+      "持续时间": "Current damage packet",
+      "清理时点": "Frame source_modifiers_done; discard frame on completion/terminal",
+      "隐藏信息": "Public damage amount and range; no hand disclosure",
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
-      "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
+      "reconnect要求": "Modified amount and once-only source flag survive transfer requests",
       "当前实现文件": "src/sanguosha/engine/military_basics.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
-      "审计状态": "BLOCKED"
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed; tests/test_t18a11_damage_system.py",
+      "审计状态": "FIXED"
     },
     {
       "general_id": "yj2013_yu_fan",
@@ -4175,7 +4175,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py",
-      "测试文件": "tests/test_t17c_mieji_zhiyan.py",
+      "测试文件": "tests/test_t17c_mieji_zhiyan.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4199,7 +4199,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2013.py",
-      "测试文件": "tests/test_t17c_danshou_fencheng.py",
+      "测试文件": "tests/test_t17c_danshou_fencheng.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4223,7 +4223,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/turns.py",
-      "测试文件": "tests/test_t17c_fuhuanghou.py",
+      "测试文件": "tests/test_t17c_fuhuanghou.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4271,7 +4271,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/skills.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4319,7 +4319,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/yj2013.py",
-      "测试文件": "tests/test_t17c_danshou_fencheng.py",
+      "测试文件": "tests/test_t17c_danshou_fencheng.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4343,7 +4343,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/card_use.py; src/sanguosha/engine/longnu.py; src/sanguosha/engine/phases.py",
-      "测试文件": "tests/test_t17c_longnu.py; tests/test_t18a10_ai.py",
+      "测试文件": "tests/test_t17c_longnu.py; tests/test_t18a10_ai.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4391,7 +4391,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/remaining_gods.py",
-      "测试文件": "tests/test_t17c_god_luxun.py; tests/test_t18a11_release.py",
+      "测试文件": "tests/test_t17c_god_luxun.py; tests/test_t18a11_release.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4415,7 +4415,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/phases.py",
-      "测试文件": "tests/test_t17c_god_luxun.py; tests/test_t18a11_release.py",
+      "测试文件": "tests/test_t17c_god_luxun.py; tests/test_t18a11_release.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4439,7 +4439,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/remaining_gods.py",
-      "测试文件": "tests/test_t17c_god_luxun.py",
+      "测试文件": "tests/test_t17c_god_luxun.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4463,7 +4463,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/private_hands.py; src/sanguosha/engine/remaining_gods.py",
-      "测试文件": "tests/test_t17c_desktop_choices.py; tests/test_t17c_poxi.py",
+      "测试文件": "tests/test_t17c_desktop_choices.py; tests/test_t17c_poxi.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4511,7 +4511,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/zhangliao.py",
-      "测试文件": "未定位直接引用；需追踪行为用例",
+      "测试文件": "未定位直接引用；需追踪行为用例; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4535,7 +4535,7 @@
       "AI支持": "100场AI压力通过；未等同逐技能策略核验",
       "reconnect要求": "100场中定期快照恢复；未等同逐技能边界全覆盖",
       "当前实现文件": "src/sanguosha/engine/remaining_gods.py; src/sanguosha/engine/zhangliao.py",
-      "测试文件": "tests/test_t17c_zhangliao.py",
+      "测试文件": "tests/test_t17c_zhangliao.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4583,7 +4583,7 @@
       "AI支持": "未完成独立规则核对",
       "reconnect要求": "未完成独立规则核对",
       "当前实现文件": "src/sanguosha/engine/card_use.py; src/sanguosha/engine/gods.py; src/sanguosha/engine/judgment.py; src/sanguosha/engine/military_basics.py; src/sanguosha/engine/skills.py; src/sanguosha/engine/zhangliao.py",
-      "测试文件": "tests/test_t13_gods.py; tests/test_t18a11_judgment.py；judgment_targeted.log 325 passed",
+      "测试文件": "tests/test_t13_gods.py; tests/test_t18a11_judgment.py；judgment_targeted.log 325 passed; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     },
     {
@@ -4607,7 +4607,7 @@
       "AI支持": "未完成独立规则核对",
       "reconnect要求": "未完成独立规则核对",
       "当前实现文件": "src/sanguosha/engine/yj2012.py",
-      "测试文件": "tests/test_t17c_first_batch.py",
+      "测试文件": "tests/test_t17c_first_batch.py; shared HP/death dependency audit: damage_system_audit.md; 302 targeted passed",
       "审计状态": "BLOCKED"
     }
   ]
