@@ -56,9 +56,11 @@ def clear_turn(state):
                 player.marks.pop(key)
 
 
-def canonical_definition(state, skills, pid, definition):
-    return ('basic.slash' if definition == 'basic.wine' and skills is not None
-            and skills.has(state, pid, 'jinjiu') else definition)
+def canonical_definition(state, skills, pid, definition, card_id=None):
+    from .longnu import longnu_definition
+    converted=longnu_definition(state,skills,pid,definition,card_id)
+    return ('basic.slash' if converted == 'basic.wine' and skills is not None
+            and skills.has(state, pid, 'jinjiu') else converted)
 
 
 @dataclass(frozen=True, slots=True)
@@ -268,7 +270,7 @@ class YJSkillHandler:
         if f.step_index == 4:
             f.local['victim'], f.decision = f.decision, None
             cards = tuple(cid for cid in hand(state, pid)
-                if canonical_definition(state, self.skills, pid, state.cards[cid].definition_id) in SLASH)
+                if canonical_definition(state, self.skills, pid, state.cards[cid].definition_id,cid) in SLASH)
             f.step_index = 5
             return self.ask(f, RequestType.CHOOSE_OPTION, '【眩惑】使用一张杀，或让法正获得两张牌',
                             player=pid, choices=(*cards, 'decline'))
@@ -412,7 +414,7 @@ class YJSkillHandler:
     def mingce_materials(self, state, pid):
         return tuple(cid for cid in discardable(state, pid)
                      if self.definitions.get(state.cards[cid].definition_id).category is CardCategory.EQUIPMENT
-                     or canonical_definition(state, self.skills, pid, state.cards[cid].definition_id) in SLASH)
+                     or canonical_definition(state, self.skills, pid, state.cards[cid].definition_id,cid) in SLASH)
 
     def mingce(self, state, f):
         a = f.action

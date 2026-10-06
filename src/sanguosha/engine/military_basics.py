@@ -110,8 +110,9 @@ class MilitaryDamageHandler(DamageActionHandler):
             armor = equipped(state, action.target_id, EquipmentSlot.ARMOR)
             if (action.source_id is not None and state.current_player_id == action.source_id
                     and state.players[action.source_id].marks.get('luoyi')
-                    and not getattr(action, 'propagated', False) and action.card_id in state.cards
-                    and state.cards[action.card_id].definition_id in (*SLASH_IDS, 'trick.duel')):
+                    and not getattr(action, 'propagated', False)
+                    and (getattr(action,'card_kind','')=='slash' or (action.card_id in state.cards
+                         and state.cards[action.card_id].definition_id in (*SLASH_IDS, 'trick.duel')))):
                 amount += 1
             if (self.skills is not None and action.source_id is not None
                     and action.source_id != action.target_id and not getattr(action, 'propagated', False)
@@ -475,9 +476,10 @@ class MilitarySlashRule(SlashRule):
             self.skills.has(state, pid, 'kongcheng') and
             not state.cards_in(ZoneRef(ZoneType.HAND, pid))))
     def target_bounds(self,state,user,card):
+        from .yj2011_tier3 import canonical_definition
         maximum = 3 if equipped(state,user,EquipmentSlot.WEAPON)=='equipment.weapon.halberd' and len(state.cards_in(ZoneRef(ZoneType.HAND,user)))==1 else 1
         extra_fire = int(self.skills is not None and self.skills.has(state,user,'lihuo')
-                         and (card is None or state.cards[card].definition_id=='basic.fire_slash'))
+                         and (card is None or canonical_definition(state,self.skills,user,state.cards[card].definition_id,card)=='basic.fire_slash'))
         return 1,maximum + extra_fire + max(0, state.players[user].marks.get('slash_extra_targets', 0))
     def validate_targets(self,state,user,targets):
         low,high=self.target_bounds(state,user,None)
@@ -534,7 +536,7 @@ class MilitarySlashHandler:
         virtual=getattr(action,'virtual_card',None)
         from .yj2011_tier3 import canonical_definition
         definition=virtual.definition_id if virtual else canonical_definition(
-            state, self.skills, action.source_id, card.definition_id)
+            state, self.skills, action.source_id, card.definition_id,action.card_id)
         color=virtual.color if virtual else effective_color(state, action.card_id, action.source_id)
         nature = DamageNature.FIRE if frame.local.get('fan_fire') else {'basic.fire_slash': DamageNature.FIRE, 'basic.thunder_slash': DamageNature.THUNDER}.get(definition, DamageNature.NORMAL)
         ignore = weapon == 'equipment.weapon.qinggang_sword' or bool(
@@ -919,14 +921,16 @@ class MilitaryResponseHandler(RespondWithCardHandler):
             frame.step_index=0
         if frame.step_index == 0:
             hand = state.cards_in(ZoneRef(ZoneType.HAND, action.player_id))
+            from .yj2011_tier3 import canonical_definition
+            def identity(cid):return canonical_definition(state,self.skills,action.player_id,state.cards[cid].definition_id,cid)
             eligible = tuple(cid for cid in hand if
-                state.cards[cid].definition_id == action.required_definition_id
-                or action.required_definition_id == 'basic.slash' and state.cards[cid].definition_id in SLASH_IDS
+                identity(cid) == action.required_definition_id
+                or action.required_definition_id == 'basic.slash' and identity(cid) in SLASH_IDS
                 or action.required_definition_id == 'basic.peach' and action.subject_player_id == action.player_id
-                and state.players[action.player_id].hp <= 0 and state.cards[cid].definition_id == 'basic.wine'
+                and state.players[action.player_id].hp <= 0 and identity(cid) == 'basic.wine'
                 and not (self.skills is not None and self.skills.has(state, action.player_id, 'jinjiu')))
             if self.skills is not None and self.skills.has(state, action.player_id, 'jinjiu') and action.required_definition_id == 'basic.slash':
-                eligible += tuple(cid for cid in hand if state.cards[cid].definition_id == 'basic.wine')
+                eligible += tuple(cid for cid in hand if identity(cid) == 'basic.wine')
             frame.local['eligible'] = '|'.join(eligible)
             if action.required_definition_id=='basic.slash' and equipped(state,action.player_id,EquipmentSlot.WEAPON)=='equipment.weapon.serpent_spear' and len(hand)>=2:
                 from .card_limits import legal_pairs
@@ -1237,7 +1241,7 @@ class MilitaryResponseHandler(RespondWithCardHandler):
         from .yj2011_tier3 import canonical_definition
         self.recorder.record(CardRespondedEvent(action.action_id + ':responded', action.player_id, card,
                                                 action.source_action_id,
-                                                canonical_definition(state, self.skills, action.player_id, state.cards[card].definition_id),
+                                                canonical_definition(state, self.skills, action.player_id, state.cards[card].definition_id,card),
                                                 action.response_number, action.response_total))
         self.moves.move(state, CardMove(action.action_id + ':discard', (card,), processing,
             ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.RESPONSE, action.player_id))

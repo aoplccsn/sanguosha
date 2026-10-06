@@ -33,6 +33,10 @@ class UseCardActionHandler:
         self.recorder = recorder
         self.skills = skills
 
+    def _definition(self,state,action):
+        from .yj2011_tier3 import canonical_definition
+        return self.validator.definitions.get(canonical_definition(state,self.skills,action.user_id,state.cards[action.card_id].definition_id,action.card_id))
+
     def _rule_for_action(self, state: GameState, action: UseCardAction):
         if not action.forced:
             return self.validator.validate_card(state, action.user_id, action.card_id)
@@ -64,6 +68,17 @@ class UseCardActionHandler:
         self.validator.validate_targets_for_card(rule, state, action.user_id,
                                                  action.card_id, targets)
         effect = rule.effect_action(f"{action.action_id}:effect", action.user_id, action.card_id, targets)
+        from .yj2011_tier3 import canonical_definition
+        physical=state.cards[action.card_id].definition_id
+        canonical=canonical_definition(state,self.skills,action.user_id,physical,action.card_id)
+        virtual=None
+        if canonical!=physical:
+            from .military_basics import SlashSequence
+            from sanguosha.model.virtual_card import VirtualCard
+            from .suits import effective_suit,effective_color
+            from dataclasses import replace
+            virtual=VirtualCard(canonical,(action.card_id,),effective_suit(state,action.card_id,action.user_id),effective_color(state,action.card_id,action.user_id),'longnu' if canonical in ('basic.fire_slash','basic.thunder_slash') else 'jinjiu')
+            if isinstance(effect,SlashSequence):effect=replace(effect,virtual_card=virtual)
         hand = ZoneRef(ZoneType.HAND, action.user_id)
         processing = ZoneRef(ZoneType.PROCESSING)
         self.moves.move(state, CardMove(
@@ -80,13 +95,10 @@ class UseCardActionHandler:
                 slash_counted = record_slash_use(state, action.user_id, targets)
             else:
                 usage.record(usage_key)
-        from .yj2011_tier3 import canonical_definition
-        physical = state.cards[action.card_id].definition_id
-        canonical = canonical_definition(state, self.skills, action.user_id, physical)
         self.recorder.record(CardUsedEvent(f"{action.action_id}:used", action.user_id, action.card_id, targets,
-            canonical if canonical != physical else '', slash_counted=slash_counted))
+            canonical if canonical != physical else '', slash_counted=slash_counted,virtual_card=virtual))
         if (any(state.players[pid].identity is Identity.LORD for pid in targets)
-                and str(state.cards[action.card_id].definition_id) in
+                and canonical in
                 ('basic.slash', 'basic.fire_slash', 'basic.thunder_slash',
                  'trick.duel', 'trick.snatch', 'trick.dismantlement')):
             hostility = state.metadata.setdefault('public_hostility_to_lord', {})
@@ -95,7 +107,7 @@ class UseCardActionHandler:
 
     def _commit_with_jizhi(self, state, frame, action, targets, committed_effect=None):
         outcome = StepResult.push(committed_effect) if committed_effect is not None else self._commit(state, action, targets)
-        definition = self.validator.definitions.get(state.cards[action.card_id].definition_id)
+        definition = self._definition(state,action)
         native_jizhi = self.skills is not None and self.skills.has(state, action.user_id, 'jizhi')
         jilue_jizhi = (self.skills is not None and self.skills.has(state, action.user_id, 'jilue')
                        and state.players[action.user_id].marks.get('ren', 0) > 0)
@@ -110,7 +122,7 @@ class UseCardActionHandler:
         return outcome
 
     def _commit_with_wumou(self, state, frame, action, targets):
-        definition = self.validator.definitions.get(state.cards[action.card_id].definition_id)
+        definition = self._definition(state,action)
         if (self.skills is not None and self.skills.has(state, action.user_id, 'wumou')
                 and definition.category is CardCategory.TRICK):
             committed = self._commit(state, action, targets)
@@ -193,6 +205,7 @@ class UseCardActionHandler:
             frame.step_index = 2
             return StepResult.push(self._jizhi_effect(state, frame, action))
         if frame.step_index == 2:
+            resolved_definition=self._definition(state,action).id
             processing = ZoneRef(ZoneType.PROCESSING)
             discard = ZoneRef(ZoneType.DISCARD_PILE)
             if action.card_id in state.cards_in(processing):
@@ -201,7 +214,7 @@ class UseCardActionHandler:
                     CardMoveReason.USE, action.user_id, action.action_id,
                 ))
                 if (self.skills is not None
-                        and state.cards[action.card_id].definition_id == 'trick.savage_assault'):
+                        and resolved_definition == 'trick.savage_assault'):
                     owner = next((pid for pid in state.seat_order if pid != action.user_id
                                   and state.players[pid].is_alive
                                   and self.skills.has(state, pid, 'juxiang')), None)

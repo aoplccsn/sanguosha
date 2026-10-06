@@ -5,6 +5,8 @@ from sanguosha.engine.yj2011_tier3 import hand
 def decide(provider,state,r):
     pid=r.player_id;kind=r.request_type;prompt=r.prompt
     def keep(c):return {'basic.peach':9,'basic.dodge':6,'trick.nullification':7}.get(state.cards[c].definition_id,2)
+    if '【纵适】' in prompt and kind is RequestType.YES_NO:
+        return Decision(r.request_id,pid,True)
     if kind is RequestType.CHOOSE_OPTION:
         attacks=[o for o in r.choices if o.startswith('skill:xiansi_slash:') and provider._priority(state,pid,o.split(':',2)[2])>0]
         if attacks:return Decision(r.request_id,pid,attacks[0])

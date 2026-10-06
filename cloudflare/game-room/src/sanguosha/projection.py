@@ -91,7 +91,7 @@ def project_for_human(
                        if judgment else card.definition_id)
         if not equipment_slot and not judgment and cid in state.cards_in(ZoneRef(ZoneType.HAND, human_id)):
             from sanguosha.engine.yj2011_tier3 import canonical_definition
-            definition_id=canonical_definition(state, skills, human_id, definition_id)
+            definition_id=canonical_definition(state, skills, human_id, definition_id,cid)
         definition=definitions.get(definition_id)
         detail = ""
         if definition.equipment_slot is not None:

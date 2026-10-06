@@ -55,6 +55,21 @@ def clear_camp(state,holder):
 
 
 class RemainingGodHandler(YJSkillHandler):
+    def longnu(self,state,f):
+        from .hp import LoseHpAction,LoseMaxHpAction
+        from .deck import DrawCardsAction
+        a=f.action;pid=a.player_id;p=state.players[pid]
+        if f.step_index==0:
+            active=2 if p.marks.get('longnu_next')==2 else 1
+            f.local['form']=active;p.marks['longnu_next']=1 if active==2 else 2
+            p.marks.pop('longnu_form',None);f.step_index=1
+            return StepResult.push((LoseHpAction if active==1 else LoseMaxHpAction)(a.action_id+':cost',pid,1))
+        if f.step_index==1:
+            f.step_index=2
+            return StepResult.push(DrawCardsAction(a.action_id+':draw',pid,1))
+        p.marks['longnu_form']=f.local['form']
+        return StepResult.complete()
+
     def jieying_liubei(self,state,f):
         from .chaining import set_chained
         a=f.action;pid=a.player_id
@@ -67,7 +82,7 @@ class RemainingGodHandler(YJSkillHandler):
         target,f.decision=f.decision,None
         if target in targets:
             set_chained(state,target,True,self.skills)
-            self.moves.recorder.record(Event(a.action_id+':chain','player_chained',pid,target,metadata={'skill_id':'jieying_liubei'}))
+            self.moves.recorder.record(Event(a.action_id+':chain','player_chained',pid,(target,),metadata={'skill_id':'jieying_liubei'}))
         return StepResult.complete()
 
     def validate_start(self,state,a):

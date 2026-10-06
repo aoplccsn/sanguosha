@@ -313,7 +313,7 @@ class AIDecisionProvider:
                 from sanguosha.engine.skills import SkillRegistry
                 from sanguosha.engine.yj2011_tier3 import canonical_definition
                 skill_registry=SkillRegistry()
-                slash = [choice for choice in usable if canonical_definition(state, skill_registry, player_id, state.cards[CardInstanceId(choice[4:])].definition_id) in ('basic.slash','basic.fire_slash','basic.thunder_slash')]
+                slash = [choice for choice in usable if canonical_definition(state, skill_registry, player_id, state.cards[CardInstanceId(choice[4:])].definition_id,CardInstanceId(choice[4:])) in ('basic.slash','basic.fire_slash','basic.thunder_slash')]
             enemies = [pid for pid in state.seat_order if pid != player_id and state.players[pid].is_alive and self._priority(state, player_id, pid) > 0]
             lord = next((pid for pid in state.seat_order
                          if pid in state.revealed_identities and state.players[pid].is_alive and state.players[pid].identity is Identity.LORD), None)

@@ -187,6 +187,7 @@ class PhaseActionHandler:
                 from .yj2013 import YJ2013Action
                 return StepResult.push(YJ2013Action(action.action_id + ':jingce', action.player_id, 'jingce'))
             if not frame.local.get('phase_end_recorded'):
+                if action.phase is Phase.PLAY:state.players[action.player_id].marks.pop('longnu_form',None)
                 self.recorder.record(PhaseEndedEvent(f"{action.action_id}:end", action.player_id, action.phase))
                 state.current_phase = None
                 frame.local['phase_end_recorded'] = True
@@ -220,6 +221,10 @@ class PhaseActionHandler:
         if state.status is GameStatus.FINISHED or not state.players[action.player_id].is_alive:
             frame.step_index = 4
             return StepResult.continue_()
+        if action.phase is Phase.PLAY and self.skills is not None and self.skills.has(state,action.player_id,'longnu') and not frame.local.get('longnu_started'):
+            from .remaining_gods import RemainingGodAction
+            frame.local['longnu_started']=True
+            return StepResult.push(RemainingGodAction(action.action_id+':longnu',action.player_id,'longnu'))
         if action.phase is Phase.PLAY and self.skills is not None and self.skills.has(state,action.player_id,'cuike') and not frame.local.get('cuike_offered'):
             from .remaining_gods import RemainingGodAction
             frame.local['cuike_offered']=True

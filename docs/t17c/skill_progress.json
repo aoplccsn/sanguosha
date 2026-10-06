@@ -211,7 +211,7 @@
     {
       "general_id": "yj2013_jian_yong",
       "skill_id": "zongshi_jianyong",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
@@ -295,7 +295,7 @@
     {
       "general_id": "shadow_god_liubei",
       "skill_id": "longnu",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
