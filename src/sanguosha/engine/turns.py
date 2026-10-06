@@ -60,6 +60,8 @@ class TurnActionHandler:
             state.current_phase = None
             state.turn_number += 1
             self.recorder.record(TurnStartedEvent(f"{action.action_id}:start", action.player_id, state.turn_number))
+            from .remaining_gods import camp_start
+            camp_start(state,action.player_id,self.skills)
             if not state.players[action.player_id].face_up:
                 state.players[action.player_id].face_up = True
                 frame.cursor = len(action.phases)
@@ -84,12 +86,18 @@ class TurnActionHandler:
                         f'{action.action_id}:lianpo:{eligible}', eligible,
                         RequestType.YES_NO, '连破：本回合结束后进行一个额外回合？',
                         action.action_id, frame.frame_id))
+            if not frame.local.get('camp_return_checked'):
+                from .remaining_gods import camp_source,clear_camp,RemainingGodAction
+                frame.local['camp_return_checked']=True
+                owner=camp_source(state,action.player_id,self.skills)
+                if owner is not None and owner!=action.player_id:
+                    return StepResult.push(RemainingGodAction(action.action_id+':camp-return',owner,'campend',action.player_id))
             if state.ruleset_id == 'classic-military':
                 state.players[action.player_id].marks.pop('wine', None)
                 state.players[action.player_id].marks.pop('jilue_wansha', None)
                 for key in ('slash_quota_bonus', 'slash_ignore_distance',
                             'slash_extra_targets', 'slash_prohibited',
-                            'shuangxiong_color', 'yj_zishou', 'yj_gongqi'):
+                            'shuangxiong_color', 'yj_zishou', 'yj_gongqi', 'poxi_hand_limit', 'poxi_end_play'):
                     state.players[action.player_id].marks.pop(key, None)
                 if state.players[action.player_id].character_id == 'forest_god_lvbu':
                     state.players[action.player_id].marks.pop('wuwei', None)

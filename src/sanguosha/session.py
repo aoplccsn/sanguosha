@@ -348,6 +348,8 @@ class GameSession:
             register_yj2011_tier3(registry, skills, moves, definitions, deck)
             from sanguosha.engine.yj2012 import register as register_yj2012
             register_yj2012(registry, skills, moves, definitions, deck)
+            from sanguosha.engine.remaining_gods import register as register_remaining_gods
+            register_remaining_gods(registry,skills,moves,definitions,deck)
             from sanguosha.engine.yj2013 import register as register_yj2013
             register_yj2013(registry, skills, moves, definitions, deck)
         engine = GameEngine(state, registry)

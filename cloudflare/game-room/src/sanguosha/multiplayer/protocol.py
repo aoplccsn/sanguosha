@@ -101,6 +101,7 @@ def serialize_request(request: PendingRequest, remaining_ms: int) -> dict[str, A
         "legal_card_sets": [list(cards) for cards in request.legal_card_sets],
         "min_count": request.min_count, "max_count": request.max_count,
         "minimum_nonempty_count": request.minimum_nonempty_count,
+        "exclusive_card_groups": [list(cards) for cards in request.exclusive_card_groups],
         "subject_player_id": request.subject_player_id, "remaining_ms": remaining_ms,
         "play_card_targets": {option: {"targets": list(spec[0]), "min": spec[1], "max": spec[2]}
                               for option, spec in request.play_card_targets.items()},

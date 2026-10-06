@@ -34,7 +34,8 @@ def choice_labels(room, request):
                     if card_id in zone.card_ids), None)
         if ref is None:
             return None
-        if ref.zone_type in (ZoneType.HAND, ZoneType.SPECIAL) and ref.player_id != request.player_id:
+        from sanguosha.engine.private_hands import can_view_hand
+        if ref.zone_type in (ZoneType.HAND, ZoneType.SPECIAL) and ref.player_id != request.player_id and not (ref.zone_type is ZoneType.HAND and can_view_hand(session.state,request.player_id,ref.player_id)):
             return '背面手牌' if ref.zone_type is ZoneType.HAND else '特殊区牌'
         if ref.zone_type is ZoneType.DRAW_PILE:
             return '背面牌'

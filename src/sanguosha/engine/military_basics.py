@@ -147,6 +147,8 @@ class MilitaryDamageHandler(DamageActionHandler):
                 target.marks['ren'] = target.marks.get('ren', 0) + amount
             from .fuhun import grant_after_damage
             grant_after_damage(state,action,self.skills)
+            from .remaining_gods import gain_junlve
+            gain_junlve(state,action.source_id,action.target_id,amount,self.skills)
             virtual=getattr(action,"virtual_card",None)
             if virtual is not None and virtual.skill_id=="lihuo" and virtual.material_ids:
                 state.metadata.setdefault("lihuo_hits",{})[str(action.source_id)+":"+virtual.material_ids[0]]=True
@@ -431,7 +433,8 @@ class SkillSlashLimit:
         if self.skills is not None and self.skills.has(state, user, 'paoxiao'):
             return None
         base = self.equipment.limit(state, user)
-        return None if base is None else base + max(0, state.players[user].marks.get('slash_quota_bonus', 0))
+        from .remaining_gods import camp_bonus
+        return None if base is None else base + camp_bonus(state,user,self.skills) + max(0, state.players[user].marks.get('slash_quota_bonus', 0))
 
 
 class MilitarySlashRule(SlashRule):

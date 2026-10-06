@@ -49,6 +49,7 @@ export interface PendingRequest {
   max_count: number
   subject_player_id: string | null
   remaining_ms: number
+  exclusive_card_groups?: string[][]
   minimum_nonempty_count?: number
   legal_card_sets?: string[][]
   play_card_targets?: Record<string, { targets: string[]; min: number; max: number }>

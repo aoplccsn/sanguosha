@@ -70,7 +70,7 @@ class PlayPhaseBody:
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
         assert isinstance(action, PhaseAction)
-        if state.status is GameStatus.FINISHED:
+        if state.status is GameStatus.FINISHED or state.players[action.player_id].marks.pop('poxi_end_play',0):
             return StepResult.complete()
         if frame.step_index == 1:
             options = self.provider.options(state, action.player_id)
@@ -220,6 +220,10 @@ class PhaseActionHandler:
         if state.status is GameStatus.FINISHED or not state.players[action.player_id].is_alive:
             frame.step_index = 4
             return StepResult.continue_()
+        if action.phase is Phase.PLAY and self.skills is not None and self.skills.has(state,action.player_id,'cuike') and not frame.local.get('cuike_offered'):
+            from .remaining_gods import RemainingGodAction
+            frame.local['cuike_offered']=True
+            return StepResult.push(RemainingGodAction(action.action_id+':cuike',action.player_id,'cuike'))
         outcome = self.bodies.body_for(action.phase).step(state, frame)
         if outcome.kind is StepKind.COMPLETE:
             frame.step_index = 4

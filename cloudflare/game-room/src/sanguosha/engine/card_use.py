@@ -39,6 +39,9 @@ class UseCardActionHandler:
         if (action.user_id not in state.players or not state.players[action.user_id].is_alive
                 or action.card_id not in state.cards_in(ZoneRef(ZoneType.HAND, action.user_id))):
             raise InvalidCardUse('forced-use card is unavailable')
+        from .card_limits import card_allowed
+        if not card_allowed(state,action.user_id,(action.card_id,)):
+            raise InvalidCardUse('forced-use card color is prohibited')
         rule = self.validator.rule_for(state, action.card_id, action.user_id)
         if not rule.can_use(state, action.user_id):
             raise InvalidCardUse('forced-use card condition is not met')

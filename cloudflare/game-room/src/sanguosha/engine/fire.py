@@ -524,7 +524,10 @@ class FireHandLimit:
             value += 2 * sum(1 for pid in state.seat_order if pid != player_id
                              and state.players[pid].is_alive
                              and self.skills.faction(state, pid) is Kingdom.QUN)
-        return value
+        from .remaining_gods import camp_bonus
+        value += camp_bonus(state,player_id,self.skills)
+        value -= int(state.players[player_id].marks.get('poxi_hand_limit')==state.turn_number)
+        return max(0,value)
 
 
 def effective_armor(state, player_id, skills):

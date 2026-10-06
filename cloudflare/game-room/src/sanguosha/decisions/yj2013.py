@@ -5,6 +5,17 @@ from sanguosha.engine.yj2011_tier3 import hand
 def decide(provider,state,r):
     pid=r.player_id;kind=r.request_type;prompt=r.prompt
     def keep(c):return {'basic.peach':9,'basic.dodge':6,'trick.nullification':7}.get(state.cards[c].definition_id,2)
+    if kind is RequestType.CHOOSE_OPTION and 'skill:mieji' in r.choices:
+        if any(provider._priority(state,pid,q)>0 for q in state.seat_order if q!=pid and state.players[q].is_alive):return Decision(r.request_id,pid,'skill:mieji')
+    if '【灭计】' in prompt:
+        if kind is RequestType.CHOOSE_CARD:value=min(r.eligible_card_ids,key=keep)
+        elif kind is RequestType.CHOOSE_PLAYER:value=max(r.allowed_player_ids,key=lambda q:provider._priority(state,pid,q))
+        elif kind is RequestType.CHOOSE_CARDS:value=min(r.legal_card_sets,key=lambda cards:sum(keep(c) for c in cards))
+        else:return None
+        r.validate(value);return Decision(r.request_id,pid,value)
+    if '【直言】' in prompt:
+        value=True if kind is RequestType.YES_NO else min(r.allowed_player_ids,key=lambda q:(provider._priority(state,pid,q),state.players[q].hp))
+        r.validate(value);return Decision(r.request_id,pid,value)
     if kind is RequestType.CHOOSE_OPTION and 'skill:danshou' in r.choices:
         own=hand(state,pid)
         if len(own)>=2 and any(provider._priority(state,pid,q)>0 for q in state.seat_order if q!=pid and state.players[q].is_alive):return Decision(r.request_id,pid,'skill:danshou')

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GamePage, ResultOverlay, portraitState } from './GamePage'
@@ -38,6 +38,30 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
+  it('shows authorized Poxi hand faces and rejects four cards with duplicate suits', async () => {
+    extraCards = [
+      { ...card, card_id: 'dodge-2', name: '闪', suit: '♥', definition_id: 'basic.dodge' },
+      { ...card, card_id: 'wine-3', name: '酒', suit: '♣', definition_id: 'basic.wine' },
+    ]
+    ;(players[1] as any).revealed_hand = [
+      { ...card, card_id: 'fire-4', name: '火攻', suit: '♠', definition_id: 'trick.fire_attack' },
+      { ...card, card_id: 'thunder-5', name: '雷杀', suit: '♦', definition_id: 'basic.thunder_slash' },
+    ]
+    request = { request_id: 'poxi', player_id: 'p1', request_type: 'choose_cards',
+      subject_player_id: 'p2', prompt: '【魄袭】选择四张花色各异的牌，或空选放弃', choices: [],
+      allowed_player_ids: [], eligible_card_ids: ['slash-1','dodge-2','wine-3','fire-4','thunder-5'],
+      min_count: 0, max_count: 4, minimum_nonempty_count: 4, remaining_ms: 60000,
+      exclusive_card_groups: [['slash-1','fire-4'],['dodge-2'],['wine-3'],['thunder-5']] }
+    render(<GamePage />)
+    const panel = within(screen.getByRole('dialog', { name: '魄袭' }))
+    for (const name of ['杀','闪','火攻','雷杀']) await userEvent.click(panel.getByRole('button', { name: new RegExp('^'+name+' ') }))
+    expect(panel.getByRole('button', { name: '确定' })).toBeDisabled()
+    await userEvent.click(panel.getByRole('button', { name: /^火攻 / }))
+    await userEvent.click(panel.getByRole('button', { name: /^酒 / }))
+    expect(panel.getByRole('button', { name: '确定' })).toBeEnabled()
+    await userEvent.click(panel.getByRole('button', { name: '确定' }))
+    expect(submitDecision).toHaveBeenCalledWith('poxi', ['slash-1','dodge-2','thunder-5','wine-3'])
+  })
   it('permits declining Fencheng but rejects undersized nonempty card selections', async () => {
     extraCards = [
       { ...card, card_id: 'dodge-2', name: '闪', definition_id: 'basic.dodge' },
@@ -85,7 +109,7 @@ describe('GamePage', () => {
     expect(screen.getByText('真人响应')).toBeInTheDocument()
     expect(container.querySelectorAll('.player-panel.thinking')).toHaveLength(0)
   })
-  beforeEach(() => { extraCards = []; submitDecision.mockClear(); request = null; waiting = undefined; combat=undefined; generals = {}; publicEvents = []; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
+  beforeEach(() => { players.forEach((p) => delete (p as any).revealed_hand); extraCards = []; submitDecision.mockClear(); request = null; waiting = undefined; combat=undefined; generals = {}; publicEvents = []; card.name = '杀'; card.definition_id = 'basic.slash'; players[0].character_id = 'caocao'; players[0].skill_labels = ['奸雄']; delete (players[0] as any).special_piles; delete (players[0] as any).active_transformation; delete (players[0] as any).transformation_pool })
 
   it.each([
     [{ event_id: 'slash', kind: 'CardUsedEvent', source_id: 'p1', target_ids: ['p2'], card_name: '杀' }, '曹操 对 刘备 使用【杀】', 'p1', 'p2'],

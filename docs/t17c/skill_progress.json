@@ -246,7 +246,7 @@
     {
       "general_id": "yj2013_yu_fan",
       "skill_id": "zhiyan",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
@@ -281,7 +281,7 @@
     {
       "general_id": "yj2013_li_ru",
       "skill_id": "mieji",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
@@ -309,35 +309,35 @@
     {
       "general_id": "shadow_god_luxun",
       "skill_id": "junlve",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
     {
       "general_id": "shadow_god_luxun",
       "skill_id": "cuike",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
     {
       "general_id": "shadow_god_luxun",
       "skill_id": "zhanhuo",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
     {
       "general_id": "thunder_god_ganning",
       "skill_id": "poxi",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },
     {
       "general_id": "thunder_god_ganning",
       "skill_id": "jieying_ganning",
-      "runtime_status": "NOT_IMPLEMENTED",
+      "runtime_status": "PROTOTYPE_TESTED",
       "acceptance_status": "PENDING",
       "production_exposed": false
     },

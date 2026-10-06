@@ -45,6 +45,7 @@ class PendingRequest:
     subject_player_id: PlayerId | None = None
     play_card_targets: dict[str, tuple[tuple[str, ...], int, int]] = field(default_factory=dict)
 
+    exclusive_card_groups: tuple[tuple[CardInstanceId, ...], ...] = ()
     minimum_nonempty_count: int = 0
     legal_card_sets: tuple[tuple[CardInstanceId, ...], ...] = ()
 
@@ -102,6 +103,7 @@ class PendingRequest:
                 and (not value or len(value) >= self.minimum_nonempty_count)
                 and all(type(card_id) is str and card_id in self.eligible_card_ids for card_id in value)
                 and len(value) == len(set(value))
+                and all(sum(cid in group for cid in value) <= 1 for group in self.exclusive_card_groups)
                 and (not self.legal_card_sets or any(set(value) == set(cards) for cards in self.legal_card_sets))
             )
         elif kind is RequestType.CHOOSE_PLAYERS:

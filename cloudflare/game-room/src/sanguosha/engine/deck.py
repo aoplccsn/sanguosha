@@ -157,6 +157,10 @@ class RevealTopCardsHandler:
 
 
 class DrawPhaseBody:
+    def _camp_bonus(self,state,pid):
+        from .remaining_gods import camp_bonus
+        return camp_bonus(state,pid,self.skills)
+
     def __init__(self, skills=None):
         self.skills = skills
 
@@ -209,7 +213,7 @@ class DrawPhaseBody:
                     action.action_id, frame.frame_id))
             frame.step_index = 2
             bonus = int(self.skills is not None and self.skills.has(state, action.player_id, 'yingzi'))
-            return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id, 2 + bonus))
+            return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id, 2 + bonus + self._camp_bonus(state,action.player_id)))
         if frame.step_index == 3:
             action = frame.action
             activate = frame.decision is True
@@ -218,7 +222,7 @@ class DrawPhaseBody:
                 state.players[action.player_id].marks['luoyi'] = 1
             frame.step_index = 2
             return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id,
-                                                   1 if activate else 2))
+                                                   (1 if activate else 2) + self._camp_bonus(state,action.player_id)))
         if frame.step_index == 5:
             action = frame.action
             activate = frame.decision is True
@@ -227,7 +231,7 @@ class DrawPhaseBody:
             if activate:
                 from .skills import TuxiAction
                 return StepResult.push(TuxiAction(action.action_id + ':tuxi', action.player_id))
-            return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id, 2))
+            return StepResult.push(DrawCardsAction(f"{action.action_id}:draw", action.player_id, 2 + self._camp_bonus(state,action.player_id)))
         if frame.step_index == 7:
             action = frame.action
             wanted = frame.decision is True
@@ -245,7 +249,7 @@ class DrawPhaseBody:
             if wanted:
                 frame.step_index = 10
                 return StepResult.push(DrawCardsAction(action.action_id + ':haoshi-draw',
-                                                       action.player_id, 4))
+                                                       action.player_id, 4 + self._camp_bonus(state,action.player_id)))
             frame.step_index = 1
             return StepResult.continue_()
         if frame.step_index == 10:

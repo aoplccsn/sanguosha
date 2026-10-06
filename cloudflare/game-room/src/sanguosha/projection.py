@@ -1,5 +1,6 @@
 """Human-visible read-only snapshots; opponent hands and identities stay hidden."""
 
+from sanguosha.engine.private_hands import can_view_hand
 from dataclasses import dataclass, field
 
 from sanguosha.engine.card_registry import CardDefinitionRegistry
@@ -147,9 +148,7 @@ def project_for_human(
             player.active_transformation or "",
             tuple(player.transformation_pool) if pid == human_id else (),
             tuple(card_view(cid) for cid in state.cards_in(ZoneRef(ZoneType.HAND, pid)))
-            if (state.metadata.get('gongxin_reveal', {}).get('actor') == human_id
-                and state.metadata.get('gongxin_reveal', {}).get('target') == pid
-                and state.players[human_id].is_alive) else (),
+            if pid!=human_id and can_view_hand(state,human_id,pid) else (),
         ))
     hand = tuple(card_view(card_id) for card_id in state.cards_in(ZoneRef(ZoneType.HAND, human_id)))
     discard = state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))

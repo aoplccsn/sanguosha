@@ -492,6 +492,7 @@ class YJ2012Handler(YJSkillHandler):
         return StepResult.complete()
 
     def jiangchi(self,state,f):
+        from .remaining_gods import camp_bonus
         a=f.action; p=state.players[a.player_id]
         if f.step_index == 0:
             f.step_index=1
@@ -503,10 +504,11 @@ class YJ2012Handler(YJSkillHandler):
                 p.marks['slash_ignore_distance']=1
                 p.marks['slash_quota_bonus']=p.marks.get('slash_quota_bonus',0)+1
             f.step_index=2
-            return StepResult.push(DrawCardsAction(a.action_id+':draw',a.player_id,{'default':2,'jiang':3,'chi':1}[choice]))
+            return StepResult.push(DrawCardsAction(a.action_id+':draw',a.player_id,{'default':2,'jiang':3,'chi':1}[choice]+camp_bonus(state,a.player_id,self.skills)))
         return StepResult.complete(True)
 
     def zishou(self,state,f):
+        from .remaining_gods import camp_bonus
         a=f.action
         if f.step_index==0:
             f.step_index=1
@@ -515,7 +517,7 @@ class YJ2012Handler(YJSkillHandler):
             wanted,f.decision=f.decision is True,None
             if wanted: state.players[a.player_id].marks['yj_zishou']=state.turn_number
             f.step_index=2
-            return StepResult.push(DrawCardsAction(a.action_id+':draw',a.player_id,2+(factions(state,self.skills) if wanted else 0)))
+            return StepResult.push(DrawCardsAction(a.action_id+':draw',a.player_id,2+(factions(state,self.skills) if wanted else 0)+camp_bonus(state,a.player_id,self.skills)))
         return StepResult.complete(True)
 
     def zhiyu(self,state,f):

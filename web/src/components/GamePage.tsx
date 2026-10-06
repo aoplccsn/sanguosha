@@ -467,6 +467,7 @@ export function GamePage() {
   const canConfirm = !!request && state.connection === 'connected' && (playTargetSpec
     ? selectedTargets.length >= playTargetSpec.min && selectedTargets.length <= playTargetSpec.max
     : selectionCount >= minimum && selectionCount <= (request.max_count || 1))
+    && (request.exclusive_card_groups ?? []).every((group) => selectedCards.filter((id) => group.includes(id)).length <= 1)
     && (!selectedCards.length || selectedCards.length >= (request.minimum_nonempty_count ?? 0))
     && (!request.legal_card_sets?.length || request.legal_card_sets.some((cards) =>
       cards.length === selectedCards.length && cards.every((id) => selectedCards.includes(id))))
@@ -490,7 +491,7 @@ export function GamePage() {
   const aoe = combat && ['trick.savage_assault', 'trick.archery_attack'].includes(combat.definition_id) ? combat : null
   const aoeState = (id: string) => !aoe?.target_ids.includes(id) ? undefined : aoe.resolved_target_ids?.includes(id) ? 'resolved' : aoe.current_target_id === id ? 'current' : 'pending'
 
-  const temporaryPanel = projection.shared_cards.length > 0 || (!!request && request.request_type === 'choose_card' && !!request.subject_player_id && otherCardChoices.length > 0)
+  const temporaryPanel = projection.shared_cards.length > 0 || (!!request && (request.request_type === 'choose_card' || request.request_type === 'choose_cards' && !!projection.players.find((p) => p.player_id === request.subject_player_id)?.revealed_hand?.length) && !!request.subject_player_id && (otherCardChoices.length > 0 || !!projection.players.find((p) => p.player_id === request.subject_player_id)?.revealed_hand?.some((card) => request.eligible_card_ids?.includes(card.card_id))))
   return <main className="game-page table-background">
     {temporaryPanel && <TemporaryInteractionPanel projection={projection} request={request} seatId={state.seatId} connected={state.connection === 'connected'} processing={!!state.decisionProcessing} selected={selectedCards} canConfirm={canConfirm} onSelect={toggleCard} onConfirm={confirm} onPass={() => submitImmediate({ pass: true })} requestControls={request && request.request_type !== 'choose_card' ? <DecisionPrompt request={request} projection={projection} canConfirm={canConfirm} processing={!!state.decisionProcessing} summary={summary} onConfirm={confirm} onCancel={() => setSelectedCards([])} onPass={() => submitImmediate({ pass: true })} onPassRoot={() => submitImmediate({ pass: true, scope: 'root_trick' })} onBoolean={submitImmediate} onOption={submitImmediate} /> : undefined} />}
     <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><label>对局速度 <select aria-label="对局速度" value={gameSpeed} onChange={(event) => { const value = event.target.value as GameSpeed; setGameSpeed(value); actions.setPresentationSpeed?.(value); localStorage.setItem('sanguosha.web.speed', value) }}><option value="slow">慢</option><option value="normal">正常</option><option value="fast">快</option></select></label><label className="vfx-quality-control">画质 <select aria-label="战斗特效画质" value={vfxQuality} onChange={(event) => { const value = event.target.value as VfxQuality; setVfxQuality(value); saveVfxQuality(value) }}><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></label><button onClick={actions.returnHome}>离开牌局</button></div></header>
@@ -512,7 +513,7 @@ export function GamePage() {
       </section>}
       {request?.player_id === self.player_id && projection.players.filter((player) => !!player.revealed_hand?.length).map((player) =>
         <section key={player.player_id} className="shared-card-pool" aria-label="攻心查看手牌">
-          <p>攻心 · {player.name} 的手牌</p><div>{player.revealed_hand!.map((card) =>
+          <p>{request.prompt.match(/【([^】]+)】/)?.[1] ?? '攻心'} · {player.name} 的手牌</p><div>{player.revealed_hand!.map((card) =>
             <HandCard key={card.card_id} card={card} selected={false}
               eligible={request.choices.includes(card.card_id)}
               onClick={() => request.choices.includes(card.card_id) ? submitImmediate(card.card_id) : setHint('当前不能选择这张牌')} />)}</div>

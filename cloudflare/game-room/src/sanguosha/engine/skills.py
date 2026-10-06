@@ -108,6 +108,14 @@ class FinishSkillBody:
     def step(self, state, frame):
         actor = frame.action.player_id
         if frame.step_index == 1:
+            if not frame.local.get('camp_transfer_offered') and self.skills.has(state,actor,'jieying_ganning'):
+                from .remaining_gods import RemainingGodAction
+                frame.local['camp_transfer_offered']=True
+                return StepResult.push(RemainingGodAction(frame.action.action_id+':camp-transfer',actor,'camptransfer'))
+            if not frame.local.get('yj2013_zhiyan') and self.skills.has(state,actor,'zhiyan'):
+                from .yj2013 import YJ2013Action
+                frame.local['yj2013_zhiyan']=True
+                return StepResult.push(YJ2013Action(frame.action.action_id+':zhiyan',actor,'zhiyan'))
             if not frame.local.get('yj2013_juece') and self.skills.has(state,actor,'juece'):
                 from .yj2013 import YJ2013Action
                 frame.local['yj2013_juece']=True
@@ -1147,6 +1155,8 @@ class SkillPlayOptions:
         ordinary = self.base.options(state,pid)
         from .yj2011_tier3 import play_options
         extra = play_options(state, pid, self.skills)
+        from .remaining_gods import play_options as god_play_options
+        extra.extend(god_play_options(state,pid,self.skills))
         from .fuhun import available as fuhun_available
         if fuhun_available(state,pid,self.skills,self.slash_rule):extra.append('skill:fuhun')
         from .card_limits import card_allowed
@@ -1315,13 +1325,16 @@ class SkillPlayOptions:
     def build_action(self, state, pid, option, aid):
         if option not in self.options(state,pid):
             raise InvalidCardUse('skill option is no longer legal')
+        if option in ('skill:zhanhuo','skill:poxi'):
+            from .remaining_gods import RemainingGodAction
+            return RemainingGodAction(aid+':god',pid,option.split(':')[1])
         if option=='skill:fuhun':
             from .fuhun import UseFuhun
             return UseFuhun(aid+':fuhun',pid)
         if option in ('skill:jiushi', 'skill:xinzhan', 'skill:ganlu', 'skill:mingce', 'skill:xianzhen'):
             from .yj2011_tier3 import YJSkillAction
             return YJSkillAction(aid + ':yj2011', pid, option.split(':')[1])
-        if option in ('skill:junxing','skill:danshou','skill:fencheng'):
+        if option in ('skill:junxing','skill:danshou','skill:fencheng','skill:mieji'):
             from .yj2013 import YJ2013Action
             return YJ2013Action(aid+':yj2013',pid,option.split(':')[1])
         if option in ('skill:paiyi', 'skill:anxu', 'skill:gongqi', 'skill:jiefan', 'skill:qice', 'skill:lihuo'):

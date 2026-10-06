@@ -32,11 +32,88 @@ class YJ2013Handler(YJSkillHandler):
         if action.skill=='fencheng' and frame.step_index>0:
             from sanguosha.model.state import GameStatus
             return StepResult.complete() if state.status is GameStatus.FINISHED else self.fencheng(state,frame)
-        if action.skill=='junxing' and frame.step_index==0:
+        if action.skill in ('junxing','mieji') and frame.step_index==0:
             self.validate_active(state,action)
         if not state.players[action.player_id].is_alive or not self.skills.has(state, action.player_id, action.skill):
             return StepResult.complete()
         return super().step(state,frame)
+
+    def mieji(self,state,f):
+        from itertools import combinations
+        from sanguosha.model.enums import CardCategory,Color
+        from sanguosha.model.zones import ZoneRef,ZoneType
+        from .yj2011_tier3 import hand
+        from .suits import effective_color
+        from .military_equipment import discardable
+        from .card_moves import CardMove,CardMoveReason
+        from .card_rules import InvalidCardUse
+        a=f.action;pid=a.player_id
+        if f.step_index==0:
+            cards=tuple(c for c in hand(state,pid) if self.category(state,c) is CardCategory.TRICK and effective_color(state,c,pid) is Color.BLACK)
+            if not cards:raise InvalidCardUse('灭计需要黑色锦囊手牌')
+            f.step_index=1
+            return self.ask(f,RequestType.CHOOSE_CARD,'【灭计】将一张黑色锦囊置于牌堆顶',eligible_card_ids=cards)
+        if f.step_index==1:
+            f.local['card'],f.decision=f.decision,None
+            targets=tuple(q for q in state.seat_order if q!=pid and state.players[q].is_alive and hand(state,q))
+            if not targets:raise InvalidCardUse('灭计没有合法目标')
+            f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_PLAYER,'【灭计】选择有手牌的其他角色',allowed_player_ids=targets,min_count=1,max_count=1)
+        if f.step_index==2:
+            target,f.decision=f.decision,None;f.local['target']=target
+            card=f.local['card'];state.play_usage.record('skill.mieji')
+            self.moves.move(state,CardMove(a.action_id+':top',(card,),ZoneRef(ZoneType.HAND,pid),ZoneRef(ZoneType.DRAW_PILE),CardMoveReason.SYSTEM,pid,a.action_id,to_top=True))
+            f.step_index=3
+            return StepResult.continue_()
+        if f.step_index==3:
+            target=f.local['target'];cards=discardable(state,target)
+            tricks=tuple(c for c in cards if self.category(state,c) is CardCategory.TRICK)
+            other=tuple(c for c in cards if c not in tricks)
+            legal=tuple((c,) for c in tricks)+tuple(combinations(other,2))
+            if not legal and len(other)==1:legal=(other,)
+            if not legal:return StepResult.complete()
+            f.step_index=4
+            return self.ask(f,RequestType.CHOOSE_CARDS,'【灭计】弃一张锦囊或两张非锦囊',player=target,eligible_card_ids=cards,min_count=1,max_count=2,legal_card_sets=legal)
+        cards,f.decision=tuple(f.decision),None
+        self.transfer(state,a,cards,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,actor=f.local['target'])
+        return StepResult.complete()
+
+    def zhiyan(self,state,f):
+        from sanguosha.model.enums import CardCategory
+        from .events import Event
+        from .recovery import RecoverAction
+        from .card_use import UseCardAction
+        from .card_limits import card_allowed
+        from .yj2011_tier3 import hand
+        from sanguosha.model.zones import ZoneRef,ZoneType
+        a=f.action;pid=a.player_id
+        if f.step_index==0:
+            f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【直言】是否令一名角色摸牌并展示？')
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted:return StepResult.complete()
+            f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_PLAYER,'【直言】选择摸牌的角色',allowed_player_ids=tuple(q for q in state.seat_order if state.players[q].is_alive),min_count=1,max_count=1)
+        if f.step_index==2:
+            target,f.decision=f.decision,None;f.local['target']=target
+            if not self.deck.ensure_draw(state,a.action_id+':ensure'):return StepResult.complete()
+            f.local['card']=state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0]
+            f.step_index=3
+            return StepResult.push(DrawCardsAction(a.action_id+':draw',target,1))
+        target=f.local['target'];card=f.local['card']
+        if not state.players[target].is_alive:return StepResult.complete()
+        if f.step_index==3:
+            if card not in hand(state,target):return StepResult.complete()
+            self.moves.recorder.record(Event(a.action_id+':reveal','card_revealed',target,metadata={'card_id':card}))
+            if self.category(state,card) is not CardCategory.EQUIPMENT:return StepResult.complete()
+            f.step_index=4
+            return StepResult.push(RecoverAction(a.action_id+':recover',pid,target,1))
+        if f.step_index==4:
+            f.step_index=5
+            if card in hand(state,target) and card_allowed(state,target,(card,)):
+                return StepResult.push(UseCardAction(a.action_id+':equip',target,card,forced=True))
+        return StepResult.complete()
 
     def danshou(self,state,f):
         from copy import deepcopy
@@ -401,6 +478,9 @@ def play_options(state,pid,skills):
     from .yj2011_tier3 import hand
     from .military_equipment import discardable
     options=[]
+    from sanguosha.model.enums import Color
+    from .suits import effective_color
+    if skills.has(state,pid,'mieji') and not state.play_usage.count('skill.mieji') and any(q!=pid and state.players[q].is_alive and hand(state,q) for q in state.seat_order) and any(state.cards[c].definition_id.startswith(('trick.','delayed.')) and effective_color(state,c,pid) is Color.BLACK for c in hand(state,pid)):options.append('skill:mieji')
     if skills.has(state,pid,'fencheng') and not state.players[pid].marks.get('fencheng_used'):options.append('skill:fencheng')
     if skills.has(state,pid,'danshou') and len(discardable(state,pid))>=state.play_usage.count('skill.danshou')+1:options.append('skill:danshou')
     return options + (['skill:junxing'] if (skills.has(state,pid,'junxing') and state.play_usage is not None

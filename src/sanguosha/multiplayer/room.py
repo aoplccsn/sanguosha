@@ -592,6 +592,8 @@ class MultiplayerRoom:
                 or request.subject_player_id == request.player_id
                 or request.request_type not in (RequestType.CHOOSE_CARD, RequestType.CHOOSE_CARDS)):
             return {}
+        from sanguosha.engine.private_hands import can_view_hand
+        if can_view_hand(self.session.state,request.player_id,request.subject_player_id):return {}
         hand = self.session.state.cards_in(ZoneRef(ZoneType.HAND, request.subject_player_id))
         return {f'hidden-hand:{index}': card_id for index, card_id in enumerate(hand, 1)
                 if card_id in request.eligible_card_ids}
@@ -606,6 +608,7 @@ class MultiplayerRoom:
             reverse = {card_id: alias for alias, card_id in aliases.items()}
             payload['eligible_card_ids'] = [reverse.get(card_id, card_id)
                                             for card_id in request.eligible_card_ids]
+            payload['exclusive_card_groups'] = [[reverse.get(cid,cid) for cid in group] for group in request.exclusive_card_groups]
             payload['legal_card_sets'] = [[reverse.get(cid, cid) for cid in cards]
                                           for cards in request.legal_card_sets]
             payload['choice_labels'] = {reverse.get(card_id,card_id):label

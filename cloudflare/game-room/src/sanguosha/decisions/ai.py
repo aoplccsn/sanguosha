@@ -238,6 +238,9 @@ class AIDecisionProvider:
                 value=min(request.eligible_card_ids,key=lambda c:
                     {'basic.peach':9,'basic.dodge':6,'trick.nullification':7}.get(state.cards[c].definition_id,2))
                 return Decision(request.request_id,player_id,value)
+        from .remaining_gods import decide as decide_remaining_gods
+        god_decision=decide_remaining_gods(self,state,request)
+        if god_decision is not None:return god_decision
         from .yj2013 import decide as decide_yj2013
         yj2013_decision=decide_yj2013(self,state,request)
         if yj2013_decision is not None:
