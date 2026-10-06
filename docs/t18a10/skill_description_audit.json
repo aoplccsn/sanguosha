@@ -1,0 +1,2172 @@
+{
+  "status": "PASS",
+  "generals": 103,
+  "registered_skills": 189,
+  "placeholder_count": 0,
+  "generals_detail": [
+    {
+      "id": "caocao",
+      "name": "曹操",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "jianxiong",
+          "name": "奸雄",
+          "type": "triggered",
+          "description": "受到牌造成的伤害后，可获得仍可取得的材料牌。"
+        },
+        {
+          "id": "hujia",
+          "name": "护驾",
+          "type": "triggered",
+          "description": "需要闪时，可请求其他魏势力角色代为提供。"
+        }
+      ]
+    },
+    {
+      "id": "liubei",
+      "name": "刘备",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "rende",
+          "name": "仁德",
+          "type": "active",
+          "description": "出牌阶段交给其他角色手牌；本阶段累计交出两张后恢复一点体力。"
+        },
+        {
+          "id": "jijiang",
+          "name": "激将",
+          "type": "triggered",
+          "description": "需要杀时，可请求其他蜀势力角色代为提供。"
+        }
+      ]
+    },
+    {
+      "id": "sunquan",
+      "name": "孙权",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "zhiheng",
+          "name": "制衡",
+          "type": "active",
+          "description": "出牌阶段限一次，弃任意张牌并摸等量牌。"
+        },
+        {
+          "id": "jiuyuan",
+          "name": "救援",
+          "type": "locked",
+          "description": "濒死时其他吴势力角色用桃救援，额外恢复一点体力。"
+        }
+      ]
+    },
+    {
+      "id": "lvbu",
+      "name": "吕布",
+      "kingdom": "qun",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "wushuang",
+          "name": "无双",
+          "type": "locked",
+          "description": "杀需两闪，决斗中对手每次需两杀。"
+        }
+      ]
+    },
+    {
+      "id": "guanyu",
+      "name": "关羽",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "wusheng",
+          "name": "武圣",
+          "type": "view_as",
+          "description": "红色牌可作为杀使用或打出。"
+        }
+      ]
+    },
+    {
+      "id": "simayi",
+      "name": "司马懿",
+      "kingdom": "wei",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "fankui",
+          "name": "反馈",
+          "type": "triggered",
+          "description": "受到伤害后，可取走伤害来源的一张牌。"
+        },
+        {
+          "id": "guicai",
+          "name": "鬼才",
+          "type": "triggered",
+          "description": "判定牌生效前，可用一张手牌替换。"
+        }
+      ]
+    },
+    {
+      "id": "xiahou_dun",
+      "name": "夏侯惇",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "ganglie",
+          "name": "刚烈",
+          "type": "triggered",
+          "description": "受伤后可判定，令伤害来源弃牌或受伤。"
+        }
+      ]
+    },
+    {
+      "id": "zhangliao",
+      "name": "张辽",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "tuxi",
+          "name": "突袭",
+          "type": "triggered",
+          "description": "摸牌阶段可改为取得其他角色的手牌。"
+        }
+      ]
+    },
+    {
+      "id": "xuchu",
+      "name": "许褚",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "luoyi",
+          "name": "裸衣",
+          "type": "triggered",
+          "description": "少摸一张牌，使本回合指定伤害增加。"
+        }
+      ]
+    },
+    {
+      "id": "guojia",
+      "name": "郭嘉",
+      "kingdom": "wei",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "tiandu",
+          "name": "天妒",
+          "type": "triggered",
+          "description": "自己的判定牌结算后可获得。"
+        },
+        {
+          "id": "yiji",
+          "name": "遗计",
+          "type": "triggered",
+          "description": "每受到一点伤害，可摸牌并分配。"
+        }
+      ]
+    },
+    {
+      "id": "zhenji",
+      "name": "甄姬",
+      "kingdom": "wei",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "luoshen",
+          "name": "洛神",
+          "type": "triggered",
+          "description": "准备阶段可连续判定，获得黑色判定牌。"
+        },
+        {
+          "id": "qingguo",
+          "name": "倾国",
+          "type": "view_as",
+          "description": "可将黑色手牌当闪打出。"
+        }
+      ]
+    },
+    {
+      "id": "zhangfei",
+      "name": "张飞",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "paoxiao",
+          "name": "咆哮",
+          "type": "locked",
+          "description": "出牌阶段使用杀不受次数限制。"
+        }
+      ]
+    },
+    {
+      "id": "zhugeliang",
+      "name": "诸葛亮",
+      "kingdom": "shu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "guanxing",
+          "name": "观星",
+          "type": "triggered",
+          "description": "准备阶段可查看并调整牌堆顶的牌。"
+        },
+        {
+          "id": "kongcheng",
+          "name": "空城",
+          "type": "locked",
+          "description": "没有手牌时，不能成为杀或决斗的目标。"
+        }
+      ]
+    },
+    {
+      "id": "zhaoyun",
+      "name": "赵云",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "longdan",
+          "name": "龙胆",
+          "type": "view_as",
+          "description": "杀与闪可互相转化使用或打出。"
+        }
+      ]
+    },
+    {
+      "id": "machao",
+      "name": "马超",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "mashu",
+          "name": "马术",
+          "type": "locked",
+          "description": "锁定技。你计算与其他角色的距离时减一，最小为一。"
+        },
+        {
+          "id": "tieqi",
+          "name": "铁骑",
+          "type": "triggered",
+          "description": "使用杀指定目标后，可判定以限制其闪避。"
+        }
+      ]
+    },
+    {
+      "id": "huangyueying",
+      "name": "黄月英",
+      "kingdom": "shu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "jizhi",
+          "name": "集智",
+          "type": "triggered",
+          "description": "使用非延时锦囊时可摸一张牌。"
+        },
+        {
+          "id": "qicai",
+          "name": "奇才",
+          "type": "locked",
+          "description": "使用锦囊牌时不受距离限制。"
+        }
+      ]
+    },
+    {
+      "id": "ganning",
+      "name": "甘宁",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "qixi",
+          "name": "奇袭",
+          "type": "view_as",
+          "description": "可将黑色牌当过河拆桥使用。"
+        }
+      ]
+    },
+    {
+      "id": "lvmeng",
+      "name": "吕蒙",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "keji",
+          "name": "克己",
+          "type": "triggered",
+          "description": "本回合未使用或打出杀时可跳过弃牌。"
+        }
+      ]
+    },
+    {
+      "id": "huanggai",
+      "name": "黄盖",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "kurou",
+          "name": "苦肉",
+          "type": "active",
+          "description": "出牌阶段可失去一点体力并摸两张牌。"
+        }
+      ]
+    },
+    {
+      "id": "zhouyu",
+      "name": "周瑜",
+      "kingdom": "wu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "yingzi",
+          "name": "英姿",
+          "type": "locked",
+          "description": "摸牌阶段额外摸一张牌。"
+        },
+        {
+          "id": "fanjian",
+          "name": "反间",
+          "type": "active",
+          "description": "每阶段一次，令目标猜花色并取得你的牌。"
+        }
+      ]
+    },
+    {
+      "id": "daqiao",
+      "name": "大乔",
+      "kingdom": "wu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "guose",
+          "name": "国色",
+          "type": "view_as",
+          "description": "可将方块牌当乐不思蜀使用。"
+        },
+        {
+          "id": "liuli",
+          "name": "流离",
+          "type": "triggered",
+          "description": "成为杀的目标时，可弃牌转移目标。"
+        }
+      ]
+    },
+    {
+      "id": "luxun",
+      "name": "陆逊",
+      "kingdom": "wu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "qianxun",
+          "name": "谦逊",
+          "type": "locked",
+          "description": "不能成为顺手牵羊或乐不思蜀的目标。"
+        },
+        {
+          "id": "lianying",
+          "name": "连营",
+          "type": "triggered",
+          "description": "失去最后一张手牌后可摸一张牌。"
+        }
+      ]
+    },
+    {
+      "id": "sunshangxiang",
+      "name": "孙尚香",
+      "kingdom": "wu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "jieyin",
+          "name": "结姻",
+          "type": "active",
+          "description": "弃两张手牌，与受伤男性角色各恢复一点体力。"
+        },
+        {
+          "id": "xiaoji",
+          "name": "枭姬",
+          "type": "triggered",
+          "description": "失去装备区的牌后摸两张牌。"
+        }
+      ]
+    },
+    {
+      "id": "huatuo",
+      "name": "华佗",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "jijiu",
+          "name": "急救",
+          "type": "view_as",
+          "description": "回合外可将红色牌当桃使用。"
+        },
+        {
+          "id": "qingnang",
+          "name": "青囊",
+          "type": "active",
+          "description": "弃一张手牌，令受伤角色恢复一点体力。"
+        }
+      ]
+    },
+    {
+      "id": "diaochan",
+      "name": "貂蝉",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "lijian",
+          "name": "离间",
+          "type": "active",
+          "description": "弃一张牌，令两名男性角色进行决斗。"
+        },
+        {
+          "id": "biyue",
+          "name": "闭月",
+          "type": "triggered",
+          "description": "结束阶段可摸一张牌。"
+        }
+      ]
+    },
+    {
+      "id": "wind_xiahou_yuan",
+      "name": "夏侯渊",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "shensu",
+          "name": "神速",
+          "type": "active",
+          "description": "你可跳过判定阶段和摸牌阶段，视为使用一张无距离限制的杀；亦可跳过出牌阶段并弃置一张装备牌，视为使用一张无距离限制的杀。两项可分别发动。"
+        }
+      ]
+    },
+    {
+      "id": "wind_cao_ren",
+      "name": "曹仁",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "jushou",
+          "name": "据守",
+          "type": "triggered",
+          "description": "结束阶段开始时，你可以摸三张牌，然后将武将牌翻面。背面朝上时跳过下个自己的回合并翻回正面。"
+        }
+      ]
+    },
+    {
+      "id": "wind_huang_zhong",
+      "name": "黄忠",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "liegong",
+          "name": "烈弓",
+          "type": "triggered",
+          "description": "出牌阶段使用杀指定目标后，若其手牌数不小于你的体力值，或不大于你的攻击范围，你可以令其不能以闪响应此杀。"
+        }
+      ]
+    },
+    {
+      "id": "wind_wei_yan",
+      "name": "魏延",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "kuanggu",
+          "name": "狂骨",
+          "type": "locked",
+          "description": "锁定技。你对距离一以内的角色每造成一点伤害后，回复一点体力。"
+        }
+      ]
+    },
+    {
+      "id": "wind_xiao_qiao",
+      "name": "小乔",
+      "kingdom": "wu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "tianxiang",
+          "name": "天香",
+          "type": "triggered",
+          "description": "受到伤害前，你可以弃置一张红桃手牌并选择一名其他角色，将此次伤害转移给该角色；结算后其摸等同于已损失体力值的牌。"
+        },
+        {
+          "id": "hongyan",
+          "name": "红颜",
+          "type": "locked",
+          "description": "锁定技。你的黑桃牌视为红桃牌。"
+        }
+      ]
+    },
+    {
+      "id": "wind_zhou_tai",
+      "name": "周泰",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "buqu",
+          "name": "不屈",
+          "type": "locked",
+          "description": "锁定技。濒死时亮出牌堆顶一张牌作为不屈牌；若点数与已有不屈牌均不同，回复至一点体力，否则弃置并继续濒死流程。有不屈牌时手牌上限等于其数量。"
+        }
+      ]
+    },
+    {
+      "id": "wind_zhang_jiao",
+      "name": "张角",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "leiji",
+          "name": "雷击",
+          "type": "triggered",
+          "description": "使用或打出闪时，你可以令一名其他角色判定：黑桃则对其造成两点雷电伤害；梅花则你回复一点体力，再对其造成一点雷电伤害。"
+        },
+        {
+          "id": "guidao",
+          "name": "鬼道",
+          "type": "triggered",
+          "description": "任意角色的判定牌生效前，你可以打出一张黑色牌替换之。"
+        },
+        {
+          "id": "huangtian",
+          "name": "黄天",
+          "type": "active",
+          "description": "主公技。其他群势力角色在各自出牌阶段限一次，可以将一张闪或闪电交给你。"
+        }
+      ]
+    },
+    {
+      "id": "wind_yuji",
+      "name": "于吉",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "guhuo",
+          "name": "蛊惑",
+          "type": "view_as",
+          "description": "你可以扣置一张手牌，声明为基本牌或非延时锦囊牌使用或打出。其他角色依次可质疑；被质疑时展示实体牌，并按真伪结算质疑者失去体力或摸牌。仅真牌且实体牌为红桃时继续生效。"
+        }
+      ]
+    },
+    {
+      "id": "wind_god_guanyu",
+      "name": "神关羽",
+      "kingdom": "qun",
+      "max_hp": 5,
+      "initial_hp": 5,
+      "version": "",
+      "skills": [
+        {
+          "id": "wushen",
+          "name": "武神",
+          "type": "view_as",
+          "description": "锁定技，你的红桃牌可以当无距离限制的杀使用或打出。"
+        },
+        {
+          "id": "wuhun",
+          "name": "武魂",
+          "type": "locked",
+          "description": "锁定技，你受到伤害后令来源获得等量梦魇；死亡时令梦魇最多者判定，非桃则死亡。"
+        }
+      ]
+    },
+    {
+      "id": "wind_god_lvmeng",
+      "name": "神吕蒙",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "shelie",
+          "name": "涉猎",
+          "type": "triggered",
+          "description": "摸牌阶段可改为亮出牌堆顶五张牌，每种花色获得一张，其余弃置。"
+        },
+        {
+          "id": "gongxin",
+          "name": "攻心",
+          "type": "active",
+          "description": "出牌阶段限一次，查看一名其他角色手牌，可将其中一张红桃牌弃置或置于牌堆顶。"
+        }
+      ]
+    },
+    {
+      "id": "fire_dian_wei",
+      "name": "典韦",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "qiangxi",
+          "name": "强袭",
+          "type": "active",
+          "description": "出牌阶段限一次，你可以失去一点体力或弃置一张武器牌，对攻击范围内一名其他角色造成一点伤害。"
+        }
+      ]
+    },
+    {
+      "id": "fire_xun_yu",
+      "name": "荀彧",
+      "kingdom": "wei",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "quhu",
+          "name": "驱虎",
+          "type": "active",
+          "description": "出牌阶段限一次，与体力值大于你的角色拼点。你赢时，令其对其攻击范围内另一名角色造成一点伤害；否则其对你造成一点伤害。"
+        },
+        {
+          "id": "jieming",
+          "name": "节命",
+          "type": "triggered",
+          "description": "每受到一点伤害后，可令一名角色将手牌补至其体力上限，至多补至五张。"
+        }
+      ]
+    },
+    {
+      "id": "fire_pang_tong",
+      "name": "庞统",
+      "kingdom": "shu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "lianhuan",
+          "name": "连环",
+          "type": "view_as",
+          "description": "你可将一张梅花手牌当铁索连环使用或重铸。"
+        },
+        {
+          "id": "niepan",
+          "name": "涅槃",
+          "type": "limited",
+          "description": "限定技，濒死时可弃置所有区域的牌，解除连环并翻至正面，摸三张牌，回复至三点体力（不超过上限）。"
+        }
+      ]
+    },
+    {
+      "id": "fire_wolong",
+      "name": "卧龙诸葛亮",
+      "kingdom": "shu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "bazhen",
+          "name": "八阵",
+          "type": "locked",
+          "description": "锁定技。未装备防具时，视为装备八卦阵：需要闪时可判定，红色结果视为打出闪。"
+        },
+        {
+          "id": "huoji",
+          "name": "火计",
+          "type": "view_as",
+          "description": "你可以将一张红色手牌当火攻使用，依照火攻的展示及同花色弃牌流程结算。"
+        },
+        {
+          "id": "kanpo",
+          "name": "看破",
+          "type": "view_as",
+          "description": "你可以将一张黑色手牌当无懈可击打出。"
+        }
+      ]
+    },
+    {
+      "id": "fire_taishi_ci",
+      "name": "太史慈",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "tianyi",
+          "name": "天义",
+          "type": "active",
+          "description": "出牌阶段限一次，与一名其他角色拼点。你赢时本回合杀的次数和目标各加一且无距离限制；否则本回合不能使用杀。"
+        }
+      ]
+    },
+    {
+      "id": "fire_pang_de",
+      "name": "庞德",
+      "kingdom": "qun",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "mashu",
+          "name": "马术",
+          "type": "locked",
+          "description": "锁定技。你计算与其他角色的距离时减一，最小为一。"
+        },
+        {
+          "id": "mengjin",
+          "name": "猛进",
+          "type": "triggered",
+          "description": "你的杀被闪抵消后，可以弃置目标角色的一张牌。"
+        }
+      ]
+    },
+    {
+      "id": "fire_yan_liang_wen_chou",
+      "name": "颜良文丑",
+      "kingdom": "qun",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "shuangxiong",
+          "name": "双雄",
+          "type": "view_as",
+          "description": "摸牌阶段可改为判定并获得判定牌；本回合可将与判定结果颜色不同的一张手牌当决斗使用。"
+        }
+      ]
+    },
+    {
+      "id": "fire_yuan_shao",
+      "name": "袁绍",
+      "kingdom": "qun",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "luanji",
+          "name": "乱击",
+          "type": "view_as",
+          "description": "出牌阶段，你可以将两张花色相同的手牌当万箭齐发使用。"
+        },
+        {
+          "id": "xueyi",
+          "name": "血裔",
+          "type": "locked",
+          "description": "主公技，锁定技。每有一名其他存活的群势力角色，你的手牌上限加二。"
+        }
+      ]
+    },
+    {
+      "id": "fire_god_zhouyu",
+      "name": "神周瑜",
+      "kingdom": "qun",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "qinyin",
+          "name": "琴音",
+          "type": "triggered",
+          "description": "弃牌阶段弃置至少两张牌后，可令所有角色各回复或失去一点体力。"
+        },
+        {
+          "id": "yeyan",
+          "name": "业炎",
+          "type": "active",
+          "description": "限定技，小业炎对三名角色各造成一点火焰伤害；大业炎弃四种花色各一张并失去三点体力，分配三点火焰伤害。"
+        }
+      ]
+    },
+    {
+      "id": "fire_god_zhugeliang",
+      "name": "神诸葛亮",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "qixing",
+          "name": "七星",
+          "type": "triggered",
+          "description": "开局拥有七张星牌；摸牌阶段结束时可将任意张手牌与等量星牌交换。"
+        },
+        {
+          "id": "kuangfeng",
+          "name": "狂风",
+          "type": "triggered",
+          "description": "结束阶段可弃一张星，令一名角色直到你下次准备阶段受到的火焰伤害加一。"
+        },
+        {
+          "id": "dawu",
+          "name": "大雾",
+          "type": "triggered",
+          "description": "结束阶段可弃任意张星，令等量角色直到你下次准备阶段防止非雷电伤害。"
+        }
+      ]
+    },
+    {
+      "id": "forest_caopi",
+      "name": "曹丕",
+      "kingdom": "wei",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "xingshang",
+          "name": "行殇",
+          "type": "triggered",
+          "description": "其他角色死亡时，你可以获得其此时仍拥有的所有牌。"
+        },
+        {
+          "id": "fangzhu",
+          "name": "放逐",
+          "type": "triggered",
+          "description": "每受到一次伤害后，你可以令一名其他角色摸等同于你已损失体力值的牌，然后将其武将牌翻面。"
+        },
+        {
+          "id": "songwei",
+          "name": "颂威",
+          "type": "triggered",
+          "description": "主公技。其他魏势力角色的黑色判定牌生效后，其可以令你摸一张牌。"
+        }
+      ]
+    },
+    {
+      "id": "forest_xuhuang",
+      "name": "徐晃",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "duanliang",
+          "name": "断粮",
+          "type": "view_as",
+          "description": "你可以将一张黑色基本牌或装备牌当兵粮寸断使用；你使用兵粮寸断的距离限制为二。"
+        }
+      ]
+    },
+    {
+      "id": "forest_menghuo",
+      "name": "孟获",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "huoshou",
+          "name": "祸首",
+          "type": "locked",
+          "description": "锁定技。南蛮入侵对你无效；其他角色使用的南蛮入侵造成伤害时，伤害来源改为你。"
+        },
+        {
+          "id": "zaiqi",
+          "name": "再起",
+          "type": "triggered",
+          "description": "摸牌阶段，若你已受伤，你可以改为亮出等同于已损失体力值的牌；每有一张红桃牌，你回复一点体力，然后获得其余的牌。"
+        }
+      ]
+    },
+    {
+      "id": "forest_zhurong",
+      "name": "祝融",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "juxiang",
+          "name": "巨象",
+          "type": "locked",
+          "description": "锁定技。南蛮入侵对你无效；其他角色使用的南蛮入侵结算结束后，你获得此牌。"
+        },
+        {
+          "id": "lieren",
+          "name": "烈刃",
+          "type": "triggered",
+          "description": "你使用杀对目标角色造成伤害后，可以与其拼点；若你赢，获得其一张牌。"
+        }
+      ]
+    },
+    {
+      "id": "forest_sunjian",
+      "name": "孙坚",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "yinghun",
+          "name": "英魂",
+          "type": "triggered",
+          "description": "准备阶段，若你已受伤，你可以令一名其他角色摸X张牌并弃一张牌，或摸一张牌并弃X张牌（X为你已损失体力值）。"
+        }
+      ]
+    },
+    {
+      "id": "forest_lusu",
+      "name": "鲁肃",
+      "kingdom": "wu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "haoshi",
+          "name": "好施",
+          "type": "triggered",
+          "description": "摸牌阶段，你可以额外摸两张牌；若摸牌结束后你的手牌数大于五，你须将一半手牌交给一名手牌最少的其他角色。"
+        },
+        {
+          "id": "dimeng",
+          "name": "缔盟",
+          "type": "active",
+          "description": "出牌阶段限一次，你可以弃置等同于两名其他角色手牌数差的牌，令他们交换手牌。"
+        }
+      ]
+    },
+    {
+      "id": "forest_jia_xu",
+      "name": "贾诩",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "wansha",
+          "name": "完杀",
+          "type": "locked",
+          "description": "锁定技。你的回合内有角色处于濒死状态时，除你和该角色外，其他角色不能使用桃救援。"
+        },
+        {
+          "id": "luanwu",
+          "name": "乱武",
+          "type": "limited",
+          "description": "限定技。出牌阶段，你可以令其他角色依次对距离最近的合法角色使用一张杀，否则失去一点体力。"
+        },
+        {
+          "id": "weimu",
+          "name": "帷幕",
+          "type": "locked",
+          "description": "锁定技。你不能成为黑色锦囊牌的目标。"
+        }
+      ]
+    },
+    {
+      "id": "forest_dong_zhuo",
+      "name": "董卓",
+      "kingdom": "qun",
+      "max_hp": 8,
+      "initial_hp": 8,
+      "version": "",
+      "skills": [
+        {
+          "id": "jiuchi",
+          "name": "酒池",
+          "type": "view_as",
+          "description": "你可以将一张黑桃手牌当酒使用或用于自己濒死时自救。"
+        },
+        {
+          "id": "roulin",
+          "name": "肉林",
+          "type": "locked",
+          "description": "锁定技。你对女性角色使用杀，或女性角色对你使用杀时，目标角色须连续使用两张闪才能抵消。"
+        },
+        {
+          "id": "benghuai",
+          "name": "崩坏",
+          "type": "locked",
+          "description": "结束阶段开始时，若你的体力值不是全场最低，你须选择失去一点体力或减少一点体力上限。"
+        },
+        {
+          "id": "baonue",
+          "name": "暴虐",
+          "type": "triggered",
+          "description": "主公技。其他群势力角色造成伤害后，其可以进行判定；若结果为黑桃，你回复一点体力。"
+        }
+      ]
+    },
+    {
+      "id": "forest_god_caocao",
+      "name": "神曹操",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "guixin",
+          "name": "归心",
+          "type": "triggered",
+          "description": "每受到一点伤害，可从每名其他角色处获得一张牌，然后将武将牌翻面。"
+        },
+        {
+          "id": "feiying",
+          "name": "飞影",
+          "type": "locked",
+          "description": "锁定技，其他角色计算与你的距离时加一。"
+        }
+      ]
+    },
+    {
+      "id": "forest_god_lvbu",
+      "name": "神吕布",
+      "kingdom": "qun",
+      "max_hp": 5,
+      "initial_hp": 5,
+      "version": "",
+      "skills": [
+        {
+          "id": "kuangbao",
+          "name": "狂暴",
+          "type": "locked",
+          "description": "锁定技，开局获得两枚怒；每造成或受到一点伤害，获得一枚怒。"
+        },
+        {
+          "id": "wumou",
+          "name": "无谋",
+          "type": "locked",
+          "description": "锁定技，使用非延时锦囊时弃一枚怒或失去一点体力。"
+        },
+        {
+          "id": "wuwei",
+          "name": "无前",
+          "type": "active",
+          "description": "出牌阶段可弃两枚怒，令一名角色本回合受到你的杀时防具无效，且你获得无双。"
+        },
+        {
+          "id": "shenfen",
+          "name": "神愤",
+          "type": "active",
+          "description": "出牌阶段限一次，弃六枚怒，对所有其他角色造成一点伤害，令其弃装备与四张手牌，然后翻面。"
+        }
+      ]
+    },
+    {
+      "id": "mountain_zhang_he",
+      "name": "张郃",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "qiaobian",
+          "name": "巧变",
+          "type": "triggered",
+          "description": "你可以弃置一张手牌跳过判定、摸牌、出牌或弃牌阶段。跳过摸牌阶段时可从至多两名其他角色各获得一张手牌；跳过出牌阶段时可移动场上的一张装备牌或延时锦囊牌。"
+        }
+      ]
+    },
+    {
+      "id": "mountain_deng_ai",
+      "name": "邓艾",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "tuntian",
+          "name": "屯田",
+          "type": "triggered",
+          "description": "回合外失去牌后，你可以判定；若结果不为红桃，将判定牌置于武将牌上作为田。你与其他角色的距离减少田的数量。"
+        },
+        {
+          "id": "zaoxian",
+          "name": "凿险",
+          "type": "triggered",
+          "description": "觉醒技，准备阶段若田不少于三张，减少一点体力上限并获得急袭。"
+        }
+      ]
+    },
+    {
+      "id": "mountain_liushan",
+      "name": "刘禅",
+      "kingdom": "shu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "xiangle",
+          "name": "享乐",
+          "type": "locked",
+          "description": "锁定技，其他角色使用杀指定你为目标时，须额外弃置一张基本牌，否则此杀对你无效。"
+        },
+        {
+          "id": "fangquan",
+          "name": "放权",
+          "type": "triggered",
+          "description": "你可以跳过出牌阶段；若如此，回合结束时可弃置一张手牌，令一名其他角色进行一个额外回合。"
+        },
+        {
+          "id": "ruoyu",
+          "name": "若愚",
+          "type": "triggered",
+          "description": "主公技、觉醒技，准备阶段若你的体力值为全场最低，增加一点体力上限、回复一点体力并获得激将。"
+        }
+      ]
+    },
+    {
+      "id": "mountain_jiang_wei",
+      "name": "姜维",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "tiaoxin",
+          "name": "挑衅",
+          "type": "active",
+          "description": "出牌阶段限一次，选择攻击范围内一名其他角色，其须对你使用一张杀，否则你弃置其一张牌。"
+        },
+        {
+          "id": "zhiji",
+          "name": "志继",
+          "type": "triggered",
+          "description": "觉醒技，准备阶段若你没有手牌，选择回复一点体力或摸两张牌，然后减少一点体力上限并获得观星。"
+        },
+        {
+          "id": "guanxing",
+          "name": "观星",
+          "type": "triggered",
+          "description": "准备阶段可查看并调整牌堆顶的牌。"
+        }
+      ]
+    },
+    {
+      "id": "mountain_sunce",
+      "name": "孙策",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "jiang",
+          "name": "激昂",
+          "type": "triggered",
+          "description": "使用或成为红色杀、决斗的目标时，你可以摸一张牌。"
+        },
+        {
+          "id": "hunzi",
+          "name": "魂姿",
+          "type": "triggered",
+          "description": "觉醒技，准备阶段若你的体力值为一，减少一点体力上限并获得英姿、英魂。"
+        },
+        {
+          "id": "zhiba",
+          "name": "制霸",
+          "type": "active",
+          "description": "主公技，其他吴势力角色出牌阶段限一次可与你拼点；你觉醒后可拒绝。若你未赢，可获得双方拼点牌。"
+        }
+      ]
+    },
+    {
+      "id": "mountain_zhang_zhaozhang",
+      "name": "张昭张纮",
+      "kingdom": "wu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "zhijian",
+          "name": "直谏",
+          "type": "active",
+          "description": "出牌阶段，你可以将手牌中的一张装备牌置入其他角色装备区，然后摸一张牌。"
+        },
+        {
+          "id": "guzheng",
+          "name": "固政",
+          "type": "triggered",
+          "description": "其他角色弃牌阶段结束后，你可以将其此阶段因规则弃置的一张牌归还，然后获得其余这些牌。"
+        }
+      ]
+    },
+    {
+      "id": "mountain_zuoci",
+      "name": "左慈",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "huashen",
+          "name": "化身",
+          "type": "triggered",
+          "description": "游戏开始获得两张未登场武将牌；准备阶段及结束阶段可选择一张化身及其一项允许的技能，并改变性别和势力。"
+        },
+        {
+          "id": "xinsheng",
+          "name": "新生",
+          "type": "triggered",
+          "description": "受到伤害后，你可以按伤害点数获得新的未登场武将牌。"
+        }
+      ]
+    },
+    {
+      "id": "mountain_cai_wenji",
+      "name": "蔡文姬",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "",
+      "skills": [
+        {
+          "id": "beige",
+          "name": "悲歌",
+          "type": "triggered",
+          "description": "其他角色受到杀造成的伤害后，你可以弃置一张牌令其判定：红桃回复，方块摸牌，梅花伤害来源弃牌，黑桃伤害来源翻面。"
+        },
+        {
+          "id": "duanchang",
+          "name": "断肠",
+          "type": "locked",
+          "description": "锁定技，你死亡时，杀死你的角色失去其武将技能。"
+        }
+      ]
+    },
+    {
+      "id": "mountain_god_zhaoyun",
+      "name": "神赵云",
+      "kingdom": "qun",
+      "max_hp": 2,
+      "initial_hp": 2,
+      "version": "",
+      "skills": [
+        {
+          "id": "juejing",
+          "name": "绝境",
+          "type": "locked",
+          "description": "锁定技，摸牌阶段额外摸已损失体力值张牌；手牌上限加二。"
+        },
+        {
+          "id": "longhun",
+          "name": "龙魂",
+          "type": "view_as",
+          "description": "可将等同于当前体力值的同花色牌分别当桃、火杀、闪或无懈可击使用或打出。"
+        }
+      ]
+    },
+    {
+      "id": "mountain_god_simayi",
+      "name": "神司马懿",
+      "kingdom": "qun",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "",
+      "skills": [
+        {
+          "id": "renjie",
+          "name": "忍戒",
+          "type": "locked",
+          "description": "锁定技，每受到一点伤害或在弃牌阶段因规则弃置一张牌，获得一枚忍。"
+        },
+        {
+          "id": "baoyin",
+          "name": "拜印",
+          "type": "triggered",
+          "description": "觉醒技，准备阶段若忍不少于四，减少一点体力上限并获得极略。"
+        },
+        {
+          "id": "lianpo",
+          "name": "连破",
+          "type": "triggered",
+          "description": "当你于一回合内杀死角色，可在此回合结束后进行一个额外回合。"
+        }
+      ]
+    },
+    {
+      "id": "yj2011_zhang_chunhua",
+      "name": "张春华",
+      "kingdom": "wei",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "经典OL/身份局张春华：绝情、伤逝（已损失体力，不设2张上限）",
+      "skills": [
+        {
+          "id": "jueqing",
+          "name": "绝情",
+          "type": "locked",
+          "description": "锁定技。伤害结算开始前，你将要造成的伤害视为失去体力。"
+        },
+        {
+          "id": "shangshi",
+          "name": "伤逝",
+          "type": "triggered",
+          "description": "每当你的手牌数、体力值或体力上限改变后，若你的手牌数小于X，你可以将手牌补至X张。（X为你已损失的体力值）"
+        }
+      ]
+    },
+    {
+      "id": "yj2011_yu_jin",
+      "name": "于禁",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "yizhong",
+          "name": "毅重",
+          "type": "locked",
+          "description": "锁定技。若你的装备区没有防具牌，黑色【杀】对你无效。"
+        }
+      ]
+    },
+    {
+      "id": "yj2011_cao_zhi",
+      "name": "曹植",
+      "kingdom": "wei",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "luoying",
+          "name": "落英",
+          "type": "triggered",
+          "description": "其他角色的牌因判定或弃置而置入弃牌堆时，你可以获得其中至少一张梅花牌。"
+        },
+        {
+          "id": "jiushi",
+          "name": "酒诗",
+          "type": "triggered",
+          "description": "若你的武将牌正面朝上，你可以将武将牌翻面，视为你使用了一张【酒】。每当你受到伤害扣减体力前，若武将牌背面朝上，你可以在伤害结算后将武将牌翻至正面朝上。"
+        }
+      ]
+    },
+    {
+      "id": "yj2011_fa_zheng",
+      "name": "法正",
+      "kingdom": "shu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "enyuan",
+          "name": "恩怨",
+          "type": "triggered",
+          "description": "每当你获得一名其他角色的两张或更多的牌后，你可以令其摸一张牌。每当你受到1点伤害后，你可以令伤害来源选择一项：交给你一张手牌，或失去1点体力。"
+        },
+        {
+          "id": "xuanhuo",
+          "name": "眩惑",
+          "type": "triggered",
+          "description": "摸牌阶段开始时，你可以放弃摸牌并选择一名其他角色：若如此做，该角色摸两张牌，然后该角色可以对其攻击范围内由你选择的一名角色使用一张【杀】，否则令你获得其两张牌。"
+        }
+      ]
+    },
+    {
+      "id": "yj2011_ma_su",
+      "name": "马谡",
+      "kingdom": "shu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "xinzhan",
+          "name": "心战",
+          "type": "active",
+          "description": "阶段技。若你的手牌数大于你的体力上限，你可以观看牌堆顶的三张牌，然后你可以展示并获得其中至少一张红桃牌，然后将其余的牌置于牌堆顶。"
+        },
+        {
+          "id": "huilei",
+          "name": "挥泪",
+          "type": "locked",
+          "description": "锁定技。你死亡时，杀死你的其他角色弃置其所有牌。"
+        }
+      ]
+    },
+    {
+      "id": "yj2011_xu_shu",
+      "name": "徐庶",
+      "kingdom": "shu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "wuyan",
+          "name": "无言",
+          "type": "locked",
+          "description": "锁定技。每当你造成或受到伤害时，防止锦囊牌的伤害。"
+        },
+        {
+          "id": "jujian",
+          "name": "举荐",
+          "type": "triggered",
+          "description": "结束阶段开始时，你可以弃置一张非基本牌并选择一名其他角色：若如此做，该角色选择一项：摸两张牌，或回复1点体力，或重置武将牌并将其翻至正面朝上。"
+        }
+      ]
+    },
+    {
+      "id": "yj2011_ling_tong",
+      "name": "凌统",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "xuanfeng",
+          "name": "旋风",
+          "type": "triggered",
+          "description": "每当你失去一次装备区的牌后，或弃牌阶段结束时若你于本阶段内弃置了至少两张你的牌，你可以弃置一名其他角色的一张牌，然后弃置一名其他角色的一张牌。"
+        }
+      ]
+    },
+    {
+      "id": "yj2011_xu_sheng",
+      "name": "徐盛",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "pojun",
+          "name": "破军",
+          "type": "triggered",
+          "description": "每当你使用【杀】对目标角色造成伤害后，你可以令其摸X张牌，然后将其武将牌翻面。（X为该角色的体力值且至多为5）"
+        }
+      ]
+    },
+    {
+      "id": "yj2011_wu_guotai",
+      "name": "吴国太",
+      "kingdom": "wu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "ganlu",
+          "name": "甘露",
+          "type": "active",
+          "description": "阶段技。你可以令装备区的牌数量差不超过你已损失体力值的两名角色交换他们装备区的装备牌。"
+        },
+        {
+          "id": "buyi",
+          "name": "补益",
+          "type": "triggered",
+          "description": "每当一名角色进入濒死状态时，你可以展示该角色的一张手牌：若此牌为非基本牌，该角色弃置此牌，然后回复1点体力。"
+        }
+      ]
+    },
+    {
+      "id": "yj2011_chen_gong",
+      "name": "陈宫",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "mingce",
+          "name": "明策",
+          "type": "active",
+          "description": "阶段技。你可以将一张装备牌或【杀】交给一名其他角色：若如此做，该角色可以视为对其攻击范围内由你选择的一名角色使用一张【杀】，否则其摸一张牌。"
+        },
+        {
+          "id": "zhichi",
+          "name": "智迟",
+          "type": "locked",
+          "description": "锁定技。你的回合外，每当你受到伤害后，【杀】和非延时锦囊牌对你无效，直到回合结束。"
+        }
+      ]
+    },
+    {
+      "id": "yj2011_gao_shun",
+      "name": "高顺",
+      "kingdom": "qun",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "xianzhen",
+          "name": "陷阵",
+          "type": "active",
+          "description": "阶段技。你可以与一名其他角色拼点：若你赢，本回合，该角色的防具无效，你无视与该角色的距离，你对该角色使用【杀】无次数限制；若你没赢，你不能使用【杀】，直到回合结束。"
+        },
+        {
+          "id": "jinjiu",
+          "name": "禁酒",
+          "type": "locked",
+          "description": "锁定技。你的【酒】视为【杀】。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_xun_you",
+      "name": "荀攸",
+      "kingdom": "wei",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "qice",
+          "name": "奇策",
+          "type": "view_as",
+          "description": "每个出牌阶段一次。把全部手牌作为一张非延时锦囊使用；至少须有一张手牌。"
+        },
+        {
+          "id": "zhiyu",
+          "name": "智愚",
+          "type": "triggered",
+          "description": "受伤后可摸一张并公开全部手牌。若这些牌颜色一致，伤害来源须弃一张手牌。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_wang_yi",
+      "name": "王异",
+      "kingdom": "wei",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "zhenlie",
+          "name": "贞烈",
+          "type": "triggered",
+          "description": "别人用杀或非延时锦囊指定你时，可失去1点体力，弃置其一张牌，并取消该牌对你的效果。"
+        },
+        {
+          "id": "miji",
+          "name": "秘计",
+          "type": "triggered",
+          "description": "结束阶段受伤时，可摸不超过已损失体力值的牌，再把等量手牌分给其他角色。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_cao_zhang",
+      "name": "曹彰",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "jiangchi",
+          "name": "将驰",
+          "type": "triggered",
+          "description": "摸牌时可少摸一张，换取本回合杀不限距离且多用一次；也可多摸一张，但本回合不能使用或打出杀。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_zhong_hui",
+      "name": "钟会",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "一将成名2012经典钟会：权计、自立、觉醒获得排异（单觉醒）",
+      "skills": [
+        {
+          "id": "quanji",
+          "name": "权计",
+          "type": "triggered",
+          "description": "每受到1点伤害，可摸一张，再把一张手牌存为“权”。每张权使你的手牌上限增加1。"
+        },
+        {
+          "id": "zili",
+          "name": "自立",
+          "type": "awakening",
+          "description": "准备阶段权达到三张时，觉醒一次：体力上限减1，选择摸两张或回复1点体力，获得排异。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_liao_hua",
+      "name": "廖化",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "dangxian",
+          "name": "当先",
+          "type": "locked",
+          "description": "锁定：回合开始先执行一个额外出牌阶段，再继续正常回合。"
+        },
+        {
+          "id": "fuli",
+          "name": "伏枥",
+          "type": "limited",
+          "description": "每局一次。濒死时可把体力回复至现存势力数（不超过体力上限），然后翻面。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_guan_xing_zhang_bao",
+      "name": "关兴张苞",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "fuhun",
+          "name": "父魂",
+          "type": "view_as",
+          "description": "可用两张手牌组成普通杀。你在出牌阶段用此杀造成伤害后，本回合获得武圣和咆哮。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_ma_dai",
+      "name": "马岱",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "mashu",
+          "name": "马术",
+          "type": "locked",
+          "description": "锁定技。你计算与其他角色的距离时减一，最小为一。"
+        },
+        {
+          "id": "qianxi",
+          "name": "潜袭",
+          "type": "triggered",
+          "description": "准备阶段可判定，并选择距离为1的一名角色。本回合，该角色不能使用或打出与判定结果同色的手牌。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_bu_lianshi",
+      "name": "步练师",
+      "kingdom": "wu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "anxu",
+          "name": "安恤",
+          "type": "active",
+          "description": "每个出牌阶段一次。选择手牌数量不同的两名其他角色，让牌少者取得牌多者一张手牌并公开；若不是黑桃，你摸一张。"
+        },
+        {
+          "id": "zhuiyi",
+          "name": "追忆",
+          "type": "triggered",
+          "description": "死亡时可选择除击杀者之外的一名其他角色，令其摸三张并回复1点体力。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_cheng_pu",
+      "name": "程普",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "lihuo",
+          "name": "疠火",
+          "type": "view_as",
+          "description": "可把普通杀改为火杀；这次杀造成过伤害时，全部结算后失去1点体力。你使用火杀可多指定一名目标。"
+        },
+        {
+          "id": "chunlao",
+          "name": "醇醪",
+          "type": "triggered",
+          "description": "结束阶段没有醇时，可把手牌中的任意数量杀存为醇。角色濒死时，可消耗一张醇让其视为使用酒自救。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_han_dang",
+      "name": "韩当",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "gongqi",
+          "name": "弓骑",
+          "type": "active",
+          "description": "每个出牌阶段一次。弃一张手牌或装备，本回合攻击范围无限；弃的是装备牌时，还可弃置别人一张牌。"
+        },
+        {
+          "id": "jiefan",
+          "name": "解烦",
+          "type": "limited",
+          "description": "每局一次，在出牌阶段选一人。攻击范围覆盖此人的角色依次选择：弃一张武器牌，或让此人摸一张。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_liu_biao",
+      "name": "刘表",
+      "kingdom": "qun",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "官方修订后的经典刘表：势力数额外摸牌、出牌阶段不能指定其他角色",
+      "skills": [
+        {
+          "id": "zishou",
+          "name": "自守",
+          "type": "triggered",
+          "description": "摸牌阶段可多摸现存势力数的牌。选择多摸后，本回合出牌阶段使用牌的目标限于自己。"
+        },
+        {
+          "id": "zongshi",
+          "name": "宗室",
+          "type": "locked",
+          "description": "锁定：你的手牌上限增加现存势力数。"
+        }
+      ]
+    },
+    {
+      "id": "yj2012_hua_xiong",
+      "name": "华雄",
+      "kingdom": "qun",
+      "max_hp": 6,
+      "initial_hp": 6,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "shiyong",
+          "name": "恃勇",
+          "type": "locked",
+          "description": "锁定：红色杀或带酒加成的杀每次对你造成伤害后，你的体力上限减1。"
+        }
+      ]
+    },
+    {
+      "id": "yj2013_cao_chong",
+      "name": "曹冲",
+      "kingdom": "wei",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "chengxiang",
+          "name": "称象",
+          "type": "triggered",
+          "description": "受伤后可展示牌堆顶四张，取得其中点数总和不超过13的至少一张，剩余牌弃置。"
+        },
+        {
+          "id": "renxin",
+          "name": "仁心",
+          "type": "triggered",
+          "description": "另一名体力为1的角色将受伤时，可翻面并弃一张装备牌，取消这次伤害。"
+        }
+      ]
+    },
+    {
+      "id": "yj2013_guo_huai",
+      "name": "郭淮",
+      "kingdom": "wei",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "jingce",
+          "name": "精策",
+          "type": "triggered",
+          "description": "出牌阶段结束时，本回合用牌数量达到当前体力值，可摸两张。"
+        }
+      ]
+    },
+    {
+      "id": "yj2013_man_chong",
+      "name": "满宠",
+      "kingdom": "wei",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "junxing",
+          "name": "峻刑",
+          "type": "active",
+          "description": "每个出牌阶段一次。弃任意数量手牌，让另一人弃一张类型与这些牌均不同的手牌；不弃则翻面，并摸与你弃牌数量相同的牌。"
+        },
+        {
+          "id": "yuce",
+          "name": "御策",
+          "type": "triggered",
+          "description": "受伤后可展示一张手牌。伤害来源若不弃一张类型不同的手牌，你回复1点体力。"
+        }
+      ]
+    },
+    {
+      "id": "yj2013_guan_ping",
+      "name": "关平",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "longyin",
+          "name": "龙吟",
+          "type": "triggered",
+          "description": "角色在出牌阶段使用杀时，可弃一张牌取消这次杀的次数计数；若杀为红色，你再摸一张。"
+        }
+      ]
+    },
+    {
+      "id": "yj2013_jian_yong",
+      "name": "简雍",
+      "kingdom": "shu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "qiaoshui",
+          "name": "巧说",
+          "type": "triggered",
+          "description": "出牌阶段开始可与别人拼点。赢后，本回合下一张基本牌或非延时锦囊可加一人（忽略距离），或在至少两目标时减一人；未赢则本回合禁用锦囊。"
+        },
+        {
+          "id": "zongshi_jianyong",
+          "name": "纵适",
+          "type": "triggered",
+          "description": "拼点赢时可取对方的拼点牌；平局或输时可取回自己的拼点牌。"
+        }
+      ]
+    },
+    {
+      "id": "yj2013_liu_feng",
+      "name": "刘封",
+      "kingdom": "shu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "xiansi",
+          "name": "陷嗣",
+          "type": "triggered",
+          "description": "准备阶段可从一至两名角色处各取一张手牌或装备，存为公开的逆。其他角色可消耗两张逆，对你使用一张遵守距离及次数规则的杀。"
+        }
+      ]
+    },
+    {
+      "id": "yj2013_pan_zhang_ma_zhong",
+      "name": "潘璋马忠",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "duodao",
+          "name": "夺刀",
+          "type": "triggered",
+          "description": "被杀造成伤害后，可弃一张牌，取得伤害来源当前装备的武器。"
+        },
+        {
+          "id": "anjian",
+          "name": "暗箭",
+          "type": "triggered",
+          "description": "你用杀造成伤害时，若目标的攻击范围不覆盖你，伤害增加1。"
+        }
+      ]
+    },
+    {
+      "id": "yj2013_yu_fan",
+      "name": "虞翻",
+      "kingdom": "wu",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "zongxuan",
+          "name": "纵玄",
+          "type": "triggered",
+          "description": "自己的手牌或装备因弃置离场时，可选其中任意有序子集置顶；最后选择的牌位于牌堆最上方。"
+        },
+        {
+          "id": "zhiyan",
+          "name": "直言",
+          "type": "triggered",
+          "description": "结束阶段可让一人摸一张并公开。若是装备，其回复1点体力并使用这件装备。"
+        }
+      ]
+    },
+    {
+      "id": "yj2013_zhu_ran",
+      "name": "朱然",
+      "kingdom": "wu",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "danshou",
+          "name": "胆守",
+          "type": "active",
+          "description": "本出牌阶段第N次发动须弃N张牌，选攻击范围内一人：N为1弃其一张牌，2令其交一张牌，3造成1点伤害，4或更多则双方各摸两张。"
+        }
+      ]
+    },
+    {
+      "id": "yj2013_fu_huanghou",
+      "name": "伏皇后",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "zhuikong",
+          "name": "惴恐",
+          "type": "triggered",
+          "description": "别人回合开始、你受伤且双方有手牌时，可拼点。赢则其本回合普通牌只能指定自己；未赢则其到你的距离固定为1，直到回合结束。"
+        },
+        {
+          "id": "qiuyuan",
+          "name": "求援",
+          "type": "triggered",
+          "description": "成为杀目标时，可向另一名非使用者索要闪；对方不交则追加为同一张杀的目标，忽略距离并保留禁止条件。"
+        }
+      ]
+    },
+    {
+      "id": "yj2013_li_ru",
+      "name": "李儒",
+      "kingdom": "qun",
+      "max_hp": 3,
+      "initial_hp": 3,
+      "version": "QS-v2经典原版修订档案 @ e8768851bd8054db9fd1b63cd6f1feca813590d7",
+      "skills": [
+        {
+          "id": "juece",
+          "name": "绝策",
+          "type": "triggered",
+          "description": "结束阶段可对一名没有手牌的角色造成1点伤害。"
+        },
+        {
+          "id": "mieji",
+          "name": "灭计",
+          "type": "active",
+          "description": "每个出牌阶段一次。把一张黑色锦囊手牌置顶，选择有手牌的其他角色；其须弃一张锦囊，或两张非锦囊牌。"
+        },
+        {
+          "id": "fencheng",
+          "name": "焚城",
+          "type": "limited",
+          "description": "每局一次，在出牌阶段发动。其他角色按座次弃牌或承受2点火伤；首人至少弃1张，之后的最低数量为上一人实际弃牌数加1，不弃则重置为1。"
+        }
+      ]
+    },
+    {
+      "id": "shadow_god_liubei",
+      "name": "神刘备",
+      "kingdom": "qun",
+      "max_hp": 6,
+      "initial_hp": 6,
+      "version": "经典6 HP神刘备：龙怒、结营（阴阳转换）",
+      "skills": [
+        {
+          "id": "longnu",
+          "name": "龙怒",
+          "type": "locked",
+          "description": "锁定，出牌阶段开始交替执行：先失去1点体力并摸一张，本阶段红色手牌变为不限距离的火杀；下次体力上限减1并摸一张，本阶段锦囊手牌变为雷杀，雷杀不限次数。"
+        },
+        {
+          "id": "jieying_liubei",
+          "name": "结营",
+          "type": "locked",
+          "description": "锁定：你保持横置。你存活且技能有效时，所有横置角色手牌上限增加2。结束阶段横置一名未横置的其他角色。"
+        }
+      ]
+    },
+    {
+      "id": "shadow_god_luxun",
+      "name": "神陆逊",
+      "kingdom": "qun",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "经典神陆逊：军略、摧克、绽火（奇偶军略体系）",
+      "skills": [
+        {
+          "id": "junlve",
+          "name": "军略",
+          "type": "locked",
+          "description": "锁定：每造成或受到1点伤害，增加一枚军略。"
+        },
+        {
+          "id": "cuike",
+          "name": "摧克",
+          "type": "triggered",
+          "description": "出牌阶段开始，军略为奇数可对一人造成1点伤害；为偶数可横置一人并弃其区域一张牌。处理后军略超过七枚，还可清空标记，对所有其他角色各造成1点伤害。"
+        },
+        {
+          "id": "zhanhuo",
+          "name": "绽火",
+          "type": "limited",
+          "description": "每局一次，在出牌阶段清空军略，选不超过消耗数量的横置角色，弃其全部装备，再对其中一人造成1点火伤。"
+        }
+      ]
+    },
+    {
+      "id": "thunder_god_ganning",
+      "name": "神甘宁",
+      "kingdom": "qun",
+      "max_hp": 6,
+      "initial_hp": 3,
+      "version": "经典神甘宁：魄袭、劫营（初始3/上限6，营标记）",
+      "skills": [
+        {
+          "id": "poxi",
+          "name": "魄袭",
+          "type": "active",
+          "description": "每个出牌阶段一次。查看另一人手牌，可从双方手牌弃四张各不相同花色的牌。你自己弃0张则体力上限减1；1张则结束出牌且本回合手牌上限减1；2张无额外效果；3张回复1点；4张摸四张。"
+        },
+        {
+          "id": "jieying_ganning",
+          "name": "劫营",
+          "type": "locked",
+          "description": "回合开始没有营时，你取得营；结束阶段可交给另一人。有营者多摸一张，出牌阶段杀上限及手牌上限各加1。其他持营者回合结束，营移除，你取得其全部手牌。"
+        }
+      ]
+    },
+    {
+      "id": "thunder_god_zhangliao",
+      "name": "神张辽",
+      "kingdom": "qun",
+      "max_hp": 4,
+      "initial_hp": 4,
+      "version": "经典夺技能神张辽：夺锐、止啼（废栏、临时获得、原主失效）",
+      "skills": [
+        {
+          "id": "duorui",
+          "name": "夺锐",
+          "type": "triggered",
+          "description": "出牌阶段对别人造成伤害后，可废除一个尚可用的装备栏，暂取其一项普通技能并令其失效。全栏已废时无需再废栏。效果到其下次回合结束或死亡；归还前不能再次夺锐。限定、觉醒、主公及特殊技能不能借取。"
+        },
+        {
+          "id": "zhiti",
+          "name": "止啼",
+          "type": "locked",
+          "description": "锁定：攻击范围内受伤的其他角色手牌上限减1。与范围内受伤角色拼点或决斗获胜，或被其造成伤害后，恢复一个已废除的装备栏。"
+        }
+      ]
+    }
+  ]
+}

@@ -53,6 +53,7 @@ export interface PendingRequest {
   minimum_nonempty_count?: number
   legal_card_sets?: string[][]
   play_card_targets?: Record<string, { targets: string[]; min: number; max: number }>
+  allow_root_trick_pass?: boolean
   choice_labels?: Record<string, string>
 }
 
@@ -86,6 +87,7 @@ export interface PlayerView {
   character_id: string
   faction: string
   chained: boolean
+  ai_controlled?: boolean
   equipment: CardView[]
   judgments: CardView[]
   base_distance: number | null
@@ -129,6 +131,8 @@ export interface CombatContext {
   top_response?: { source_id: string; definition_id: string }
 }
 export interface Projection {
+  public_reveal?: PublicEvent | null
+  public_card_history?: PublicEvent[]
   combat?: CombatContext | null
   waiting?: { key: string; player_id: string; responding: boolean; thinking: boolean; remaining_ms: number; total_ms?: number; required_definition_id?: string; response_to?: string; deadline?: number } | null
   players: PlayerView[]

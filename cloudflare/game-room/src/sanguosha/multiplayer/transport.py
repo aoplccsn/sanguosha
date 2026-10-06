@@ -23,6 +23,7 @@ class GameServer:
         self.room = MultiplayerRoom(seed=seed, timeout_seconds=timeout_seconds)
         self._server: asyncio.Server | None = None
         self._poll_task: asyncio.Task | None = None
+        self._writers: set[asyncio.StreamWriter] = set()
 
     async def start(self) -> None:
         self._server = await asyncio.start_server(self._handle, self.host, self.port,
@@ -39,6 +40,9 @@ class GameServer:
                 pass
         if self._server:
             self._server.close()
+            # Python 3.13 waits for active connections as well as the listener.
+            for writer in tuple(self._writers):
+                writer.close()
             await self._server.wait_closed()
 
     async def _poll_loop(self) -> None:
@@ -51,6 +55,7 @@ class GameServer:
 
     async def _handle(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
         pid: PlayerId | None = None
+        self._writers.add(writer)
         def send(message: dict) -> None:
             if not writer.is_closing():
                 writer.write(encode(message))
@@ -108,6 +113,7 @@ class GameServer:
             except (ConnectionError, RuntimeError):
                 pass
         finally:
+            self._writers.discard(writer)
             if pid is not None and self.room.seats[pid].send is send:
                 self.room.disconnect(pid)
             writer.close()

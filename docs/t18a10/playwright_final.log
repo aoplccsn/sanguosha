@@ -1,0 +1,26 @@
+
+Running 18 tests using 1 worker
+
+
+
+(node:34152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/18] [edge] › e2e\t18a10-hardening.spec.ts:12:2 › seat order and nonoverlap military-five 1440
+[2/18] [edge] › e2e\t18a10-hardening.spec.ts:12:2 › seat order and nonoverlap military-five 390
+[3/18] [edge] › e2e\t18a10-hardening.spec.ts:12:2 › seat order and nonoverlap military-five 430
+[4/18] [edge] › e2e\t18a10-hardening.spec.ts:12:2 › seat order and nonoverlap military-eight 1440
+[5/18] [edge] › e2e\t18a10-hardening.spec.ts:12:2 › seat order and nonoverlap military-eight 390
+[6/18] [edge] › e2e\t18a10-hardening.spec.ts:12:2 › seat order and nonoverlap military-eight 430
+[7/18] [edge] › e2e\t18a10-hardening.spec.ts:23:1 › real acquired Qixi cancellation then normal Peach
+[8/18] [edge] › e2e\t18a10-hardening.spec.ts:29:44 › AI reveal and suit flow fire
+[9/18] [edge] › e2e\t18a10-hardening.spec.ts:29:44 › AI reveal and suit flow fire_none
+[10/18] [edge] › e2e\t18a10-hardening.spec.ts:36:1 › dismantlement hides hand until public discard
+[11/18] [edge] › e2e\t18a10-hardening.spec.ts:39:1 › three discarded cards share one public presentation
+[12/18] [edge] › e2e\t18a10-hardening.spec.ts:42:98 › interaction savage
+[13/18] [edge] › e2e\t18a10-hardening.spec.ts:42:98 › interaction archery
+[14/18] [edge] › e2e\t18a10-hardening.spec.ts:42:98 › interaction counter_single
+[15/18] [edge] › e2e\t18a10-hardening.spec.ts:42:98 › interaction counter_group
+[16/18] [edge] › e2e\t18a10-hardening.spec.ts:42:98 › interaction harvest
+[17/18] [edge] › e2e\t18a10-hardening.spec.ts:42:98 › interaction takeover
+[18/18] [edge] › e2e\t18a10-hardening.spec.ts:50:1 › 103 GeneralDetail descriptions and two missing generals
+  18 passed (28.0s)

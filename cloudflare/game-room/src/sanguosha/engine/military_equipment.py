@@ -56,6 +56,11 @@ class MilitaryMoveService(CardMoveService):
             from .mountain import TuntianAction
             self.reactions.append(TuntianAction(move.move_id + ':tuntian', owner))
     def next_reaction(self,state):
+        from sanguosha.model.state import GameStatus
+        if state.status is GameStatus.FINISHED:
+            self.reactions.clear()
+            state.metadata['reaction_event_cursor']=len(self.recorder.events)
+            return None
         cursor = state.metadata.get('reaction_event_cursor', 0)
         new_events = self.recorder.events[cursor:]
         from .qiaoshui import before_reactions

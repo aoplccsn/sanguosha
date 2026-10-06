@@ -103,8 +103,8 @@ def test_thinking_profile_range_and_complexity():
     s = game(); ai = AIDecisionProvider('human')
     simple = request(RequestType.RESPOND_WITH_CARD, eligible_card_ids=('dodge',))
     complex = request(RequestType.CHOOSE_PLAYERS, allowed_player_ids=('p2', 'p3'), max_count=2)
-    assert 4000 <= ai.thinking_profile(s.state, simple)[1] <= 6000
-    assert 6000 <= ai.thinking_profile(s.state, complex)[1] <= 10000
+    assert 1000 <= ai.thinking_profile(s.state, simple)[1] <= 2200
+    assert 2600 <= ai.thinking_profile(s.state, complex)[1] <= 3000
 
 
 def test_speed_changes_only_ai_wait_not_human_deadline(monkeypatch):

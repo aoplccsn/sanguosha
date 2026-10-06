@@ -217,11 +217,13 @@ def test_tcp_illegal_decision_rejected_and_pending_reconnect():
         client = GameClient("127.0.0.1", server.port)
         await client.connect("host")
         async def until(connection, kind):
-            for _ in range(100):
-                msg = await asyncio.wait_for(connection.receive(), 3)
-                if msg["type"] == kind:
-                    return msg
-            raise AssertionError(f"missing {kind}")
+            # Public presentation facts can exceed 100 messages before a prompt.
+            # Bound elapsed time, not the number of valid messages on the wire.
+            async with asyncio.timeout(3):
+                while True:
+                    msg = await connection.receive()
+                    if msg["type"] == kind:
+                        return msg
         try:
             welcome = await until(client, "WELCOME")
             await client.send("START_GAME")

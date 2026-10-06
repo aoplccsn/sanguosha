@@ -9,7 +9,7 @@ from .response import RespondWithCardAction
 from .card_effects import SlashEffectAction
 from .card_moves import CardMove, CardMoveReason
 from .card_rules import InvalidCardUse
-from .events import TrickTargetsDeclaredEvent
+from .events import TrickTargetsDeclaredEvent, Event
 from .deck import DrawCardsAction
 from .recovery import RecoverAction
 from .judgment import JudgmentAction, JudgmentPattern
@@ -237,6 +237,7 @@ class TrickHandler:
             if savage_effect_immune(state, target, self.skills):
                 return StepResult.continue_()
         frame.step_index=2
+        self.recorder.record(Event(a.action_id+f':current:{frame.cursor}','effect_target',a.source_id,(target,),metadata={'definition_id':d}))
         if self.definitions is not None and not self.definitions.get(d).nullifiable:
             frame.child_result = False
             return StepResult.continue_()
@@ -301,11 +302,16 @@ class TargetTrickHandler:
             if d == 'trick.fire_attack':
                 from .suits import effective_suit
                 suit=effective_suit(state, f.decision, a.target_id)
+                f.local['revealed_card_id']=str(f.decision)
+                f.local['revealed_suit']=suit.value
+                self.moves.recorder.record(Event(a.action_id+':revealed','card_revealed',a.target_id,(a.source_id,),metadata={'card_id':str(f.decision),'reason':'fire_attack'}))
                 f.decision=None
                 f.step_index=2
                 eligible=tuple(cid for cid in state.cards_in(ZoneRef(ZoneType.HAND,a.source_id))
                                if effective_suit(state, cid, a.source_id) == suit)
-                return self.ask(a,f,a.source_id,RequestType.RESPOND_WITH_CARD,f'火攻：展示花色 {suit.value}，弃同花色手牌或放弃',eligible_card_ids=eligible,allow_pass=True)
+                if not eligible:
+                    self.moves.recorder.record(Event(a.action_id+':no-match','fire_attack_result',a.source_id,(a.target_id,),metadata={'suit':suit.value,'stage':'no_match','dealt_damage':False}))
+                return self.ask(a,f,a.source_id,RequestType.RESPOND_WITH_CARD,f'火攻：请选择弃置一张 { {Suit.SPADE: "♠", Suit.HEART: "♥", Suit.CLUB: "♣", Suit.DIAMOND: "♦"}[suit]} 手牌，或放弃' if eligible else f'火攻：没有可弃置的 { {Suit.SPADE: "♠", Suit.HEART: "♥", Suit.CLUB: "♣", Suit.DIAMOND: "♦"}[suit]} 手牌，未造成伤害',eligible_card_ids=eligible,allow_pass=True)
             if d == 'trick.borrowed_sword':
                 f.local['victim']=str(f.decision)
                 f.decision=None
@@ -344,6 +350,7 @@ class TargetTrickHandler:
                 choice=f.decision
                 f.decision=None
                 if choice is PASS_RESPONSE:
+                    self.moves.recorder.record(Event(a.action_id+':no-damage','fire_attack_result',a.source_id,(a.target_id,),metadata={'suit':f.local.get('revealed_suit',''),'dealt_damage':False}))
                     return StepResult.complete()
                 self.move(state,a,choice,ZoneRef(ZoneType.DISCARD_PILE))
                 return StepResult.push(MilitaryDamageAction(a.action_id+':fire',a.source_id,a.target_id,1,DamageNature.FIRE,a.card_id))
@@ -357,7 +364,6 @@ class TargetTrickHandler:
                 if cards:
                     self.move(state,a,cards[0],ZoneRef(ZoneType.HAND,a.source_id))
         if d == 'trick.duel' and f.step_index==3 and f.local.get('duel_winner'):
-            from .events import Event
             self.moves.recorder.record(Event(a.action_id+':duel-resolved','duel_resolved',a.source_id,(a.target_id,),metadata={'winner_id':f.local['duel_winner'],'loser_id':f.local['duel_loser']}))
         return StepResult.complete()
 

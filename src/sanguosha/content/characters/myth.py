@@ -53,6 +53,24 @@ _NAMES = {
     'dawu':'大雾','guixin':'归心','feiying':'飞影','juejing':'绝境',
     'longhun':'龙魂','renjie':'忍戒','baoyin':'拜印','lianpo':'连破',
 }
+_FIRE_DESCRIPTIONS = {
+    'qiangxi': '出牌阶段限一次，你可以失去一点体力或弃置一张武器牌，对攻击范围内一名其他角色造成一点伤害。',
+    'quhu': '出牌阶段限一次，与体力值大于你的角色拼点。你赢时，令其对其攻击范围内另一名角色造成一点伤害；否则其对你造成一点伤害。',
+    'jieming': '每受到一点伤害后，可令一名角色将手牌补至其体力上限，至多补至五张。',
+    'lianhuan': '你可将一张梅花手牌当铁索连环使用或重铸。',
+    'niepan': '限定技，濒死时可弃置所有区域的牌，解除连环并翻至正面，摸三张牌，回复至三点体力（不超过上限）。',
+    'bazhen': '锁定技。未装备防具时，视为装备八卦阵：需要闪时可判定，红色结果视为打出闪。',
+    'huoji': '你可以将一张红色手牌当火攻使用，依照火攻的展示及同花色弃牌流程结算。',
+    'kanpo': '你可以将一张黑色手牌当无懈可击打出。',
+    'tianyi': '出牌阶段限一次，与一名其他角色拼点。你赢时本回合杀的次数和目标各加一且无距离限制；否则本回合不能使用杀。',
+    'mashu': '锁定技。你计算与其他角色的距离时减一，最小为一。',
+    'mengjin': '你的杀被闪抵消后，可以弃置目标角色的一张牌。',
+    'shuangxiong': '摸牌阶段可改为判定并获得判定牌；本回合可将与判定结果颜色不同的一张手牌当决斗使用。',
+    'luanji': '出牌阶段，你可以将两张花色相同的手牌当万箭齐发使用。',
+    'xueyi': '主公技，锁定技。每有一名其他存活的群势力角色，你的手牌上限加二。',
+}
+_FIRE_TYPES = {s: SkillType.VIEW_AS for s in ('lianhuan','huoji','kanpo','shuangxiong','luanji')}
+_FIRE_TYPES.update(bazhen=SkillType.LOCKED, mashu=SkillType.LOCKED, xueyi=SkillType.LOCKED, niepan=SkillType.LIMITED, mengjin=SkillType.TRIGGERED, jieming=SkillType.TRIGGERED)
 _WIND_DESCRIPTIONS = {
     'shensu': '你可跳过判定阶段和摸牌阶段，视为使用一张无距离限制的杀；亦可跳过出牌阶段并弃置一张装备牌，视为使用一张无距离限制的杀。两项可分别发动。',
     'jushou': '结束阶段开始时，你可以摸三张牌，然后将武将牌翻面。背面朝上时跳过下个自己的回合并翻回正面。',
@@ -188,10 +206,10 @@ _GOD_TYPES = {
 MYTH_SKILL_CATALOGUE = tuple(SkillDefinition(
     s, _NAMES.get(s, _FOREST_NAMES.get(s, _MOUNTAIN_NAMES.get(s, s))),
     _GOD_DESCRIPTIONS.get(s, _WIND_DESCRIPTIONS.get(s, _FOREST_DESCRIPTIONS.get(s,
-                           _MOUNTAIN_DESCRIPTIONS.get(s, '经典神话再临规则摘要。')))),
-    _GOD_TYPES.get(s, _WIND_TYPES.get(s, _FOREST_TYPES.get(s, _MOUNTAIN_TYPES.get(s, SkillType.ACTIVE)))),
+                           _MOUNTAIN_DESCRIPTIONS.get(s, _FIRE_DESCRIPTIONS.get(s, ''))))),
+    _GOD_TYPES.get(s, _WIND_TYPES.get(s, _FOREST_TYPES.get(s, _MOUNTAIN_TYPES.get(s, _FIRE_TYPES.get(s, SkillType.ACTIVE))))),
     {key: True for key, enabled in (
-        ('lord', s in ('huangtian', 'songwei', 'baonue', 'ruoyu', 'zhiba')),
+        ('lord', s in ('huangtian', 'songwei', 'baonue', 'ruoyu', 'zhiba', 'xueyi')),
         ('awakening', s in ('zaoxian', 'zhiji', 'hunzi', 'ruoyu', 'baoyin')),
         ('limited', s in ('luanwu', 'niepan', 'yeyan')),
     ) if enabled})

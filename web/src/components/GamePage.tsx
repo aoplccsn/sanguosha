@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { effectiveSelection, emptySelection, virtualOptions, materials, type Selection } from '../state/selection'
 import type { CardView, GeneralInfo, PendingRequest, PlayerView, Projection, PublicEvent, PortraitState, CombatContext } from '../types'
 import { useGame } from '../state/GameContext'
 import { cardImage, defaultCardImage, defaultGeneralPortrait, generalPortrait } from '../assets'
@@ -14,9 +15,8 @@ import { CombatVFXLayer } from './CombatVFXLayer'
 import type { GodPortraitMode } from './GodPortrait'
 import { readVfxQuality, saveVfxQuality, type VfxQuality } from '../vfx/CombatVFXRuntime'
 
-const positions = ['north-west', 'north', 'north-east', 'east']
-const positionsEight = ['north-west', 'north', 'north-east',
-  'east-upper', 'east-lower', 'west-lower', 'west-upper']
+const positions = ['east', 'north-east', 'north-west', 'west']
+const positionsEight = ['east-lower', 'east-upper', 'north-east', 'north', 'north-west', 'west-upper', 'west-lower']
 const phaseNames: Record<string, string> = {
   '—': '回合观察', start: '开始', judgment: '判定', draw: '摸牌', play: '出牌', discard: '弃牌', finish: '结束',
 }
@@ -94,7 +94,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
     <button className="portrait-button" onClick={(event) => { event.stopPropagation(); if (selectable) onSelect(); else onDetail() }} aria-label={selectable ? '选择目标' + player.character_name : '查看' + player.character_name + '详情'}>
       <DynamicPortrait staticPortrait={portraitFor(player, state.generals)} idleVideo={idlePortrait(player.character_id)?.panelVideo ?? idlePortrait(player.character_id)?.video} objectPosition={idlePortrait(player.character_id)?.objectPosition} name={player.character_name} quality={vfxQuality} />
       {portrait.faceDown && <span className="face-down-mark">翻面</span>}
-      {player.chained && <span className="chain-mark">锁</span>}
+      {player.chained && <span className="chain-mark">连环</span>}
     </button>
     <div className="player-heading"><strong>{player.name}</strong><span>{player.identity_label}</span></div>
     <div className="general-line"><b>{player.character_name}</b></div>
@@ -102,11 +102,11 @@ export function PlayerPanel({ player, position, selected, selectable, responding
       {Array.from({ length: player.max_hp }, (_, index) => <i key={index} className={index < player.hp ? 'full' : ''}>♥</i>)}
     </div>
     <div className="seat-caption">
-      <div className="seat-facts"><span>{player.faction}</span><span>距离 {player.effective_distance ?? '—'} · 范围 {player.attack_range}</span></div>
+      <div className="seat-facts">{player.ai_controlled && <span className="control-badge">AI 托管</span>}<span>{player.faction}</span><span>距离 {player.effective_distance ?? '—'} · 范围 {player.attack_range}</span></div>
       <div className="player-zones">
         <span className="hand-count">手牌 {player.hand_count}</span>
         {player.equipment.map((card) => <span key={card.card_id} className="zone-token equipment-token" tabIndex={0} aria-label={'装备 ' + card.name}>
-          {card.name}
+          {card.name}{card.equipment_slot === 'defensive_horse' ? ' +1' : card.equipment_slot === 'offensive_horse' ? ' -1' : ''}
           <span className="equipment-preview" role="tooltip"><img src={assetForCard(card)} alt={card.name} /><small>{card.details}</small></span>
         </span>)}
         {player.judgments.map((card) => <span key={card.card_id} className="zone-token judgment-token" title={card.details}>{card.name}</span>)}
@@ -148,7 +148,7 @@ export function HandCard({ card, selected, eligible, onClick }: { card: CardView
   >
     <img src={assetForCard(card)} alt="" />
     <span className="card-corner"><b>{card.rank}</b>{card.suit}</span>
-    <strong>{card.name}</strong>
+    <strong>{card.name}{card.equipment_slot === 'defensive_horse' ? ' +1' : card.equipment_slot === 'offensive_horse' ? ' -1' : ''}</strong>
   </button>
 }
 
@@ -188,15 +188,16 @@ function choiceLabel(choice: string, index: number, projection: Projection): str
 }
 
 function SkillBar({ player, general, skillNames, request, chosen, onChoose, onUnavailable }: { player: PlayerView; general?: GeneralInfo; skillNames: Record<string, string>; request: PendingRequest | null; chosen: string; onChoose(value: string): void; onUnavailable(): void }) {
-  const skillOptions = Array.from(new Set([
+  const allOptions = Array.from(new Set([
     ...(request?.choices.filter((choice) => choice.startsWith('skill:') || choice.startsWith('virtual:')) ?? []),
     ...(request?.eligible_card_ids.filter((choice) => choice.startsWith('virtual:')) ?? []),
   ]))
+  const skillOptions=allOptions.filter((option,index)=>!option.startsWith('virtual:') || allOptions.findIndex(o=>o.startsWith('virtual:') && o.split(':')[1]===option.split(':')[1])===index)
   const { state } = useGame()
   return <div className="skill-bar" aria-label="技能栏">
     {player.skill_labels.map((label) => {
       const plain = label.split(' · ')[0]
-      const skill = general?.skills.find((item) => item.name === plain)
+      const skill = general?.skills.find((item) => item.name === plain) ?? Object.values(state.generals).flatMap(item=>item.skills).find(item=>item.name===plain)
       const option = skillOptions.find((item) => item.split(':')[1] === (skill?.id ?? (plain === '蛊惑' ? 'guhuo' : '')))
       const metadata = skill ?? Object.values(state.generals).flatMap(item => item.skills).find(item => item.name === plain)
       return <SkillTooltip key={label} skills={metadata ? [metadata] : []}><button aria-disabled={!option} className={chosen === option ? 'selected' : ''} onClick={() => option ? onChoose(option) : onUnavailable()}>{label}</button></SkillTooltip>
@@ -221,7 +222,9 @@ function DecisionPrompt({ request, projection, canConfirm, processing, summary, 
   onOption(value: string): void
 }) {
   const { state } = useGame()
-  const prompt = ({
+  const currentTarget=projection.combat?.current_target_id
+  const effectTarget=projection.players.find(p=>p.player_id===currentTarget)?.character_name
+  const prompt = request.required_definition_id==='trick.nullification' && effectTarget ? `是否对【${projection.combat?.card_name ?? cardNames[projection.combat?.definition_id ?? ''] ?? '锦囊'} → ${effectTarget}】使用【无懈可击】？` : ({
     'Choose a play action or end the play phase': '请选择出牌操作，或结束出牌阶段',
     'Choose a target': '请选择目标',
     'Respond with a card or pass': '请打出响应牌，或选择不出',
@@ -243,9 +246,9 @@ function DecisionPrompt({ request, projection, canConfirm, processing, summary, 
       return <SkillTooltip key={choice} {...detail}><button className="brush-button compact" disabled={processing} onClick={() => onOption(choice)}>{label ?? request.choice_labels?.[choice] ?? choiceLabel(choice, index, projection)}</button></SkillTooltip>
     })}
     {request.allow_pass && <button className="brush-button subtle compact" disabled={processing} onClick={onPass}>{request.required_definition_id === 'trick.nullification' ? '不响应' : '不出'}</button>}
-    {request.required_definition_id === 'trick.nullification' && request.allow_pass && <button className="brush-button subtle compact" disabled={processing} onClick={onPassRoot}>本次不无懈</button>}
+    {request.required_definition_id === 'trick.nullification' && request.allow_pass && request.allow_root_trick_pass && <button className="brush-button subtle compact" disabled={processing} onClick={onPassRoot}>本轮不再询问</button>}
     <button className="brush-button primary compact" disabled={!canConfirm || processing} onClick={onConfirm}>{processing ? '正在提交…' : request.required_definition_id === 'trick.nullification' ? '使用无懈' : '确定'}</button>
-    {summary && <button className="brush-button subtle compact" disabled={processing} onClick={onCancel}>取消</button>}
+    <button className="brush-button subtle compact" disabled={processing} onClick={onCancel}>取消选中</button>
   </section>
 }
 
@@ -300,14 +303,21 @@ function EventStage({ event, players, combat }: { event?: PublicEvent; players: 
   const isResponse = /Responded|VirtualResponse/.test(kind)
   const definition = base?.definition_id ?? String(event.definition_id ?? '')
   const top = isResponse ? {source_id: String(event.source_id), definition_id: String(event.definition_id)} : base?.top_response
-  const showCard = !!definition
+  const publicCards = Array.isArray(event.cards) ? event.cards as CardView[] : []
+  const showCard = !!definition && !publicCards.length
+  if (publicCards.length) text = name(event.player_id ?? event.source_id) + (kind==='DiscardEvent' ? ' 弃置：' : kind.includes('Judgment') ? ' 判定：' : ' 展示：')
+  if (kind==='FireAttackResultEvent') text = event.stage==='no_match' ? name(event.source_id)+'没有可弃置的 '+({heart:'♥',spade:'♠',club:'♣',diamond:'♦'}[String(event.suit)] ?? '')+' 手牌' : '【火攻】未造成伤害'
+  if (kind==='ChainPropagationEvent') text=name(event.source_id)+' → 连环传播 → '+name(event.target_id)
+  if (kind==='EffectTargetEvent') text = '【' + (cardNames[String(event.definition_id)] ?? '锦囊') + '】当前结算：' + name(event.target_id)
   if (base && /CardUsed|TrickTargets|Responded|VirtualResponse/.test(kind)) text = name(base.source_id) + (base.target_ids.length ? ' → ' + base.target_ids.map(name).join('、') : '')
   if (top?.definition_id === 'trick.nullification') text = name(top.source_id) + '【无懈可击】 → 【' + (cardNames[definition] ?? base?.card_name ?? '') + '】'
   return <div key={String(event.event_id ?? kind) + String(event.presentation_phase ?? '')} data-event-id={event.event_id} data-stage={String(event.presentation_phase ?? 'result')} className={'event-stage event-' + kind.toLowerCase()}>
     <div className="action-cards">
+    {publicCards.map((card,index)=><div className="public-resolution-card" key={index}><img src={assetForCard(card)} alt={card.name}/><b>{card.suit}{card.rank} {card.name}</b></div>)}
     {showCard && <div className="center-action-card base-card"><img src={assetForCard({ definition_id: definition } as CardView)} alt={cardNames[definition] ?? String(event.card_name ?? '卡牌')} /><b>{cardNames[definition] ?? String(event.card_name ?? '卡牌')}</b></div>}
     {top && <div className="center-action-card response-card"><img src={assetForCard({definition_id:top.definition_id} as CardView)} alt={cardNames[top.definition_id] ?? '响应牌'} /><b>{cardNames[top.definition_id] ?? '响应牌'}</b></div>}
     </div><strong>{text}</strong>
+    {base?.current_target_id && <small>当前结算：{name(base.current_target_id)}</small>}
     {!!base?.nullification_count && <small className="nullification-status">无懈×{base.nullification_count} · 当前{base.cancelled ? '锦囊失效' : '锦囊有效'}</small>}
   </div>
 }
@@ -327,9 +337,10 @@ export function GamePage() {
   const { state, actions } = useGame()
   const projection = state.projection
   const request = state.pendingRequest
-  const [selection, setSelection] = useState<{ requestId: string; cards: string[]; targets: string[]; option: string }>({ requestId: '', cards: [], targets: [], option: '' })
+  const [selection, setSelection] = useState<Selection>(emptySelection(''))
   const selectionKey = `${request?.request_id ?? ''}:${state.requestEpoch ?? 0}`
-  const activeSelection = selection.requestId === selectionKey ? selection : { requestId: selectionKey, cards: [], targets: [], option: '' }
+  const materialIds = new Set([...(projection?.hand ?? []),...(projection?.players.flatMap(p=>[...p.equipment,...Object.values(p.special_piles ?? {}).flat()]) ?? [])].map(c=>c.card_id))
+  const activeSelection = effectiveSelection(selection, selectionKey, request, materialIds)
   const selectedCards = activeSelection.cards
   const selectedTargets = activeSelection.targets
   const selectedOption = activeSelection.option
@@ -345,7 +356,7 @@ export function GamePage() {
       if (saved.requestId !== request.request_id) { sessionStorage.removeItem(selectionStorageKey); return }
       const option = typeof saved.option === 'string' && (request.choices.includes(saved.option) || request.eligible_card_ids.includes(saved.option)) ? saved.option : ''
       const targets = request.play_card_targets?.[option]?.targets ?? request.allowed_player_ids
-      setSelection({requestId:selectionKey,option,
+      setSelection({requestId:selectionKey,option,mode: typeof saved.mode==='string' ? saved.mode : '',
         cards:Array.isArray(saved.cards) ? [...new Set<string>(saved.cards.filter((id:unknown)=>typeof id==='string' && request.eligible_card_ids.includes(id)))].slice(0,request.max_count || 1) : [],
         targets:Array.isArray(saved.targets) ? [...new Set<string>(saved.targets.filter((id:unknown)=>typeof id==='string' && targets.includes(id)))].slice(0,request.play_card_targets?.[option]?.max ?? request.max_count ?? 1) : []})
     } catch { /* A malformed local selection never changes the authoritative request. */ }
@@ -363,7 +374,7 @@ export function GamePage() {
   selectionKeyRef.current = selectionKey
   function updateSelection(update: (current: typeof selection) => typeof selection) {
     setSelection((current) => {
-      const next = update(current.requestId === selectionKeyRef.current ? current : { requestId: selectionKeyRef.current, cards: [], targets: [], option: '' })
+      const next = update(effectiveSelection(current, selectionKeyRef.current, request, materialIds))
       if (selectionStorageKey && request) {
         try { sessionStorage.setItem(selectionStorageKey, JSON.stringify({...next,requestId:request.request_id})) } catch { /* Selection still works when browser storage is unavailable. */ }
       }
@@ -433,7 +444,7 @@ export function GamePage() {
 
   const selfIndex = projection.players.findIndex((player) => player.player_id === state.seatId)
   const self = projection.players[selfIndex >= 0 ? selfIndex : 0]
-  const opponents = projection.players.filter((player) => player.player_id !== self.player_id)
+  const opponents = [...projection.players.slice(selfIndex+1),...projection.players.slice(0,selfIndex)].filter(p=>p.player_id!==self.player_id)
   const playTargetSpec = request?.play_card_targets?.[selectedOption]
   const allowedTargets = new Set(playTargetSpec?.targets ?? request?.allowed_player_ids ?? [])
   const eligibleCards = new Set(request?.eligible_card_ids ?? [])
@@ -450,7 +461,8 @@ export function GamePage() {
   const isCardRequest = !!request && ['respond_with_card', 'choose_card', 'choose_cards'].includes(request.request_type)
   const isTargetRequest = !!request && (['choose_player', 'choose_players'].includes(request.request_type) || !!playTargetSpec?.max)
   const choiceCardIds = new Set((request?.choices ?? []).filter((choice) => choice.startsWith('use:')).map((choice) => choice.slice(4)))
-  const cardEligible = (id: string) => isCardRequest ? eligibleCards.has(id) : request?.request_type === 'choose_option' ? choiceCardIds.has(id) : false
+  const modeOptions = virtualOptions(request).filter(o=>o.split(':')[1]===activeSelection.mode)
+  const cardEligible = (id: string) => activeSelection.mode ? modeOptions.some(o=>{ const ids=materials(o,materialIds); return ids.includes(id) && selectedCards.filter(c=>c!==id).every(c=>ids.includes(c)) }) : isCardRequest ? eligibleCards.has(id) : request?.request_type === 'choose_option' ? choiceCardIds.has(id) : false
 
   function toggleCard(id: string) {
     if (!request || requestRef.current !== request.request_id || state.connection !== 'connected') { setHint('当前响应已更新或连接恢复中'); return }
@@ -458,6 +470,12 @@ export function GamePage() {
     if (!cardEligible(id)) { setHint(request.request_type === 'respond_with_card' ? '此牌不能用于当前响应' : '当前不能选择这张牌'); return }
     if (import.meta.env.DEV) console.debug('[game] click card', id, 'request', request.request_id, 'option', selectedOption)
     setHint('')
+    if (activeSelection.mode) {
+      const cards = selectedCards.includes(id) ? selectedCards.filter(c=>c!==id) : [...selectedCards,id]
+      const option = modeOptions.find(o=>{const ids=materials(o,materialIds);return ids.length===cards.length && ids.every(c=>cards.includes(c))}) ?? ''
+      updateSelection(current=>({...current,cards,option,targets:[]}))
+      return
+    }
     if (request.request_type === 'choose_option') {
       const next = selectedCards.includes(id) ? '' : 'use:' + id
       updateSelection((current) => ({ ...current, cards: next ? [id] : [], targets: [], option: next }))
@@ -493,7 +511,7 @@ export function GamePage() {
     actions.submitDecision(request.request_id, value)
   }
   const minimum = request?.min_count ?? 1
-  const selectionCount = isTargetRequest ? selectedTargets.length : selectedOption ? 1 : selectedCards.length
+  const selectionCount = isTargetRequest ? selectedTargets.length : activeSelection.mode ? (selectedOption ? 1 : 0) : selectedOption ? 1 : selectedCards.length
   const canConfirm = !!request && state.connection === 'connected' && (playTargetSpec
     ? selectedTargets.length >= playTargetSpec.min && selectedTargets.length <= playTargetSpec.max
     : selectionCount >= minimum && selectionCount <= (request.max_count || 1))
@@ -507,7 +525,7 @@ export function GamePage() {
     : playTargetSpec.max ? ' → 请选择目标' : ''}` : ''
   const beamMode = request?.request_type === 'respond_with_card' ? 'protect' : selectedOption.includes('slash') || request?.required_definition_id?.includes('slash') ? 'attack' : 'normal'
   const detailGeneral = detailPlayer ? state.generals[detailPlayer.character_id] : undefined
-  const latestEvent = visibleEvents[visibleEvents.length - 1]
+  const latestEvent = visibleEvents[visibleEvents.length - 1] ?? projection.public_reveal ?? undefined
   const eventActorId = String(latestEvent?.source_id ?? latestEvent?.player_id ?? '')
   const eventTargetIds = [String(latestEvent?.target_id ?? ''), ...(Array.isArray(latestEvent?.target_ids) ? latestEvent.target_ids.map(String) : [])]
   const eventKind = String(latestEvent?.kind ?? '')
@@ -534,7 +552,7 @@ export function GamePage() {
         const targets = Array.isArray(e.target_ids) ? e.target_ids : (e.base_action as CombatContext | undefined)?.target_ids ?? []
         const message = '【' + String(e.skill_name ?? cardNames[String(e.definition_id)] ?? e.card_name ?? '技能') + '】 ' + name(e.source_id) + (targets.length ? ' → ' + targets.map(name).join('、') : '')
         return <div key={String(e.event_id ?? i)} title={message}>{message}</div>
-      })}</aside>
+      })}{projection.public_card_history?.length ? <details className="public-card-history"><summary>公开牌记录</summary>{projection.public_card_history.map((event,index)=><div key={index}>{projection.players.find(p=>p.player_id===(event.player_id ?? event.source_id))?.character_name} · {event.kind==='DiscardEvent' ? '弃置' : event.kind==='JudgmentEvent' ? '判定' : '展示'}：{(event.cards as CardView[] ?? []).map(c=>c.suit+c.rank+' '+c.name).join('、')}</div>)}</details> : null}</aside>
       {!temporaryPanel && <SharedCards cards={projection.shared_cards} selected={selectedCards} eligible={eligibleCards} onSelect={toggleCard} />}
       {!temporaryPanel && otherCardChoices.length > 0 && <section className="shared-card-pool" aria-label="可选目标牌">
         <p>选择目标的一张牌</p><div>{otherCardChoices.map((id) =>
@@ -553,9 +571,10 @@ export function GamePage() {
         <div>{projection.discard_top ? <div className="discard-top"><HandCard card={projection.discard_top} selected={false} eligible={false} onClick={() => undefined} /></div> : <span className="table-discard" aria-hidden="true" />}<small>弃牌 {projection.discard_count}</small></div>
       </div>
       <div className="self-area">
-        {request && !temporaryPanel && <DecisionPrompt request={request} projection={projection} canConfirm={canConfirm} processing={!!state.decisionProcessing} summary={summary} onConfirm={confirm} onCancel={() => updateSelection((current) => current.targets.length ? { ...current, targets: [] } : { ...current, cards: [], option: '' })} onPass={() => submitImmediate({ pass: true })} onPassRoot={() => submitImmediate({ pass: true, scope: 'root_trick' })} onBoolean={submitImmediate} onOption={submitImmediate} />}
+        {request && !temporaryPanel && <DecisionPrompt request={request} projection={projection} canConfirm={canConfirm} processing={!!state.decisionProcessing} summary={summary} onConfirm={confirm} onCancel={() => updateSelection(() => emptySelection(selectionKey))} onPass={() => submitImmediate({ pass: true })} onPassRoot={() => submitImmediate({ pass: true, scope: 'root_trick' })} onBoolean={submitImmediate} onOption={submitImmediate} />}
         <PlayerPanel player={self} phase={projection.current_phase} aoeState={aoeState(self.player_id)} position="self" selected={false} selectable={false} responding={responseId === self.player_id} waiting={waiting?.player_id === self.player_id ? waiting : undefined} thinking={thinkingId === self.player_id} eventKind={eventTargetIds.includes(self.player_id) || eventActorId === self.player_id ? eventKind : undefined} eventActor={eventActorId === self.player_id} eventTarget={latestEvent?.presentation_phase === 'target' && eventTargetIds.includes(self.player_id)} eventCue={latestEvent} godCue={godCues[self.player_id]} vfxQuality={vfxQuality} onSelect={() => undefined} onDetail={() => setDetailPlayer(self)} />
-        <SkillBar player={self} general={state.generals[self.character_id]} skillNames={Object.fromEntries(Object.values(state.generals).flatMap((general) => general.skills.map((skill) => [skill.id, skill.name])))} request={request} chosen={selectedOption} onUnavailable={() => setHint('此技能当前不可使用')} onChoose={(option) => { if (state.decisionProcessing) return; setHint(''); setSelectedOption(selectedOption === option ? '' : option); if (request?.request_type === 'respond_with_card') setSelectedCards([]) }} />
+        <SkillBar player={self} general={state.generals[self.character_id]} skillNames={Object.fromEntries(Object.values(state.generals).flatMap((general) => general.skills.map((skill) => [skill.id, skill.name])))} request={request} chosen={selectedOption || virtualOptions(request).find(o=>o.split(':')[1]===activeSelection.mode) || ''} onUnavailable={() => setHint('此技能当前不可使用')} onChoose={(option) => { if (state.decisionProcessing) return; setHint(''); const mode=option.startsWith('virtual:') && materials(option,materialIds).length ? option.split(':')[1] : ''; updateSelection(()=>({...emptySelection(selectionKey), mode: activeSelection.mode===mode && mode ? '' : mode, option: mode ? '' : selectedOption===option ? '' : option})) }} />
+        {activeSelection.mode && <div className="view-as-materials" aria-label="技能区域材料">{[...self.equipment,...Object.values(self.special_piles ?? {}).flat()].filter(c=>cardEligible(c.card_id)).map(card=><button key={card.card_id} className={selectedCards.includes(card.card_id) ? 'selected' : ''} onClick={()=>toggleCard(card.card_id)}>{card.name} {card.suit}{card.rank}</button>)}</div>}
         <div className="hand" aria-label="手牌区">{projection.hand.map((card) => <HandCard key={card.card_id} card={card} selected={selectedCards.includes(card.card_id)} eligible={cardEligible(card.card_id)} onClick={() => toggleCard(card.card_id)} />)}</div>
       </div>
     </section>

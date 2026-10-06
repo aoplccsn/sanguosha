@@ -152,7 +152,7 @@ class UseCardActionHandler:
                 low, high = rule.target_bounds(state, action.user_id, action.card_id) if hasattr(rule, 'target_bounds') else (1, 1)
                 return StepResult.ask(PendingRequest(
                     f"{action.action_id}:target", action.user_id, RequestType.CHOOSE_PLAYERS if high > 1 else RequestType.CHOOSE_PLAYER,
-                    "Choose a target", action.action_id, frame.frame_id,
+                    f"【{self.validator.definitions.get(state.cards[action.card_id].definition_id).name}】请选择目标", action.action_id, frame.frame_id,
                     allowed_player_ids=self.validator.target_candidates(state, action.user_id,
                                                                         action.card_id),
                     min_count=low, max_count=high,

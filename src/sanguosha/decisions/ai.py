@@ -22,12 +22,12 @@ class AIDecisionProvider:
                    for pid in request.allowed_player_ids)
         skill = skill or any(cid.startswith('virtual:') for cid in request.eligible_card_ids)
         if request.request_type is RequestType.YES_NO and candidates <= 1:
-            return 'simple', 4500
+            return 'simple', 1800
         if multi or skill or candidates > 8 or kill:
-            return 'complex', min(10000, 6500 + min(candidates, 16) * 100 + int(multi) * 350 + int(kill) * 400)
+            return 'complex', min(3000, 2600 + min(candidates, 16) * 20 + int(multi) * 100 + int(kill) * 100)
         if request.request_type is RequestType.RESPOND_WITH_CARD and candidates <= 3:
-            return 'simple', 4500 + candidates * 200
-        return 'ordinary', 5000 + min(candidates, 8) * 200
+            return 'simple', 1800 + candidates * 100
+        return 'ordinary', 2200 + min(candidates, 8) * 80
 
     def observe_public_events(self, state, events):
         """Small public attitude ledger; persisted with the match, no hidden cards."""
@@ -111,10 +111,14 @@ class AIDecisionProvider:
             return 26 if player.hp <= 2 else 10
         if definition_id in (SLASH_ID, 'basic.fire_slash', 'basic.thunder_slash'):
             return 14 if player.hp <= 1 else 20
+        if definition_id == 'basic.wine':
+            return 28 if player.hp<=1 else 11
         if definition_id == 'trick.nullification':
             return 20 if player.hp <= 1 else 12
         if definition_id.startswith('equipment.'):
-            return 8
+            slot,quality=self._equipment_quality(state,player_id,definition_id)
+            existing=state.cards_in(ZoneRef(ZoneType.EQUIPMENT,player_id,slot))
+            return 3 if existing and self._equipment_quality(state,player_id,state.cards[existing[0]].definition_id)[1]>=quality else quality
         return 6
 
     def _choice_card_value(self, state: GameState, player_id: PlayerId, card_id: str) -> int:
@@ -179,6 +183,16 @@ class AIDecisionProvider:
                 chance = max(.35, 1 - len(state.cards_in(ZoneRef(ZoneType.HAND, pid))) * .1)
                 net += relation * danger * chance
             return 60 + round(net * 8) if net > 0 else -100
+        if definition == 'trick.fire_attack':
+            suits={state.cards[c].suit for c in state.cards_in(ZoneRef(ZoneType.HAND,actor)) if state.cards[c].definition_id!='trick.fire_attack' and self._choice_card_value(state,actor,c)<26}
+            return 55+len(suits)*5 if enemies and suits else -100
+        if definition == 'trick.iron_chain':
+            elemental=any(state.cards[c].definition_id in ('basic.fire_slash','basic.thunder_slash','trick.fire_attack') for c in state.cards_in(ZoneRef(ZoneType.HAND,actor)))
+            linked_friends=any(state.players[q].chained and self._priority(state,actor,q)<0 for q in state.seat_order if q!=actor and state.players[q].is_alive)
+            return 80 if linked_friends else 68 if elemental and enemies else 15
+        if definition == 'trick.god_salvation':
+            net=sum((1 if q==actor or self._priority(state,actor,q)<0 else -1)*(state.players[q].max_hp-state.players[q].hp) for q in state.seat_order if state.players[q].is_alive)
+            return 80+net*5 if net>0 else -100
         if definition.startswith(('trick.', 'delayed.')):
             return 60
         return 0
@@ -416,6 +430,13 @@ class AIDecisionProvider:
                     (1 if self._priority(state, player_id, pid) > 0 else -1)
                     * (1 if state.players[pid].face_up else -1)
                     - (missing - 1) * (1 if self._priority(state, player_id, pid) > 0 else -1)))
+            elif '火攻' in request.prompt:
+                value=max(request.allowed_player_ids,key=lambda pid:self._target_score(state,player_id,pid)-len(state.cards_in(ZoneRef(ZoneType.HAND,pid))))
+            elif '过河拆桥' in request.prompt or '顺手牵羊' in request.prompt:
+                def resource_score(pid):
+                    visible=[state.cards[c].definition_id for ref,z in state.zones.items() if ref.player_id==pid and ref.zone_type is ZoneType.EQUIPMENT for c in z.card_ids]
+                    return self._priority(state,player_id,pid)*4+sum(self._equipment_quality(state,pid,d)[1] for d in visible)+len(state.cards_in(ZoneRef(ZoneType.HAND,pid)))
+                value=max(request.allowed_player_ids,key=resource_score)
             elif '天香' in request.prompt:
                 enemies = [pid for pid in request.allowed_player_ids
                            if self._priority(state, player_id, pid) > 0]
@@ -437,6 +458,9 @@ class AIDecisionProvider:
                     return Decision(request.request_id, player_id, PASS_RESPONSE)
                 value = max(request.eligible_card_ids, key=lambda cid: (
                     self._choice_card_value(state, player_id, cid), str(cid)))
+            elif '火攻' in request.prompt:
+                cheapest=min(request.eligible_card_ids,key=lambda cid:self._choice_card_value(state,player_id,cid))
+                value=cheapest if self._choice_card_value(state,player_id,cheapest)<26 else PASS_RESPONSE
             elif request.required_definition_id == PEACH_ID:
                 subject = request.subject_player_id
                 if subject is not None and (subject == player_id or self._priority(state, player_id, subject) < 0):
@@ -465,6 +489,19 @@ class AIDecisionProvider:
                     int(state.cards[cid].definition_id == declared) * 10 +
                     int(state.cards[cid].suit.value == 'heart') * 3 -
                     keep.get(state.cards[cid].definition_id, 0), str(cid)))
+            elif request.subject_player_id and request.subject_player_id!=player_id and '目标区域' in request.prompt:
+                target=request.subject_player_id
+                public={cid:ref for ref,z in state.zones.items() if ref.player_id==target and ref.zone_type in (ZoneType.EQUIPMENT,ZoneType.JUDGMENT) for cid in z.card_ids}
+                friendly=self._priority(state,player_id,target)<0
+                def removal_value(cid):
+                    if cid not in public:return 5 if not friendly else -20
+                    ref=public[cid];definition=state.cards[cid].definition_id
+                    if ref.zone_type is ZoneType.JUDGMENT:return 45 if friendly and definition!='delayed.lightning' else -30 if friendly else -15
+                    quality=self._equipment_quality(state,target,definition)[1]
+                    return -quality if friendly else quality
+                value=max(request.eligible_card_ids,key=removal_value)
+            elif '火攻' in request.prompt:
+                value=min(request.eligible_card_ids,key=lambda cid:self._choice_card_value(state,player_id,cid))
             elif '黄天' in request.prompt:
                 lord = next((pid for pid in state.seat_order
                              if pid in state.revealed_identities and state.players[pid].is_alive and state.players[pid].identity is Identity.LORD), None)
@@ -487,10 +524,15 @@ class AIDecisionProvider:
                 value = next((cid for cid in request.eligible_card_ids
                               if f'better:{cid}' in request.choices), request.eligible_card_ids[0])
         elif kind is RequestType.CHOOSE_PLAYERS:
-            ordered=sorted(request.allowed_player_ids,key=lambda pid:self._target_score(state,player_id,pid),reverse=True)
+            def target_score(pid):
+                if '铁索连环' in request.prompt:
+                    friendly=pid==player_id or self._priority(state,player_id,pid)<0
+                    return 100 if friendly and state.players[pid].chained else 50 if not friendly and not state.players[pid].chained else -100
+                return self._target_score(state,player_id,pid)
+            ordered=sorted(request.allowed_player_ids,key=target_score,reverse=True)
             count=max(1,request.min_count) if state.ruleset_id=='classic-military' else request.min_count
             if state.ruleset_id=='classic-military' and request.max_count>1:
-                enemies=[pid for pid in ordered if pid!=player_id and self._priority(state,player_id,pid)>0]
+                enemies=[pid for pid in ordered if (target_score(pid)>0 if '铁索连环' in request.prompt else pid!=player_id and self._priority(state,player_id,pid)>0)]
                 count=max(count,min(request.max_count,len(enemies)))
             value=tuple(ordered[:min(count,len(ordered),request.max_count)])
         elif kind is RequestType.YES_NO:

@@ -10,10 +10,15 @@ export function readGameSpeed(): GameSpeed {
 export function eventDuration(event: PublicEvent | null, speed: GameSpeed) {
   const kind = String(event?.kind ?? '')
   if (kind === 'AIThinkingEvent') {
-    const base = Number(event?.thinking_ms ?? (event?.complexity === 'simple' ? 4500 : event?.complexity === 'complex' ? 7500 : 6000))
+    const base = Number(event?.thinking_ms ?? (event?.complexity === 'simple' ? 1800 : event?.complexity === 'complex' ? 3000 : 2400))
     return Math.round(base * (speed === 'slow' ? 1.4 : speed === 'fast' ? .55 : 1))
   }
   const config = presentationPacing[speed]
+  const factor = speed === 'slow' ? 1.4 : speed === 'fast' ? .55 : 1
+  if (/^(CardRevealedEvent|DiscardEvent|JudgmentRevealedEvent)$/.test(kind)) return Math.round(2000 * factor)
+  if (kind === 'FireAttackResultEvent') return Math.round(1300 * factor)
+  if (kind === 'ChainPropagationEvent') return Math.round(900 * factor)
+  if (kind === 'EffectTargetEvent') return Math.round(700 * factor)
   if (/Skill|Guhuo/.test(kind)) return Math.round(config.skill * (1 + Math.min(3, Number(event?.level ?? 0)) * .04))
   if (/^(BeforeDamage|AfterDamage|Phase|CardResolved)/.test(kind)) return 0
   if (/DamageDealt|Recovered|Judgment|Skill|Dying|Died|Death/.test(kind)) return Math.round(config.impact * (1 + Math.min(3, Math.max(0, Number(event?.amount ?? 1) - 1)) * .08))

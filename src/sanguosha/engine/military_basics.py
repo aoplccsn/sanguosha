@@ -69,6 +69,8 @@ class MilitaryDamageHandler(DamageActionHandler):
     def step(self, state, frame):
         action = frame.action
         target = state.players[action.target_id]
+        if state.status is GameStatus.FINISHED:
+            return StepResult.complete(int(frame.local.get('amount',0)))
         from .yj2011 import replace_damage
         replacement = replace_damage(state, frame, self.skills, self.recorder)
         if replacement is not None:
@@ -400,6 +402,7 @@ class MilitaryDamageHandler(DamageActionHandler):
         frame.cursor += 1
         if not state.players[pid].is_alive or not state.players[pid].chained:
             return StepResult.continue_()
+        self.recorder.record(Event(f'{action.action_id}:chain-cue:{frame.cursor}','chain_propagation',action.target_id,(pid,),metadata={'nature':action.nature.value}))
         return StepResult.push(MilitaryDamageAction(
             f'{action.action_id}:chain:{frame.cursor}', action.source_id, pid,
             int(frame.local['amount']), action.nature, action.card_id, action.related_action_id,

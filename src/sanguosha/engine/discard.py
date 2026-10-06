@@ -92,7 +92,7 @@ class DiscardPhaseBody:
         frame.step_index = 2
         return StepResult.ask(PendingRequest(
             f"{action.action_id}:discard", action.player_id,
-            RequestType.CHOOSE_CARDS, f"Discard {excess} card(s)",
+            RequestType.CHOOSE_CARDS, f"请选择要弃置的 {excess} 张牌",
             action.action_id, frame.frame_id,
             eligible_card_ids=eligible, min_count=excess, max_count=excess,
         ))

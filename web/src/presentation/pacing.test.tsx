@@ -20,7 +20,7 @@ it('holds key actions for the requested three speeds', () => {
   expect(eventDuration(card, 'fast')).toBe(2475)
 })
 it('paces actual AI decisions by complexity independently of action dwell', () => {
-  for (const [complexity, duration] of [['simple', 4500], ['ordinary', 6000], ['complex', 7500]] as const) {
+  for (const [complexity, duration] of [['simple', 1800], ['ordinary', 2400], ['complex', 3000]] as const) {
     const event = { kind: 'AIThinkingEvent', complexity }
     expect(eventDuration(event, 'normal')).toBe(duration)
     expect(eventDuration(event, 'slow')).toBe(Math.round(duration * 1.4))
@@ -86,4 +86,18 @@ it('retains a Slash when the immediate human request arrives after its public ev
  expect(result.current?.presentation_phase).toBe('target')
  act(()=>vi.advanceTimersByTime(4000))
  expect(result.current?.event_id).toBe('incoming-slash')
+})
+
+it('public reveals and discards survive fast snapshots and human requests, deduplicated by event ID',()=>{
+ vi.useFakeTimers()
+ const reveal={kind:'CardRevealedEvent',event_id:'reveal',cards:[]}
+ const discard={kind:'DiscardEvent',event_id:'discard',cards:[]}
+ const {result,rerender}=renderHook(({items,human}:{items:PublicEvent[],human?:string})=>usePresentation(items,'normal',human),{initialProps:{items:[reveal],human:undefined as string|undefined}})
+ act(()=>vi.advanceTimersByTime(500))
+ rerender({items:[{...reveal},discard],human:'new-request'})
+ expect(result.current?.event_id).toBe('reveal')
+ act(()=>vi.advanceTimersByTime(1500))
+ expect(result.current?.event_id).toBe('discard')
+ act(()=>vi.advanceTimersByTime(2000))
+ expect(result.current).toBeNull()
 })

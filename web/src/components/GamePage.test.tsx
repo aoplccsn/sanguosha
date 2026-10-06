@@ -38,6 +38,29 @@ vi.mock('../state/GameContext', () => ({
 }))
 
 describe('GamePage', () => {
+  it('acquired Qixi deselect, cancel and normal play are independent contexts', async()=>{
+    const original={character_id:players[0].character_id,skill_labels:players[0].skill_labels}
+    players[0].character_id='mountain_zuoci';players[0].skill_labels=['化身','奇袭']
+    generals={mountain_zuoci:{skills:[{id:'huashen',name:'化身',description:'化身规则',type:'triggered'}]},ganning:{skills:[{id:'qixi',name:'奇袭',description:'黑牌转拆',type:'view_as'}]}}
+    extraCards=[{...card,card_id:'peach',name:'桃',suit:'♥',definition_id:'basic.peach'}]
+    request={request_id:'qixi-lifecycle',player_id:'p1',request_type:'choose_option',prompt:'出牌',choices:['virtual:qixi:slash-1','use:peach','end_play_phase'],eligible_card_ids:[],allowed_player_ids:[],min_count:1,max_count:1,remaining_ms:60000}
+    const {rerender}=render(<GamePage />)
+    await userEvent.click(screen.getAllByRole('button',{name:'奇袭'})[0])
+    await userEvent.click(screen.getByRole('button',{name:'杀 ♠7'}))
+    await userEvent.click(screen.getByRole('button',{name:'杀 ♠7'}))
+    expect(screen.getByRole('button',{name:'确定'})).toBeDisabled()
+    await userEvent.click(screen.getByRole('button',{name:'杀 ♠7'}))
+    expect(screen.getByRole('button',{name:'确定'})).toBeEnabled()
+    await userEvent.click(screen.getByRole('button',{name:'取消选中'}))
+    expect(screen.getByRole('button',{name:'桃 ♥7'})).toHaveAttribute('aria-disabled','false')
+    await userEvent.click(screen.getByRole('button',{name:'桃 ♥7'}))
+    await userEvent.click(screen.getByRole('button',{name:'确定'}))
+    expect(submitDecision).toHaveBeenLastCalledWith('qixi-lifecycle','use:peach')
+    request={...request,request_id:'changed-avatar',choices:['use:peach']};rerender(<GamePage />)
+    expect(screen.getByRole('button',{name:'确定'})).toBeDisabled()
+    Object.assign(players[0],original)
+  })
+
   it('renders abolished equipment slots from authoritative projection', () => {
     ;(players[1] as any).abolished_equipment_slots=['weapon','armor']
     render(<GamePage />)
@@ -257,6 +280,7 @@ describe('GamePage', () => {
     request = { request_id: 'jiuchi-rescue', player_id: 'p1', request_type: 'respond_with_card', prompt: '濒死：请打出桃救援或放弃', choices: [], allowed_player_ids: [], required_definition_id: 'basic.peach', eligible_card_ids: ['virtual:jiuchi:slash-1'], allow_pass: true, min_count: 1, max_count: 1, subject_player_id: 'p1', remaining_ms: 30000 }
     render(<GamePage />)
     await userEvent.click(screen.getByRole('button', { name: '酒池' }))
+    await userEvent.click(screen.getByRole('button', { name: '杀 ♠7' }))
     await userEvent.click(screen.getByRole('button', { name: '确定' }))
     expect(submitDecision).toHaveBeenCalledWith('jiuchi-rescue', 'virtual:jiuchi:slash-1')
   })
@@ -343,12 +367,12 @@ describe('T18A.7 response semantics',()=>{
   })
   it('submits distinct current-request and root-trick commands',async()=>{
     waiting=undefined;publicEvents=[]
-    request={request_id:'counter',player_id:'p1',request_type:'respond_with_card',prompt:'无懈可击',choices:[],eligible_card_ids:[],allowed_player_ids:[],min_count:0,max_count:1,allow_pass:true,remaining_ms:60000,required_definition_id:'trick.nullification'}
+    request={allow_root_trick_pass:true,request_id:'counter',player_id:'p1',request_type:'respond_with_card',prompt:'无懈可击',choices:[],eligible_card_ids:[],allowed_player_ids:[],min_count:0,max_count:1,allow_pass:true,remaining_ms:60000,required_definition_id:'trick.nullification'}
     render(<GamePage />)
     expect(screen.getByRole('button',{name:'使用无懈'})).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button',{name:'不响应'}))
     expect(submitDecision).toHaveBeenLastCalledWith('counter',{pass:true})
-    await userEvent.click(screen.getByRole('button',{name:'本次不无懈'}))
+    await userEvent.click(screen.getByRole('button',{name:'本轮不再询问'}))
     expect(submitDecision).toHaveBeenLastCalledWith('counter',{pass:true,scope:'root_trick'})
   })
 })

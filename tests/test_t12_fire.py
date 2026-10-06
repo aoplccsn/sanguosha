@@ -234,7 +234,7 @@ def test_huoji_uses_red_hand_as_fire_attack():
     drive(session, lambda request: (
         'p2' if request.request_type is RequestType.CHOOSE_PLAYER else
         target_card if request.request_type is RequestType.CHOOSE_CARD else
-        matching if request.request_type is RequestType.RESPOND_WITH_CARD and '火攻：展示' in request.prompt else
+        matching if request.request_type is RequestType.RESPOND_WITH_CARD and '火攻：' in request.prompt else
         PASS_RESPONSE if request.request_type is RequestType.RESPOND_WITH_CARD else
         request.timeout_value()))
     assert session.state.players['p2'].hp == before - 1

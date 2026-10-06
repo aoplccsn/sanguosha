@@ -55,11 +55,13 @@ class Seat:
     connected: bool = False
     token: str = ""
     send: Send | None = None
+    disconnected_at: float | None = None
+    ai_controlled: bool = False
 
     def public(self) -> dict:
         return {"seat_id": str(self.player_id), "player_name": self.name,
                 "controller_type": self.controller.value, "ready": self.ready,
-                "connected": self.connected}
+                "connected": self.connected, "ai_controlled": self.ai_controlled}
 
 
 class RoomError(ValueError):
@@ -105,6 +107,7 @@ class MultiplayerRoom:
         self.seed = seed
         self.review_god_lvbu = review_god_lvbu
         self.timeout_seconds = timeout_seconds
+        self.reconnect_grace_seconds = 15.0
         self.pregame: Pregame | None = None
         self.draft_requests: dict[PlayerId, PendingRequest] = {}
         self.draft_deadlines: dict[PlayerId, float] = {}
@@ -127,10 +130,18 @@ class MultiplayerRoom:
 
     def join(self, name: str, send: Send, *, token: str | None = None) -> tuple[PlayerId, str]:
         if token:
-            seat = next((s for s in self.seats.values() if s.token == token and s.controller is Controller.HUMAN), None)
+            seat = next((s for s in self.seats.values() if s.token == token and (s.controller is Controller.HUMAN or s.ai_controlled)), None)
             if seat is None:
                 raise RoomError("invalid reconnect token")
             seat.connected, seat.send = True, send
+            if seat.ai_controlled:
+                seat.controller=Controller.HUMAN
+                seat.ai_controlled=False
+                self.ai_deadline=None; self._ai_wait_request=None; self._last_request_id=None
+                self.request_deadline=None
+            seat.disconnected_at=None
+            if self.session is not None and self.session.engine.pending_request is not None and self.session.engine.pending_request.player_id==seat.player_id and self.request_deadline is None:
+                self.pump()
             self._send_current(seat.player_id)
             self._broadcast(envelope("PLAYER_RECONNECTED", seat_id=str(seat.player_id)))
             self._broadcast_lobby()
@@ -156,6 +167,7 @@ class MultiplayerRoom:
         if not seat.connected:
             return
         seat.connected, seat.send = False, None
+        seat.disconnected_at=time.time()
         self._broadcast(envelope("PLAYER_DISCONNECTED", seat_id=str(pid)))
         self._broadcast_lobby()
 
@@ -293,7 +305,7 @@ class MultiplayerRoom:
             decision = self._resolve_hidden_choice(request, decision)
         skip_root = decision.value == 'ui.pass_root_trick'
         if skip_root:
-            if request.required_definition_id != 'trick.nullification' or self.session.nullification_window_id(request) is None:
+            if not self._allow_root_trick_pass(request):
                 raise RoomError('root trick pass requires a current nullification request')
             decision = Decision(decision.request_id, decision.player_id, PASS_RESPONSE)
         self.network_decisions.validate(pid, decision)
@@ -516,6 +528,14 @@ class MultiplayerRoom:
 
     def poll(self) -> None:
         now = time.time()
+        changed=False
+        if self.phase is RoomPhase.IN_GAME:
+            for seat in self.seats.values():
+                if seat.controller is Controller.HUMAN and not seat.connected and seat.disconnected_at is not None and now-seat.disconnected_at>=self.reconnect_grace_seconds:
+                    seat.ai_controlled=True;seat.controller=Controller.AI;changed=True
+            if changed:
+                self.request_deadline=None; self._last_request_id=None
+                self._broadcast_lobby();self.pump()
         if ((self.ai_deadline is not None and now >= self.ai_deadline)
                 or (self.presentation_deadline is not None and now >= self.presentation_deadline)):
             self.pump()
@@ -588,6 +608,10 @@ class MultiplayerRoom:
             if request is not None and request.player_id == pid and self.request_deadline is not None:
                 self._send(pid, envelope("PENDING_REQUEST", request=self._request_payload(request)))
 
+    def _allow_root_trick_pass(self, request):
+        from sanguosha.engine.military_tricks import TrickAction
+        return bool(self.session and request.required_definition_id=='trick.nullification' and any(isinstance(f.action,TrickAction) and (f.action.definition_id in ('trick.savage_assault','trick.archery_attack','trick.amazing_grace','trick.god_salvation') or len(str(f.local.get('targets','')).split('|'))>1) for f in self.session.engine.stack.snapshot()))
+
     def _hidden_hand_aliases(self, request: PendingRequest) -> dict[str, str]:
         if (self.session is None or request.subject_player_id is None
                 or request.subject_player_id == request.player_id
@@ -604,6 +628,7 @@ class MultiplayerRoom:
         payload = serialize_request(request, remaining)
         from .choice_labels import choice_labels
         payload['choice_labels'] = choice_labels(self, request)
+        payload['allow_root_trick_pass'] = self._allow_root_trick_pass(request)
         aliases = self._hidden_hand_aliases(request)
         if aliases:
             reverse = {card_id: alias for alias, card_id in aliases.items()}
@@ -637,8 +662,13 @@ class MultiplayerRoom:
         for player in result["players"]:
             pid = PlayerId(player["player_id"])
             player["name"] = ("你 · " if pid == viewer else "") + self.seats[pid].name
+            player["ai_controlled"] = self.seats[pid].ai_controlled
         request = self.session.engine.pending_request
         result['combat'] = self._combat_context()
+        from sanguosha.engine.military_tricks import TargetTrick
+        fire=next((f for f in reversed(self.session.engine.stack.snapshot()) if isinstance(f.action,TargetTrick) and f.action.definition_id=='trick.fire_attack' and f.local.get('revealed_card_id')),None)
+        result['public_reveal'] = dict(kind='CardRevealedEvent',event_id=fire.action.action_id+':revealed',source_id=str(fire.action.target_id),target_id=str(fire.action.source_id),cards=[self._public_card(fire.local['revealed_card_id'])],reason='fire_attack') if fire else None
+        result['public_card_history'] = [public for event in self.session.events.events[-80:] if isinstance(event,CardMovedEvent) and event.to_zone.zone_type is ZoneType.DISCARD_PILE and event.reason=='discard' or isinstance(event,Event) and event.event_type in ('card_revealed','after_judgment') if (public:=self._public_event(event)) is not None][-12:]
         result['waiting'] = None
         if request is not None:
             ai = self.seats[request.player_id].controller is Controller.AI
@@ -719,6 +749,11 @@ class MultiplayerRoom:
             base['top_response'] = {'source_id': str(e.player_id), 'definition_id': str(e.response_definition_id)}
         return base
 
+    def _public_card(self, cid):
+        from sanguosha.projection import SUIT_SYMBOLS, RANK_LABELS
+        card=self.session.state.cards[cid];definition=self.session.definitions.get(card.definition_id)
+        return dict(card_id='public-card',name=definition.name,definition_id=str(card.definition_id),suit=SUIT_SYMBOLS[card.suit],rank=str(RANK_LABELS.get(card.rank,card.rank)),category=definition.category.value,equipment_slot=definition.equipment_slot.value if definition.equipment_slot else '',details='')
+
     def _public_event(self, event) -> dict | None:
         """Allowlist semantic facts; card instance IDs and hidden moves are excluded."""
         result = {"kind": type(event).__name__, "event_id": event.event_id}
@@ -756,7 +791,9 @@ class MultiplayerRoom:
             if base:
                 if event.response_definition_id == 'trick.nullification':
                     count = sum(isinstance(e, (CardRespondedEvent, VirtualResponseEvent)) and e.source_action_id == event.source_action_id for e in self.session.events.events[:self.session.events.events.index(event) + 1])
-                    base.update(nullification_count=count, cancelled=bool(count % 2))
+                    from sanguosha.engine.military_tricks import NullificationWindow
+                    window=next((f for f in self.session.engine.stack.snapshot() if isinstance(f.action,NullificationWindow) and f.action.action_id==event.source_action_id),None)
+                    base.update(nullification_count=count, cancelled=bool(count % 2),current_target_id=str(window.action.target_id) if window else '')
                 result['base_action'] = base
             result.update(source_id=str(event.player_id), response_number=event.response_number,
                           response_total=event.response_total)
@@ -772,19 +809,28 @@ class MultiplayerRoom:
             result.update(player_id=str(event.player_id), turn_number=event.turn_number)
         elif isinstance(event, DyingRequiredEvent):
             result.update(player_id=str(event.target_id))
-        elif isinstance(event, CardMovedEvent) and event.reason == 'discard':
-            # Count only; never serialize hand IDs, hidden draws or move metadata.
+        elif isinstance(event, CardMovedEvent) and event.to_zone.zone_type is ZoneType.DISCARD_PILE and (event.reason == 'discard' or event.reason == 'system' and event.from_zone.zone_type in (ZoneType.HAND,ZoneType.EQUIPMENT,ZoneType.JUDGMENT,ZoneType.SPECIAL)):
+            # Public discard faces use anonymous IDs; hidden draws and moves stay private.
             from hashlib import sha256
             result.update(kind='DiscardEvent', event_id=sha256(event.event_id.encode()).hexdigest()[:24],
-                          player_id=str(event.actor_id or ''), count=len(event.card_ids))
-        elif isinstance(event, Event) and event.event_type == 'card_revealed':
+                          player_id=str(event.from_zone.player_id or event.actor_id or ''), source_id=str(event.actor_id or ''), count=len(event.card_ids),
+                          cards=[self._public_card(cid) for cid in event.card_ids if not self.session.state.metadata.get('concealed_discard_cards',{}).get(cid)] if self.session else [], reason='discard')
+        elif isinstance(event, Event) and event.event_type in ('card_revealed','judgment_card_revealed','judgment_card_replaced'):
             card = self.session.state.cards[event.metadata['card_id']]
             result.update(kind='CardRevealedEvent', source_id=str(event.source_id),
                           definition_id=str(card.definition_id), card_name=self.session.definitions.get(card.definition_id).name,
-                          suit=card.suit.value, rank=card.rank, skill_id=event.metadata.get('skill_id', ''))
+                          suit=card.suit.value, rank=card.rank, skill_id=event.metadata.get('skill_id', ''), cards=[self._public_card(event.metadata['card_id'])], reason=event.metadata.get('reason','reveal'))
+            if event.event_type.startswith('judgment_card'): result['kind']='JudgmentRevealedEvent'
+        elif isinstance(event,Event) and event.event_type=='chain_propagation':
+            result.update(kind='ChainPropagationEvent',source_id=str(event.source_id),target_id=str(event.target_ids[0]),nature=event.metadata['nature'])
+        elif isinstance(event,Event) and event.event_type=='effect_target':
+            result.update(kind='EffectTargetEvent',source_id=str(event.source_id),target_id=str(event.target_ids[0]),definition_id=event.metadata['definition_id'])
+        elif isinstance(event,Event) and event.event_type=='fire_attack_result':
+            result.update(kind='FireAttackResultEvent',source_id=str(event.source_id),target_id=str(event.target_ids[0]),suit=event.metadata.get('suit',''),stage=event.metadata.get('stage','result'),dealt_damage=False)
         elif isinstance(event, Event) and event.event_type == 'after_judgment':
             result.update(kind='JudgmentEvent', source_id=str(event.source_id or ''),
                           matched=bool(event.metadata.get('matched', False)))
+            if self.session and event.metadata.get('card_id') in self.session.state.cards: result['cards']=[self._public_card(event.metadata['card_id'])]
         elif isinstance(event, Event) and (event.event_type.startswith('skill_') or event.event_type == 'presentation_skill'):
             from sanguosha.content.characters.standard import ALL_SKILL_CATALOGUE
             skill_id = str(event.metadata['skill_id']) if event.event_type == 'presentation_skill' else event.event_type.removeprefix('skill_')

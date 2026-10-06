@@ -3,10 +3,12 @@ import type { PublicEvent } from '../types'
 import { eventDuration, type GameSpeed } from './pacing'
 
 // Intake is independent of the playback timer: incoming projections/events cannot
-// restart the dwell time. Human decisions flush playback, never the protocol path.
+// restart the dwell time. Human prompts are immediate; essential public facts keep playing.
 export function usePresentation(events: PublicEvent[], speed: GameSpeed, humanRequest: string | undefined, authoritativeWaiting = false) {
   const queue = useRef<PublicEvent[]>([])
-  const seen = useRef(new Set<PublicEvent>())
+  const seen = useRef(new Set<string | PublicEvent>())
+  const identity = (event: PublicEvent) => typeof event.event_id === 'string' ? event.event_id : event
+  const essential = (event: PublicEvent) => /^(CardRevealedEvent|DiscardEvent|JudgmentEvent|JudgmentRevealedEvent|FireAttackResultEvent|EffectTargetEvent|ChainPropagationEvent)$/.test(String(event.kind))
   const timer = useRef<number | undefined>(undefined)
   const previousHuman = useRef<string | undefined>(undefined)
   const speedRef = useRef(speed)
@@ -23,14 +25,19 @@ export function usePresentation(events: PublicEvent[], speed: GameSpeed, humanRe
     timer.current = window.setTimeout(() => advance.current(), eventDuration(next, speedRef.current))
   }
   useEffect(() => {
-    const incoming = events.filter(event => !seen.current.has(event))
+    const incoming = events.filter(event => !seen.current.has(identity(event)))
     // Target declaration belongs to its original reveal, not a second action.
     const fresh = incoming.filter(event => !(event.kind === 'TrickTargetsDeclaredEvent' && incoming.some(
       other => other.kind === 'CardUsedEvent' && other.root_id && other.root_id === event.root_id)))
-    incoming.forEach(event => seen.current.add(event))
-    if (seen.current.size > 1024) seen.current = new Set(events)
+    incoming.forEach(event => seen.current.add(identity(event)))
+    if (seen.current.size > 1024) seen.current = new Set(events.map(identity))
     const changedHuman = humanRequest !== previousHuman.current
     previousHuman.current = humanRequest
+    if (humanRequest && humanRequest !== 'connection-reset' && (fresh.some(essential) || queue.current.some(essential) || (currentRef.current && essential(currentRef.current)))) {
+      queue.current.push(...fresh.filter(e=>eventDuration(e,speedRef.current)>0 && e.kind!=='AIThinkingEvent'))
+      if (timer.current===undefined && queue.current.length) advance.current()
+      return
+    }
     if (humanRequest) {
       const newAction = [...fresh].some(event => /CardUsed|TrickTargetsDeclared|Responded|VirtualResponse|Skill/.test(String(event.kind)))
       if (!changedHuman && !newAction && humanRequest !== 'connection-reset') return

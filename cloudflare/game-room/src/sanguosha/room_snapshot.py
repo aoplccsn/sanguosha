@@ -42,6 +42,8 @@ def snapshot_room(room: MultiplayerRoom) -> bytes:
             "ready": seat.ready,
             "token": seat.token,
             "connected": seat.connected,
+            "disconnected_at": seat.disconnected_at,
+            "ai_controlled": seat.ai_controlled,
         } for seat in room.seats.values()],
         "pregame": pregame,
         "draft_requests": _encode(room.draft_requests),
@@ -80,6 +82,8 @@ def restore_room(blob: bytes) -> MultiplayerRoom:
         seat.ready = seat_data["ready"]
         seat.token = seat_data["token"]
         # Connections are rebound from hibernating WebSocket attachments.
+        seat.disconnected_at = seat_data.get("disconnected_at")
+        seat.ai_controlled = seat_data.get("ai_controlled", False)
         seat.connected = False
         seat.send = None
     if data["pregame"] is not None:
