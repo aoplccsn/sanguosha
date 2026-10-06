@@ -1,0 +1,156 @@
+FFFFFFFFF                                                                [100%]
+================================== FAILURES ===================================
+__________ test_pindian_public_faces_and_ownership_survive_reconnect __________
+
+    def test_pindian_public_faces_and_ownership_survive_reconnect():
+        s,a,b=pindian_game(ranks=(7,7)); room=room_for(s)
+        s.engine.start_action(PindianAction('close-compare','p1','p2'))
+        answer(s,a)
+        assert not any(isinstance(e,Event) and e.event_type=='pindian_revealed' for e in s.events.events)
+        answer(s,b)
+        event=next(e for e in s.events.events if isinstance(e,Event) and e.event_type=='pindian_revealed')
+        public=room._public_event(event)
+>       assert public is not None
+E       assert None is not None
+
+t18a11_closeout\test_t18a11_closeout.py:27: AssertionError
+_ test_already_skipped_phase_does_not_offer_replacement[False-wind_god_lvmeng-draw] _
+
+general = 'wind_god_lvmeng', phase = <Phase.DRAW: 'draw'>, marked = False
+
+    @pytest.mark.parametrize('general,phase', [('wind_god_lvmeng',Phase.DRAW),('mountain_liushan',Phase.PLAY),('mountain_zhang_he',Phase.DISCARD)])
+    @pytest.mark.parametrize('marked',[False,True])
+    def test_already_skipped_phase_does_not_offer_replacement(general,phase,marked):
+        s=setup('cao_zhang');s.state.players['p1'].character_id=general
+        if marked:s.state.players['p1'].marks['skip_'+phase.value]=1
+        s.engine.start_action(TurnAction('close-skip','p1',phases=(phase,),skipped_phases=frozenset() if marked else frozenset((phase,))))
+>       assert s.engine.pending_request is None
+E       AssertionError: assert PendingRequest(request_id='close-skip:before:0:shelie:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes_n..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E        +  where PendingRequest(request_id='close-skip:before:0:shelie:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes_n..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000024E41B08050>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x0000024E41B08050> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000024E41B08050>, events=<sanguosha.engine.events....F50>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000024E41A9CE10>).engine
+
+t18a11_closeout\test_t18a11_closeout.py:42: AssertionError
+_ test_already_skipped_phase_does_not_offer_replacement[False-mountain_liushan-play] _
+
+general = 'mountain_liushan', phase = <Phase.PLAY: 'play'>, marked = False
+
+    @pytest.mark.parametrize('general,phase', [('wind_god_lvmeng',Phase.DRAW),('mountain_liushan',Phase.PLAY),('mountain_zhang_he',Phase.DISCARD)])
+    @pytest.mark.parametrize('marked',[False,True])
+    def test_already_skipped_phase_does_not_offer_replacement(general,phase,marked):
+        s=setup('cao_zhang');s.state.players['p1'].character_id=general
+        if marked:s.state.players['p1'].marks['skip_'+phase.value]=1
+        s.engine.start_action(TurnAction('close-skip','p1',phases=(phase,),skipped_phases=frozenset() if marked else frozenset((phase,))))
+>       assert s.engine.pending_request is None
+E       AssertionError: assert PendingRequest(request_id='close-skip:before:0:fangquan:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E        +  where PendingRequest(request_id='close-skip:before:0:fangquan:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000024E41B1BB10>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x0000024E41B1BB10> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000024E41B1BB10>, events=<sanguosha.engine.events....CD0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000024E418E8E10>).engine
+
+t18a11_closeout\test_t18a11_closeout.py:42: AssertionError
+_ test_already_skipped_phase_does_not_offer_replacement[False-mountain_zhang_he-discard] _
+
+general = 'mountain_zhang_he', phase = <Phase.DISCARD: 'discard'>
+marked = False
+
+    @pytest.mark.parametrize('general,phase', [('wind_god_lvmeng',Phase.DRAW),('mountain_liushan',Phase.PLAY),('mountain_zhang_he',Phase.DISCARD)])
+    @pytest.mark.parametrize('marked',[False,True])
+    def test_already_skipped_phase_does_not_offer_replacement(general,phase,marked):
+        s=setup('cao_zhang');s.state.players['p1'].character_id=general
+        if marked:s.state.players['p1'].marks['skip_'+phase.value]=1
+        s.engine.start_action(TurnAction('close-skip','p1',phases=(phase,),skipped_phases=frozenset() if marked else frozenset((phase,))))
+>       assert s.engine.pending_request is None
+E       AssertionError: assert PendingRequest(request_id='close-skip:before:0:qiaobian:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E        +  where PendingRequest(request_id='close-skip:before:0:qiaobian:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000024E41AC1A70>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x0000024E41AC1A70> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000024E41AC1A70>, events=<sanguosha.engine.events....2C0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000024E418C63F0>).engine
+
+t18a11_closeout\test_t18a11_closeout.py:42: AssertionError
+_ test_already_skipped_phase_does_not_offer_replacement[True-wind_god_lvmeng-draw] _
+
+general = 'wind_god_lvmeng', phase = <Phase.DRAW: 'draw'>, marked = True
+
+    @pytest.mark.parametrize('general,phase', [('wind_god_lvmeng',Phase.DRAW),('mountain_liushan',Phase.PLAY),('mountain_zhang_he',Phase.DISCARD)])
+    @pytest.mark.parametrize('marked',[False,True])
+    def test_already_skipped_phase_does_not_offer_replacement(general,phase,marked):
+        s=setup('cao_zhang');s.state.players['p1'].character_id=general
+        if marked:s.state.players['p1'].marks['skip_'+phase.value]=1
+        s.engine.start_action(TurnAction('close-skip','p1',phases=(phase,),skipped_phases=frozenset() if marked else frozenset((phase,))))
+>       assert s.engine.pending_request is None
+E       AssertionError: assert PendingRequest(request_id='close-skip:before:0:shelie:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes_n..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E        +  where PendingRequest(request_id='close-skip:before:0:shelie:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes_n..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000024E41B24FC0>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x0000024E41B24FC0> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000024E41B24FC0>, events=<sanguosha.engine.events....650>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000024E41AC2060>).engine
+
+t18a11_closeout\test_t18a11_closeout.py:42: AssertionError
+_ test_already_skipped_phase_does_not_offer_replacement[True-mountain_liushan-play] _
+
+general = 'mountain_liushan', phase = <Phase.PLAY: 'play'>, marked = True
+
+    @pytest.mark.parametrize('general,phase', [('wind_god_lvmeng',Phase.DRAW),('mountain_liushan',Phase.PLAY),('mountain_zhang_he',Phase.DISCARD)])
+    @pytest.mark.parametrize('marked',[False,True])
+    def test_already_skipped_phase_does_not_offer_replacement(general,phase,marked):
+        s=setup('cao_zhang');s.state.players['p1'].character_id=general
+        if marked:s.state.players['p1'].marks['skip_'+phase.value]=1
+        s.engine.start_action(TurnAction('close-skip','p1',phases=(phase,),skipped_phases=frozenset() if marked else frozenset((phase,))))
+>       assert s.engine.pending_request is None
+E       AssertionError: assert PendingRequest(request_id='close-skip:before:0:fangquan:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E        +  where PendingRequest(request_id='close-skip:before:0:fangquan:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000024E41B23E30>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x0000024E41B23E30> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000024E41B23E30>, events=<sanguosha.engine.events....5B0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000024E41912570>).engine
+
+t18a11_closeout\test_t18a11_closeout.py:42: AssertionError
+_ test_already_skipped_phase_does_not_offer_replacement[True-mountain_zhang_he-discard] _
+
+general = 'mountain_zhang_he', phase = <Phase.DISCARD: 'discard'>, marked = True
+
+    @pytest.mark.parametrize('general,phase', [('wind_god_lvmeng',Phase.DRAW),('mountain_liushan',Phase.PLAY),('mountain_zhang_he',Phase.DISCARD)])
+    @pytest.mark.parametrize('marked',[False,True])
+    def test_already_skipped_phase_does_not_offer_replacement(general,phase,marked):
+        s=setup('cao_zhang');s.state.players['p1'].character_id=general
+        if marked:s.state.players['p1'].marks['skip_'+phase.value]=1
+        s.engine.start_action(TurnAction('close-skip','p1',phases=(phase,),skipped_phases=frozenset() if marked else frozenset((phase,))))
+>       assert s.engine.pending_request is None
+E       AssertionError: assert PendingRequest(request_id='close-skip:before:0:qiaobian:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) is None
+E        +  where PendingRequest(request_id='close-skip:before:0:qiaobian:offer', player_id='p1', request_type=<RequestType.YES_NO: 'yes..., subject_player_id=None, play_card_targets={}, exclusive_card_groups=(), minimum_nonempty_count=0, legal_card_sets=()) = <sanguosha.engine.engine.GameEngine object at 0x0000024E41B55D00>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x0000024E41B55D00> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000024E41B55D00>, events=<sanguosha.engine.events....AE0>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x0000024E418B5480>).engine
+
+t18a11_closeout\test_t18a11_closeout.py:42: AssertionError
+_______________ test_zhiji_max_hp_payment_precedes_reward[4-3] ________________
+
+max_hp = 4, hp = 3
+
+    @pytest.mark.parametrize('max_hp,hp',[(4,3),(1,1)])
+    def test_zhiji_max_hp_payment_precedes_reward(max_hp,hp):
+        from sanguosha.engine.mountain import ZhijiAction
+        from test_t17c_juece import empty
+        s=setup('cao_zhang');p=s.state.players['p1'];p.character_id='mountain_jiang_wei'
+        empty(s,'p1');p.max_hp=max_hp;p.hp=hp
+        s.engine.start_action(ZhijiAction('close-zhiji','p1'))
+>       assert p.max_hp==max_hp-1
+E       AssertionError: assert 4 == (4 - 1)
+E        +  where 4 = PlayerState(player_id='p1', seat=0, character_id='mountain_jiang_wei', identity=<Identity.LORD: 'lord'>, hp=3, max_hp=...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).max_hp
+
+t18a11_closeout\test_t18a11_closeout.py:53: AssertionError
+_______________ test_zhiji_max_hp_payment_precedes_reward[1-1] ________________
+
+max_hp = 1, hp = 1
+
+    @pytest.mark.parametrize('max_hp,hp',[(4,3),(1,1)])
+    def test_zhiji_max_hp_payment_precedes_reward(max_hp,hp):
+        from sanguosha.engine.mountain import ZhijiAction
+        from test_t17c_juece import empty
+        s=setup('cao_zhang');p=s.state.players['p1'];p.character_id='mountain_jiang_wei'
+        empty(s,'p1');p.max_hp=max_hp;p.hp=hp
+        s.engine.start_action(ZhijiAction('close-zhiji','p1'))
+>       assert p.max_hp==max_hp-1
+E       AssertionError: assert 1 == (1 - 1)
+E        +  where 1 = PlayerState(player_id='p1', seat=0, character_id='mountain_jiang_wei', identity=<Identity.LORD: 'lord'>, hp=1, max_hp=...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).max_hp
+
+t18a11_closeout\test_t18a11_closeout.py:53: AssertionError
+=========================== short test summary info ===========================
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_pindian_public_faces_and_ownership_survive_reconnect
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_already_skipped_phase_does_not_offer_replacement[False-wind_god_lvmeng-draw]
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_already_skipped_phase_does_not_offer_replacement[False-mountain_liushan-play]
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_already_skipped_phase_does_not_offer_replacement[False-mountain_zhang_he-discard]
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_already_skipped_phase_does_not_offer_replacement[True-wind_god_lvmeng-draw]
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_already_skipped_phase_does_not_offer_replacement[True-mountain_liushan-play]
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_already_skipped_phase_does_not_offer_replacement[True-mountain_zhang_he-discard]
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_zhiji_max_hp_payment_precedes_reward[4-3]
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_zhiji_max_hp_payment_precedes_reward[1-1]
+9 failed in 0.25s

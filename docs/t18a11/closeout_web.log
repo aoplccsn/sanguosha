@@ -1,0 +1,34 @@
+
+> sanguosha-web@0.3.0 pretest
+> python ../scripts/sync_web_assets.py
+
+Web development assets synchronized: C:\Sanguosha\web\public\assets
+
+> sanguosha-web@0.3.0 test
+> vitest run --run src/components/GamePage.test.tsx -t pindian|AOE|aoe|无懈|counter
+
+
+ RUN  v3.2.7 C:/Sanguosha/web
+
+stderr | src/components/GamePage.test.tsx > GamePage > shows public counter cards in the Xiansi modal and requires exactly two
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > GamePage > shows public counter cards in the Xiansi modal and requires exactly two
+[game] click card counter-1 request xiansi option 
+
+stdout | src/components/GamePage.test.tsx > GamePage > shows public counter cards in the Xiansi modal and requires exactly two
+[game] click card counter-2 request xiansi option 
+
+stderr | src/components/GamePage.test.tsx > renders the authoritative AOE targets, root trick and top counter without a second stack UI
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > shows each public pindian card beside its original owner
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ ✓ src/components/GamePage.test.tsx (37 tests | 34 skipped) 305ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed | 34 skipped (37)
+   Start at  03:06:27
+   Duration  1.44s (transform 192ms, setup 135ms, collect 296ms, tests 305ms, environment 447ms, prepare 80ms)
+

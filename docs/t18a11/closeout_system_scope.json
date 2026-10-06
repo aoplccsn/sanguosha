@@ -1,0 +1,503 @@
+{
+  "baseline_code": "c388d7b",
+  "baseline_report": "2cf8720",
+  "baseline_blocked": 163,
+  "code_checkpoint": "974bc0c",
+  "groups": {
+    "pindian": [
+      "quhu",
+      "tianyi",
+      "lieren",
+      "zhiba",
+      "xianzhen",
+      "qiaoshui",
+      "zongshi_jianyong",
+      "zhuikong",
+      "zhiti"
+    ],
+    "aoe_multitarget_nullification": [
+      "jianxiong",
+      "hujia",
+      "jijiang",
+      "jizhi",
+      "wushuang",
+      "longdan",
+      "guhuo",
+      "wumou",
+      "roulin",
+      "qiaoshui",
+      "qiuyuan",
+      "lihuo"
+    ],
+    "phase_turn_skip": [
+      "tuxi",
+      "luoyi",
+      "keji",
+      "yingzi",
+      "biyue",
+      "guanxing",
+      "luoshen",
+      "shensu",
+      "jushou",
+      "shelie",
+      "shuangxiong",
+      "qinyin",
+      "qixing",
+      "kuangfeng",
+      "dawu",
+      "fangzhu",
+      "zaiqi",
+      "yinghun",
+      "haoshi",
+      "benghuai",
+      "qiaobian",
+      "guzheng",
+      "juejing",
+      "renjie",
+      "jiangchi",
+      "zishou",
+      "chunlao",
+      "miji",
+      "jingce",
+      "zhiyan",
+      "juece",
+      "longnu",
+      "jieying_liubei",
+      "cuike",
+      "poxi",
+      "jieying_ganning"
+    ],
+    "extra_phase_turn": [
+      "dangxian",
+      "fangquan",
+      "lianpo"
+    ],
+    "awakening": [
+      "zaoxian",
+      "ruoyu",
+      "zhiji",
+      "hunzi",
+      "baoyin",
+      "zili"
+    ],
+    "limited": [
+      "niepan",
+      "luanwu",
+      "yeyan",
+      "fuli",
+      "jiefan",
+      "fencheng",
+      "zhanhuo"
+    ],
+    "temporary_skills": [
+      "fuhun",
+      "duorui",
+      "duanchang",
+      "jilue",
+      "jixi",
+      "paiyi"
+    ]
+  },
+  "dependent_rows": [
+    {
+      "general_id": "caocao",
+      "skill_id": "jianxiong",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "caocao",
+      "skill_id": "hujia",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "liubei",
+      "skill_id": "jijiang",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "lvbu",
+      "skill_id": "wushuang",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "zhangliao",
+      "skill_id": "tuxi",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "xuchu",
+      "skill_id": "luoyi",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "zhenji",
+      "skill_id": "luoshen",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "zhugeliang",
+      "skill_id": "guanxing",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "zhaoyun",
+      "skill_id": "longdan",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "huangyueying",
+      "skill_id": "jizhi",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "lvmeng",
+      "skill_id": "keji",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "zhouyu",
+      "skill_id": "yingzi",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "diaochan",
+      "skill_id": "biyue",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "wind_xiahou_yuan",
+      "skill_id": "shensu",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "wind_cao_ren",
+      "skill_id": "jushou",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "wind_yuji",
+      "skill_id": "guhuo",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "wind_god_lvmeng",
+      "skill_id": "shelie",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "fire_xun_yu",
+      "skill_id": "quhu",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "fire_pang_tong",
+      "skill_id": "niepan",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "fire_taishi_ci",
+      "skill_id": "tianyi",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "fire_yan_liang_wen_chou",
+      "skill_id": "shuangxiong",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "fire_god_zhouyu",
+      "skill_id": "qinyin",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "fire_god_zhouyu",
+      "skill_id": "yeyan",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "fire_god_zhugeliang",
+      "skill_id": "qixing",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "fire_god_zhugeliang",
+      "skill_id": "kuangfeng",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "fire_god_zhugeliang",
+      "skill_id": "dawu",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "forest_caopi",
+      "skill_id": "fangzhu",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "forest_menghuo",
+      "skill_id": "zaiqi",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "forest_zhurong",
+      "skill_id": "lieren",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "forest_sunjian",
+      "skill_id": "yinghun",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "forest_lusu",
+      "skill_id": "haoshi",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "forest_jia_xu",
+      "skill_id": "luanwu",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "forest_dong_zhuo",
+      "skill_id": "roulin",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "forest_dong_zhuo",
+      "skill_id": "benghuai",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "forest_god_lvbu",
+      "skill_id": "wumou",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "mountain_zhang_he",
+      "skill_id": "qiaobian",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "mountain_deng_ai",
+      "skill_id": "zaoxian",
+      "status": "PASS"
+    },
+    {
+      "general_id": "mountain_liushan",
+      "skill_id": "fangquan",
+      "status": "FIXED"
+    },
+    {
+      "general_id": "mountain_liushan",
+      "skill_id": "ruoyu",
+      "status": "PASS"
+    },
+    {
+      "general_id": "mountain_jiang_wei",
+      "skill_id": "zhiji",
+      "status": "FIXED"
+    },
+    {
+      "general_id": "mountain_jiang_wei",
+      "skill_id": "guanxing",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "mountain_sunce",
+      "skill_id": "hunzi",
+      "status": "PASS"
+    },
+    {
+      "general_id": "mountain_sunce",
+      "skill_id": "zhiba",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "mountain_zhang_zhaozhang",
+      "skill_id": "guzheng",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "mountain_cai_wenji",
+      "skill_id": "duanchang",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "mountain_god_zhaoyun",
+      "skill_id": "juejing",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "mountain_god_simayi",
+      "skill_id": "renjie",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "mountain_god_simayi",
+      "skill_id": "baoyin",
+      "status": "PASS"
+    },
+    {
+      "general_id": "mountain_god_simayi",
+      "skill_id": "lianpo",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2011_gao_shun",
+      "skill_id": "xianzhen",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2012_wang_yi",
+      "skill_id": "miji",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2012_cao_zhang",
+      "skill_id": "jiangchi",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2012_zhong_hui",
+      "skill_id": "zili",
+      "status": "PASS"
+    },
+    {
+      "general_id": "yj2012_liao_hua",
+      "skill_id": "dangxian",
+      "status": "PASS"
+    },
+    {
+      "general_id": "yj2012_liao_hua",
+      "skill_id": "fuli",
+      "status": "PASS"
+    },
+    {
+      "general_id": "yj2012_guan_xing_zhang_bao",
+      "skill_id": "fuhun",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2012_cheng_pu",
+      "skill_id": "lihuo",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2012_cheng_pu",
+      "skill_id": "chunlao",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2012_han_dang",
+      "skill_id": "jiefan",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2012_liu_biao",
+      "skill_id": "zishou",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2013_guo_huai",
+      "skill_id": "jingce",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2013_jian_yong",
+      "skill_id": "qiaoshui",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2013_jian_yong",
+      "skill_id": "zongshi_jianyong",
+      "status": "FIXED"
+    },
+    {
+      "general_id": "yj2013_yu_fan",
+      "skill_id": "zhiyan",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2013_fu_huanghou",
+      "skill_id": "zhuikong",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2013_fu_huanghou",
+      "skill_id": "qiuyuan",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2013_li_ru",
+      "skill_id": "juece",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "yj2013_li_ru",
+      "skill_id": "fencheng",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "shadow_god_liubei",
+      "skill_id": "longnu",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "shadow_god_liubei",
+      "skill_id": "jieying_liubei",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "shadow_god_luxun",
+      "skill_id": "cuike",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "shadow_god_luxun",
+      "skill_id": "zhanhuo",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "thunder_god_ganning",
+      "skill_id": "poxi",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "thunder_god_ganning",
+      "skill_id": "jieying_ganning",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "thunder_god_zhangliao",
+      "skill_id": "duorui",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "thunder_god_zhangliao",
+      "skill_id": "zhiti",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "动态授予/附属",
+      "skill_id": "jixi",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "动态授予/附属",
+      "skill_id": "jilue",
+      "status": "BLOCKED"
+    },
+    {
+      "general_id": "动态授予/附属",
+      "skill_id": "paiyi",
+      "status": "BLOCKED"
+    }
+  ],
+  "counts": {
+    "BLOCKED": 153,
+    "FIXED": 24,
+    "PASS": 15
+  }
+}

@@ -1,0 +1,21 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_nested_extra_turn_precedes_already_pending_extra_turn __________
+
+    def test_nested_extra_turn_precedes_already_pending_extra_turn():
+        from sanguosha.engine.turn_order import queue_extra_turn, next_scheduled_player
+        s=setup('cao_zhang');s.state.current_player_id='p1'
+        queue_extra_turn(s.state,'p3');queue_extra_turn(s.state,'p4')
+        assert next_scheduled_player(s.state)=='p3'
+        s.state.current_player_id='p3';queue_extra_turn(s.state,'p5')
+        s=restore_session(snapshot_session(s))
+>       assert next_scheduled_player(s.state)=='p5'
+E       AssertionError: assert 'p4' == 'p5'
+E         
+E         - p5
+E         + p4
+
+t18a11_closeout\test_t18a11_closeout.py:72: AssertionError
+=========================== short test summary info ===========================
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_nested_extra_turn_precedes_already_pending_extra_turn
+1 failed, 9 deselected in 0.24s

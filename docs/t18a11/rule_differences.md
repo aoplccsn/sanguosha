@@ -139,3 +139,16 @@ Equipment / distance batch; code c388d7b:
 Eight repaired real public roots, cumulative **63**. H03 rejects deliberately corrupt equipment state/snapshot (capacity and abolished nonempty); defensive only. C02 implements the user's explicit old-departure-reaction-before-new-install contract; historical archive uses atomic replacement, so classify as explicit project variant/contract adjustment, not an extra classic baseline bug. Four-slot deck has no treasure; classic drlt vs OL Zhang Liao differences and fixture/development errors are separately documented in equipment_distance_audit.md.
 
 Selected 57 dependent rows / 55 skills. Closed 4 PASS rows (three Mashu, Feiying), 1 FIXED (Qicai). Current **163 BLOCKED / 21 FIXED / 8 PASS**. Duorui/Zhiti and incomplete composite timing rows remain BLOCKED. **385 related Python / 36 scoped Web passed**; no full pytest needed at five closures/localized scope, no 795 rerun or final gates. No RC issued.
+
+
+Shared closeout systems; code **974bc0c**:
+
+| R62 | Pindian public ownership | Engine reveal omitted from room public adapter/history | Publish both anonymized faces and original owners, restore history, label owners in existing shared card display | Real baseline product information gap | closeout_system_reproduction.log; test_t18a11_closeout.py; scoped GamePage | 974bc0c |
+| R63 | Already skipped phase replacement | before_phase offers replacement before skip check | Shared scheduler checks pre-existing schedule/mark skip before any replacement offer | Real baseline rule timing bug | Six Draw/Play/Discard reproductions | 974bc0c |
+| R64 | Zhiji payment order | Reward/choice before max HP reduction; dead owner can receive earlier reward | Existing max HP action first; surviving owner then chooses reward and gains Guanxing | Real baseline rule ordering bug | max4 HP3 and fatal max1 reproductions | 974bc0c |
+| R65 | Nested extra-turn priority | Older pending extra turn precedes turn newly granted inside extra turn | Shared pending-prefix insertion preserves nested priority, batch FIFO and original-seat anchor through restore | Real baseline scheduling bug | closeout_extra_turn_reproduction.log | 974bc0c |
+| R66 | Fangquan end timing | Cost asked inside Finish, omitted if Finish skipped | Offer from shared TurnAction completion after phase end, independent of Finish body | Real baseline phase/turn timing bug | closeout_fangquan_reproduction.log, normal/skipped Finish | 974bc0c |
+
+Five real roots this batch; cumulative **68**. No defensive tests/invariants or unrelated refactor. 79 dependent BLOCKED rows selected, **7 PASS / 3 FIXED** newly closed. Current **153 BLOCKED / 24 FIXED / 15 PASS**. Evidence and all remaining per-row clauses: closeout_system_audit.md; source hashes: closeout_system_sources.json.
+
+Targeted **284 main Python / 49 closure Python / 209 final turn recheck / 3 scoped Web**, all passed; overlapping batches are not summed. Correct implementations reuse existing tests; 12 added cases cover only confirmed differences. Fixture mistakes and correct experimental paths are documented separately and not counted. No full pytest, Zuoci 795 rerun, final gates or RC.

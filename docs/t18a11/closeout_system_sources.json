@@ -1,0 +1,66 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/mountain.cpp",
+    "sha256": "6af7a935814d9dd7e3edd4f2cc10972c4a59c5bd3f8959a66abe6765590b18db",
+    "anchors": [
+      "class Zaoxian",
+      "class Hunzi",
+      "class Zhiji",
+      "class Ruoyu",
+      "class Fangquan"
+    ],
+    "finding": "Zaoxian/Hunzi/Zhiji/Ruoyu/Fangquan: preparation conditions, once-only marks, max-HP-before-reward and NotActive extra turn."
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/yjcm.cpp",
+    "sha256": "f3d841e5d964096d3f9dfc76ee731aae1ae76639e4ffc9d6a575aff18d0068ab",
+    "anchors": [
+      "class Zili"
+    ],
+    "finding": "Zili: three power cards, once-only mark, max HP payment before reward and Paiyi."
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/yjcm2012.cpp",
+    "sha256": "4201945fa47162ac6987de35f4482ad22462b34838dee89af9138c41d4abbc4d",
+    "anchors": [
+      "class Dangxian",
+      "class Fuli"
+    ],
+    "finding": "Dangxian: compulsory additional Play at RoundStart; Fuli: own dying, once, faction-count recovery then turnover. Modern Zishou differs from locked catalogue and is not adopted."
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/yjcm2013.cpp",
+    "sha256": "e95319d7dcc81faf2cdb04d71fb1a2c52113dc1aee6855c063bd98afebc0ae0c",
+    "anchors": [
+      "class Zongshih"
+    ],
+    "finding": "Zongshih: compare each side strictly; ties obtain own card; only table cards; initiating holder priority."
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/package/god.cpp",
+    "sha256": "0fdd392bb4977697431964710fa6a213d2cfc4fb71d18de3023d63fa344c5642",
+    "anchors": [
+      "class Baiyin",
+      "class Lianpo"
+    ],
+    "finding": "Baiyin: four bear marks, once, max HP payment before Jilve. Lianpo: extra turn at NotActive after kill."
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/server/serverplayer.cpp",
+    "sha256": "06f18fc5666854c3e330f23865f1a82a156aa46eacab99f81a4c654bb256d01b",
+    "anchors": [
+      "bool ServerPlayer::pindian",
+      "void ServerPlayer::gainAnExtraTurn"
+    ],
+    "finding": "Pindian publicly moves both original-owner cards to table; strict greater comparison. gainAnExtraTurn synchronously nests before returning to former current player."
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Mogara/QSanguosha-v2/e8768851bd8054db9fd1b63cd6f1feca813590d7/src/server/gamerule.cpp",
+    "sha256": "61abb19afc87756a113813ea5a1c007ffe0ba57fc1a520b50406e7494d168302",
+    "anchors": [
+      "case TurnStart",
+      "case EventPhaseChanging"
+    ],
+    "finding": "Face-down turns flip without normal phases; Play stops on death; phase-change/NotActive cleanup and extra turn return remain distinct."
+  }
+]

@@ -1,0 +1,39 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+__ test_fangquan_cost_offer_is_at_turn_end_even_if_finish_is_skipped[False] ___
+
+skip_finish = False
+
+    @pytest.mark.parametrize('skip_finish',[False,True])
+    def test_fangquan_cost_offer_is_at_turn_end_even_if_finish_is_skipped(skip_finish):
+        from sanguosha.engine.events import PhaseEndedEvent, PhaseSkippedEvent
+        s=setup('cao_zhang');s.state.players['p1'].character_id='mountain_liushan'
+        s.engine.start_action(TurnAction('close-fangquan','p1',phases=(Phase.PLAY,Phase.FINISH),skipped_phases=frozenset((Phase.FINISH,)) if skip_finish else frozenset()))
+        answer(s,True)
+        assert s.engine.pending_request is not None and '����һ������' in s.engine.pending_request.prompt
+>       assert s.state.current_phase is None
+E       AssertionError: assert <Phase.FINISH: 'finish'> is None
+E        +  where <Phase.FINISH: 'finish'> = GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='mountain_liu...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None).current_phase
+E        +    where GameState(ruleset_id='classic-military', players={'p1': PlayerState(player_id='p1', seat=0, character_id='mountain_liu...'p1', turn_number=4, counts={}), revealed_identities={'p1'}, victory=None, extra_turn_queue=[], extra_turn_anchor=None) = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000017451288C20>, events=<sanguosha.engine.events....050>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000001745109EBA0>).state
+
+t18a11_closeout\test_t18a11_closeout.py:87: AssertionError
+___ test_fangquan_cost_offer_is_at_turn_end_even_if_finish_is_skipped[True] ___
+
+skip_finish = True
+
+    @pytest.mark.parametrize('skip_finish',[False,True])
+    def test_fangquan_cost_offer_is_at_turn_end_even_if_finish_is_skipped(skip_finish):
+        from sanguosha.engine.events import PhaseEndedEvent, PhaseSkippedEvent
+        s=setup('cao_zhang');s.state.players['p1'].character_id='mountain_liushan'
+        s.engine.start_action(TurnAction('close-fangquan','p1',phases=(Phase.PLAY,Phase.FINISH),skipped_phases=frozenset((Phase.FINISH,)) if skip_finish else frozenset()))
+        answer(s,True)
+>       assert s.engine.pending_request is not None and '����һ������' in s.engine.pending_request.prompt
+E       assert (None is not None)
+E        +  where None = <sanguosha.engine.engine.GameEngine object at 0x0000017451340050>.pending_request
+E        +    where <sanguosha.engine.engine.GameEngine object at 0x0000017451340050> = GameSession(engine=<sanguosha.engine.engine.GameEngine object at 0x0000017451340050>, events=<sanguosha.engine.events....F50>, declined_nullification_windows=set(), rng=<sanguosha.engine.rng.PythonRandomSource object at 0x000001745127CE10>).engine
+
+t18a11_closeout\test_t18a11_closeout.py:86: AssertionError
+=========================== short test summary info ===========================
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_fangquan_cost_offer_is_at_turn_end_even_if_finish_is_skipped[False]
+FAILED t18a11_closeout/test_t18a11_closeout.py::test_fangquan_cost_offer_is_at_turn_end_even_if_finish_is_skipped[True]
+2 failed, 10 deselected in 0.25s
