@@ -218,3 +218,28 @@ def test_nonterminal_lightning_death_cleans_delayed_processing_card():
  assert cid in s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
  assert not s.state.cards_in(ZoneRef(ZoneType.PROCESSING))
  s.state.__post_init__()
+
+
+
+def test_lightning_transfer_continues_identically_from_finish_judge_snapshot():
+ from sanguosha.engine.military_tricks import ResolveDelayed
+ from sanguosha.model.enums import Identity
+ from sanguosha.multiplayer.room import MultiplayerRoom
+ from sanguosha.projection import project_for_human
+ s=game();s.state.players['p1'].identity=Identity.LORD;s.state.players['p1'].granted_skills['songwei']='audit'
+ cid=put(s,'delayed.lightning','p2',ZoneType.JUDGMENT)
+ top=s.state.cards_in(ZoneRef(ZoneType.DRAW_PILE))[0];s.state.cards[top]=replace(s.state.cards[top],suit=Suit.CLUB,rank=5)
+ s.engine.start_action(ResolveDelayed('audit-transfer-restore','p2',cid))
+ while s.engine.pending_request and ':counter:' in s.engine.pending_request.request_id:
+  answer(s,s.engine.pending_request.timeout_value())
+ assert s.engine.pending_request.request_id.endswith(':songwei:offer')
+ assert cid in s.state.cards_in(ZoneRef(ZoneType.PROCESSING))
+ restored=restore(s)
+ for session in (s,restored):
+  answer(session,False)
+  assert cid in session.state.cards_in(ZoneRef(ZoneType.JUDGMENT,'p3'))
+  room=MultiplayerRoom();room.session=session
+  history=room._named_projection(project_for_human(session.state,session.definitions,'p4',{}),'p4')['public_card_history']
+  assert history[-1]['kind']=='DelayedResultEvent' and history[-1]['target_id']=='p3'
+  session.state.__post_init__()
+ assert restored.engine.pending_request is None

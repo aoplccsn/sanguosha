@@ -13,6 +13,7 @@ let waiting: any = undefined
 let combat: any = undefined
 let generals: Record<string, any> = {}
 let publicEvents: any[] = []
+let publicHistory: any[] = []
 const card = { card_id: 'slash-1', name: '杀', suit: '♠', rank: '7', definition_id: 'basic.slash', category: 'basic', equipment_slot: '', details: '' }
 let extraCards: typeof card[] = []
 const players = [
@@ -27,7 +28,7 @@ vi.mock('../state/GameContext', () => ({
       seatId,
       connection: 'connected',
       decisionProcessing: null,
-      projection: { waiting, combat, players, hand: [card, ...extraCards], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
+      projection: { public_card_history: publicHistory, waiting, combat, players, hand: [card, ...extraCards], current_phase: 'play', turn_number: 1, deck_count: 120, discard_count: 5, result: null, discard_top: null, shared_cards: [] },
       pendingRequest: request,
       publicEvents,
       generals,
@@ -415,4 +416,14 @@ it('never duplicates opponents while reconnect seat confirmation is pending',()=
  expect(ids).toHaveLength(players.length-1)
  expect(new Set(ids).size).toBe(ids.length)
  seatId='p1';view.rerender(<GamePage />)
+})
+
+
+it('restores delayed outcome text from projection history without live events',()=>{
+ publicHistory=[{kind:'DelayedResultEvent',source_id:'p1',message:'\u3010\u95ea\u7535\u3011\u672a\u751f\u6548\uff1a\u4f20\u9012\u81f3\u4e0b\u4e00\u5408\u6cd5\u89d2\u8272'}]
+ publicEvents=[]
+ try {
+  const {container}=render(<GamePage />)
+  expect(container.querySelector('.public-card-history')).toHaveTextContent('\u4f20\u9012\u81f3\u4e0b\u4e00\u5408\u6cd5\u89d2\u8272')
+ } finally { publicHistory=[] }
 })
