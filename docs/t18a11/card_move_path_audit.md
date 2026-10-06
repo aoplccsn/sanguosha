@@ -10,3 +10,6 @@ rg枚举位置写入并人工追踪：
 - session初始发牌、snapshot恢复及docs/t18a11/audit_server.py本地场景准备单独分类为初始化/证据夹具；不能冒充正式技能移动。
 
 两组100场模拟每步GameState不变量检查，新增重铸使用独立RECAST原因：不得触发discard专属落英/纵玄，不计使用专属集智/精策。仍需要检查全部动态别名写入、每技能移动批次与跨技能反应，状态BLOCKED；这是位置写入路径证据，不是全189技能CardMove语义PASS。
+
+
+Current shared-system batch (code 8d449b4): expanded inventory, pinned clauses, real defects versus defensive contracts, pile visibility and targeted evidence in [card_move_system_audit.md](card_move_system_audit.md). 144 entry dependent rows; 2 closed, 169 BLOCKED overall. 354 related + 2 scoped AI + 3 scoped privacy passed; no historical large simulations rerun.

@@ -100,3 +100,13 @@ Damage / HP / death batch; code checkpoint 1f3f2bb:
 | R44 | Jiuyuan rescuer faction | Checks rescuer faction matches recipient | Checks Wu rescuer; lord/effective skill/other rescuer gates remain | Shared rule root; details in damage_system_audit.md | Wu vs matching Wei; self/nonlord/disabled; test_t18a11_damage_system.py; 302 targeted passed | 1f3f2bb |
 
 8 new baseline roots repaired; cumulative 46 (previous 38). Correct-but-unverified, version differences and fixture/development errors are classified separately in damage_system_audit.md. Closed 4 rows: Jiuyuan/Wansha/Anjian FIXED, Zhuiyi PASS. Current {'BLOCKED': 171, 'FIXED': 17, 'PASS': 4}. No full pytest or final acceptance gates; no RC issued.
+
+
+CardMove / special-pile batch; code 8d449b4:
+
+| R45 | Tuntian movement qualification | Own hand/equipment relocation triggers; inactive current loss misses | NotActive current qualifies actual loss; same owner hand/equipment transfers excluded | Shared movement / area eligibility root | card_move_system_reproduction.log; 354 related + 2 AI + 3 privacy passed | 8d449b4 |
+| R46 | Power pile derived count | Shared pile/death moves leave quan mark stale | Shared CardMove updates/removes count from authoritative zone | Shared movement / area eligibility root | card_move_system_reproduction.log; 354 related + 2 AI + 3 privacy passed | 8d449b4 |
+| R47 | Zongxuan internal movement facts | Reservation triggers early/duplicate equipment departure and duplicate public final discard | Internal moves preserved for state but not rules/public events; publish original-source final facts once; top placements revealed | Shared movement / area eligibility root | card_move_reservation_reproduction.log; 354 related + 2 AI + 3 privacy passed | 8d449b4 |
+| R48 | Xingshang eligible areas | Judgment cards gained with hand/equipment | Hand + equipment only; judgment/private pile remains death cleanup | Shared movement / area eligibility root | card_move_inherit_reproduction.log; 354 related + 2 AI + 3 privacy passed | 8d449b4 |
+
+Four additional real baseline product roots, cumulative 50. Two separate contract improvements (H01 multizone obtain prevalidation on constructed corrupt state; C01 Xingshang acquisition summary) are not added to baseline defect count. Version differences and fixture errors recorded separately in card_move_system_audit.md. Closed Quanji/Xingshang FIXED; {'BLOCKED': 169, 'FIXED': 19, 'PASS': 4}. No full/final gates or RC approval.

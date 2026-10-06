@@ -1,0 +1,88 @@
+F.FFFF                                                                   [100%]
+================================== FAILURES ===================================
+_________ test_tuntian_excludes_own_hand_equipment_relocation[False] __________
+
+inactive = False
+
+    @pytest.mark.parametrize('inactive',[False,True])
+    def test_tuntian_excludes_own_hand_equipment_relocation(inactive):
+     s=game();s.state.players['p2'].granted_skills['tuntian']='audit'
+     s.state.current_player_id='p2' if inactive else 'p1'
+     if inactive:s.state.current_phase=None
+     cid=put(s,'equipment.weapon.spear','p2');moves=s.engine.reaction_provider.__self__
+     moves.move(s.state,CardMove('audit-own-equip',(cid,),ZoneRef(ZoneType.HAND,'p2'),ZoneRef(ZoneType.EQUIPMENT,'p2',EquipmentSlot.WEAPON),CardMoveReason.SYSTEM,'p2'))
+>    assert not moves.reactions
+E    AssertionError: assert not [TuntianAction(action_id='audit-own-equip:tuntian', player_id='p2')]
+E     +  where [TuntianAction(action_id='audit-own-equip:tuntian', player_id='p2')] = <sanguosha.engine.military_equipment.MilitaryMoveService object at 0x0000021B3B921E80>.reactions
+
+tests\test_t18a11_card_move_system.py:26: AssertionError
+________ test_tuntian_notactive_current_still_triggers_on_actual_loss _________
+
+    def test_tuntian_notactive_current_still_triggers_on_actual_loss():
+     s=game();s.state.players['p2'].granted_skills['tuntian']='audit'
+     s.state.current_player_id='p2';s.state.current_phase=None
+     cid=put(s,'basic.slash','p2');moves=s.engine.reaction_provider.__self__
+     moves.move(s.state,CardMove('audit-inactive-loss',(cid,),ZoneRef(ZoneType.HAND,'p2'),ZoneRef(ZoneType.HAND,'p3'),CardMoveReason.SYSTEM,'p3'))
+>    assert len(moves.reactions)==1
+E    assert 0 == 1
+E     +  where 0 = len([])
+E     +    where [] = <sanguosha.engine.military_equipment.MilitaryMoveService object at 0x0000021B3BC4D590>.reactions
+
+tests\test_t18a11_card_move_system.py:35: AssertionError
+______ test_obtain_validates_entire_multizone_batch_before_any_mutation _______
+
+    def test_obtain_validates_entire_multizone_batch_before_any_mutation():
+     s=game();first=put(s,'basic.slash','p2');second=put(s,'equipment.weapon.spear','p2',ZoneType.EQUIPMENT,EquipmentSlot.WEAPON)
+     s.state.zones[ZoneRef(ZoneType.EQUIPMENT,'p2',EquipmentSlot.WEAPON)].card_ids.append(second)
+     before=deepcopy(s.state.zones);events=len(s.events.events)
+     with pytest.raises(InvalidCardMove):s.engine.reaction_provider.__self__.obtain_cards(s.state,(first,second),'p1','p1','audit-atomic-obtain')
+>    assert s.state.zones==before and len(s.events.events)==events
+E    AssertionError: assert ({ZoneRef(zone...rt-02']), ...} == {ZoneRef(zone...rt-02']), ...}
+E
+E      Omitting 5 identical items, use -vv to show
+E      Differing items:
+E      {ZoneRef(zone_type=<ZoneType.HAND: 'hand'>, player_id='p2', equipment_slot=None, special_key=None): CardZone(ref=ZoneR...quipment_slot=None, special_key=None), card_ids=['std-heart-01-2', 'std-spade-13-1', 'mil-diamond-13', 'ex-heart-12'])} != {ZoneRef(zone_type=<ZoneType.HAND: 'hand'>, player_id='p2', equipment_slot=None, special_key=None): CardZone(ref=ZoneR...e, special_key=None), card_ids=['std-heart-01-2', 'std-spade-13-1', 'mil-diamond-13', 'ex-heart-12', 'std-club-04-2'])}
+E      {ZoneRef(zone_type=<ZoneType.HAND...
+E
+E      ...Full output truncated (2 lines hidden), use '-vv' to show)
+
+tests\test_t18a11_card_move_system.py:43: AssertionError
+__________ test_quan_count_updates_on_shared_move_and_death_cleanup ___________
+
+    def test_quan_count_updates_on_shared_move_and_death_cleanup():
+     from sanguosha.engine.yj2012 import power_zone
+     from sanguosha.engine.death import DeathAction
+     s=game();cid=put(s,'basic.slash','p2');moves=s.engine.reaction_provider.__self__
+     moves.move(s.state,CardMove('audit-quan-in',(cid,),ZoneRef(ZoneType.HAND,'p2'),power_zone('p2'),CardMoveReason.SYSTEM,'p2'))
+>    assert s.state.players['p2'].marks.get('quan')==1
+E    AssertionError: assert None == 1
+E     +  where None = <built-in method get of dict object at 0x0000021B3BD1C200>('quan')
+E     +    where <built-in method get of dict object at 0x0000021B3BD1C200> = {}.get
+E     +      where {} = PlayerState(player_id='p2', seat=1, character_id='caocao', identity=<Identity.LOYALIST: 'loyalist'>, hp=4, max_hp=4, s...lls={}, abolished_equipment_slots=set(), transformation_pool=[], active_transformation=None, transformation_skill=None).marks
+
+tests\test_t18a11_card_move_system.py:51: AssertionError
+__________ test_xingshang_cross_zone_acquisition_is_one_enyuan_fact ___________
+
+    def test_xingshang_cross_zone_acquisition_is_one_enyuan_fact():
+     from sanguosha.engine.forest import XingshangAction
+     from sanguosha.model.enums import PlayerStatus
+     s=game();s.state.players['p1'].granted_skills.update(xingshang='audit',enyuan='audit')
+     s.state.players['p2'].status=PlayerStatus.DEAD
+     hand=ZoneRef(ZoneType.HAND,'p2');old=s.state.cards_in(hand)
+     if old:CardMoveService(s.events).move(s.state,CardMove('audit-clear',old,hand,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.SYSTEM))
+     a=put(s,'basic.slash','p2');b=put(s,'equipment.weapon.spear','p2',ZoneType.EQUIPMENT,EquipmentSlot.WEAPON)
+     s.state.metadata['reaction_event_cursor']=len(s.events.events)
+     s.engine.start_action(XingshangAction('audit-inherit','p2'));s=restore(s);answer(s,True)
+     facts=[e for e in s.events.events if getattr(e,'event_type','')=='cards_obtained' and e.source_id=='p1']
+>    assert len(facts)==1 and facts[0].metadata=={'from_player_id':'p2','count':2}
+E    assert (0 == 1)
+E     +  where 0 = len([])
+
+tests\test_t18a11_card_move_system.py:68: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_card_move_system.py::test_tuntian_excludes_own_hand_equipment_relocation[False]
+FAILED tests/test_t18a11_card_move_system.py::test_tuntian_notactive_current_still_triggers_on_actual_loss
+FAILED tests/test_t18a11_card_move_system.py::test_obtain_validates_entire_multizone_batch_before_any_mutation
+FAILED tests/test_t18a11_card_move_system.py::test_quan_count_updates_on_shared_move_and_death_cleanup
+FAILED tests/test_t18a11_card_move_system.py::test_xingshang_cross_zone_acquisition_is_one_enyuan_fact
+5 failed, 1 passed in 0.30s

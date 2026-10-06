@@ -1,0 +1,19 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ test_zongxuan_reserved_equipment_does_not_publish_duplicate_departure_trigger _
+
+    def test_zongxuan_reserved_equipment_does_not_publish_duplicate_departure_trigger():
+     from sanguosha.engine.zongxuan import PendingDiscard
+     s=game();s.state.players['p1'].granted_skills.update(zongxuan='audit',xuanfeng='audit')
+     cid=put(s,'equipment.weapon.spear','p1',ZoneType.EQUIPMENT,EquipmentSlot.WEAPON)
+     moves=s.engine.reaction_provider.__self__
+     moves.move(s.state,CardMove('audit-reserved-equipment',(cid,),ZoneRef(ZoneType.EQUIPMENT,'p1',EquipmentSlot.WEAPON),ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.DISCARD,'p1'))
+     pending=moves.next_reaction(s.state);assert isinstance(pending,PendingDiscard)
+>    assert not any(type(a).__name__=='XuanfengAction' for a in moves.reactions)
+E    assert not True
+E     +  where True = any(<generator object test_zongxuan_reserved_equipment_does_not_publish_duplicate_departure_trigger.<locals>.<genexpr> at 0x0000010E0E4C32A0>)
+
+tests\test_t18a11_card_move_system.py:80: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_t18a11_card_move_system.py::test_zongxuan_reserved_equipment_does_not_publish_duplicate_departure_trigger
+1 failed, 6 deselected in 0.28s
