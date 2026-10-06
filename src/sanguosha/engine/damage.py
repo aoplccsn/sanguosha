@@ -27,6 +27,14 @@ class DamageAction(Action):
     related_action_id: str | None = None
 
 
+def normalize_damage_source(state, action):
+    """A dead source cannot be credited with a newly applied damage packet."""
+    if action.source_id is not None and not state.players[action.source_id].is_alive:
+        from dataclasses import replace
+        return replace(action, source_id=None)
+    return action
+
+
 class DamageActionHandler:
     def __init__(self, recorder: EventRecorder, dying_factory: Callable[[DamageAction], Action] | None = None) -> None:
         self.recorder = recorder
@@ -45,6 +53,7 @@ class DamageActionHandler:
         if frame.step_index == 1:
             return StepResult.complete(action.amount)
         self.validate_start(state, action)
+        action = frame.action = normalize_damage_source(state, action)
         target = state.players[action.target_id]
         self.recorder.record(BeforeDamageEvent(f"{action.action_id}:before", action.source_id, action.target_id, action.amount))
         target.hp -= action.amount

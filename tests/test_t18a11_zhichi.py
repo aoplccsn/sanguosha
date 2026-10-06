@@ -21,7 +21,7 @@ def test_zhichi_fatal_damage_does_not_activate_until_rescued():
     s.engine.start_action(MilitaryDamageAction('audit-zhichi-fatal','p3','p1',1))
     assert s.engine.pending_request is not None
     assert not protected(s.state,'p1')
-    s=restore(s);answer(s,PASS_RESPONSE);s=restore(s);answer(s,peach)
+    s=restore(s);assert s.engine.pending_request.player_id=='p2';answer(s,peach)
     finish(s)
     assert s.state.players['p1'].hp==1 and protected(s.state,'p1')
 

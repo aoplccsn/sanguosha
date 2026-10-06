@@ -30,9 +30,11 @@ class RecoverActionHandler:
     def step(self, state: GameState, frame: ResolutionFrame) -> StepResult:
         action = frame.action
         assert isinstance(action, RecoverAction)
-        if action.amount <= 0 or action.target_id not in state.players or not state.players[action.target_id].is_alive:
+        if action.amount <= 0 or action.target_id not in state.players:
             raise InvalidRecovery("recovery requires a living target and positive amount")
         target = state.players[action.target_id]
+        if not target.is_alive or target.hp >= target.max_hp:
+            return StepResult.complete(0)
         previous = target.hp
         target.hp = min(target.max_hp, target.hp + action.amount)
         actual = target.hp - previous

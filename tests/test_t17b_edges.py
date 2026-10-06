@@ -70,6 +70,9 @@ def test_zhichi_and_xianzhen_all_players_clear_at_real_turn_end(source_death):
     s.state.players['p1'].marks['yj_xianzhen:p3']=s.state.turn_number
     s.state.players['p3'].marks['yj_zhichi']=s.state.turn_number
     if source_death:
+        from sanguosha.model.enums import Identity
+        s.state.players['p1'].identity=Identity.LOYALIST
+        s.state.players['p2'].identity=Identity.LORD
         s.engine.start_action(DeathAction('death','p1',None)); s=drain(s)
     # A face-down owner ends a turn without phase bodies, using the real cleanup.
     pid='p2' if source_death else 'p1'; s.state.players[pid].face_up=False

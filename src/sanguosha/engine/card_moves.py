@@ -39,6 +39,16 @@ class CardMoveService:
     def __init__(self, recorder: EventRecorder) -> None:
         self.recorder = recorder
 
+    def cleanup_terminal(self, state):
+        """Discard transient public cards after terminal stack cancellation."""
+        refs = tuple(ref for ref in state.zones if ref.zone_type is ZoneType.PROCESSING
+                     or ref.zone_type is ZoneType.SPECIAL and ref.player_id is None)
+        for index, ref in enumerate(refs):
+            cards = state.cards_in(ref)
+            if cards:
+                self.move(state, CardMove('gameover-cleanup:' + str(state.turn_number) + ':' + str(index),
+                    cards, ref, ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.SYSTEM))
+
     def obtain_cards(self, state, card_ids, recipient_id, actor_id, acquisition_id):
         """One acquisition can draw from several zones of the same card owner."""
         from .events import Event

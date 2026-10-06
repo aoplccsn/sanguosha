@@ -79,6 +79,9 @@ class MilitaryDamageHandler(DamageActionHandler):
     def step(self, state, frame):
         from .damage_cards import damage_definition
         action = frame.action
+        if frame.step_index == 0:
+            from .damage import normalize_damage_source
+            action = frame.action = normalize_damage_source(state, action)
         target = state.players[action.target_id]
         if state.status is GameStatus.FINISHED:
             return StepResult.complete(int(frame.local.get('amount',0)))
@@ -88,6 +91,22 @@ class MilitaryDamageHandler(DamageActionHandler):
             return replacement
         if frame.step_index == 0:
             self.validate_start(state, action)
+            if not frame.local.get('source_modifiers_done'):
+                frame.local['source_modifiers_done'] = True
+                amount = action.amount
+                if not getattr(action, 'propagated', False) and not getattr(action, 'redirected', False):
+                    if (action.source_id is not None and state.current_player_id == action.source_id
+                            and state.players[action.source_id].marks.get('luoyi')
+                            and damage_definition(state, action) in (*SLASH_IDS, 'trick.duel')):
+                        amount += 1
+                    if (self.skills is not None and action.source_id is not None
+                            and action.source_id != action.target_id and getattr(action, 'card_kind', '') == 'slash'
+                            and self.skills.has(state, action.source_id, 'anjian')
+                            and not self.distance.can_reach_with_slash(state, action.target_id, action.source_id)):
+                        amount += 1
+                if amount != action.amount:
+                    from dataclasses import replace
+                    action = frame.action = replace(action, amount=amount)
             if (action.nature is not DamageNature.THUNDER
                     and any(key.startswith('fog:') for key in target.marks)):
                 self.recorder.record(Event(action.action_id + ':fog', 'damage_prevented',
@@ -121,18 +140,6 @@ class MilitaryDamageHandler(DamageActionHandler):
                     and any(key.startswith('wind:') for key in target.marks)):
                 amount += 1
             armor = equipped(state, action.target_id, EquipmentSlot.ARMOR)
-            if (action.source_id is not None and state.current_player_id == action.source_id
-                    and state.players[action.source_id].marks.get('luoyi')
-                    and not getattr(action, 'propagated', False)
-                    and damage_definition(state, action) in (*SLASH_IDS, 'trick.duel')):
-                amount += 1
-            if (self.skills is not None and action.source_id is not None
-                    and action.source_id != action.target_id and not getattr(action, 'propagated', False)
-                    and not getattr(action,'redirected',False)
-                    and getattr(action,'card_kind','') == 'slash'
-                    and self.skills.has(state,action.source_id,'anjian')
-                    and not self.distance.can_reach_with_slash(state,action.target_id,action.source_id)):
-                amount += 1
             from .yj2011_tier3 import scoped_target
             ignores_armor = getattr(action, 'ignore_armor', False) or (
                 action.source_id is not None and scoped_target(state, action.source_id, action.target_id))

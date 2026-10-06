@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from sanguosha.content.cards.ids import PEACH_ID
 from sanguosha.model.ids import PlayerId
+from sanguosha.model.enums import Kingdom
 from sanguosha.model.state import GameState
 
 from .actions import Action, StepResult
@@ -30,6 +31,8 @@ class DyingActionHandler:
         action = frame.action
         assert isinstance(action, DyingAction)
         target = state.players[action.target_id]
+        if not target.is_alive:
+            return StepResult.complete('dead')
         if frame.step_index == 0:
             if target.hp > 0:
                 self.recorder.record(DyingRescuedEvent(f"{action.action_id}:rescued", action.target_id, target.hp))
@@ -56,21 +59,30 @@ class DyingActionHandler:
                 if offer is not None:
                     frame.step_index = 4
                     return StepResult.push(offer)
-            order = state.seat_order
+            if 'rescue_order' not in frame.local:
+                order = state.seat_order
+                current = state.current_player_id
+                if current in order:
+                    start = order.index(current)
+                    order = order[start:] + order[:start]
+                    if state.current_phase is None:
+                        order = order[1:] + order[:1]
+                frame.local['rescue_order'] = order
+            order = tuple(frame.local['rescue_order'])
             if frame.cursor >= len(order):
                 frame.step_index = 3
                 return StepResult.push(DeathAction(f"{action.action_id}:death", action.target_id, action.source_id))
-            start = order.index(action.target_id)
-            candidate = order[(start + frame.cursor) % len(order)]
+            candidate = order[frame.cursor]
             frame.cursor += 1
             if not state.players[candidate].is_alive:
                 return StepResult.continue_()
             turn_owner = state.current_player_id
             if (self.skills is not None and turn_owner in state.players
-                    and state.players[turn_owner].is_alive
+                    and state.players[turn_owner].is_alive and state.current_phase is not None
                     and self.skills.has(state, turn_owner, 'wansha')
                     and candidate not in (turn_owner, action.target_id)):
                 return StepResult.continue_()
+            frame.local['responder'] = candidate
             frame.step_index = 1
             round_number = int(frame.local.get("round", 0))
             return StepResult.push(RespondWithCardAction(
@@ -82,7 +94,7 @@ class DyingActionHandler:
             if frame.child_result is None:
                 frame.step_index = 0
                 return StepResult.continue_()
-            responder = state.seat_order[(state.seat_order.index(action.target_id) + frame.cursor - 1) % len(state.seat_order)]
+            responder = frame.local['responder']
             frame.step_index = 2
             from sanguosha.model.virtual_card import VirtualCard
             if isinstance(frame.child_result,VirtualCard) and frame.child_result.skill_id=='chunlao':
@@ -91,11 +103,11 @@ class DyingActionHandler:
             return StepResult.push(RecoverAction(
                 f"{action.action_id}:recover:{round_number}:{frame.cursor}", responder, action.target_id,
                 2 if self.skills is not None and self.skills.has(state,action.target_id,'jiuyuan')
-                and responder != action.target_id and self.skills.faction(state,responder) == self.skills.faction(state,action.target_id)
+                and responder != action.target_id and self.skills.faction(state,responder) is Kingdom.WU
                 else 1,
             ))
         if frame.step_index == 2:
-            frame.cursor = 0
+            frame.cursor -= 1
             frame.local["round"] = int(frame.local.get("round", 0)) + 1
             frame.step_index = 0
             return StepResult.continue_()

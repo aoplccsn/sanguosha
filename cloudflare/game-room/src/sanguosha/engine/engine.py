@@ -2,7 +2,7 @@
 
 from enum import StrEnum
 
-from sanguosha.model.state import GameState
+from sanguosha.model.state import GameState, GameStatus
 
 from .actions import Action, ResultValue, StepKind
 from .errors import InvalidDecision, InvalidEngineState, ResolutionError, UnknownRequest
@@ -32,6 +32,7 @@ class GameEngine:
         self._seen_request_ids: set[str] = set()
         self.max_steps = max_steps
         self.reaction_provider = None
+        self.terminal_cleanup = None
 
     def _new_frame(self, action: Action, parent_id: str | None = None) -> ResolutionFrame:
         if not action.action_id or action.action_id in self._seen_action_ids:
@@ -43,6 +44,8 @@ class GameEngine:
         return frame
 
     def start_action(self, action: Action) -> EngineStatus:
+        if self.state.status is GameStatus.FINISHED:
+            raise InvalidEngineState('game has already ended')
         if self.status in (EngineStatus.RUNNING, EngineStatus.WAITING_FOR_DECISION) or not self.stack.is_empty():
             raise InvalidEngineState("engine is already resolving")
         # Optional handler preflight rejects invalid top-level actions before
@@ -75,7 +78,19 @@ class GameEngine:
             return self.status
         return self.run_until_blocked()
 
+    def _complete_terminal(self):
+        if self.terminal_cleanup is not None:
+            self.terminal_cleanup(self.state)
+        if self.reaction_provider is not None:
+            self.reaction_provider(self.state)
+        self.stack = ResolutionStack()
+        self.pending_request = None
+        self.status = EngineStatus.COMPLETED
+        return self.status
+
     def run_until_blocked(self) -> EngineStatus:
+        if self.state.status is GameStatus.FINISHED:
+            return self._complete_terminal()
         if self.pending_request is not None:
             self.status = EngineStatus.WAITING_FOR_DECISION
             return self.status
@@ -83,6 +98,8 @@ class GameEngine:
         steps = 0
         try:
             while not self.stack.is_empty():
+                if self.state.status is GameStatus.FINISHED:
+                    return self._complete_terminal()
                 steps += 1
                 if steps > self.max_steps:
                     raise ResolutionError("resolution step limit exceeded")
@@ -95,6 +112,10 @@ class GameEngine:
                     frame.child_result = frame.reaction_child_result
                 else:
                     outcome = self.registry.handler_for(frame.action).step(self.state, frame)
+                if self.state.status is GameStatus.FINISHED:
+                    if outcome.kind in (StepKind.COMPLETE, StepKind.CANCELLED):
+                        self.last_result = outcome.value
+                    return self._complete_terminal()
                 reaction = self.reaction_provider(self.state) if self.reaction_provider else None
                 if reaction is not None:
                     frame.deferred_step = outcome
@@ -136,6 +157,8 @@ class GameEngine:
                         parent.status = FrameStatus.READY
                     continue
                 raise ResolutionError(f"action failed: {outcome.value!r}")
+            if self.state.status is GameStatus.FINISHED:
+                return self._complete_terminal()
             self.status = EngineStatus.COMPLETED
             return self.status
         except Exception:

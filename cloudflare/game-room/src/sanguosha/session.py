@@ -356,6 +356,7 @@ class GameSession:
             from sanguosha.engine.yj2013 import register as register_yj2013
             register_yj2013(registry, skills, moves, definitions, deck)
         engine = GameEngine(state, registry)
+        engine.terminal_cleanup = moves.cleanup_terminal
         if military:
             engine.reaction_provider = moves.next_reaction
         return cls(

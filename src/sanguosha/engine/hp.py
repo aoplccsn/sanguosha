@@ -66,6 +66,10 @@ class LoseMaxHpHandler:
         self.events.record(Event(action.action_id + ':lost', 'max_hp_lost', action.player_id,
                                  metadata={'amount': frame.local['lost'],
                                            'max_hp': player.max_hp, 'hp': player.hp}))
+        if player.max_hp == 0:
+            from .death import DeathAction
+            frame.step_index = 1
+            return StepResult.push(DeathAction(action.action_id + ':death', action.player_id, None))
         if player.hp <= 0:
             frame.step_index = 1
             return StepResult.push(DyingAction(action.action_id + ':dying', action.player_id, None))
