@@ -23,9 +23,9 @@ from .turnover import TurnoverAction
 
 
 def owned_cards(state, player_id):
-    """Cards still belonging to a player, in deterministic zone order."""
+    """Hand and equipment eligible for classic Xingshang, in zone order."""
     refs = sorted((ref for ref in state.zones if ref.player_id == player_id
-                   and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT, ZoneType.JUDGMENT)),
+                   and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)),
                   key=lambda ref: (ref.zone_type.value,
                                    ref.equipment_slot.value if ref.equipment_slot else ''))
     return tuple((ref, state.cards_in(ref)) for ref in refs if state.cards_in(ref))
@@ -152,11 +152,10 @@ class XingshangHandler:
         wanted = frame.decision is True
         frame.decision = None
         if wanted and state.players[owner].is_alive:
-            for index, (ref, card_ids) in enumerate(owned_cards(state, action.victim_id)):
-                self.moves.move(state, CardMove(
-                    f'{action.action_id}:gain:{frame.cursor}:{index}', card_ids, ref,
-                    ZoneRef(ZoneType.HAND, owner), CardMoveReason.SYSTEM, owner,
-                    action.action_id))
+            cards = tuple(cid for _, ids in owned_cards(state, action.victim_id) for cid in ids)
+            if cards:
+                self.moves.obtain_cards(state, cards, owner, owner,
+                    f'{action.action_id}:gain:{frame.cursor}')
         frame.cursor += 1
         frame.step_index = 1
         return StepResult.continue_()

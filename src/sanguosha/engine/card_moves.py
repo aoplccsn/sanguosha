@@ -33,6 +33,7 @@ class CardMove:
     actor_id: PlayerId | None = None
     related_action_id: str | None = None
     to_top: bool = False
+    triggers_rules: bool = True
 
 
 class CardMoveService:
@@ -59,7 +60,8 @@ class CardMoveService:
         groups, counts = {}, {}
         for cid in card_ids:
             refs = [ref for ref, z in state.zones.items() if cid in z.card_ids]
-            if cid not in state.cards or len(refs) != 1 or refs[0] == destination:
+            if (cid not in state.cards or len(refs) != 1 or refs[0] == destination
+                    or sum(z.card_ids.count(cid) for z in state.zones.values()) != 1):
                 raise InvalidCardMove("acquisition card has no valid source")
             ref = refs[0]
             groups.setdefault(ref, []).append(cid)
@@ -170,9 +172,18 @@ class CardMoveService:
             concealed = state.metadata.get('concealed_discard_cards', {})
             for card_id in ids:
                 concealed.pop(card_id, None)
+        for ref in (move.from_zone, move.to_zone):
+            if (ref.zone_type is ZoneType.SPECIAL and ref.special_key == 'quan'
+                    and ref.player_id is not None):
+                owner = state.players[ref.player_id]
+                count = len(state.cards_in(ref))
+                if count:
+                    owner.marks['quan'] = count
+                else:
+                    owner.marks.pop('quan', None)
         self.recorder.record(CardMovedEvent(
             move.move_id, ids, move.from_zone, move.to_zone,
-            move.reason.value, move.actor_id, move.related_action_id,
+            move.reason.value, move.actor_id, move.related_action_id, move.triggers_rules,
         ))
 
 

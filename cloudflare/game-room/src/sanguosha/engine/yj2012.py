@@ -432,7 +432,7 @@ class YJ2012Handler(YJSkillHandler):
         card,f.decision=f.decision,None
         if card not in hand(state,a.player_id):
             raise InvalidCardUse('权计材料已不可用')
-        # The owner-private special zone is snapshotted by the normal zone store.
+        # The public power pile is snapshotted by the normal zone store.
         self.transfer(state,a,(card,),power_zone(a.player_id))
         state.players[a.player_id].marks['quan']=len(state.cards_in(power_zone(a.player_id)))
         f.cursor+=1; f.step_index=0

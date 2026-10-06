@@ -34,7 +34,7 @@ class MilitaryMoveService(CardMoveService):
             from .zongxuan import PendingDiscard
             # Reserve the outgoing cards, before publishing any discard or loss reaction.
             # The original move and departure facts resume on the ordinary reaction stack.
-            super().move(state,replace(move,move_id=move.move_id+':reserved',to_zone=ZoneRef(ZoneType.SPECIAL,owner,special_key='committed:zongxuan:'+move.move_id),reason=CardMoveReason.SYSTEM,related_action_id=None))
+            super().move(state,replace(move,move_id=move.move_id+':reserved',to_zone=ZoneRef(ZoneType.SPECIAL,owner,special_key='committed:zongxuan:'+move.move_id),reason=CardMoveReason.SYSTEM,related_action_id=None,triggers_rules=False))
             index=next((i for i,x in enumerate(self.reactions) if not isinstance(x,PendingDiscard)),len(self.reactions))
             self.reactions.insert(index,PendingDiscard(move.move_id+':zongxuan',owner,move,facts))
             return
@@ -51,7 +51,10 @@ class MilitaryMoveService(CardMoveService):
             from .skills import XiaojiAction
             self.reactions.append(XiaojiAction(move.move_id+':xiaoji',owner,len(move.card_ids)))
         if (owner is not None and move.from_zone.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
-                and state.current_player_id != owner and state.players[owner].is_alive
+                and (state.current_player_id != owner or state.current_phase is None)
+                and not (move.to_zone.player_id == owner
+                    and move.to_zone.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT))
+                and state.players[owner].is_alive
                 and self.skills is not None and self.skills.has(state, owner, 'tuntian')):
             from .mountain import TuntianAction
             self.reactions.append(TuntianAction(move.move_id + ':tuntian', owner))
@@ -62,7 +65,9 @@ class MilitaryMoveService(CardMoveService):
             state.metadata['reaction_event_cursor']=len(self.recorder.events)
             return None
         cursor = state.metadata.get('reaction_event_cursor', 0)
-        new_events = self.recorder.events[cursor:]
+        from .events import CardMovedEvent
+        new_events = [event for event in self.recorder.events[cursor:]
+                      if not isinstance(event, CardMovedEvent) or event.triggers_rules]
         from .qiaoshui import before_reactions
         window,blocked=before_reactions(state,new_events,self.skills,getattr(self,'definitions',None))
         if blocked:return window

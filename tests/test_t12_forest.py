@@ -80,7 +80,7 @@ def test_xingshang_decline_leaves_death_cleanup_intact():
     assert hand | {equipment, judgment} <= discard
 
 
-def test_xingshang_claims_all_personal_zones_without_private_projection_leak():
+def test_xingshang_claims_hand_equipment_excludes_judgment_without_private_projection_leak():
     session = forest_game()
     hand = set(session.state.cards_in(ZoneRef(ZoneType.HAND, 'p2')))
     equipment = put(session, 'equipment.weapon.serpent_spear', 'p2',
@@ -90,10 +90,11 @@ def test_xingshang_claims_all_personal_zones_without_private_projection_leak():
     drive(session, lambda request: True if '行殇' in request.prompt
           else request.timeout_value())
     gained = set(session.state.cards_in(ZoneRef(ZoneType.HAND, 'p1')))
-    assert hand | {equipment, judgment} <= gained
+    assert hand | {equipment} <= gained
+    assert judgment in session.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
     stranger = json.dumps(serialize_projection(project_for_human(
         session.state, session.definitions, 'p3', session.character_names)))
-    assert all(card_id not in stranger for card_id in hand | {equipment, judgment})
+    assert all(card_id not in stranger for card_id in hand | {equipment})
 
 
 def test_xingshang_does_not_trigger_for_owners_own_death():

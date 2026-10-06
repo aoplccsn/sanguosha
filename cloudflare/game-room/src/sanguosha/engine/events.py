@@ -63,6 +63,7 @@ class CardMovedEvent:
     reason: str
     actor_id: PlayerId | None
     related_action_id: str | None
+    triggers_rules: bool = True
 
 
 @dataclass(frozen=True, slots=True)

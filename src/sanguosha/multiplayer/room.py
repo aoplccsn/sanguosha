@@ -756,6 +756,8 @@ class MultiplayerRoom:
 
     def _public_event(self, event) -> dict | None:
         """Allowlist semantic facts; card instance IDs and hidden moves are excluded."""
+        if isinstance(event, CardMovedEvent) and not event.triggers_rules:
+            return None
         result = {"kind": type(event).__name__, "event_id": event.event_id}
         if isinstance(event, Event) and event.event_type == 'ai_thinking':
             result.update(kind='AIThinkingEvent', source_id=str(event.source_id),
