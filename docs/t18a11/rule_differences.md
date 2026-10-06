@@ -79,10 +79,10 @@ R27–R29后三十一项已修基线根因；智迟关闭FIXED。当前181 BLOCK
 
 R30/R31后累计33项已修基线根因；本批不关闭尚缺其他时机证据的改判技能。当前仍181 BLOCKED、9 FIXED、2 PASS；最终门禁未开始。
 
-| R32 | 共享ViewAs用牌资格/限制 | 部分转化动作绕过潜袭手牌颜色、巧说锦囊禁用；连环使用绕过颜色限制 | 共享validate_view_as_limits在请求/付款前验证角色、阶段、技能与有效牌限制；重铸保留独立例外 | 非法使用与成本消耗 | view_as_limits_reproduction.log初版9真实失败+1参数夹具；longhun_limit/lianhuan_limit独立原checkpoint复现；279相关通过 | 当前工作树 |
-| R33 | 共享龙胆Slash牌族 | 普通杀可转闪，火杀/雷杀遗漏 | response.longdan_materials统一有效Slash族供响应和method-none提供 | 遗漏合法响应 | longdan_slash_identity_reproduction.log 2失败 | 当前工作树 |
-| R34 | 共享转化响应编号 | 武圣/急救等路径默认1/1，丢失实际2/2 | _record_material_response统一传递当前响应编号 | 重连/交互事件提示错误 | view_as_response_number_reproduction.log 2失败 | 当前工作树 |
-| R35 | 共享双材料响应合同 | 丈八/父魂两材料记成两次响应，直接手牌到弃堆 | 全材料先复核后批量经处理区付款，一张虚拟杀记一次响应 | 响应事实重复及移动合同不一致 | two_material_response_reproduction.log 2失败 | 当前工作树 |
-| R36 | 转化提交权限复核 | 龙胆目标请求恢复后技能失效仍付款使用 | 共享校验再次检查角色/阶段/技能资格 | 过期请求非法使用 | view_as_submit_reproduction.log 1失败、4反例通过 | 当前工作树 |
+| R32 | 共享ViewAs用牌资格/限制 | 部分转化动作绕过潜袭手牌颜色、巧说锦囊禁用；连环使用绕过颜色限制 | 共享validate_view_as_limits在请求/付款前验证角色、阶段、技能与有效牌限制；重铸保留独立例外 | 非法使用与成本消耗 | view_as_limits_reproduction.log初版9真实失败+1参数夹具；longhun_limit/lianhuan_limit独立原checkpoint复现；279相关通过 | b4964e1 |
+| R33 | 共享龙胆Slash牌族 | 普通杀可转闪，火杀/雷杀遗漏 | response.longdan_materials统一有效Slash族供响应和method-none提供 | 遗漏合法响应 | longdan_slash_identity_reproduction.log 2失败 | b4964e1 |
+| R34 | 共享转化响应编号 | 武圣/急救等路径默认1/1，丢失实际2/2 | _record_material_response统一传递当前响应编号 | 重连/交互事件提示错误 | view_as_response_number_reproduction.log 2失败 | b4964e1 |
+| R35 | 共享双材料响应合同 | 丈八/父魂两材料记成两次响应，直接手牌到弃堆 | 全材料先复核后批量经处理区付款，一张虚拟杀记一次响应 | 响应事实重复及移动合同不一致 | two_material_response_reproduction.log 2失败 | b4964e1 |
+| R36 | 转化提交权限复核 | 龙胆目标请求恢复后技能失效仍付款使用 | 共享校验再次检查角色/阶段/技能资格 | 过期请求非法使用 | view_as_submit_reproduction.log 1失败、4反例通过 | b4964e1 |
 
 本批共享根因新增5项，累计38项基线缺陷已修。版本差异、夹具错误和未核验项不计为产品bug，分类见view_as_system_audit.md。6项关闭后当前175 BLOCKED、14 FIXED、3 PASS；低于30–50项清理区间，未跑full pytest或最终七项验收。
