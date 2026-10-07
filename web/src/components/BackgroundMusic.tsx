@@ -4,6 +4,32 @@ import { BGM_AVAILABLE, BGM_URL } from '../bgmAsset'
 const STORAGE_KEY = 'sanguosha.bgm'
 let player: HTMLAudioElement | undefined
 let interacted = false
+let startTimer: ReturnType<typeof setTimeout> | undefined
+
+function audioPlayer() {
+  if (!player) {
+    player = new Audio()
+    player.preload = 'none'
+    player.loop = true
+  }
+  return player
+}
+
+function requestPlayback() {
+  const current = preferences()
+  if (current.muted || startTimer !== undefined || (player && !player.paused)) return
+  // Give portraits and the page entered by this gesture a head start.
+  startTimer = setTimeout(() => {
+    startTimer = undefined
+    const latest = preferences()
+    if (latest.muted) return
+    const node = audioPlayer()
+    node.volume = latest.volume
+    node.muted = latest.muted
+    if (!node.src) node.src = BGM_URL
+    void node.play().catch(() => {})
+  }, 2000)
+}
 
 function preferences(): { muted: boolean; volume: number } {
   try {
@@ -20,12 +46,7 @@ export function BackgroundMusic() {
     if (!BGM_AVAILABLE) return
     const start = () => {
       interacted = true
-      player ??= new Audio(BGM_URL)
-      player.loop = true
-      const current = preferences()
-      player.volume = current.volume
-      player.muted = current.muted
-      if (!current.muted && player.paused) void player.play().catch(() => {})
+      requestPlayback()
     }
     // Keep these listeners so a later gesture can retry a browser-rejected play.
     document.addEventListener('pointerdown', start)
@@ -42,12 +63,15 @@ export function BackgroundMusic() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)) } catch { /* Session settings still apply. */ }
     if (!BGM_AVAILABLE) return
     interacted = true
-    player ??= new Audio(BGM_URL)
-    player.loop = true
-    player.volume = next.volume
-    player.muted = next.muted
-    if (next.muted) player.pause()
-    else if (player.paused) void player.play().catch(() => {})
+    if (player) {
+      player.volume = next.volume
+      player.muted = next.muted
+    }
+    if (next.muted) {
+      if (startTimer !== undefined) clearTimeout(startTimer)
+      startTimer = undefined
+      player?.pause()
+    } else requestPlayback()
   }
 
   return <div className="background-music">

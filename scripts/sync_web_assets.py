@@ -27,7 +27,7 @@ for entry in idle_manifest.values():
         runtime_videos.add(path)
 
 def development_ignore(directory, names):
-    ignored = set(shutil.ignore_patterns('source_art', '*.py', '*.qss')(directory, names))
+    ignored = set(shutil.ignore_patterns('source_art', '*.py', '*.qss', 'main_bgm.wav')(directory, names))
     for name in names:
         path = Path(directory) / name
         if path.suffix.lower() in {'.mp4', '.mov', '.webm'} and path.resolve() not in runtime_videos:
@@ -64,6 +64,7 @@ else:
             continue
         relative = source.relative_to(SOURCE)
         if ('source_art' in relative.parts or relative.parts[0] == 'gods'
+                or relative.name == 'main_bgm.wav'
                 or source.suffix.lower() in {'.py', '.qss', '.gitkeep'}):
             continue
         if source.suffix.lower() in {'.mp4', '.mov', '.webm'} and source.resolve() not in runtime_videos:
