@@ -52,9 +52,9 @@ export function BackgroundMusic() {
 
   return <div className="background-music">
     <button disabled={!BGM_AVAILABLE} aria-pressed={!settings.muted && BGM_AVAILABLE}
-      title={BGM_AVAILABLE ? '背景音乐开关' : '缺少音频资源：main_bgm.mp3'}
+      title='背景音乐开关'
       onClick={() => update({ ...settings, muted: !settings.muted })}>
-      背景音乐 {BGM_AVAILABLE ? settings.muted ? '关' : '开' : '缺少音频'}
+      背景音乐 {settings.muted ? '关' : '开'}
     </button>
     {BGM_AVAILABLE && <input aria-label="背景音乐音量" type="range" min="0" max="1" step="0.05"
       value={settings.volume} onChange={event => update({ ...settings, volume: Number(event.target.value) })} />}

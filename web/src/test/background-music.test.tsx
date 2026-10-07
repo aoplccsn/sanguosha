@@ -2,9 +2,10 @@ import { StrictMode } from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, expect, it, vi } from 'vitest'
 import { existsSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { BackgroundMusic } from '../components/BackgroundMusic'
 
-vi.mock('../bgmAsset', () => ({ BGM_AVAILABLE: true, BGM_URL: '/assets/audio/bgm/main_bgm.mp3' }))
+vi.mock('../bgmAsset', () => ({ BGM_AVAILABLE: true, BGM_URL: '/assets/audio/bgm/main_bgm.wav' }))
 const audio = { paused: true, loop: false, muted: false, volume: 1,
   play: vi.fn(() => { audio.paused = false; return Promise.resolve() }),
   pause: vi.fn(() => { audio.paused = true }) }
@@ -32,7 +33,7 @@ it('persists mute and volume and reuses one player across gestures and remounts'
   expect(AudioMock).toHaveBeenCalledTimes(1)
 })
 
-const source = new URL('../../../assets/audio/bgm/main_bgm.mp3', import.meta.url)
+const source = resolve(process.cwd(), '../assets/audio/bgm/main_bgm.wav')
 it.skipIf(!existsSync(source))('ships the supplied BGM through the existing assets pipeline', () => {
-  expect(existsSync(new URL('../../public/assets/audio/bgm/main_bgm.mp3', import.meta.url))).toBe(true)
+  expect(existsSync(resolve(process.cwd(), 'public/assets/audio/bgm/main_bgm.wav'))).toBe(true)
 })
