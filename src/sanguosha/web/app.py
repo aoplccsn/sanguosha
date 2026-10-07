@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import hmac
 import json
 import logging
 import os
@@ -12,7 +14,7 @@ from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -193,6 +195,38 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
             for character in ALL_GENERAL_POOL
         ]
 
+    def authorized_test_cookie(value: str | None) -> bool:
+        if not value or not config.test_access_code:
+            return False
+        try:
+            timestamp, signature = value.split('.', 1)
+            issued = int(timestamp)
+        except (ValueError, AttributeError):
+            return False
+        if not 0 <= time.time() - issued <= 3600:
+            return False
+        expected = hmac.new(config.secret_key.encode(),
+            f'test-room:{config.test_access_code}:{timestamp}'.encode(), hashlib.sha256).hexdigest()
+        return len(signature) == 64 and signature.isascii() and hmac.compare_digest(signature, expected)
+
+    @app.post('/api/test-mode/authorize')
+    async def authorize_test_mode(request: Request):
+        try:
+            payload = await request.json()
+            code = payload.get('code') if isinstance(payload, dict) else None
+        except (ValueError, TypeError):
+            code = None
+        if (not config.test_access_code or not isinstance(code, str) or len(code) > 256
+                or not hmac.compare_digest(code.encode('utf-8'), config.test_access_code.encode('utf-8'))):
+            return JSONResponse({'error': 'invalid test access code'}, status_code=403)
+        timestamp = str(int(time.time()))
+        signature = hmac.new(config.secret_key.encode(),
+            f'test-room:{config.test_access_code}:{timestamp}'.encode(), hashlib.sha256).hexdigest()
+        response = JSONResponse({'authorized': True})
+        response.set_cookie('sanguosha_test', timestamp + '.' + signature,
+            max_age=3600, httponly=True, secure=config.production, samesite='strict', path='/')
+        return response
+
     @app.websocket("/ws")
     async def websocket_endpoint(websocket: WebSocket) -> None:
         if shutting_down:
@@ -233,11 +267,15 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                             if len(recent) >= config.room_creations_per_minute:
                                 raise RoomError("room creation rate limit reached")
                             recent.append(now)
+                        test_room = message.get('test_room') is True
+                        if test_room and not authorized_test_cookie(websocket.cookies.get('sanguosha_test')):
+                            raise RoomError('test authorization required')
                         review_god_lvbu = message.get('review_god_lvbu') is True and not config.production
                         managed = manager.create(seed=message.get("seed"),
                             review_god_lvbu=review_god_lvbu,
                             mode_id=message.get('mode_id', 'military-five'),
-                            allow_gods=message.get('allow_gods', False))
+                            allow_gods=message.get('allow_gods', False),
+                            test_room=test_room)
                         connection.managed = managed
                         connection.send_nowait(envelope("ROOM_CREATED", room_code=managed.code))
                         pid, token = managed.game.join(message.get("name"), connection.send_nowait)

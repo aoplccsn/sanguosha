@@ -14,7 +14,7 @@ class Tickets:
         return ticket
     def shuffle(self, values): pass
 
-@pytest.mark.parametrize('slot,expected', [(2499, 1), (2500, 0)])
+@pytest.mark.parametrize('slot,expected', [(499, 1), (500, 0)])
 def test_slot_rate_boundary(slot, expected):
     offer = draft_general_ids(CATALOGUE, (), Tickets(slot, 0))
     assert len(offer) == 10

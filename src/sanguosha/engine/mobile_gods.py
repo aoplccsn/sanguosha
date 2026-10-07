@@ -482,7 +482,7 @@ class MobileGodHandler:
                 self.moves.move(state, CardMove(action.action_id + ':' + suffix + ':' + str(index),
                     tuple(group), source, destination, CardMoveReason.SYSTEM, pid, action.action_id))
         if mode == 'tamo':
-            nonlords = tuple(q for q in state.seat_order if state.players[q].identity is not Identity.LORD)
+            nonlords = tuple(q for q in state.seat_order if state.players[q].is_alive and state.players[q].identity is not Identity.LORD)
             if frame.step_index == 0:
                 frame.step_index = 1
                 return StepResult.ask(PendingRequest(action.action_id + ':offer', pid, RequestType.YES_NO,

@@ -50,3 +50,19 @@ describe('HomePage', () => {
     expect(screen.getByText(/协议 2/)).toBeInTheDocument()
   })
 })
+
+
+it('requires a server grant before creating a test room', async () => {
+  const fetchMock = vi.fn().mockResolvedValue({ ok: true })
+  vi.stubGlobal('fetch', fetchMock)
+  render(<HomePage />)
+  await userEvent.click(screen.getByRole('button', { name: '测试模式' }))
+  expect(screen.queryByRole('button', { name: '创建测试房' })).not.toBeInTheDocument()
+  await userEvent.type(screen.getByLabelText('测试权限码'), 'fixture-only-code')
+  await userEvent.click(screen.getByRole('button', { name: '验证' }))
+  expect(await screen.findByRole('button', { name: '创建测试房' })).toBeInTheDocument()
+  expect(fetchMock).toHaveBeenCalledWith('/api/test-mode/authorize', expect.objectContaining({ method: 'POST' }))
+  await userEvent.click(screen.getByRole('button', { name: '创建测试房' }))
+  expect(createRoom).toHaveBeenCalledWith('玩家', true, 'military-five', true)
+  vi.unstubAllGlobals()
+})

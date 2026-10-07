@@ -121,7 +121,7 @@ function reducer(state: ClientState, action: Action): ClientState {
 }
 
 interface GameActions {
-  createRoom(name: string, singlePlayer?: boolean, modeId?: string): void
+  createRoom(name: string, singlePlayer?: boolean, modeId?: string, testRoom?: boolean): void
   joinRoom(name: string, roomCode: string): void
   setReady(ready: boolean): void
   startGame(): void
@@ -371,7 +371,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const actions = useMemo<GameActions>(() => ({
-    createRoom(name, singlePlayer = false, modeId = 'military-five') {
+    createRoom(name, singlePlayer = false, modeId = 'military-five', testRoom = false) {
       const clean = name.trim() || '玩家'
       playerNameRef.current = clean
       dispatch({ type: 'set-name', payload: clean })
@@ -384,6 +384,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         single_player: singlePlayer,
         mode_id: modeId,
         allow_gods: true,
+        test_room: testRoom,
         review_god_lvbu: new URLSearchParams(window.location.search).get('t11_lvbu') === '1',
         ...(Number.isInteger(requestedSeed) && requestedSeed >= 0 ? { seed: requestedSeed } : {}),
       }
@@ -400,6 +401,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
             })
           })
           .catch(() => dispatch({ type: 'error', payload: '无法创建房间，请稍后重试。' }))
+      } else if (testRoom) {
+        connectionRef.current.openRoom('', 'CREATE_ROOM', fields)
       } else {
         sendWhenConnected('CREATE_ROOM', fields)
       }

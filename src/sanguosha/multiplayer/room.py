@@ -98,7 +98,7 @@ class MultiplayerRoom:
 
     def __init__(self, *, seed: int | None = None, timeout_seconds: float = TIMEOUT_SECONDS,
                  review_god_lvbu: bool = False, mode_id: str = 'military-five',
-                 allow_gods: bool = True):
+                 allow_gods: bool = True, test_room: bool = False):
         self.mode = game_mode(mode_id)
         self.allow_gods = True
         self.seats = {pid: Seat(pid) for pid in self.mode.seats}
@@ -106,6 +106,7 @@ class MultiplayerRoom:
         self.host_id: PlayerId | None = None
         self.seed = seed
         self.review_god_lvbu = review_god_lvbu
+        self.test_room = test_room
         self.timeout_seconds = timeout_seconds
         self.reconnect_grace_seconds = 15.0
         self.pregame: Pregame | None = None
@@ -244,7 +245,8 @@ class MultiplayerRoom:
         pool = PLAYABLE_GENERAL_POOL
         remaining = [c.id for c in pool if c.id not in self.pregame.generals.values()]
         from sanguosha.general_draft import draft_general_ids
-        candidates = tuple(map(str, draft_general_ids(remaining, (), self.pregame.rng)))
+        candidates = (tuple(map(str, remaining)) if self.test_room and pid == self.host_id
+                      else tuple(map(str, draft_general_ids(remaining, (), self.pregame.rng))))
         if self.review_god_lvbu and pid == self.host_id:
             candidates = tuple(c for c in candidates if c != 'forest_god_lvbu')[:9] + ('forest_god_lvbu',)
         first_choices = {request.choices[0] for other_pid, request in self.draft_requests.items() if other_pid != pid}
@@ -265,7 +267,8 @@ class MultiplayerRoom:
         request = self.draft_requests[pid]
         self._send(pid, envelope("DRAFT_REQUEST", request=serialize_request(
             request, max(0, int((self.draft_deadlines[pid] - time.time()) * 1000))),
-            identity=self.pregame.identities[pid].value, lord_id=str(self.pregame.lord_id)))
+            identity=self.pregame.identities[pid].value, lord_id=str(self.pregame.lord_id),
+            test_room=self.test_room and pid == self.host_id))
 
     def submit(self, pid: PlayerId, decision: Decision, *, defer_resolution: bool = False,
                send_ack: bool = True) -> None:

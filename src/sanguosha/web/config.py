@@ -15,6 +15,7 @@ class WebConfig:
     port: int = 8000
     public_origin: str = "http://localhost:5173"
     secret_key: str = "development-only-change-me"
+    test_access_code: str = ""
     room_ttl: float = 7200.0
     reconnect_grace: float = 300.0
     log_level: str = "INFO"
@@ -41,6 +42,7 @@ class WebConfig:
             public_origin=os.getenv("PUBLIC_ORIGIN") or (os.getenv("RENDER_EXTERNAL_URL") if render else None)
                           or (os.getenv("ZEABUR_WEB_URL") if zeabur else None) or "http://localhost:5173",
             secret_key=os.getenv("SECRET_KEY", "development-only-change-me"),
+            test_access_code=os.getenv("SANGUOSHA_TEST_ACCESS_CODE", ""),
             room_ttl=float(os.getenv("ROOM_TTL", "7200")),
             reconnect_grace=float(os.getenv("RECONNECT_GRACE", "300")),
             log_level=os.getenv("LOG_LEVEL", "INFO"),

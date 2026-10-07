@@ -453,3 +453,30 @@ it('shows each public pindian card beside its original owner', () => {
   expect(faces[0]).toHaveTextContent('曹操 · 拼点')
   expect(faces[1]).toHaveTextContent('刘备 · 拼点')
 })
+
+
+it('lets 榻谟 order every nonlord including self and clear a cancelled selection', async () => {
+  const original = { identity: players[0].identity_label, name: players[0].character_name }
+  players[0].identity_label = '未知'
+  players[0].character_name = '神鲁肃'
+  const ids = players.map(p => p.player_id)
+  request = { request_id: 'tamo-order', player_id: 'p1', request_type: 'choose_players',
+    prompt: '榻谟：按新座次顺序选择全部非主公角色', choices: [], allowed_player_ids: ids,
+    eligible_card_ids: [], min_count: ids.length, max_count: ids.length, remaining_ms: 60000 }
+  try {
+    render(<GamePage />)
+    await userEvent.click(screen.getByRole('button', { name: '选择目标神鲁肃' }))
+    expect(screen.getByRole('button', { name: '确定' })).toBeDisabled()
+    await userEvent.click(screen.getByRole('button', { name: '取消选中' }))
+    for (const name of ['刘备', '武将', '神鲁肃']) {
+      const buttons = screen.getAllByRole('button', { name: '选择目标' + name })
+      for (const button of buttons) await userEvent.click(button)
+    }
+    expect(screen.getByRole('button', { name: '确定' })).toBeEnabled()
+    await userEvent.click(screen.getByRole('button', { name: '确定' }))
+    expect(submitDecision).toHaveBeenLastCalledWith('tamo-order', ['p2', 'p3', 'p4', 'p5', 'p1'])
+  } finally {
+    players[0].identity_label = original.identity
+    players[0].character_name = original.name
+  }
+})

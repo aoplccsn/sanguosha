@@ -58,6 +58,7 @@ export interface PendingRequest {
 }
 
 export interface DraftState {
+  test_room?: boolean
   request: PendingRequest
   identity: string
   lord_id: string

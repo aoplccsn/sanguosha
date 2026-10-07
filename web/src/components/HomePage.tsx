@@ -13,6 +13,27 @@ export function HomePage() {
   const [roomCode, setRoomCode] = useState(initialRoom)
   const [modeId, setModeId] = useState<'military-five' | 'military-eight'>('military-five')
   const [entering, setEntering] = useState(false)
+  const [showTestMode, setShowTestMode] = useState(false)
+  const [testCode, setTestCode] = useState('')
+  const [testAuthorized, setTestAuthorized] = useState(false)
+  const [testBusy, setTestBusy] = useState(false)
+  const [testError, setTestError] = useState('')
+
+  const authorizeTest = async () => {
+    setTestBusy(true)
+    setTestError('')
+    try {
+      const response = await fetch('/api/test-mode/authorize', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: testCode }),
+      })
+      if (!response.ok) throw new Error('access denied')
+      setTestCode('')
+      setTestAuthorized(true)
+    } catch { setTestError('测试权限码无效或测试入口未启用。') }
+    finally { setTestBusy(false) }
+  }
 
   useEffect(() => { if (state.error || state.connection === 'offline' || state.connection === 'fatal') setEntering(false) }, [state.error, state.connection])
   useEffect(() => {
@@ -48,6 +69,17 @@ export function HomePage() {
       <div className="home-actions">
         <button className="brush-button primary" disabled={entering} onClick={() => { setEntering(true); actions.createRoom(remember(), true, modeId) }}>{entering ? '正在进入…' : '单人游戏'}</button>
         <button className="brush-button" disabled={entering} onClick={() => { setEntering(true); actions.createRoom(remember(), false, modeId) }}>{entering ? '正在进入…' : '创建多人房间'}</button>
+      </div>
+      <div className="test-mode-panel">
+        <button type="button" className="brush-button subtle compact" onClick={() => setShowTestMode(!showTestMode)}>测试模式</button>
+        {showTestMode && (testAuthorized ? <div>
+          <span role="status">测试授权已通过，可自选武将。</span>
+          <button className="brush-button compact" disabled={entering} onClick={() => { setEntering(true); actions.createRoom(remember(), true, modeId, true) }}>创建测试房</button>
+        </div> : <form onSubmit={(event) => { event.preventDefault(); void authorizeTest() }}>
+          <label>测试权限码 <input aria-label="测试权限码" type="password" autoComplete="off" value={testCode} onChange={(event) => setTestCode(event.target.value)} /></label>
+          <button className="brush-button compact" disabled={testBusy || !testCode} type="submit">验证</button>
+          {testError && <span role="alert">{testError}</span>}
+        </form>)}
       </div>
       {import.meta.env.DEV && <a className="god-preview-entry" href="/t11/god-lvbu-preview">God Lü Bu Presentation Preview · 神吕布视觉验收</a>}
       <div className="join-row">

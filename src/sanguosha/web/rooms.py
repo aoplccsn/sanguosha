@@ -41,7 +41,8 @@ class RoomManager:
         self.rooms: dict[str, ManagedRoom] = {}
 
     def create(self, *, seed: int | None = None, review_god_lvbu: bool = False,
-               mode_id: str = 'military-five', allow_gods: bool = False) -> ManagedRoom:
+               mode_id: str = 'military-five', allow_gods: bool = False,
+               test_room: bool = False) -> ManagedRoom:
         if len(self.rooms) >= self.max_rooms:
             raise ValueError("server room limit reached")
         for _ in range(100):
@@ -49,7 +50,7 @@ class RoomManager:
             if code not in self.rooms:
                 managed = ManagedRoom(code, MultiplayerRoom(seed=seed,
                     timeout_seconds=self.timeout_seconds, review_god_lvbu=review_god_lvbu,
-                    mode_id=mode_id, allow_gods=allow_gods))
+                    mode_id=mode_id, allow_gods=allow_gods, test_room=test_room))
                 managed.game.ai_presentation = self.ai_presentation
                 # Yield between bounded batches so WebSocket senders can drain.
                 managed.game.auto_step_budget = 32

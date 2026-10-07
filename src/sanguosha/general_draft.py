@@ -1,7 +1,7 @@
 """T19 authoritative ten-general sampling; uses only the room's seeded RNG."""
 from sanguosha.engine.rng import RandomSource
 
-OVERPOWERED_SLOT_RATE = 0.25
+OVERPOWERED_SLOT_RATE = 0.05
 OVERPOWERED_WEIGHTS = {
     'mobile_god_taishici': 10,
     'mobile_god_sunce': 8,
