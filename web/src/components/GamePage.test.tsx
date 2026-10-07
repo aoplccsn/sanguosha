@@ -553,3 +553,31 @@ it.each([
     request = null
   }
 })
+
+it('T20.3 HUD separates many hand cards from skill and equipment selection', async()=>{
+ const equipment={...card,card_id:'cost-eq',name:'诸葛连弩',definition_id:'equipment.weapon.crossbow',equipment_slot:'weapon'}
+ ;(players[0] as any).equipment=[equipment]
+ extraCards=Array.from({length:24},(_,i)=>({...card,card_id:'many-'+i}))
+ request={request_id:'equip-cost',player_id:'p1',request_type:'choose_cards',prompt:'【制衡】选择牌',choices:[],eligible_card_ids:['cost-eq','slash-1'],allowed_player_ids:[],min_count:1,max_count:2,remaining_ms:60000}
+ try {
+  const {container}=render(<GamePage/>)
+  expect(container.querySelector('.skill-area .hand-card')).toBeNull()
+  expect(container.querySelectorAll('.hand .hand-card')).toHaveLength(25)
+  const equip=screen.getByRole('button',{name:'装备 诸葛连弩'})
+  await userEvent.click(equip);expect(equip).toHaveAttribute('aria-pressed','true')
+  await userEvent.click(equip);expect(equip).toHaveAttribute('aria-pressed','false')
+  await userEvent.click(equip);await userEvent.click(screen.getAllByRole('button',{name:'杀 ♠7'})[0])
+  await userEvent.click(screen.getByRole('button',{name:'确定'}))
+  expect(submitDecision).toHaveBeenLastCalledWith('equip-cost',['cost-eq','slash-1'])
+ } finally { players[0].equipment=[];extraCards=[] }
+})
+it('T20.3 separates physical chain use from zero-target recast', async()=>{
+ extraCards=[{...card,card_id:'chain',name:'铁索连环',definition_id:'trick.iron_chain'}]
+ request={request_id:'chain-play',player_id:'p1',request_type:'choose_option',prompt:'出牌',choices:['use:chain'],eligible_card_ids:[],allowed_player_ids:[],min_count:1,max_count:1,remaining_ms:60000,play_card_targets:{'use:chain':{targets:['p1','p2','p3'],min:0,max:2}}}
+ render(<GamePage/>);await userEvent.click(screen.getByRole('button',{name:'铁索连环 ♠7'}))
+ expect(screen.getByRole('button',{name:'使用'})).toBeDisabled()
+ await userEvent.click(screen.getByRole('button',{name:'选择目标刘备'}))
+ expect(screen.getByRole('button',{name:'使用'})).toBeEnabled()
+ await userEvent.click(screen.getByRole('button',{name:'重铸'}))
+ expect(submitDecision).toHaveBeenLastCalledWith('chain-play',{option:'use:chain',targets:[]})
+})

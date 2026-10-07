@@ -1,3 +1,4 @@
+import { tryLandscape } from './LandscapeGate'
 import { useGame } from '../state/GameContext'
 
 export function LobbyPage() {
@@ -46,7 +47,7 @@ export function LobbyPage() {
       <div className="lobby-actions">
         <button className="brush-button subtle" onClick={actions.returnHome}>返回首页</button>
         {isHost
-          ? <button className="brush-button primary" disabled={!guestsReady} onClick={actions.startGame}>开始游戏</button>
+          ? <button className="brush-button primary" disabled={!guestsReady} onClick={() => { void tryLandscape(); actions.startGame() }}>开始游戏</button>
           : <button className={`brush-button ${self?.ready ? 'subtle' : 'primary'}`} onClick={() => actions.setReady(!self?.ready)}>{self?.ready ? '取消准备' : '准备'}</button>}
       </div>
       {state.error && <div className="error-banner" role="alert">{state.error}</div>}

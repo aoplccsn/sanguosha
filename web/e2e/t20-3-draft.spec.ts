@@ -1,0 +1,22 @@
+import {test,expect} from '@playwright/test'
+test('T20.3 draft portrait gate and landscape ten-choice grid',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/?seed=6')
+ await expect(page.getByText('请横屏游玩')).toHaveCount(0)
+ await page.getByRole('button',{name:'单人游戏'}).click()
+ await expect(page.getByText('请横屏游玩')).toBeVisible()
+ await page.setViewportSize({width:844,height:390})
+ await expect(page.getByText('请横屏游玩')).not.toBeVisible()
+ await expect(page.locator('.general-card')).toHaveCount(10)
+ await page.locator('.general-card').first().click()
+ const confirm=page.getByRole('button',{name:'确认武将'})
+ await expect(confirm).toBeEnabled();expect((await confirm.boundingBox())!.y).toBeLessThan(390)
+ await page.screenshot({path:'../docs/t20_3/draft-844.png'})
+})
+test('T20.3 protected test draft remains a searchable landscape grid',async({page})=>{
+ await page.setViewportSize({width:932,height:430});await page.goto('/')
+ await page.getByRole('button',{name:'测试模式'}).click();await page.getByLabel('测试权限码').fill('fixture-only-code')
+ await page.getByRole('button',{name:'验证',exact:true}).click();await page.getByRole('button',{name:'创建测试房'}).click()
+ await expect(page.locator('.general-card')).toHaveCount(108)
+ await page.getByLabel('搜索武将或技能').fill('孙权');await expect(page.locator('.general-card')).toHaveCount(1)
+ await page.locator('.general-card').click();await expect(page.getByRole('button',{name:'确认武将'})).toBeEnabled()
+})

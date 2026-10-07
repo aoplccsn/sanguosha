@@ -1,0 +1,74 @@
+{
+  "baseline": "ffaef23",
+  "scope": "T20.3 mobile landscape HUD, chain recast, identity notes and selection UX",
+  "engine_changed": false,
+  "three_survivor_reproduction": "Current baseline already accepts loyalist targeting lord, rebel and self. No identity/relation filter fault reproduced. Preserve engine and cover real Web combined decisions.",
+  "python": {
+    "passed": 14,
+    "files": [
+      "test_t20_3.py",
+      "test_t18a11_recast.py"
+    ]
+  },
+  "vitest": {
+    "passed": 134,
+    "files": 20
+  },
+  "playwright": {
+    "passed": 17,
+    "real_engine": true,
+    "viewports": [
+      [
+        1440,
+        1000
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        852,
+        393
+      ],
+      [
+        915,
+        412
+      ],
+      [
+        932,
+        430
+      ]
+    ],
+    "modes": [
+      "military-five",
+      "military-eight",
+      "duel-1v1",
+      "team-2v2"
+    ],
+    "tamo": [
+      "five",
+      "eight"
+    ]
+  },
+  "typescript": "PASS",
+  "fresh_vite_build": "PASS",
+  "production_assets": {
+    "portraits": 108,
+    "cards": 44,
+    "status": "PASS"
+  },
+  "full_pytest": false,
+  "visual_review": [
+    "desktop static HUD",
+    "landscape 5 and 8 players with 26 cards",
+    "landscape response",
+    "landscape draft",
+    "desktop and landscape dynamic portrait and fallback"
+  ],
+  "identity_storage": "localStorage key includes room, local player, target player; no rule/wire data",
+  "rotation": "same DOM and state; real WebSocket count unchanged; materials remain selected"
+}

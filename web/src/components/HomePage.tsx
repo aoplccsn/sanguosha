@@ -1,3 +1,4 @@
+import { tryLandscape } from './LandscapeGate'
 import { useEffect, useMemo, useState } from 'react'
 import { useGame } from '../state/GameContext'
 
@@ -67,14 +68,14 @@ export function HomePage() {
         </select>
       </label>
       <div className="home-actions">
-        <button className="brush-button primary" disabled={entering} onClick={() => { setEntering(true); actions.createRoom(remember(), true, modeId) }}>{entering ? '正在进入…' : '单人游戏'}</button>
+        <button className="brush-button primary" disabled={entering} onClick={() => { setEntering(true); void tryLandscape(); actions.createRoom(remember(), true, modeId) }}>{entering ? '正在进入…' : '单人游戏'}</button>
         <button className="brush-button" disabled={entering} onClick={() => { setEntering(true); actions.createRoom(remember(), false, modeId) }}>{entering ? '正在进入…' : '创建多人房间'}</button>
       </div>
       <div className="test-mode-panel">
         <button type="button" className="brush-button subtle compact" onClick={() => setShowTestMode(!showTestMode)}>测试模式</button>
         {showTestMode && (testAuthorized ? <div>
           <span role="status">测试授权已通过，可自选武将。</span>
-          <button className="brush-button compact" disabled={entering} onClick={() => { setEntering(true); actions.createRoom(remember(), true, modeId, true) }}>创建测试房</button>
+          <button className="brush-button compact" disabled={entering} onClick={() => { setEntering(true); void tryLandscape(); actions.createRoom(remember(), true, modeId, true) }}>创建测试房</button>
         </div> : <form onSubmit={(event) => { event.preventDefault(); void authorizeTest() }}>
           <label>测试权限码 <input aria-label="测试权限码" type="password" autoComplete="off" value={testCode} onChange={(event) => setTestCode(event.target.value)} /></label>
           <button className="brush-button compact" disabled={testBusy || !testCode} type="submit">验证</button>
