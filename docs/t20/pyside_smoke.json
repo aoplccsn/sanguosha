@@ -1,0 +1,12 @@
+[
+  {
+    "mode": "duel-1v1",
+    "visible_panels": 2,
+    "status": "PASS"
+  },
+  {
+    "mode": "team-2v2",
+    "visible_panels": 4,
+    "status": "PASS"
+  }
+]

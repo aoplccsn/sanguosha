@@ -41,6 +41,10 @@ class Kingdom(StrEnum):
 
 
 class Identity(StrEnum):
+    PLAYER_A = "player_a"
+    PLAYER_B = "player_b"
+    TEAM_A = "team_a"
+    TEAM_B = "team_b"
     LORD = "lord"
     LOYALIST = "loyalist"
     REBEL = "rebel"

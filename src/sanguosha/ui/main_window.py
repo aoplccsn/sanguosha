@@ -4,7 +4,7 @@ import os
 from PySide6.QtCore import QTimer, Qt, QAbstractAnimation, QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QDialog, QHBoxLayout, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget,
+    QComboBox, QDialog, QHBoxLayout, QLabel, QMainWindow, QPushButton, QVBoxLayout, QWidget,
 )
 
 from sanguosha.engine.phases import END_PLAY_PHASE
@@ -71,7 +71,12 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(6, 5, 6, 5)
         layout.setSpacing(3)
         header = QHBoxLayout()
-        self.standard_game_button = QPushButton('单人游戏 · 标准身份局')
+        self.mode_selector = QComboBox()
+        for label, mode in (('军五', 'military-five'), ('军八', 'military-eight'), ('1v1 对决', 'duel-1v1'), ('2v2 小队战', 'team-2v2')):
+            self.mode_selector.addItem(label, mode)
+        if military:
+            header.addWidget(self.mode_selector)
+        self.standard_game_button = QPushButton('单人游戏')
         self.standard_game_button.setObjectName('standard-new-game')
         self.standard_game_button.clicked.connect(lambda checked=False: self.start_standard_game())
         if military:
@@ -144,7 +149,7 @@ class MainWindow(QMainWindow):
             self._pregame_dialog.close()
         self._tick_timer.stop()
         self._decision_timer.stop()
-        setup = Pregame.create(seed)
+        setup = Pregame.create(seed, self.mode_selector.currentData())
         dialog = PregameDialog(setup, self)
         self._pregame_dialog = dialog
         def finished(result):

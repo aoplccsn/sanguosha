@@ -16,6 +16,7 @@ import type { GodPortraitMode } from './GodPortrait'
 import { readVfxQuality, saveVfxQuality, type VfxQuality } from '../vfx/CombatVFXRuntime'
 
 const positions = ['east', 'north-east', 'north-west', 'west']
+const positionsSmall: Record<number, string[]> = { 2: ['north'], 4: ['east', 'north', 'west'] }
 const positionsEight = ['east-lower', 'east-upper', 'north-east', 'north', 'north-west', 'west-upper', 'west-lower']
 const phaseNames: Record<string, string> = {
   '—': '回合观察', start: '开始', judgment: '判定', draw: '摸牌', play: '出牌', discard: '弃牌', finish: '结束',
@@ -75,7 +76,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
   const committed = Object.entries(player.special_piles ?? {})
     .filter(([key]) => key.startsWith('committed:'))
     .flatMap(([, cards]) => cards)
-  const classes = 'player-panel player-' + position
+  const classes = 'player-panel player-' + position + (player.team_id ? ' team-' + player.team_id : '')
     + (player.active ? ' active' : '')
     + (selected ? ' selected-target' : '')
     + (selectable ? ' selectable' : '')
@@ -90,7 +91,7 @@ export function PlayerPanel({ player, position, selected, selectable, responding
     + (eventKind?.includes('Damage') ? ' damage-flash' : '')
     + (eventKind?.includes('Recover') ? ' healing-flash' : '')
     + (!player.alive ? ' dead' : '')
-  return <article data-character-id={player.character_id} data-player-id={player.player_id} className={classes} onClick={selectable ? onSelect : undefined}>
+  return <article data-team-id={player.team_id ?? ""} data-character-id={player.character_id} data-player-id={player.player_id} className={classes} onClick={selectable ? onSelect : undefined}>
     <button className="portrait-button" onClick={(event) => { event.stopPropagation(); if (selectable) onSelect(); else onDetail() }} aria-label={selectable ? '选择目标' + player.character_name : '查看' + player.character_name + '详情'}>
       <DynamicPortrait staticPortrait={portraitFor(player, state.generals)} idleVideo={idlePortrait(player.character_id)?.panelVideo ?? idlePortrait(player.character_id)?.video} objectPosition={idlePortrait(player.character_id)?.objectPosition} name={player.character_name} quality={vfxQuality} />
       {portrait.faceDown && <span className="face-down-mark">翻面</span>}
@@ -326,7 +327,7 @@ function EventStage({ event, players, combat }: { event?: PublicEvent; players: 
 export function ResultOverlay({ result, identity, godVictory = false, quality = 'medium', onHome, onReplay }: { result: string; identity?: string; godVictory?: boolean; quality?: VfxQuality; onHome(): void; onReplay(): void }) {
   const won = identity === '主公' || identity === '忠臣'
     ? result.includes('主公') || result.includes('忠臣')
-    : identity === '反贼' ? result.includes('反贼') : identity === '内奸' ? result.includes('内奸') : false
+    : identity === '反贼' ? result.includes('反贼') : identity === '内奸' ? result.includes('内奸') : ['玩家A', '玩家B', 'A队', 'B队'].includes(identity ?? '') && result.includes(identity ?? '')
   return <div className={'result-overlay ' + (won ? 'victory' : 'defeat')} role="dialog" aria-label="对局结果"><div>
     <p className="eyebrow">对局终了 · {identity ?? '身份未知'}</p>{won && godVictory && <div className="god-result-portrait"><img src={generalPortrait('forest_god_lvbu', 'qun', {})} alt="神吕布胜利" /></div>}<h1>{won ? '胜利' : '败北'}</h1><p>{result || '本局已经结束'}</p>
     <button className="brush-button primary" onClick={onReplay}>再来一局</button>
@@ -544,9 +545,9 @@ export function GamePage() {
   return <main className="game-page table-background">
     {temporaryPanel && <TemporaryInteractionPanel projection={projection} request={request} seatId={state.seatId} connected={state.connection === 'connected'} processing={!!state.decisionProcessing} selected={selectedCards} canConfirm={canConfirm} onSelect={toggleCard} onConfirm={confirm} onPass={() => submitImmediate({ pass: true })} requestControls={request && request.request_type !== 'choose_card' ? <DecisionPrompt request={request} projection={projection} canConfirm={canConfirm} processing={!!state.decisionProcessing} summary={summary} onConfirm={confirm} onCancel={() => setSelectedCards([])} onPass={() => submitImmediate({ pass: true })} onPassRoot={() => submitImmediate({ pass: true, scope: 'root_trick' })} onBoolean={submitImmediate} onOption={submitImmediate} /> : undefined} />}
     <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><label>对局速度 <select aria-label="对局速度" value={gameSpeed} onChange={(event) => { const value = event.target.value as GameSpeed; setGameSpeed(value); actions.setPresentationSpeed?.(value); localStorage.setItem('sanguosha.web.speed', value) }}><option value="slow">慢</option><option value="normal">正常</option><option value="fast">快</option></select></label><label className="vfx-quality-control">画质 <select aria-label="战斗特效画质" value={vfxQuality} onChange={(event) => { const value = event.target.value as VfxQuality; setVfxQuality(value); saveVfxQuality(value) }}><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></label><button onClick={actions.returnHome}>离开牌局</button></div></header>
-    <section className={'game-board' + (projection.players.length === 8 ? ' eight-seats' : '')}>
+    <section className={'game-board' + (projection.players.length === 8 ? ' eight-seats' : projection.players.length <= 4 ? ' small-party-seats' : '')}>
       <CombatVFXLayer players={projection.players} targets={selectedTargets} mode={beamMode} events={visibleEvents} quality={vfxQuality} />
-      {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} phase={projection.current_phase} aoeState={aoeState(player.player_id)} position={(projection.players.length === 8 ? positionsEight : positions)[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={responseId === player.player_id} waiting={waiting?.player_id === player.player_id ? waiting : undefined} thinking={thinkingId === player.player_id} eventKind={eventTargetIds.includes(player.player_id) || eventActorId === player.player_id ? eventKind : undefined} eventActor={eventActorId === player.player_id} eventTarget={latestEvent?.presentation_phase === 'target' && eventTargetIds.includes(player.player_id)} eventCue={latestEvent} godCue={godCues[player.player_id]} vfxQuality={vfxQuality} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
+      {opponents.map((player, index) => <PlayerPanel key={player.player_id} player={player} phase={projection.current_phase} aoeState={aoeState(player.player_id)} position={(positionsSmall[projection.players.length] ?? (projection.players.length === 8 ? positionsEight : positions))[index]} selected={selectedTargets.includes(player.player_id)} selectable={isTargetRequest && allowedTargets.has(player.player_id)} responding={responseId === player.player_id} waiting={waiting?.player_id === player.player_id ? waiting : undefined} thinking={thinkingId === player.player_id} eventKind={eventTargetIds.includes(player.player_id) || eventActorId === player.player_id ? eventKind : undefined} eventActor={eventActorId === player.player_id} eventTarget={latestEvent?.presentation_phase === 'target' && eventTargetIds.includes(player.player_id)} eventCue={latestEvent} godCue={godCues[player.player_id]} vfxQuality={vfxQuality} onSelect={() => toggleTarget(player.player_id)} onDetail={() => setDetailPlayer(player)} />)}
       <EventStage event={latestEvent} players={projection.players} combat={combat} />
       <aside className="recent-actions" aria-label="最近动作"><small>最近动作</small>{state.publicEvents.filter(e => /^(CardUsedEvent|CardRespondedEvent|VirtualResponseEvent|SkillEvent|GodSkillEvent)$/.test(String(e.kind))).slice(-4).reverse().map((e, i) => {
         const name = (id: unknown) => projection.players.find(p => p.player_id === id)?.character_name ?? String(id ?? '')
@@ -582,6 +583,6 @@ export function GamePage() {
     {hint && <div className="interaction-hint" role="status">{hint}</div>}
     {state.error && <div className="game-error">{state.error}<button onClick={actions.clearError}>×</button></div>}
     {detailPlayer && <GeneralDetailPanel player={detailPlayer} general={detailGeneral} quality={vfxQuality} onClose={() => setDetailPlayer(null)} />}
-    {(state.result || projection.result) && <ResultOverlay result={state.result || projection.result || ''} identity={self.identity_label} godVictory={self.character_id === 'forest_god_lvbu'} quality={vfxQuality} onHome={actions.returnHome} onReplay={() => { actions.returnHome(); actions.createRoom(state.playerName || '玩家', true) }} />}
+    {(state.result || projection.result) && <ResultOverlay result={state.result || projection.result || ''} identity={self.identity_label} godVictory={self.character_id === 'forest_god_lvbu'} quality={vfxQuality} onHome={actions.returnHome} onReplay={() => { actions.returnHome(); actions.createRoom(state.playerName || '玩家', true, state.lobby?.mode_id) }} />}
   </main>
 }

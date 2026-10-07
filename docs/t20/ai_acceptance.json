@@ -1,0 +1,940 @@
+{
+  "status": "PASS",
+  "production_roster_count": 108,
+  "development_candidate_count": 108,
+  "games": [
+    {
+      "mode": "duel-1v1",
+      "seed": 20000,
+      "generals": [
+        "caocao",
+        "liubei"
+      ],
+      "turns": 2,
+      "decisions_and_turns": 47,
+      "seconds": 0.02,
+      "projection_checks": 4,
+      "reconnect_snapshots": 0,
+      "first_player": "p2",
+      "first_side_won": true,
+      "winner_ids": [
+        "p2"
+      ],
+      "winner": "玩家B胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20001,
+      "generals": [
+        "sunquan",
+        "lvbu"
+      ],
+      "turns": 4,
+      "decisions_and_turns": 41,
+      "seconds": 0.02,
+      "projection_checks": 4,
+      "reconnect_snapshots": 0,
+      "first_player": "p2",
+      "first_side_won": true,
+      "winner_ids": [
+        "p2"
+      ],
+      "winner": "玩家B胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20002,
+      "generals": [
+        "guanyu",
+        "simayi"
+      ],
+      "turns": 13,
+      "decisions_and_turns": 117,
+      "seconds": 0.05,
+      "projection_checks": 8,
+      "reconnect_snapshots": 0,
+      "first_player": "p2",
+      "first_side_won": true,
+      "winner_ids": [
+        "p2"
+      ],
+      "winner": "玩家B胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20003,
+      "generals": [
+        "xiahou_dun",
+        "zhangliao"
+      ],
+      "turns": 18,
+      "decisions_and_turns": 119,
+      "seconds": 0.04,
+      "projection_checks": 8,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1"
+      ],
+      "winner": "玩家A胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20004,
+      "generals": [
+        "xuchu",
+        "guojia"
+      ],
+      "turns": 9,
+      "decisions_and_turns": 75,
+      "seconds": 0.03,
+      "projection_checks": 6,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2"
+      ],
+      "winner": "玩家B胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20005,
+      "generals": [
+        "zhenji",
+        "zhangfei"
+      ],
+      "turns": 33,
+      "decisions_and_turns": 304,
+      "seconds": 0.15,
+      "projection_checks": 20,
+      "reconnect_snapshots": 1,
+      "first_player": "p2",
+      "first_side_won": false,
+      "winner_ids": [
+        "p1"
+      ],
+      "winner": "玩家A胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20006,
+      "generals": [
+        "zhugeliang",
+        "zhaoyun"
+      ],
+      "turns": 21,
+      "decisions_and_turns": 178,
+      "seconds": 0.07,
+      "projection_checks": 12,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2"
+      ],
+      "winner": "玩家B胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20007,
+      "generals": [
+        "machao",
+        "huangyueying"
+      ],
+      "turns": 13,
+      "decisions_and_turns": 103,
+      "seconds": 0.04,
+      "projection_checks": 8,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1"
+      ],
+      "winner": "玩家A胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20008,
+      "generals": [
+        "ganning",
+        "lvmeng"
+      ],
+      "turns": 31,
+      "decisions_and_turns": 272,
+      "seconds": 0.11,
+      "projection_checks": 18,
+      "reconnect_snapshots": 1,
+      "first_player": "p2",
+      "first_side_won": true,
+      "winner_ids": [
+        "p2"
+      ],
+      "winner": "玩家B胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20009,
+      "generals": [
+        "huanggai",
+        "zhouyu"
+      ],
+      "turns": 3,
+      "decisions_and_turns": 39,
+      "seconds": 0.02,
+      "projection_checks": 4,
+      "reconnect_snapshots": 0,
+      "first_player": "p2",
+      "first_side_won": true,
+      "winner_ids": [
+        "p2"
+      ],
+      "winner": "玩家B胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20010,
+      "generals": [
+        "daqiao",
+        "luxun"
+      ],
+      "turns": 40,
+      "decisions_and_turns": 257,
+      "seconds": 0.14,
+      "projection_checks": 18,
+      "reconnect_snapshots": 0,
+      "first_player": "p2",
+      "first_side_won": false,
+      "winner_ids": [
+        "p1"
+      ],
+      "winner": "玩家A胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20011,
+      "generals": [
+        "sunshangxiang",
+        "huatuo"
+      ],
+      "turns": 13,
+      "decisions_and_turns": 91,
+      "seconds": 0.04,
+      "projection_checks": 6,
+      "reconnect_snapshots": 0,
+      "first_player": "p2",
+      "first_side_won": false,
+      "winner_ids": [
+        "p1"
+      ],
+      "winner": "玩家A胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20012,
+      "generals": [
+        "diaochan",
+        "wind_xiahou_yuan"
+      ],
+      "turns": 9,
+      "decisions_and_turns": 87,
+      "seconds": 0.04,
+      "projection_checks": 6,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1"
+      ],
+      "winner": "玩家A胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20013,
+      "generals": [
+        "wind_cao_ren",
+        "wind_huang_zhong"
+      ],
+      "turns": 8,
+      "decisions_and_turns": 57,
+      "seconds": 0.02,
+      "projection_checks": 4,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2"
+      ],
+      "winner": "玩家B胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20014,
+      "generals": [
+        "wind_wei_yan",
+        "wind_xiao_qiao"
+      ],
+      "turns": 11,
+      "decisions_and_turns": 105,
+      "seconds": 0.04,
+      "projection_checks": 8,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2"
+      ],
+      "winner": "玩家B胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20015,
+      "generals": [
+        "wind_zhou_tai",
+        "wind_zhang_jiao"
+      ],
+      "turns": 9,
+      "decisions_and_turns": 63,
+      "seconds": 0.03,
+      "projection_checks": 6,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1"
+      ],
+      "winner": "玩家A胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20016,
+      "generals": [
+        "wind_yuji",
+        "wind_god_guanyu"
+      ],
+      "turns": 9,
+      "decisions_and_turns": 85,
+      "seconds": 0.04,
+      "projection_checks": 6,
+      "reconnect_snapshots": 0,
+      "first_player": "p2",
+      "first_side_won": true,
+      "winner_ids": [
+        "p2"
+      ],
+      "winner": "玩家B胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20017,
+      "generals": [
+        "wind_god_lvmeng",
+        "fire_dian_wei"
+      ],
+      "turns": 9,
+      "decisions_and_turns": 90,
+      "seconds": 0.04,
+      "projection_checks": 6,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1"
+      ],
+      "winner": "玩家A胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20018,
+      "generals": [
+        "fire_xun_yu",
+        "fire_pang_tong"
+      ],
+      "turns": 4,
+      "decisions_and_turns": 39,
+      "seconds": 0.01,
+      "projection_checks": 4,
+      "reconnect_snapshots": 0,
+      "first_player": "p2",
+      "first_side_won": true,
+      "winner_ids": [
+        "p2"
+      ],
+      "winner": "玩家B胜利"
+    },
+    {
+      "mode": "duel-1v1",
+      "seed": 20019,
+      "generals": [
+        "fire_wolong",
+        "fire_taishi_ci"
+      ],
+      "turns": 37,
+      "decisions_and_turns": 267,
+      "seconds": 0.14,
+      "projection_checks": 18,
+      "reconnect_snapshots": 1,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1"
+      ],
+      "winner": "玩家A胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21000,
+      "generals": [
+        "fire_pang_de",
+        "fire_yan_liang_wen_chou",
+        "fire_yuan_shao",
+        "fire_god_zhouyu"
+      ],
+      "turns": 33,
+      "decisions_and_turns": 372,
+      "seconds": 0.18,
+      "projection_checks": 48,
+      "reconnect_snapshots": 1,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1",
+        "p3"
+      ],
+      "winner": "A队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21001,
+      "generals": [
+        "fire_god_zhugeliang",
+        "forest_caopi",
+        "forest_xuhuang",
+        "forest_menghuo"
+      ],
+      "turns": 64,
+      "decisions_and_turns": 525,
+      "seconds": 0.27,
+      "projection_checks": 68,
+      "reconnect_snapshots": 2,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1",
+        "p3"
+      ],
+      "winner": "A队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21002,
+      "generals": [
+        "forest_zhurong",
+        "forest_sunjian",
+        "forest_lusu",
+        "forest_jia_xu"
+      ],
+      "turns": 25,
+      "decisions_and_turns": 313,
+      "seconds": 0.16,
+      "projection_checks": 44,
+      "reconnect_snapshots": 1,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1",
+        "p3"
+      ],
+      "winner": "A队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21003,
+      "generals": [
+        "forest_dong_zhuo",
+        "forest_god_caocao",
+        "forest_god_lvbu",
+        "mountain_zhang_he"
+      ],
+      "turns": 12,
+      "decisions_and_turns": 128,
+      "seconds": 0.05,
+      "projection_checks": 20,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1",
+        "p3"
+      ],
+      "winner": "A队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21004,
+      "generals": [
+        "mountain_deng_ai",
+        "mountain_liushan",
+        "mountain_jiang_wei",
+        "mountain_sunce"
+      ],
+      "turns": 19,
+      "decisions_and_turns": 273,
+      "seconds": 0.12,
+      "projection_checks": 36,
+      "reconnect_snapshots": 1,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2",
+        "p4"
+      ],
+      "winner": "B队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21005,
+      "generals": [
+        "mountain_zhang_zhaozhang",
+        "mountain_zuoci",
+        "mountain_cai_wenji",
+        "mountain_god_zhaoyun"
+      ],
+      "turns": 17,
+      "decisions_and_turns": 246,
+      "seconds": 0.1,
+      "projection_checks": 32,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2",
+        "p4"
+      ],
+      "winner": "B队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21006,
+      "generals": [
+        "mountain_god_simayi",
+        "yj2011_zhang_chunhua",
+        "yj2011_yu_jin",
+        "yj2011_cao_zhi"
+      ],
+      "turns": 10,
+      "decisions_and_turns": 215,
+      "seconds": 0.09,
+      "projection_checks": 28,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1",
+        "p3"
+      ],
+      "winner": "A队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21007,
+      "generals": [
+        "yj2011_fa_zheng",
+        "yj2011_ma_su",
+        "yj2011_xu_shu",
+        "yj2011_ling_tong"
+      ],
+      "turns": 20,
+      "decisions_and_turns": 266,
+      "seconds": 0.12,
+      "projection_checks": 36,
+      "reconnect_snapshots": 1,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1",
+        "p3"
+      ],
+      "winner": "A队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21008,
+      "generals": [
+        "yj2011_xu_sheng",
+        "yj2011_wu_guotai",
+        "yj2011_chen_gong",
+        "yj2011_gao_shun"
+      ],
+      "turns": 16,
+      "decisions_and_turns": 208,
+      "seconds": 0.09,
+      "projection_checks": 28,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2",
+        "p4"
+      ],
+      "winner": "B队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21009,
+      "generals": [
+        "yj2012_xun_you",
+        "yj2012_wang_yi",
+        "yj2012_cao_zhang",
+        "yj2012_zhong_hui"
+      ],
+      "turns": 30,
+      "decisions_and_turns": 388,
+      "seconds": 0.18,
+      "projection_checks": 52,
+      "reconnect_snapshots": 1,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1",
+        "p3"
+      ],
+      "winner": "A队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21010,
+      "generals": [
+        "yj2012_liao_hua",
+        "yj2012_guan_xing_zhang_bao",
+        "yj2012_ma_dai",
+        "yj2012_bu_lianshi"
+      ],
+      "turns": 12,
+      "decisions_and_turns": 217,
+      "seconds": 0.08,
+      "projection_checks": 28,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1",
+        "p3"
+      ],
+      "winner": "A队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21011,
+      "generals": [
+        "yj2012_cheng_pu",
+        "yj2012_han_dang",
+        "yj2012_liu_biao",
+        "yj2012_hua_xiong"
+      ],
+      "turns": 49,
+      "decisions_and_turns": 489,
+      "seconds": 0.24,
+      "projection_checks": 64,
+      "reconnect_snapshots": 1,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1",
+        "p3"
+      ],
+      "winner": "A队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21012,
+      "generals": [
+        "yj2013_cao_chong",
+        "yj2013_guo_huai",
+        "yj2013_man_chong",
+        "yj2013_guan_ping"
+      ],
+      "turns": 14,
+      "decisions_and_turns": 196,
+      "seconds": 0.09,
+      "projection_checks": 28,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2",
+        "p4"
+      ],
+      "winner": "B队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21013,
+      "generals": [
+        "yj2013_jian_yong",
+        "yj2013_liu_feng",
+        "yj2013_pan_zhang_ma_zhong",
+        "yj2013_yu_fan"
+      ],
+      "turns": 29,
+      "decisions_and_turns": 478,
+      "seconds": 0.21,
+      "projection_checks": 160,
+      "reconnect_snapshots": 1,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2",
+        "p4"
+      ],
+      "winner": "B队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21014,
+      "generals": [
+        "yj2013_zhu_ran",
+        "yj2013_fu_huanghou",
+        "yj2013_li_ru",
+        "shadow_god_liubei"
+      ],
+      "turns": 6,
+      "decisions_and_turns": 96,
+      "seconds": 0.04,
+      "projection_checks": 16,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": true,
+      "winner_ids": [
+        "p1",
+        "p3"
+      ],
+      "winner": "A队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21015,
+      "generals": [
+        "shadow_god_luxun",
+        "thunder_god_ganning",
+        "thunder_god_zhangliao",
+        "mobile_god_guojia"
+      ],
+      "turns": 15,
+      "decisions_and_turns": 308,
+      "seconds": 0.14,
+      "projection_checks": 64,
+      "reconnect_snapshots": 1,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2",
+        "p4"
+      ],
+      "winner": "B队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21016,
+      "generals": [
+        "mobile_god_xunyu",
+        "mobile_god_taishici",
+        "mobile_god_sunce",
+        "mobile_god_lusu"
+      ],
+      "turns": 19,
+      "decisions_and_turns": 235,
+      "seconds": 0.11,
+      "projection_checks": 32,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2",
+        "p4"
+      ],
+      "winner": "B队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21017,
+      "generals": [
+        "caocao",
+        "liubei",
+        "sunquan",
+        "lvbu"
+      ],
+      "turns": 19,
+      "decisions_and_turns": 264,
+      "seconds": 0.14,
+      "projection_checks": 36,
+      "reconnect_snapshots": 1,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2",
+        "p4"
+      ],
+      "winner": "B队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21018,
+      "generals": [
+        "guanyu",
+        "simayi",
+        "xiahou_dun",
+        "zhangliao"
+      ],
+      "turns": 36,
+      "decisions_and_turns": 325,
+      "seconds": 0.16,
+      "projection_checks": 44,
+      "reconnect_snapshots": 1,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2",
+        "p4"
+      ],
+      "winner": "B队胜利"
+    },
+    {
+      "mode": "team-2v2",
+      "seed": 21019,
+      "generals": [
+        "xuchu",
+        "guojia",
+        "zhenji",
+        "zhangfei"
+      ],
+      "turns": 22,
+      "decisions_and_turns": 244,
+      "seconds": 0.11,
+      "projection_checks": 32,
+      "reconnect_snapshots": 0,
+      "first_player": "p1",
+      "first_side_won": false,
+      "winner_ids": [
+        "p2",
+        "p4"
+      ],
+      "winner": "B队胜利"
+    }
+  ],
+  "failures": [],
+  "coverage": [
+    "caocao",
+    "daqiao",
+    "diaochan",
+    "fire_dian_wei",
+    "fire_god_zhouyu",
+    "fire_god_zhugeliang",
+    "fire_pang_de",
+    "fire_pang_tong",
+    "fire_taishi_ci",
+    "fire_wolong",
+    "fire_xun_yu",
+    "fire_yan_liang_wen_chou",
+    "fire_yuan_shao",
+    "forest_caopi",
+    "forest_dong_zhuo",
+    "forest_god_caocao",
+    "forest_god_lvbu",
+    "forest_jia_xu",
+    "forest_lusu",
+    "forest_menghuo",
+    "forest_sunjian",
+    "forest_xuhuang",
+    "forest_zhurong",
+    "ganning",
+    "guanyu",
+    "guojia",
+    "huanggai",
+    "huangyueying",
+    "huatuo",
+    "liubei",
+    "luxun",
+    "lvbu",
+    "lvmeng",
+    "machao",
+    "mobile_god_guojia",
+    "mobile_god_lusu",
+    "mobile_god_sunce",
+    "mobile_god_taishici",
+    "mobile_god_xunyu",
+    "mountain_cai_wenji",
+    "mountain_deng_ai",
+    "mountain_god_simayi",
+    "mountain_god_zhaoyun",
+    "mountain_jiang_wei",
+    "mountain_liushan",
+    "mountain_sunce",
+    "mountain_zhang_he",
+    "mountain_zhang_zhaozhang",
+    "mountain_zuoci",
+    "shadow_god_liubei",
+    "shadow_god_luxun",
+    "simayi",
+    "sunquan",
+    "sunshangxiang",
+    "thunder_god_ganning",
+    "thunder_god_zhangliao",
+    "wind_cao_ren",
+    "wind_god_guanyu",
+    "wind_god_lvmeng",
+    "wind_huang_zhong",
+    "wind_wei_yan",
+    "wind_xiahou_yuan",
+    "wind_xiao_qiao",
+    "wind_yuji",
+    "wind_zhang_jiao",
+    "wind_zhou_tai",
+    "xiahou_dun",
+    "xuchu",
+    "yj2011_cao_zhi",
+    "yj2011_chen_gong",
+    "yj2011_fa_zheng",
+    "yj2011_gao_shun",
+    "yj2011_ling_tong",
+    "yj2011_ma_su",
+    "yj2011_wu_guotai",
+    "yj2011_xu_sheng",
+    "yj2011_xu_shu",
+    "yj2011_yu_jin",
+    "yj2011_zhang_chunhua",
+    "yj2012_bu_lianshi",
+    "yj2012_cao_zhang",
+    "yj2012_cheng_pu",
+    "yj2012_guan_xing_zhang_bao",
+    "yj2012_han_dang",
+    "yj2012_hua_xiong",
+    "yj2012_liao_hua",
+    "yj2012_liu_biao",
+    "yj2012_ma_dai",
+    "yj2012_wang_yi",
+    "yj2012_xun_you",
+    "yj2012_zhong_hui",
+    "yj2013_cao_chong",
+    "yj2013_fu_huanghou",
+    "yj2013_guan_ping",
+    "yj2013_guo_huai",
+    "yj2013_jian_yong",
+    "yj2013_li_ru",
+    "yj2013_liu_feng",
+    "yj2013_man_chong",
+    "yj2013_pan_zhang_ma_zhong",
+    "yj2013_yu_fan",
+    "yj2013_zhu_ran",
+    "zhangfei",
+    "zhangliao",
+    "zhaoyun",
+    "zhenji",
+    "zhouyu",
+    "zhugeliang"
+  ],
+  "seconds": 4.01,
+  "new_general_coverage": 6
+}

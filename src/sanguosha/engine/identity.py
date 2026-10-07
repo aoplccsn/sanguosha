@@ -7,6 +7,18 @@ from sanguosha.model.victory import VictoryResult
 
 class IdentitySystem:
     def evaluate(self, state: GameState) -> VictoryResult | None:
+        from sanguosha.game_modes import game_mode
+        mode = game_mode(state.metadata.get('mode_id', 'military-five'))
+        if mode.public_sides:
+            surviving = {mode.team_for(pid) for pid in state.seat_order if state.players[pid].is_alive}
+            if len(surviving) > 1:
+                return None
+            if not surviving:
+                return VictoryResult('平局', (), '双方全部阵亡')
+            team = next(iter(surviving))
+            winners = tuple(pid for pid in state.seat_order if mode.team_for(pid) == team)
+            label = f'玩家{team}胜利' if mode.seat_count == 2 else f'{team}队胜利'
+            return VictoryResult(label, winners, '对方全部阵亡')
         lords = [p for p in state.players.values() if p.identity is Identity.LORD]
         if len(lords) != 1:
             return None

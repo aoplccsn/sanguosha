@@ -8,7 +8,7 @@ import { skillTypeLabel } from '../labels'
 import { defaultGeneralPortrait, generalPortrait } from '../assets'
 
 const kingdomLabel: Record<string, string> = { wei: '魏', shu: '蜀', wu: '吴', qun: '群' }
-const identityLabel: Record<string, string> = { lord: '主公', loyalist: '忠臣', rebel: '反贼', renegade: '内奸' }
+const identityLabel: Record<string, string> = { lord: '主公', loyalist: '忠臣', rebel: '反贼', renegade: '内奸', player_a: '玩家A', player_b: '玩家B', team_a: 'A队', team_b: 'B队' }
 
 export function PregamePage() {
   const { state, actions } = useGame()
@@ -24,7 +24,7 @@ export function PregamePage() {
   return <main className="pregame-page table-background">
     <section className="pregame-shell paper-panel">
       <header className="pregame-header">
-        <div className={`identity-reveal identity-${draft.identity}`}><span>你的身份</span><strong>{identityLabel[draft.identity] ?? draft.identity}</strong></div>
+        <div className={`identity-reveal identity-${draft.identity}`}><span>{draft.lord_id ? "你的身份" : "你的阵营"}</span><strong>{identityLabel[draft.identity] ?? draft.identity}</strong></div>
         <div><p className="eyebrow">{draft.test_room ? "测试房 · 自选武将" : "十选一"}</p><h1>择将入局</h1><p>先查看技能，再确认选择。点击武将不会立即锁定。</p></div>
         {state.decisionAccepted === draft.request.request_id
           ? <span role="status">已确认，等待其他玩家…</span>

@@ -103,12 +103,29 @@ class GameTable(QWidget):
             "p5": (w-pw-int(w*.018), int(h*.30)),
             "p1": ((w-int(pw*1.19))//2, h-int(ph*1.05)-5),
         }
+        if self.view is not None:
+            order = [str(p.player_id) for p in self.view.players]
+            local = next((str(p.player_id) for p in self.view.players if p.name.startswith('你')), order[0])
+            pivot = order.index(local)
+            order = order[pivot:] + order[:pivot]
+            if len(order) == 2:
+                anchors = ((.5,.78),(.5,.085))
+            elif len(order) == 4:
+                anchors = ((.5,.78),(.90,.30),(.5,.085),(.10,.30))
+            elif len(order) == 8:
+                anchors = ((.5,.78),(.90,.55),(.90,.25),(.70,.085),(.5,.085),(.30,.085),(.10,.25),(.10,.55))
+            else:
+                anchors = None
+            if anchors:
+                positions = {pid:(int(w*x)-pw//2,min(int(h*y), h-ph-5)) for pid,(x,y) in zip(order,anchors)}
         for key, (x, y) in positions.items():
             width = int(pw*1.19) if key == "p1" else pw
             height = int(ph*1.05) if key == "p1" else ph
-            self.panels[key].setGeometry(x, y, width, height)
+            if key in self.panels:
+                self.panels[key].setGeometry(x, y, width, height)
         self.vfx.setGeometry(self.rect())
-        super().resizeEvent(event)
+        if event is not None:
+            super().resizeEvent(event)
 
     def render(self, view: TableView, target_ids: set[str], selected_ids: set[str] | None = None,
                attacker_id: str | None = None, defender_id: str | None = None,
@@ -123,6 +140,16 @@ class GameTable(QWidget):
         self.center_art = center_art
         self.selected_shared_id = selected_shared_id
         selected_ids = selected_ids or set()
+        visible = {str(player.player_id) for player in view.players}
+        for pid in visible - self.panels.keys():
+            panel = PlayerPanel(pid)
+            panel.setParent(self)
+            panel.player_selected.connect(self.player_selected)
+            panel.detail_requested.connect(self.detail_requested)
+            self.panels[pid] = panel
+        for pid, panel in self.panels.items():
+            panel.setVisible(pid in visible)
+        self.resizeEvent(None)
         for player in view.players:
             pid = str(player.player_id)
             self.panels[pid].render(player, pid in target_ids, bool(target_ids), pid in selected_ids,

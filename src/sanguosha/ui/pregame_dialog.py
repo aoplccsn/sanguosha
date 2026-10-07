@@ -16,6 +16,10 @@ from .timing import PREGAME_GENERAL_TIMEOUT_MS
 
 
 GOAL_HINTS = {
+    'player_a': '击败对手即可获胜。',
+    'player_b': '击败对手即可获胜。',
+    'team_a': '与队友协作，击败全部B队角色。',
+    'team_b': '与队友协作，击败全部A队角色。',
     'lord': '守住阵营，与忠臣合力平定叛乱。',
     'loyalist': '守护主公，协助其击败反贼与内奸。',
     'rebel': '寻找同伴，合力击败主公。',

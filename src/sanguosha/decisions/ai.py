@@ -51,7 +51,20 @@ class AIDecisionProvider:
                         relation[str(target)] = max(-6, min(6, relation.get(str(target), 0) + change))
         state.metadata['public_attitude_event_count'] = len(events)
 
+    def relation(self, state: GameState, actor: PlayerId, target: PlayerId) -> str:
+        if actor == target:
+            return 'SELF'
+        from sanguosha.game_modes import game_mode
+        mode = game_mode(state.metadata.get('mode_id', 'military-five'))
+        if mode.public_sides:
+            return 'ALLY' if mode.team_for(actor) == mode.team_for(target) else 'ENEMY'
+        return 'ENEMY' if self._priority(state, actor, target) > 0 else 'ALLY'
+
     def _priority(self, state: GameState, actor: PlayerId, target: PlayerId) -> int:
+        from sanguosha.game_modes import game_mode
+        mode = game_mode(state.metadata.get('mode_id', 'military-five'))
+        if mode.public_sides:
+            return -100 if actor == target or mode.team_for(actor) == mode.team_for(target) else 100
         role = state.players[actor].identity
         known_lord = target in state.revealed_identities and state.players[target].identity is Identity.LORD
         public_hostility = int(state.metadata.get('public_hostility_to_lord', {}).get(target, 0))

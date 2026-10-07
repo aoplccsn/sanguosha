@@ -35,18 +35,17 @@ class Pregame:
     def create(cls, seed: int | None = None, mode_id: str = 'military-five') -> 'Pregame':
         rng = PythonRandomSource(seed)
         mode = game_mode(mode_id)
-        roles = list(mode.roles)
-        rng.shuffle(roles)
+        identities = mode.assign_roles(rng)
         roster = list(PLAYABLE_GENERAL_POOL)
         from sanguosha.general_draft import draft_general_ids
         candidates = draft_general_ids((c.id for c in roster), (), rng, mode.general_offer_count)
-        return cls(rng, dict(zip(mode.seats, roles)),
+        return cls(rng, identities,
                    candidates,
                    mode_id=mode_id)
 
     @property
-    def lord_id(self) -> PlayerId:
-        return next(pid for pid, identity in self.identities.items() if identity is Identity.LORD)
+    def lord_id(self) -> PlayerId | None:
+        return next((pid for pid, identity in self.identities.items() if identity is Identity.LORD), None)
 
     @property
     def human_identity(self) -> Identity:

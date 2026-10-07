@@ -3,6 +3,7 @@ export type Page = 'home' | 'lobby' | 'pregame' | 'game'
 
 export interface Seat {
   seat_id: string
+  team_id?: string | null
   player_name: string
   controller_type: 'EMPTY' | 'HUMAN' | 'AI'
   ready: boolean
@@ -12,7 +13,7 @@ export interface Seat {
 export interface LobbyState {
   phase: 'OPEN' | 'READY' | 'DRAFT' | 'IN_GAME' | 'FINISHED'
   host_id: string | null
-  mode_id: 'military-five' | 'military-eight'
+  mode_id: 'military-five' | 'military-eight' | 'duel-1v1' | 'team-2v2'
   seat_count: number
   allow_gods: boolean
   seats: Seat[]
@@ -61,7 +62,7 @@ export interface DraftState {
   test_room?: boolean
   request: PendingRequest
   identity: string
-  lord_id: string
+  lord_id: string | null
 }
 
 export interface CardView {
@@ -79,6 +80,7 @@ export interface PlayerView {
   player_id: string
   name: string
   character_name: string
+  team_id?: string | null
   identity_label: string
   hp: number
   max_hp: number

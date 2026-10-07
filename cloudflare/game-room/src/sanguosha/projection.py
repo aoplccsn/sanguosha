@@ -15,6 +15,8 @@ from sanguosha.model.zones import ZoneRef, ZoneType
 IDENTITY_LABELS = {
     Identity.LORD: "主公", Identity.LOYALIST: "忠臣",
     Identity.REBEL: "反贼", Identity.RENEGADE: "内奸",
+    Identity.PLAYER_A: "玩家A", Identity.PLAYER_B: "玩家B",
+    Identity.TEAM_A: "A队", Identity.TEAM_B: "B队",
 }
 GENERAL_PRESENTATION = {
     "blank-1": ("caocao", "魏"), "blank-2": ("liubei", "蜀"),
@@ -67,6 +69,7 @@ class PlayerView:
     transformation_pool: tuple[str, ...] = ()
     revealed_hand: tuple[CardView, ...] = ()
     abolished_equipment_slots: tuple[str,...] = ()
+    team_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -110,9 +113,11 @@ def project_for_human(
     distance = DistanceSystem(definitions)
     from sanguosha.engine.skills import SkillRegistry
     skills = SkillRegistry()
+    from sanguosha.game_modes import game_mode
+    mode = game_mode(state.metadata.get('mode_id', 'military-five'))
     for pid in state.seat_order:
         player = state.players[pid]
-        visible = pid == human_id or pid in state.revealed_identities or player.identity is Identity.LORD
+        visible = mode.public_sides or pid == human_id or pid in state.revealed_identities or player.identity is Identity.LORD
         players.append(PlayerView(
             pid, "你" if pid == human_id else f"玩家{player.seat + 1}",
             character_names.get(pid, str(player.character_id)),
@@ -154,6 +159,7 @@ def project_for_human(
             tuple(card_view(cid) for cid in state.cards_in(ZoneRef(ZoneType.HAND, pid)))
             if pid!=human_id and can_view_hand(state,human_id,pid) else (),
             tuple(sorted(slot.value for slot in player.abolished_equipment_slots)),
+            state.metadata.get("teams", {}).get(pid),
         ))
     hand = tuple(card_view(card_id) for card_id in state.cards_in(ZoneRef(ZoneType.HAND, human_id)))
     discard = state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))

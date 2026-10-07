@@ -24,7 +24,8 @@ export function LobbyPage() {
         <div className="room-code-box"><span>房间码</span><strong>{state.roomCode}</strong><button onClick={copyCode}>复制房间码</button><button onClick={copyInvite}>复制邀请链接</button></div>
       </header>
       <div className="lobby-options">
-        <label>模式 <select aria-label="房间模式" value={lobby.mode_id} disabled={!isHost || !['OPEN', 'READY'].includes(lobby.phase)} onChange={(event) => actions.configureRoom(event.target.value)}><option value="military-five">军五 · 5 人</option><option value="military-eight">军八 · 8 人</option></select></label>
+        <span>{lobby.seats.filter(seat => seat.controller_type === "HUMAN").length}/{lobby.seat_count} 人</span>
+        <label>模式 <select aria-label="房间模式" value={lobby.mode_id} disabled={!isHost || !['OPEN', 'READY'].includes(lobby.phase)} onChange={(event) => actions.configureRoom(event.target.value)}><option value="military-five">军五 · 5 人</option><option value="military-eight">军八 · 8 人</option><option value="duel-1v1">1v1 对决 · 2 人</option><option value="team-2v2">2v2 小队战 · 4 人</option></select></label>
       </div>
       <div className="seat-grid">
         {lobby.seats.map((seat, index) => <article className={`lobby-seat ${seat.controller_type.toLowerCase()} ${seat.connected ? '' : 'offline'}`} key={seat.seat_id}>
@@ -33,6 +34,7 @@ export function LobbyPage() {
           <h3>{seat.controller_type === 'EMPTY' ? '等待入席' : seat.player_name}</h3>
           <p>{seat.controller_type === 'HUMAN' ? '真人' : seat.controller_type === 'AI' ? '电脑' : '空位'}</p>
           <div className="seat-badges">
+            {seat.team_id && <span className={"team-badge team-" + seat.team_id}>{lobby.seat_count === 2 ? "玩家" + seat.team_id : seat.team_id + "队"}</span>}
             {seat.seat_id === lobby.host_id && <span className="host-badge">房主</span>}
             {seat.controller_type === 'HUMAN' && <span className={seat.ready || seat.seat_id === lobby.host_id ? 'ready' : 'waiting'}>{seat.seat_id === lobby.host_id ? '主持' : seat.ready ? '已准备' : '未准备'}</span>}
             {seat.controller_type !== 'EMPTY' && <span>{seat.connected ? '在线' : '断线'}</span>}

@@ -229,9 +229,7 @@ class MultiplayerRoom:
             if seat.controller is Controller.EMPTY:
                 seat.controller, seat.name = Controller.AI, f"电脑{seat.player_id[1:]}"
         rng = PythonRandomSource(self.seed)
-        roles = list(self.mode.roles)
-        rng.shuffle(roles)
-        self.pregame = Pregame(rng, dict(zip(self.mode.seats, roles)), (),
+        self.pregame = Pregame(rng, self.mode.assign_roles(rng), (),
                                SetupStage.CHOOSE_GENERAL, mode_id=self.mode.mode_id)
         self.phase = RoomPhase.DRAFT
         self._broadcast_lobby()
@@ -267,7 +265,7 @@ class MultiplayerRoom:
         request = self.draft_requests[pid]
         self._send(pid, envelope("DRAFT_REQUEST", request=serialize_request(
             request, max(0, int((self.draft_deadlines[pid] - time.time()) * 1000))),
-            identity=self.pregame.identities[pid].value, lord_id=str(self.pregame.lord_id),
+            identity=self.pregame.identities[pid].value, lord_id=str(self.pregame.lord_id) if self.pregame.lord_id else None,
             test_room=self.test_room and pid == self.host_id))
 
     def submit(self, pid: PlayerId, decision: Decision, *, defer_resolution: bool = False,
@@ -661,7 +659,7 @@ class MultiplayerRoom:
         return {"phase": self.phase.value, "host_id": self.host_id,
                 "mode_id": self.mode.mode_id, "seat_count": self.mode.seat_count,
                 "allow_gods": self.allow_gods,
-                "seats": [seat.public() for seat in self.seats.values()]}
+                "seats": [dict(seat.public(), team_id=self.mode.team_for(seat.player_id)) for seat in self.seats.values()]}
 
     def _named_projection(self, view, viewer):
         self.session.clear_finished_nullification_windows()

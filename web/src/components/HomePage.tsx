@@ -11,7 +11,7 @@ export function HomePage() {
   const initialRoom = useMemo(roomFromUrl, [])
   const [name, setName] = useState(localStorage.getItem('sanguosha.web.nickname') ?? '')
   const [roomCode, setRoomCode] = useState(initialRoom)
-  const [modeId, setModeId] = useState<'military-five' | 'military-eight'>('military-five')
+  const [modeId, setModeId] = useState<'military-five' | 'military-eight' | 'duel-1v1' | 'team-2v2'>('military-five')
   const [entering, setEntering] = useState(false)
   const [showTestMode, setShowTestMode] = useState(false)
   const [testCode, setTestCode] = useState('')
@@ -53,7 +53,7 @@ export function HomePage() {
     <div className="ink-mist ink-mist-two" />
     <section className="home-panel paper-panel">
       <div className="seal">战</div>
-      <p className="eyebrow">云端权威 · 身份局</p>
+      <p className="eyebrow">云端权威 · 邀友对战</p>
       <h1>三国杀</h1>
       <h2>Web Edition</h2>
       <p className="home-copy">打开网页，邀友入局。规则、身份与牌堆全部由服务器掌管。</p>
@@ -61,9 +61,9 @@ export function HomePage() {
         <input aria-label="玩家昵称" maxLength={32} value={name} onChange={(event) => setName(event.target.value)} placeholder="请输入昵称" />
       </label>
       <label className="field-label">对局模式
-        <select aria-label="对局模式" value={modeId} onChange={(event) => setModeId(event.target.value as 'military-five' | 'military-eight')}>
+        <select aria-label="对局模式" value={modeId} onChange={(event) => setModeId(event.target.value as 'military-five' | 'military-eight' | 'duel-1v1' | 'team-2v2')}>
           <option value="military-five">军五 · 5 人</option>
-          <option value="military-eight">军八 · 8 人</option>
+          <option value="military-eight">军八 · 8 人</option><option value="duel-1v1">1v1 对决 · 2 人</option><option value="team-2v2">2v2 小队战 · 4 人</option>
         </select>
       </label>
       <div className="home-actions">

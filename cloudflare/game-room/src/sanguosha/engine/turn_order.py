@@ -49,6 +49,8 @@ def next_scheduled_player(state: GameState) -> PlayerId:
         return next_alive_player(state, anchor)
     current = state.current_player_id
     if current is None:
+        if 'first_player_id' in state.metadata:
+            return state.metadata['first_player_id']
         return next(pid for pid in state.seat_order
                     if state.players[pid].is_alive and state.players[pid].identity is Identity.LORD)
     return next_alive_player(state, current)

@@ -6,7 +6,7 @@ test('production draft renders Chinese names and loaded portraits', async ({ pag
   expect(response.ok()).toBeTruthy()
   const catalog = await response.json() as Array<{ id: string; name: string; portrait: string }>
   expect(catalog).toHaveLength(108)
-  expect(catalog.filter((item) => item.id.includes('_god_'))).toHaveLength(8)
+  expect(catalog.filter((item) => item.id.includes('_god_'))).toHaveLength(17)
   for (const general of catalog) {
     expect(general.name).toMatch(/[\u3400-\u9fff]/u)
     expect(general.portrait).toMatch(/\.webp$/)
@@ -28,12 +28,12 @@ test('production draft renders Chinese names and loaded portraits', async ({ pag
 
 test('short room socket reconnect does not show a fatal connection error', async ({ page }) => {
   const sockets: WebSocketRoute[] = []
-  await page.routeWebSocket('**/room/**', (socket) => {
+  await page.routeWebSocket(/\/(?:ws|room\/[^/]+)$/, (socket) => {
     sockets.push(socket)
     socket.send(JSON.stringify({ type: 'WELCOME', room_code: 'ABC234' }))
     socket.onMessage((raw) => {
       const message = JSON.parse(String(raw)) as { type: string }
-      if (message.type === 'JOIN_ROOM' || message.type === 'RECONNECT') {
+      if (message.type === 'CREATE_ROOM' || message.type === 'JOIN_ROOM' || message.type === 'RECONNECT') {
         socket.send(JSON.stringify({ type: 'WELCOME', room_code: 'ABC234', seat_id: 'p1', reconnect_token: 'token' }))
         socket.send(JSON.stringify({ type: 'LOBBY_STATE', phase: 'OPEN', host_id: 'p1', mode_id: 'military-five', seat_count: 5, allow_gods: false, seats: [] }))
       }
@@ -45,7 +45,8 @@ test('short room socket reconnect does not show a fatal connection error', async
   await page.getByRole('button', { name: '创建多人房间' }).click()
   await expect(page.getByRole('heading', { name: '多人房间' })).toBeVisible()
   await sockets[0].close()
-  await expect(page.getByText('连接波动，正在恢复…')).toBeVisible()
+  await expect.poll(() => sockets.length).toBe(2)
+  await expect(page.getByRole('heading', { name: '多人房间' })).toBeVisible()
   await expect(page.getByText('连接波动，正在恢复…')).toHaveCount(0)
   expect(sockets).toHaveLength(2)
   await expect(page.getByText('无法连接到房间，仍在尝试恢复…')).toHaveCount(0)

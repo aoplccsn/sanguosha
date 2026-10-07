@@ -135,8 +135,11 @@ class GameSession:
             cards=card_instances, zones={draw_zone.ref: draw_zone},
             status=GameStatus.ACTIVE,
             metadata={'mode_id': mode.mode_id},
-            revealed_identities={setup.lord_id} if setup is not None else {ids[0]},
+            revealed_identities=set(ids) if mode.public_sides else ({setup.lord_id} if setup is not None else {ids[0]}),
         )
+        if mode.public_sides:
+            state.metadata['teams'] = {pid: mode.team_for(pid) for pid in ids}
+            state.metadata['first_player_id'] = rng.choice(ids) if mode is game_mode('duel-1v1') else ids[0]
         if skills is not None:
             from sanguosha.engine.mobile_gods import inject_qizheng
             for pid in ids:
@@ -384,6 +387,21 @@ class GameSession:
             raise ValueError("no human decision is pending")
         return self.engine.submit_decision(decision)
 
+    def ai_response_context(self):
+        if not game_mode(self.state.metadata.get('mode_id', 'military-five')).public_sides:
+            return None
+        from sanguosha.engine.military_tricks import NullificationWindow, TrickAction
+        frames = self.engine.stack.snapshot()
+        window = next((f for f in reversed(frames) if isinstance(f.action, NullificationWindow)), None)
+        if window is None:
+            return None
+        trick = next((f for f in reversed(frames) if isinstance(f.action, TrickAction)), None)
+        definition = trick.action.definition_id if trick else ''
+        if not definition and window.action.card_source_id in self.state.cards:
+            definition = self.state.cards[window.action.card_source_id].definition_id
+        return dict(current_target_id=window.action.target_id, definition_id=definition,
+                    cancelled=bool(window.local.get('cancelled')))
+
     def step_auto(self) -> bool:
         """Perform at most one AI decision or start one turn; Qt schedules each call."""
         if self.state.status is GameStatus.FINISHED:
@@ -399,7 +417,7 @@ class GameSession:
             return True
         request = self.engine.pending_request
         if request is not None and request.player_id != self.human_id:
-            self.engine.submit_decision(self.ai.decide(self.state, request))
+            self.engine.submit_decision(self.ai.decide(self.state, request, response_context=self.ai_response_context()))
             return True
         return False
 

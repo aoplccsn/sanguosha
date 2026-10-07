@@ -602,7 +602,7 @@ class MultiplayerWindow(QDialog):
     def _show_draft(self, message):
         self.request = message["request"]
         self.remaining_ms = self.request["remaining_ms"]
-        self.game_status.setText(f"你的身份：{message['identity']} · 主公座位：{message['lord_id']}")
+        self.game_status.setText(f"你的阵营：{message['identity']}" + (f" · 主公座位：{message['lord_id']}" if message['lord_id'] else ''))
         self.prompt.setText("十选一 · 请选择武将")
         self._clear_actions()
         characters = {str(c.id): c for c in ALL_GENERAL_POOL}

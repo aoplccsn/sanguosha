@@ -957,3 +957,18 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 
 .background-music { position: fixed; left: 10px; bottom: 10px; z-index: 100; display: flex; align-items: center; gap: 6px; padding: 4px; border-radius: 6px; background: #171d20e6; font-size: 12px; }
 .background-music input { width: 64px; }
+
+/* Public sides use restrained seals; local controls retain the current layout. */
+.team-A .player-heading span,.team-badge.team-A { color:#a9c7ba;border-bottom:2px solid #789b88; }
+.team-B .player-heading span,.team-badge.team-B { color:#dac2b0;border-bottom:2px solid #b18a70; }
+@media(min-width:721px) {
+ .small-party-seats .player-north { left:50%;top:65px;transform:translateX(-50%); }
+}
+@media(max-width:720px) {
+ .small-party-seats .player-north { grid-column:2;grid-row:1; }
+ .small-party-seats .player-east { grid-column:3;grid-row:2; }
+ .small-party-seats .player-west { grid-column:1;grid-row:2; }
+ .small-party-seats .event-stage { grid-row:2; }
+ .small-party-seats .recent-actions { grid-row:3; }
+ .small-party-seats .self-area { grid-row:4; }
+}
