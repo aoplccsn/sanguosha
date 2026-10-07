@@ -954,3 +954,6 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 @media(max-width:720px) {
  .game-board .self-area .player-self { grid-column:3; }
 }
+
+.background-music { position: fixed; left: 10px; bottom: 10px; z-index: 100; display: flex; align-items: center; gap: 6px; padding: 4px; border-radius: 6px; background: #171d20e6; font-size: 12px; }
+.background-music input { width: 64px; }
