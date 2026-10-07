@@ -7,6 +7,7 @@ from sanguosha.model.enums import Identity
 from sanguosha.model.ids import CardInstanceId, PlayerId
 from sanguosha.model.state import GameState
 from sanguosha.model.zones import ZoneRef, ZoneType
+from . import strategy
 
 
 class AIDecisionProvider:
@@ -31,9 +32,10 @@ class AIDecisionProvider:
 
     def observe_public_events(self, state, events):
         """Small public attitude ledger; persisted with the match, no hidden cards."""
-        from sanguosha.engine.events import CardUsedEvent, DamageDealtEvent, HpRecoveredEvent
+        from sanguosha.engine.events import CardUsedEvent, DamageDealtEvent, HpRecoveredEvent, CardRespondedEvent, VirtualResponseEvent, Event
         ledger = state.metadata.setdefault('public_attitude', {})
         start = state.metadata.get('public_attitude_event_count', 0)
+        effects=state.metadata.setdefault('public_counter_effects',{})
         for event in events[start:]:
             source, targets, change = None, (), 0
             if isinstance(event, (DamageDealtEvent, HpRecoveredEvent)):
@@ -44,6 +46,21 @@ class AIDecisionProvider:
                 if definition in ('trick.dismantlement', 'trick.snatch', 'trick.duel',
                                   'basic.slash', 'basic.fire_slash', 'basic.thunder_slash'):
                     source, targets, change = event.player_id, event.target_ids, -1
+            if isinstance(event,Event) and event.event_type=='effect_target':
+                effects[event.event_id.replace(':current:',':window:')]={'targets':list(event.target_ids),'definition':event.metadata.get('definition_id',''),'count':0}
+            elif isinstance(event,(CardRespondedEvent,VirtualResponseEvent)) and event.response_definition_id=='trick.nullification':
+                effect=effects.get(event.source_action_id)
+                if effect:
+                    beneficial=effect['definition'] in ('trick.ex_nihilo','trick.god_salvation','trick.amazing_grace')
+                    source,targets=event.player_id,effect['targets']
+                    change=(-1 if beneficial else 1)*(1 if effect['count']%2==0 else -1)
+                    effect['count']+=1
+            elif isinstance(event,Event) and event.source_id and event.target_ids:
+                sid=event.metadata.get('skill_id') or event.event_type.removeprefix('skill_')
+                tags=strategy.skill_tags(sid)
+                if event.event_type.startswith(('skill_','presentation_skill')):
+                    source,targets=event.source_id,event.target_ids
+                    change=-1 if tags & {'damage','discard','control'} else 1 if tags & {'give','heal','save','protect'} else 0
             if source:
                 relation = ledger.setdefault(str(source), {})
                 for target in targets:
@@ -70,7 +87,7 @@ class AIDecisionProvider:
         public_hostility = int(state.metadata.get('public_hostility_to_lord', {}).get(target, 0))
         ledger = state.metadata.get('public_attitude', {})
         lord = next((pid for pid in state.revealed_identities if state.players[pid].identity is Identity.LORD), None)
-        to_lord = ledger.get(str(target), {}).get(str(lord), 0)
+        to_lord = strategy.belief(state,target)
         to_self = ledger.get(str(target), {}).get(str(actor), 0)
         if target in state.revealed_identities and not known_lord:
             revealed = state.players[target].identity
@@ -82,39 +99,26 @@ class AIDecisionProvider:
             return 100 if known_lord else -20 + 15 * to_lord - 5 * to_self
         if role in (Identity.LOYALIST, Identity.LORD):
             return -100 if known_lord else 20 + 20 * min(public_hostility, 3) - 15 * to_lord - 5 * to_self
-        # Hidden roles are unknown to the AI. The renegade conserves the lord
-        # until only the two of them remain, using only public seat information.
-        living = sum(player.is_alive for player in state.players.values())
+        living = [q for q in state.seat_order if state.players[q].is_alive]
         if known_lord:
-            return 100 if living == 2 else -20
-        return 20 + 10 * min(public_hostility, 3)
+            if len(living)==2: return 100
+            return -80 if state.players[target].hp<=2 else -10
+        court = sum(strategy.strength(state,q) for q in living if q==lord or strategy.belief(state,q)>=2)
+        rebels = sum(strategy.strength(state,q) for q in living if q!=lord and strategy.belief(state,q)<=-2)
+        balance = max(-40,min(40,(court-rebels)*1.5))
+        lean = 1 if to_lord>=2 else -1 if to_lord<=-2 else 0
+        return round(20+lean*balance-5*to_self)
 
-    def _target_score(self, state: GameState, actor: PlayerId, target: PlayerId, *, damage: int = 1) -> int:
-        """Shared relation/threat/kill heuristic for legal target choices."""
+    def _target_score(self, state: GameState, actor: PlayerId, target: PlayerId, *, damage: int = 1, elemental: bool = False) -> int:
         if target == actor or not state.players[target].is_alive:
             return -10_000
-        player = state.players[target]
-        hand = len(state.cards_in(ZoneRef(ZoneType.HAND, target)))
-        score = self._priority(state, actor, target) * 4 + (player.max_hp - player.hp) * 3 + hand
-        if player.hp <= damage:
-            score += 30
-        if player.hp == 1:
-            score += 12
-        if not player.face_up:
-            score -= 4
         from sanguosha.engine.distance import DistanceSystem
-        from sanguosha.content.characters.standard import ALL_GENERAL_POOL
-        equipment = [state.cards[cid].definition_id for ref, zone in state.zones.items()
-                     if ref.player_id == target and ref.zone_type is ZoneType.EQUIPMENT for cid in zone.card_ids]
-        score -= min(hand, 6) * 3
-        score -= 8 * sum('.armor.' in definition for definition in equipment)
-        score += 3 * sum('.weapon.' in definition for definition in equipment)
-        if state.players[actor].is_alive:
-            score -= max(0, DistanceSystem().distance_between(state, actor, target) - 1) * 2
-        general = next((item for item in ALL_GENERAL_POOL if item.id == player.character_id), None)
-        if general:
-            score += 4 * len(set(general.skill_ids) & {'paoxiao', 'wushuang', 'jizhi', 'luanwu', 'shenfen'})
-        return score
+        terms = strategy.damage_terms(self,state,actor,target,damage,elemental)
+        terms['distance']=-max(0,DistanceSystem().distance_between(state,actor,target)-1)*2
+        return round(sum(terms.values()))
+
+    def _support_score(self,state,actor,target):
+        return strategy.support_score(self,state,actor,target)
 
     def _card_value(self, state: GameState, player_id: PlayerId, definition_id: str) -> int:
         player = state.players[player_id]
@@ -136,17 +140,26 @@ class AIDecisionProvider:
 
     def _choice_card_value(self, state: GameState, player_id: PlayerId, card_id: str) -> int:
         card = state.cards.get(card_id)
-        return self._card_value(state, player_id, card.definition_id) if card is not None else 5
+        if card is None: return 5
+        value=self._card_value(state,player_id,card.definition_id)
+        tags=strategy.profile(state,player_id); skills=strategy.active_skills(state,player_id)
+        if card.suit.value in ('heart','diamond') and skills & {'wusheng','jijiu','huoji'}: value+=9
+        if card.suit.value in ('spade','club') and skills & {'qingguo','kanpo','qixi'}: value+=7
+        if card.definition_id.startswith('equipment.') and 'equip' in tags: value+=8
+        if 'slash' in card.definition_id and 'burst' in tags: value+=9
+        if card.definition_id.startswith('trick.') and 'jizhi' in skills: value+=8
+        return value
 
-    def _equipment_quality(self, state, actor, definition):
+    def _equipment_quality(self, state, actor, definition, *, observer=None):
         from sanguosha.content.cards.classic_military import WEAPONS, HORSES
         from sanguosha.engine.distance import DistanceSystem
         from sanguosha.model.enums import EquipmentSlot
         if '.weapon.' in definition:
             reach = dict((f'equipment.weapon.{key}', radius) for key, _, radius in WEAPONS).get(definition, 1)
-            enemies = [pid for pid in state.seat_order if pid != actor and state.players[pid].is_alive and self._priority(state, actor, pid) > 0]
+            enemies = [pid for pid in state.seat_order if pid != actor and state.players[pid].is_alive and self._priority(state, observer or actor, pid) > 0]
             accessible = sum(DistanceSystem().distance_between(state, actor, pid) <= reach for pid in enemies)
-            slashes = sum('slash' in state.cards[cid].definition_id for cid in state.cards_in(ZoneRef(ZoneType.HAND, actor)))
+            # Hand count is public even when valuing an opponent's equipment.
+            slashes = strategy.hand_count(state,actor)
             return EquipmentSlot.WEAPON, 8 + accessible * 6 + reach + (15 if definition.endswith('crossbow') and slashes >= 2 else 0)
         if '.armor.' in definition:
             quality = {'eight_trigrams': 22, 'renwang_shield': 20, 'silver_lion': 19, 'vine': 14}.get(definition.rsplit('.', 1)[-1], 10)
@@ -176,7 +189,8 @@ class AIDecisionProvider:
             own_slash = any('slash' in state.cards[cid].definition_id for cid in state.cards_in(ZoneRef(ZoneType.HAND, actor)))
             return 92 if enemies and own_slash else -100
         if 'slash' in definition:
-            return 115 if any(state.players[pid].hp <= 1 for pid in enemies) else 72
+            best=max((self._target_score(state,actor,pid,damage=1+player.marks.get('wine',0),elemental=definition!='basic.slash') for pid in enemies),default=-100)
+            return 115+best*.15 if best>=90 else 60+best*.25 if best>0 else -100
         if definition in ('trick.savage_assault', 'trick.archery_attack'):
             from sanguosha.engine.military_basics import equipped
             from sanguosha.model.enums import EquipmentSlot
@@ -194,8 +208,12 @@ class AIDecisionProvider:
                 danger = 3 if state.players[pid].hp <= 1 else 2 if state.players[pid].hp <= 2 else 1
                 # Opponent hand count is public; card definitions are never inspected.
                 chance = max(.35, 1 - len(state.cards_in(ZoneRef(ZoneType.HAND, pid))) * .1)
-                net += relation * danger * chance
-            return 60 + round(net * 8) if net > 0 else -100
+                loss=1.0
+                if 'masochism' in strategy.profile(state,pid) and state.players[pid].hp>1: loss=.25
+                if pid==strategy.lord_id(state) and self._priority(state,actor,pid)<0 and state.players[pid].hp<=1: danger=8
+                net += relation * danger * chance * loss
+            reveal=strategy.exposure_cost(self,state,actor,strategy.lord_id(state)) if strategy.lord_id(state) else 0
+            return 60+round(net*8) if net>0 and net*25>reveal else -100
         if definition == 'trick.fire_attack':
             suits={state.cards[c].suit for c in state.cards_in(ZoneRef(ZoneType.HAND,actor)) if state.cards[c].definition_id!='trick.fire_attack' and self._choice_card_value(state,actor,c)<26}
             return 55+len(suits)*5 if enemies and suits else -100
@@ -211,6 +229,15 @@ class AIDecisionProvider:
         return 0
 
     def decide(self, state: GameState, request: PendingRequest, *, response_context=None) -> Decision:
+        decision=self._decide(state,request,response_context=response_context)
+        import os
+        if os.environ.get('AI_DECISION_DEBUG')=='1':
+            import json, logging
+            targets={str(q):strategy.damage_terms(self,state,request.player_id,q) for q in request.allowed_player_ids if q!=request.player_id}
+            logging.getLogger('sanguosha.ai').warning('AI_DECISION %s',json.dumps({'actor':str(request.player_id),'prompt':request.prompt,'target_scores':targets,'choice':str(decision.value)},ensure_ascii=False))
+        return decision
+
+    def _decide(self, state: GameState, request: PendingRequest, *, response_context=None) -> Decision:
         player_id = request.player_id
         if request.prompt == '神将：选择本局势力':
             return Decision(request.request_id,player_id,'wu' if state.players[player_id].character_id == 'mountain_god_simayi' else 'wei')
@@ -218,12 +245,7 @@ class AIDecisionProvider:
         mobile_choice = mobile_decide(self,state,request)
         if mobile_choice is not None: return mobile_choice
         if request.request_type is RequestType.CHOOSE_OPTION and request.prompt.startswith(('极略：', '连破：')):
-            priority = ('learn:zhiheng', 'learn:jizhi', 'learn:fangzhu', 'learn:guicai', 'learn:wansha')
-            choice = next((q for q in priority if q in request.choices), None)
-            if request.prompt.startswith('连破：') and 'extra_turn' in request.choices:
-                choice = 'extra_turn'
-            if choice is None:
-                choice = next((q for q in ('draw:2', 'draw:1', 'cancel') if q in request.choices), request.choices[0])
+            choice=max(request.choices,key=lambda q:strategy.learning_score(self,state,player_id,q))
             return Decision(request.request_id, player_id, choice)
         if request.required_definition_id == 'trick.nullification' and response_context:
             target = response_context.get('current_target_id') or request.subject_player_id
@@ -239,6 +261,13 @@ class AIDecisionProvider:
                 own_counters = sum(state.cards[cid].definition_id == 'trick.nullification'
                                    for cid in state.cards_in(ZoneRef(ZoneType.HAND, player_id)))
                 threshold = 7 if own_counters <= 1 else 5
+                if target!=player_id and self._priority(state,player_id,target)>0 and not beneficial:
+                    value=0 if not cancelled else value
+                if state.players[player_id].identity is Identity.REBEL and target==strategy.lord_id(state) and not beneficial:
+                    # A cheap public show of support only while there is no killing window.
+                    own=state.players[player_id]
+                    disguise=state.turn_number<=len(state.seat_order)*2 and strategy.belief(state,player_id)>-2 and own.hp>=3 and own_counters>=2 and state.players[target].hp>=3 and value<=7
+                    want_cancel=disguise
                 if want_cancel == cancelled or value < threshold:
                     return Decision(request.request_id, player_id, PASS_RESPONSE)
         if request.request_type is RequestType.YES_NO and '【精策】' in request.prompt:
@@ -357,7 +386,10 @@ class AIDecisionProvider:
             enemies = [pid for pid in state.seat_order if pid != player_id and state.players[pid].is_alive and self._priority(state, player_id, pid) > 0]
             lord = next((pid for pid in state.seat_order
                          if pid in state.revealed_identities and state.players[pid].is_alive and state.players[pid].identity is Identity.LORD), None)
-            if peach and state.players[player_id].hp < state.players[player_id].max_hp:
+            lethal=[c for c in slash if any(state.players[q].hp<=1 and self._priority(state,player_id,q)>0 for q in request.play_card_targets.get(c,(tuple(enemies),0,0))[0])]
+            if lethal and (state.players[player_id].hp>=2 or any(q==lord and state.players[player_id].identity is Identity.REBEL for c in lethal for q in request.play_card_targets.get(c,(tuple(enemies),0,0))[0])):
+                value=lethal[0]
+            elif peach and state.players[player_id].hp < state.players[player_id].max_hp:
                 value = peach[0]
             elif ('skill:luanwu' in request.choices and state.players[player_id].hp > 1
                   and sum(self._priority(state, player_id, pid) > 0 for pid in enemies) >= 2):
@@ -389,12 +421,12 @@ class AIDecisionProvider:
                        or len(state.cards_in(ZoneRef(ZoneType.HAND, lord))) <= 1)
                   and len(state.cards_in(ZoneRef(ZoneType.HAND, player_id))) >= 2):
                 value = 'skill:huangtian'
-            elif usable and any(self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, enemies) > 72 for choice in usable):
-                value = max(usable, key=lambda choice: self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, enemies))
-            elif slash and enemies:
+            elif usable and any(self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, [q for q in request.play_card_targets.get(choice,(tuple(enemies),0,0))[0] if q in enemies]) > 72 for choice in usable):
+                value = max(usable, key=lambda choice: self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, [q for q in request.play_card_targets.get(choice,(tuple(enemies),0,0))[0] if q in enemies]))
+            elif slash and enemies and any(self._action_priority(state,player_id,state.cards[c[4:]].definition_id,enemies)>0 for c in slash):
                 value = max(slash, key=lambda choice: (
                     self._choice_card_value(state, player_id, choice[4:]), str(choice)))
-            elif enemies and any(choice.startswith('virtual:wusheng:') for choice in request.choices):
+            elif enemies and any(self._target_score(state,player_id,q)>0 for q in enemies) and any(choice.startswith('virtual:wusheng:') for choice in request.choices):
                 value = next(choice for choice in request.choices if choice.startswith('virtual:wusheng:'))
             elif enemies and any(choice.startswith('virtual:qixi:') for choice in request.choices):
                 value = next(choice for choice in request.choices if choice.startswith('virtual:qixi:'))
@@ -419,8 +451,8 @@ class AIDecisionProvider:
             elif 'skill:huishi_guojia' in request.choices and state.players[player_id].max_hp > 3:
                 value = 'skill:huishi_guojia'
             elif usable and state.ruleset_id == 'classic-military':
-                worthwhile = [choice for choice in usable if self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, enemies) > 0]
-                value = max(worthwhile, key=lambda choice: self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, enemies)) if worthwhile else END_PLAY_PHASE
+                worthwhile = [choice for choice in usable if self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, [q for q in request.play_card_targets.get(choice,(tuple(enemies),0,0))[0] if q in enemies]) > 0]
+                value = max(worthwhile, key=lambda choice: self._action_priority(state, player_id, state.cards[CardInstanceId(choice[4:])].definition_id, [q for q in request.play_card_targets.get(choice,(tuple(enemies),0,0))[0] if q in enemies])) if worthwhile else END_PLAY_PHASE
             elif 'skill:zhiheng' in request.choices:
                 value = 'skill:zhiheng'
             elif 'skill:zhijian' in request.choices:
@@ -445,7 +477,7 @@ class AIDecisionProvider:
         elif kind is RequestType.CHOOSE_PLAYER:
             if '放权：选择获得额外回合' in request.prompt or '直谏：选择装备' in request.prompt:
                 value = min(request.allowed_player_ids,
-                            key=lambda pid: self._priority(state, player_id, pid))
+                            key=lambda pid: -self._support_score(state,player_id,pid))
             elif '巧变' in request.prompt and '摸牌' in request.prompt:
                 value = max(request.allowed_player_ids,
                             key=lambda pid: self._priority(state, player_id, pid))
@@ -471,7 +503,7 @@ class AIDecisionProvider:
             elif '过河拆桥' in request.prompt or '顺手牵羊' in request.prompt:
                 def resource_score(pid):
                     visible=[state.cards[c].definition_id for ref,z in state.zones.items() if ref.player_id==pid and ref.zone_type is ZoneType.EQUIPMENT for c in z.card_ids]
-                    return self._priority(state,player_id,pid)*4+sum(self._equipment_quality(state,pid,d)[1] for d in visible)+len(state.cards_in(ZoneRef(ZoneType.HAND,pid)))
+                    return self._priority(state,player_id,pid)*4+sum(self._equipment_quality(state,pid,d,observer=player_id)[1] for d in visible)+len(state.cards_in(ZoneRef(ZoneType.HAND,pid)))
                 value=max(request.allowed_player_ids,key=resource_score)
             elif '天香' in request.prompt:
                 enemies = [pid for pid in request.allowed_player_ids
@@ -479,7 +511,7 @@ class AIDecisionProvider:
                 value = min(enemies, key=lambda pid: state.players[pid].hp) if enemies else request.allowed_player_ids[0]
             else:
                 value = (player_id if '青囊' in request.prompt and player_id in request.allowed_player_ids else
-                     min(request.allowed_player_ids, key=lambda pid: self._priority(state, player_id, pid))
+                     min(request.allowed_player_ids, key=lambda pid: -self._support_score(state,player_id,pid))
                      if '仁德' in request.prompt or '青囊' in request.prompt or '遗计' in request.prompt or '结姻' in request.prompt else
                      max(request.allowed_player_ids, key=lambda pid: self._target_score(state, player_id, pid)))
         elif kind is RequestType.RESPOND_WITH_CARD:
@@ -487,10 +519,15 @@ class AIDecisionProvider:
                 value = PASS_RESPONSE
             elif request.required_definition_id == DODGE_ID:
                 from sanguosha.engine.skills import SkillRegistry
-                benefits = any(SkillRegistry().has(state, player_id, skill) for skill in ('yiji', 'fankui', 'jieming'))
+                benefits = 'masochism' in strategy.profile(state,player_id)
                 hand = state.cards_in(ZoneRef(ZoneType.HAND, player_id))
                 scarce = sum(state.cards[cid].definition_id == DODGE_ID for cid in hand) == 1
-                if request.allow_pass and state.players[player_id].hp >= 4 and benefits and scarce:
+                player=state.players[player_id]
+                # Mobile 忍戒 grants a mark only after declining a response; survive first.
+                growing='renjie' in strategy.active_skills(state,player_id) and not player.marks.get('awakened_baiyin') and player.marks.get('ren',0)==3 and player.marks.get('renjie_round_count',0)<4
+                amount=(response_context or {}).get('damage',1)
+                safe=player.hp>amount+1 and not player.chained and not any(strategy.threat(state,q)>55 and self._priority(state,player_id,q)>0 for q in state.seat_order if q!=player_id and state.players[q].is_alive)
+                if request.allow_pass and safe and scarce and (benefits or growing):
                     return Decision(request.request_id, player_id, PASS_RESPONSE)
                 value = max(request.eligible_card_ids, key=lambda cid: (
                     self._choice_card_value(state, player_id, cid), str(cid)))
@@ -502,7 +539,10 @@ class AIDecisionProvider:
                 if subject is not None and (subject == player_id or self._priority(state, player_id, subject) < 0):
                     value = request.eligible_card_ids[0]
                 else:
-                    value = PASS_RESPONSE
+                    lord=strategy.lord_id(state); own=state.players[player_id]
+                    count=sum(state.cards[c].definition_id==PEACH_ID for c in state.cards_in(ZoneRef(ZoneType.HAND,player_id)))
+                    conceal=(own.identity is Identity.REBEL and subject==lord and state.turn_number<=len(state.seat_order)*2 and strategy.belief(state,player_id)>-2 and count>=2 and own.hp>=3 and state.players[subject].hp==0 and not any('slash' in state.cards[c].definition_id for c in state.cards_in(ZoneRef(ZoneType.HAND,player_id))))
+                    value=request.eligible_card_ids[0] if conceal else PASS_RESPONSE
             else:
                 value = request.eligible_card_ids[0] if state.ruleset_id == 'classic-military' else PASS_RESPONSE
         elif kind is RequestType.CHOOSE_CARDS:
@@ -533,7 +573,7 @@ class AIDecisionProvider:
                     if cid not in public:return 5 if not friendly else -20
                     ref=public[cid];definition=state.cards[cid].definition_id
                     if ref.zone_type is ZoneType.JUDGMENT:return 45 if friendly and definition!='delayed.lightning' else -30 if friendly else -15
-                    quality=self._equipment_quality(state,target,definition)[1]
+                    quality=self._equipment_quality(state,target,definition,observer=player_id)[1]
                     return -quality if friendly else quality
                 value=max(request.eligible_card_ids,key=removal_value)
             elif '火攻' in request.prompt:

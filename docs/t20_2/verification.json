@@ -1,0 +1,78 @@
+{
+  "english_display_paths_fixed": 6,
+  "display_paths": [
+    "request prompt translation and internal identifiers",
+    "waiting response source id",
+    "waiting response card id",
+    "phase enum fallback",
+    "action actor id fallback",
+    "timer seconds suffix"
+  ],
+  "suit_ink": {
+    "red": "#a0322b",
+    "black": "#34383a",
+    "shared_component": "SuitText"
+  },
+  "statuses": {
+    "chain": "#648580",
+    "waiting": "#deb46d"
+  },
+  "bgm": {
+    "original_procedural": true,
+    "bpm": 72,
+    "seconds": 120,
+    "peak": 0.3548,
+    "rms": 0.0931,
+    "pcm_loop_seam_delta": 0
+  },
+  "god_guojia": "dynamic panel/detail and extracted poster integrated; original master unchanged",
+  "ai": [
+    "skill metadata/types/description-derived intent; disabled and acquired skills",
+    "public general threat and support/core synergy",
+    "masochism, rescue risk, awakening and mark growth",
+    "role concealment cost with lethal override",
+    "renegade public strength balance",
+    "public attacks, rescue, control, skill support and counter parity beliefs",
+    "skill-dependent discard and contextual learning/extra turn",
+    "public equipment valuation without opponent hand or hidden identity reads"
+  ],
+  "python": {
+    "passed": 59,
+    "files": [
+      "test_t20_2_ai.py",
+      "test_t18a10_ai.py",
+      "test_t19_simayi.py",
+      "test_t19_guojia.py",
+      "test_t20_small_party.py"
+    ]
+  },
+  "vitest": {
+    "passed": 128,
+    "files": 18
+  },
+  "playwright": {
+    "passed": 2,
+    "viewports": [
+      390,
+      1440
+    ]
+  },
+  "typescript": "PASS",
+  "fresh_vite_build": "PASS",
+  "ai_full_games": {
+    "military-five": 20,
+    "military-eight": 20,
+    "duel-1v1": 20,
+    "team-2v2": 20,
+    "all_finished": true,
+    "unresolved_requests": 0,
+    "failures": 0
+  },
+  "log_review": {
+    "matches": 12,
+    "sampled_decisions": 1698,
+    "notes": "Reviewed support choices, finishing attacks, counters, concealed attacks and equipment choices. A negative damage score on a support/control target is not a damage action. Bare Slash audit scores omit Wine; actual play evaluates its increased damage."
+  },
+  "full_pytest": false,
+  "reason": "No shared engine rule handlers changed."
+}

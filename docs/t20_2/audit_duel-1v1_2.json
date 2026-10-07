@@ -1,0 +1,1407 @@
+[
+  {
+    "turn": 0,
+    "actor": "p1",
+    "prompt": "神将：选择本局势力",
+    "allowed_targets": [],
+    "choice": "wei",
+    "target_scores": {}
+  },
+  {
+    "turn": 0,
+    "actor": "p2",
+    "prompt": "神将：选择本局势力",
+    "allowed_targets": [],
+    "choice": "wei",
+    "target_scores": {}
+  },
+  {
+    "turn": 1,
+    "actor": "p2",
+    "prompt": "定汉：增加或移出一种锦囊牌名",
+    "allowed_targets": [],
+    "choice": "add:trick.duel",
+    "target_scores": {}
+  },
+  {
+    "turn": 1,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-spade-05-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 1,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-diamond-10-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 1,
+    "actor": "p2",
+    "prompt": "【杀】请选择目标",
+    "allowed_targets": [
+      "p1"
+    ],
+    "choice": "p1",
+    "target_scores": {
+      "p1": 62
+    }
+  },
+  {
+    "turn": 1,
+    "actor": "p1",
+    "prompt": "请打出闪响应杀",
+    "allowed_targets": [],
+    "choice": "std-diamond-11-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 1,
+    "actor": "p2",
+    "prompt": "青龙偃月刀：继续对同一目标出杀，或放弃",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 1,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-heart-03-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 1,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 1,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 1,
+    "actor": "p1",
+    "prompt": "五谷丰登：选择公共牌",
+    "allowed_targets": [],
+    "choice": "std-spade-05-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 1,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "end_play_phase",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-spade-03-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "【过河拆桥】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 61
+    }
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-spade-05-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "skill:huishi",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "慧识：将仍在处理区的判定牌交给一名角色？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "慧识：选择收牌角色",
+    "allowed_targets": [
+      "p1",
+      "p2"
+    ],
+    "choice": "p1",
+    "target_scores": {
+      "p2": 58
+    }
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-club-10-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "【杀】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 58
+    }
+  },
+  {
+    "turn": 2,
+    "actor": "p2",
+    "prompt": "请打出闪响应杀",
+    "allowed_targets": [],
+    "choice": "std-diamond-03-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "skill:huishi_guojia",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "辉逝：选择角色",
+    "allowed_targets": [
+      "p1",
+      "p2"
+    ],
+    "choice": "p1",
+    "target_scores": {
+      "p2": 61
+    }
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "辉逝：选择无视条件的觉醒技",
+    "allowed_targets": [],
+    "choice": "tianyi_guojia",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-spade-06-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "【乐不思蜀】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 61
+    }
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-heart-06-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "【乐不思蜀】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 61
+    }
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:tianzuo-p2-4",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "【奇正相生】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 58
+    }
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-club-12-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "【借刀杀人】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 55
+    }
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "end_play_phase",
+    "target_scores": {}
+  },
+  {
+    "turn": 2,
+    "actor": "p1",
+    "prompt": "请选择要弃置的 1 张牌",
+    "allowed_targets": [],
+    "choice": "('mil-diamond-06',)",
+    "target_scores": {}
+  },
+  {
+    "turn": 3,
+    "actor": "p2",
+    "prompt": "定汉：增加或移出一种锦囊牌名",
+    "allowed_targets": [],
+    "choice": "add:trick.snatch",
+    "target_scores": {}
+  },
+  {
+    "turn": 3,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 3,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 3,
+    "actor": "p2",
+    "prompt": "请选择要弃置的 4 张牌",
+    "allowed_targets": [],
+    "choice": "('std-spade-12-2', 'tianzuo-p2-5', 'mil-diamond-07', 'mil-spade-09')",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "天翊：选择永久获得佐幸的角色",
+    "allowed_targets": [
+      "p1",
+      "p2"
+    ],
+    "choice": "p1",
+    "target_scores": {
+      "p2": 61
+    }
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-spade-03-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "【顺手牵羊】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 61
+    }
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "mil-heart-01",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-spade-10-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "【杀】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 61
+    }
+  },
+  {
+    "turn": 4,
+    "actor": "p2",
+    "prompt": "请打出闪响应杀",
+    "allowed_targets": [],
+    "choice": "std-diamond-06-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "skill:huishi",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "慧识：将仍在处理区的判定牌交给一名角色？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "慧识：选择收牌角色",
+    "allowed_targets": [
+      "p1",
+      "p2"
+    ],
+    "choice": "p1",
+    "target_scores": {
+      "p2": 64
+    }
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "skill:zuoxing",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "佐幸：选择视为使用的普通锦囊",
+    "allowed_targets": [],
+    "choice": "trick.ex_nihilo",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:mil-heart-03",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "【火攻】请选择目标",
+    "allowed_targets": [
+      "p1",
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 64
+    }
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-diamond-01-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "【决斗】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 64
+    }
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p2",
+    "prompt": "请打出杀",
+    "allowed_targets": [],
+    "choice": "std-club-09-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "决斗：请继续打出杀",
+    "allowed_targets": [],
+    "choice": "std-spade-09-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p2",
+    "prompt": "决斗：请继续打出杀",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:mil-spade-10",
+    "target_scores": {}
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "【兵粮寸断】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 64
+    }
+  },
+  {
+    "turn": 4,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "end_play_phase",
+    "target_scores": {}
+  },
+  {
+    "turn": 5,
+    "actor": "p2",
+    "prompt": "定汉：增加或移出一种锦囊牌名",
+    "allowed_targets": [],
+    "choice": "cancel",
+    "target_scores": {}
+  },
+  {
+    "turn": 5,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-heart-12-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 5,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-heart-08-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 5,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-spade-09-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 5,
+    "actor": "p2",
+    "prompt": "【杀】请选择目标",
+    "allowed_targets": [
+      "p1"
+    ],
+    "choice": "p1",
+    "target_scores": {
+      "p1": 59
+    }
+  },
+  {
+    "turn": 5,
+    "actor": "p1",
+    "prompt": "请打出闪响应杀",
+    "allowed_targets": [],
+    "choice": "std-diamond-10-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 5,
+    "actor": "p2",
+    "prompt": "青龙偃月刀：继续对同一目标出杀，或放弃",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 5,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-spade-01-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 5,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "end_play_phase",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:mil-spade-01",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-club-08-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "【杀】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 67
+    }
+  },
+  {
+    "turn": 6,
+    "actor": "p2",
+    "prompt": "请打出闪响应杀",
+    "allowed_targets": [],
+    "choice": "std-diamond-02-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "skill:huishi",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "慧识：将仍在处理区的判定牌交给一名角色？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "慧识：选择收牌角色",
+    "allowed_targets": [
+      "p1",
+      "p2"
+    ],
+    "choice": "p1",
+    "target_scores": {
+      "p2": 70
+    }
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "skill:zuoxing",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "佐幸：选择视为使用的普通锦囊",
+    "allowed_targets": [],
+    "choice": "trick.ex_nihilo",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:mil-spade-02",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:mil-spade-11",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "【铁索连环】请选择目标",
+    "allowed_targets": [
+      "p1",
+      "p2"
+    ],
+    "choice": "('p2',)",
+    "target_scores": {
+      "p2": 70
+    }
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:tianzuo-p2-3",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "【奇正相生】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 70
+    }
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "end_play_phase",
+    "target_scores": {}
+  },
+  {
+    "turn": 6,
+    "actor": "p1",
+    "prompt": "请选择要弃置的 1 张牌",
+    "allowed_targets": [],
+    "choice": "('mil-diamond-11',)",
+    "target_scores": {}
+  },
+  {
+    "turn": 7,
+    "actor": "p2",
+    "prompt": "定汉：增加或移出一种锦囊牌名",
+    "allowed_targets": [],
+    "choice": "remove:trick.ex_nihilo",
+    "target_scores": {}
+  },
+  {
+    "turn": 7,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-club-03-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 7,
+    "actor": "p2",
+    "prompt": "【杀】请选择目标",
+    "allowed_targets": [
+      "p1"
+    ],
+    "choice": "p1",
+    "target_scores": {
+      "p1": 56
+    }
+  },
+  {
+    "turn": 7,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "end_play_phase",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:mil-heart-07",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "【火杀】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 64
+    }
+  },
+  {
+    "turn": 8,
+    "actor": "p2",
+    "prompt": "请打出闪响应杀",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "skill:huishi",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "慧识：将仍在处理区的判定牌交给一名角色？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "慧识：选择收牌角色",
+    "allowed_targets": [
+      "p1",
+      "p2"
+    ],
+    "choice": "p1",
+    "target_scores": {
+      "p2": 64
+    }
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-heart-06-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-heart-08-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "skill:zuoxing",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "佐幸：选择视为使用的普通锦囊",
+    "allowed_targets": [],
+    "choice": "trick.ex_nihilo",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-diamond-13-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-spade-13-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 8,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "end_play_phase",
+    "target_scores": {}
+  },
+  {
+    "turn": 9,
+    "actor": "p2",
+    "prompt": "定汉：增加或移出一种锦囊牌名",
+    "allowed_targets": [],
+    "choice": "cancel",
+    "target_scores": {}
+  },
+  {
+    "turn": 9,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-diamond-12-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 9,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-diamond-12-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 9,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:mil-spade-08",
+    "target_scores": {}
+  },
+  {
+    "turn": 9,
+    "actor": "p2",
+    "prompt": "【雷杀】请选择目标",
+    "allowed_targets": [
+      "p1"
+    ],
+    "choice": "p1",
+    "target_scores": {
+      "p1": 50
+    }
+  },
+  {
+    "turn": 9,
+    "actor": "p1",
+    "prompt": "请打出闪响应杀",
+    "allowed_targets": [],
+    "choice": "mil-heart-11",
+    "target_scores": {}
+  },
+  {
+    "turn": 9,
+    "actor": "p2",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "end_play_phase",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-diamond-04-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "【顺手牵羊】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 67
+    }
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "std-club-12-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:mil-club-06",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "【雷杀】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 67
+    }
+  },
+  {
+    "turn": 10,
+    "actor": "p2",
+    "prompt": "请打出闪响应杀",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "skill:huishi",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "慧识：增加一点体力上限并继续判定？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "慧识：将仍在处理区的判定牌交给一名角色？",
+    "allowed_targets": [],
+    "choice": "True",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "慧识：选择收牌角色",
+    "allowed_targets": [
+      "p1",
+      "p2"
+    ],
+    "choice": "p1",
+    "target_scores": {
+      "p2": 67
+    }
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-heart-11-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "use:std-spade-04-1",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "【过河拆桥】请选择目标",
+    "allowed_targets": [
+      "p2"
+    ],
+    "choice": "p2",
+    "target_scores": {
+      "p2": 64
+    }
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "选择目标区域的一张牌",
+    "allowed_targets": [],
+    "choice": "std-diamond-12-2",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "skill:zuoxing",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "佐幸：选择视为使用的普通锦囊",
+    "allowed_targets": [],
+    "choice": "trick.ex_nihilo",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p2",
+    "prompt": "无懈可击：响应锦囊或反制上一张无懈",
+    "allowed_targets": [],
+    "choice": "ResponsePass.PASS",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "Choose a play action or end the play phase",
+    "allowed_targets": [],
+    "choice": "end_play_phase",
+    "target_scores": {}
+  },
+  {
+    "turn": 10,
+    "actor": "p1",
+    "prompt": "请选择要弃置的 4 张牌",
+    "allowed_targets": [],
+    "choice": "('std-heart-13-1', 'std-heart-01-1', 'mil-diamond-09', 'std-club-13-2')",
+    "target_scores": {}
+  },
+  {
+    "turn": 11,
+    "actor": "p2",
+    "prompt": "定汉：增加或移出一种锦囊牌名",
+    "allowed_targets": [],
+    "choice": "cancel",
+    "target_scores": {}
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "source_sha256": "47da1423bac5ea7e9d9c0e1c58dda4e4e0913b159b1b5f612caede49ebea04ad",
+  "variants": [
+    {
+      "path": "assets/portraits/idle/mobile_god_guojia.mp4",
+      "sha256": "389b9e52a5412b6466222ced6130d744a37d151769cc176b764e6dfcc9c20403",
+      "faststart": true,
+      "resolution": [
+        720,
+        1280
+      ],
+      "duration": "10.000000"
+    },
+    {
+      "path": "assets/portraits/idle/mobile_god_guojia.panel.mp4",
+      "sha256": "dd438372db62bd496ecb1dbf10bb26e8abd95c4d3cb5d78c684e084e659d87e1",
+      "faststart": true,
+      "resolution": [
+        360,
+        640
+      ],
+      "duration": "10.000000"
+    }
+  ],
+  "source_unchanged": true
+}

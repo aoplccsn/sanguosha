@@ -7,7 +7,7 @@ export function optionMetadata(value: string, catalog: Record<string, GeneralInf
   const general = catalog[parts[0]]
   const skills = Object.values(catalog).flatMap(item => item.skills)
   const skill = general ? general.skills.find(item => item.id === parts.at(-1))
-    : skills.find(item => item.id === (parts[0] === 'skill' || parts[0] === 'virtual' ? parts[1] : value))
+    : skills.find(item => item.id === (parts[0] === 'skill' || parts[0] === 'virtual' || parts[0] === 'learn' ? parts[1] : value))
   return { general, skills: skill ? [skill] : general?.skills ?? [] }
 }
 

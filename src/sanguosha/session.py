@@ -388,8 +388,7 @@ class GameSession:
         return self.engine.submit_decision(decision)
 
     def ai_response_context(self):
-        if not game_mode(self.state.metadata.get('mode_id', 'military-five')).public_sides:
-            return None
+        # The trick, affected target and counter parity are public in every mode.
         from sanguosha.engine.military_tricks import NullificationWindow, TrickAction
         frames = self.engine.stack.snapshot()
         window = next((f for f in reversed(frames) if isinstance(f.action, NullificationWindow)), None)

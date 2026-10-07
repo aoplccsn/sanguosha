@@ -11,6 +11,6 @@ export function Timer({ remainingMs, totalMs = remainingMs, warnAt = 5 }: { rema
   const seconds = Math.ceil(remaining / 1000)
   const percent = Math.max(0, Math.min(100, totalMs ? remaining / totalMs * 100 : 0))
   return <div className={`timer ${seconds <= warnAt ? 'urgent' : ''}`} aria-label={`剩余 ${seconds} 秒`}>
-    <span>{(remaining / 1000).toFixed(1)}s</span><div><i style={{ width: `${percent}%` }} /></div>
+    <span>{(remaining / 1000).toFixed(1)} 秒</span><div><i style={{ width: `${percent}%` }} /></div>
   </div>
 }

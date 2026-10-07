@@ -1,7 +1,7 @@
 """Procedurally generated original soundtrack.
 No external samples or copyrighted music used.
 
-群雄夜战: a quiet, loopable pentatonic battle theme synthesized with stdlib only.
+暗局·夜阵: a restrained, loopable battlefield strategy texture synthesized with stdlib only.
 """
 
 from __future__ import annotations
@@ -16,12 +16,12 @@ from pathlib import Path
 
 
 RATE = 22_050
-BPM = 76
+BPM = 72
 BEAT = 60 / BPM
-BARS = 32
+BARS = 36
 DURATION = BARS * 4 * BEAT
 COUNT = round(DURATION * RATE)
-SEED = 19176
+SEED = 20272
 TAU = 2 * math.pi
 SCALE = {"D2": 73.416, "A2": 110.0, "C3": 130.813, "D3": 146.832,
          "F3": 174.614, "G3": 195.998, "A3": 220.0, "C4": 261.626,
@@ -73,7 +73,7 @@ def add_drum(buf: array, when: float, strength: float, rng: random.Random) -> No
         phase += TAU * (68 + 45 * math.exp(-17 * t)) / RATE
         body = math.sin(phase) * math.exp(-8.5 * t)
         skin = rng.uniform(-1, 1) * math.exp(-45 * t) * 0.12
-        buf[(start + j) % COUNT] += strength * (body + skin)
+        buf[(start + j) % COUNT] += strength * min(1,t/.006) * (body + skin)
 
 
 def synthesize() -> array:
@@ -86,37 +86,32 @@ def synthesize() -> array:
         for i in range(COUNT):
             audio[i] += amplitude * math.sin(TAU * cycles * i / COUNT)
 
-    arpeggio = ["D3", "A3", "F3", "C4", "A3", "G3", "F3", "A3"]
-    theme = [("D4", 1.5), ("F4", 0.5), ("G4", 1), ("A4", 1),
-             ("G4", 1), ("F4", 1), ("D4", 2)]
-    answer = [("A4", 1), ("C5", 1), ("A4", 1.5), ("G4", 0.5),
-              ("F4", 1), ("G4", 1), ("D4", 2)]
+    # Low register, irregular silences and unresolved fourths; no bright melody.
+    cells=[('D3','A2','G3'),('D3','C3','A2'),('F3','D3','G3'),('C3','A2','D3')]
     for bar in range(BARS):
-        base = bar * 4 * BEAT
-        returning = bar >= 26
-        opening = bar < 6
-        weight = 0.73 if opening or returning else (1.0 if bar < 18 else 1.13)
-        # A recurring eight-beat figure carries the piece through all sections.
-        steps = (0, 2) if opening or returning else (0, 1, 2, 3)
-        for step in steps:
-            name = arpeggio[(bar * 4 + step) % len(arpeggio)]
-            add_pluck(audio, base + step * BEAT, name, 0.081 * weight, rng)
-        if bar % 2 == 0 and not opening and not returning:
-            add_pluck(audio, base + 2.5 * BEAT, "D4" if bar % 4 == 0 else "C4",
-                      0.031 * weight, rng)
-        if 3 <= bar < 29:
-            phrase = theme if (bar // 2) % 2 == 0 else answer
-            # Phrase spans two bars. Each return is recognisable, with restrained growth.
-            if bar % 2 == 0:
-                cursor = base
-                for note, beats in phrase:
-                    add_flute(audio, cursor, note, beats * 0.91,
-                              0.039 * (1.15 if 18 <= bar < 26 else 1.0), rng)
-                    cursor += beats * BEAT
-        if 6 <= bar < 26:
-            add_drum(audio, base, 0.071 if bar < 18 else 0.094, rng)
-            if bar >= 18 and bar % 2 == 0:
-                add_drum(audio, base + 2 * BEAT, 0.042, rng)
+        base=bar*4*BEAT
+        sparse=bar<8 or bar>=30
+        tense=20<=bar<30
+        cell=cells[(bar//3)%len(cells)]
+        weight=.68 if sparse else .88 if not tense else 1.0
+        for step,note in zip((0,2.5) if sparse else (0,1.5,3.25),cell):
+            add_pluck(audio,base+step*BEAT,note,.061*weight,rng)
+        # Occasional quiet pipa-like double stroke, never a constant arpeggio.
+        if 10<=bar<29 and bar%3==1:
+            add_pluck(audio,base+2*BEAT,'C4',.018,rng)
+            add_pluck(audio,base+2.16*BEAT,'G3',.014,rng)
+        if bar in (3,6,11,15,19,23,27,32):
+            add_flute(audio,base+.4*BEAT,('D3','C3','G3','A2')[(bar//3)%4],3.1,.022 if sparse else .028,rng)
+        if 8<=bar<30 and bar%2==0:
+            add_drum(audio,base+.12*BEAT,.048 if not tense else .067,rng)
+            if tense and bar%4==0: add_drum(audio,base+2.75*BEAT,.032,rng)
+        # Dry wood/stone ticks, synthesized without samples or modern drum kit.
+        if 10<=bar<30 and bar%3!=0:
+            when=round((base+3.5*BEAT)*RATE)
+            for j in range(round(.22*RATE)):
+                t=j/RATE
+                tone=math.sin(TAU*740*t)+.25*math.sin(TAU*1187*t)
+                audio[(when+j)%COUNT]+=.009*min(1,t/.003)*math.exp(-28*t)*tone
     # The beginning and ending share sparse texture; ease the final 0.18 s
     # toward the first sample to eliminate a boundary discontinuity.
     seam = round(0.18 * RATE)
@@ -135,7 +130,7 @@ def main() -> None:
     args = parser.parse_args()
     audio = synthesize()
     peak = max(abs(sample) for sample in audio)
-    gain = 10 ** (-3 / 20) / peak
+    gain = 10 ** (-9 / 20) / peak
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with wave.open(str(args.output), "wb") as wav:
         wav.setnchannels(1)

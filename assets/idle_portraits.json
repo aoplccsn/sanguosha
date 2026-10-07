@@ -83,5 +83,10 @@
     "video": "/assets/portraits/idle/mobile_god_xunyu.mp4",
     "panelVideo": "/assets/portraits/idle/mobile_god_xunyu.panel.mp4",
     "objectPosition": "center top"
+  },
+  "mobile_god_guojia": {
+    "video": "/assets/portraits/idle/mobile_god_guojia.mp4",
+    "panelVideo": "/assets/portraits/idle/mobile_god_guojia.panel.mp4",
+    "objectPosition": "center top"
   }
 }

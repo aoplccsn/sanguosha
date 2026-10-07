@@ -15,3 +15,20 @@ const marks: Record<string, string> = {
 }
 export const markLabel = (value: string) => marks[value] ?? (value.startsWith('wind:')
   ? '狂风' : value.startsWith('fog:') ? '大雾' : '标记')
+
+// Reuse battle names and existing server choice labels; never display wire enums.
+export function battlePrompt(request: import('./types').PendingRequest, names: Record<string,string>, skills: Record<string,string>, responseTo?:string) {
+  const required=request.required_definition_id
+  if (request.request_type==='respond_with_card' && required) {
+    if (required==='trick.nullification') return '是否使用【无懈可击】？'
+    if (required==='basic.peach') return '请使用一张【桃】救援'
+    const source=responseTo && names[responseTo]
+    return `请打出一张【${names[required] ?? '响应牌'}】${source ? `响应【${source}】` : ''}`
+  }
+  let prompt=request.prompt
+  for (const [id,name] of [...Object.entries(names),...Object.entries(skills)].sort((a,b)=>b[0].length-a[0].length)) prompt=prompt.replaceAll(id,name)
+  prompt=prompt.replace(/ViewAs/g,'转换牌').replace(/PendingRequest/g,'等待操作')
+  if (!/[a-zA-Z_]{2,}/.test(prompt)) return prompt
+  const fallback: Record<string,string> = {yes_no:'是否发动当前技能？',choose_option:'请选择出牌操作，或结束出牌阶段',choose_player:'请选择一名目标角色',choose_players:`请选择 ${request.min_count}～${request.max_count} 名目标角色`,choose_card:'请选择一张牌',choose_cards:`请选择 ${request.min_count} 张牌弃置`,respond_with_card:'请打出响应牌，或选择不出'}
+  return fallback[request.request_type] ?? '请完成当前操作'
+}
