@@ -33,4 +33,7 @@ def test_tamo_full_nonlord_order_including_actor_after_reconnect(mode):
     answer(session, tuple(reversed(nonlords)))
     assert session.engine.pending_request is None
     assert session.state.seat_order[before.index(lord)] == lord
-    assert tuple(pid for pid in session.state.seat_order if pid != lord) == tuple(reversed(nonlords))
+    lord_index = session.state.seat_order.index(lord)
+    clockwise = tuple(session.state.seat_order[(lord_index + offset) % len(seats)]
+                      for offset in range(1, len(seats)))
+    assert clockwise == tuple(reversed(nonlords))

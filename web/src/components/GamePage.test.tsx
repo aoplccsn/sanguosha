@@ -480,3 +480,76 @@ it('lets 榻谟 order every nonlord including self and clear a cancelled selecti
     players[0].character_name = original.name
   }
 })
+it.each([
+  { count: 5, chosen: ['p5', 'p4', 'p2', 'p3'], positions: ['east', 'north-east', 'north-west', 'west'] },
+  { count: 8, chosen: ['p5', 'p4', 'p8', 'p2', 'p7', 'p3', 'p6'], positions: ['east-lower', 'east-upper', 'north-east', 'north', 'north-west', 'west-upper', 'west-lower'] },
+])('rearranges the $count-player table from the confirmed Tamo projection and restores its local view', async ({ count, chosen, positions }) => {
+  const originalPlayers = [...players]
+  const originalSeatId = seatId
+  const table = Array.from({ length: count }, (_, index) => ({
+    ...originalPlayers[index % originalPlayers.length],
+    player_id: `p${index + 1}`, name: `玩家${index + 1}`,
+    character_id: index === 3 ? 'mobile_god_lusu' : `general-${index + 1}`,
+    character_name: index === 3 ? '神鲁肃' : `武将${index + 1}`,
+    identity_label: index === 0 ? '主公' : index === 3 ? '忠臣' : '未知',
+    hp: index % 3 + 1, active: false, equipment: [], judgments: [], skill_labels: [],
+  }))
+  const byId = new Map(table.map(player => [player.player_id, player]))
+  players.splice(0, players.length, ...table)
+  seatId = 'p4'
+  publicEvents = []; publicHistory = []; waiting = undefined; combat = undefined
+  submitDecision.mockClear()
+  request = { request_id: `tamo-table-${count}`, player_id: seatId, request_type: 'choose_players',
+    prompt: '榻谟：按新座次顺序选择全部非主公角色', choices: [], allowed_player_ids: chosen,
+    eligible_card_ids: [], min_count: count - 1, max_count: count - 1, remaining_ms: 60000 }
+
+  function expectLayout(container: HTMLElement, viewer: string) {
+    const selfIndex = players.findIndex(player => player.player_id === viewer)
+    const relative = [...players.slice(selfIndex + 1), ...players.slice(0, selfIndex)]
+    const opponents = [...container.querySelectorAll<HTMLElement>('.game-board > .player-panel')]
+    expect(opponents.map(panel => panel.dataset.playerId)).toEqual(relative.map(player => player.player_id))
+    opponents.forEach((panel, index) => expect(panel).toHaveClass(`player-${positions[index]}`))
+    expect(container.querySelector('.self-area > .player-panel')).toHaveAttribute('data-player-id', viewer)
+    expect(container.querySelector('.self-area > .player-panel')).toHaveClass('player-self')
+    expect(container.querySelectorAll('.player-panel')).toHaveLength(count)
+    for (const player of players) {
+      const panel = container.querySelector(`[data-player-id="${player.player_id}"]`)!
+      expect(panel).toHaveAttribute('data-character-id', player.character_id)
+      expect(within(panel as HTMLElement).getByLabelText(`${player.hp} / ${player.max_hp} 体力`)).toBeInTheDocument()
+    }
+  }
+
+  try {
+    const view = render(<GamePage />)
+    expectLayout(view.container, seatId)
+    const originalPanels = new Map([...view.container.querySelectorAll<HTMLElement>('.player-panel')].map(panel => [panel.dataset.playerId, panel]))
+    const originalSelfIndex = players.findIndex(player => player.player_id === seatId)
+    for (const id of chosen) await userEvent.click(screen.getByRole('button', { name: `选择目标${byId.get(id)!.character_name}` }))
+    await userEvent.click(screen.getByRole('button', { name: '确定' }))
+    expect(submitDecision).toHaveBeenLastCalledWith(`tamo-table-${count}`, chosen)
+
+    // The next server projection supplies the authoritative order, independent of the original room slots.
+    players.splice(0, players.length, table[0], ...chosen.map(id => byId.get(id)!))
+    request = null
+    view.rerender(<GamePage />)
+    expect(players.findIndex(player => player.player_id === seatId)).not.toBe(originalSelfIndex)
+    expectLayout(view.container, seatId)
+    for (const panel of view.container.querySelectorAll<HTMLElement>('.player-panel')) {
+      expect(panel).toBe(originalPanels.get(panel.dataset.playerId))
+    }
+    expect(view.container.querySelector('.selected-target')).toBeNull()
+
+    view.unmount()
+    const restored = render(<GamePage />)
+    expectLayout(restored.container, seatId)
+    restored.unmount()
+    seatId = 'p2'
+    const otherClient = render(<GamePage />)
+    expectLayout(otherClient.container, seatId)
+    otherClient.unmount()
+  } finally {
+    players.splice(0, players.length, ...originalPlayers)
+    seatId = originalSeatId
+    request = null
+  }
+})

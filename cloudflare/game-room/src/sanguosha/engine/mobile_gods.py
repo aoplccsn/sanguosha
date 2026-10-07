@@ -495,9 +495,24 @@ class MobileGodHandler:
                 return StepResult.ask(PendingRequest(action.action_id + ':order', pid, RequestType.CHOOSE_PLAYERS,
                     '榻谟：按新座次顺序选择全部非主公角色', action.action_id, frame.frame_id,
                     allowed_player_ids=nonlords, min_count=len(nonlords), max_count=len(nonlords)))
-            order = iter(frame.decision); frame.decision = None
-            state.seat_order = tuple(q if state.players[q].identity is Identity.LORD else next(order)
-                                     for q in state.seat_order)
+            selected = tuple(frame.decision); frame.decision = None
+            lord_index = next((index for index, q in enumerate(state.seat_order)
+                               if state.players[q].identity is Identity.LORD), None)
+            if lord_index is not None:
+                # The choice is clockwise AFTER the fixed lord, even when the
+                # room's player-id array starts before that physical seat.
+                slots = tuple((lord_index + offset) % len(state.seat_order)
+                              for offset in range(1, len(state.seat_order))
+                              if state.players[state.seat_order[(lord_index + offset) % len(state.seat_order)]].is_alive)
+                seats = list(state.seat_order)
+                for index, q in zip(slots, selected):
+                    seats[index] = q
+                state.seat_order = tuple(seats)
+            else:
+                # Preserve the T20 no-lord mode rule.
+                order = iter(selected)
+                state.seat_order = tuple(q if state.players[q].identity is Identity.LORD else next(order)
+                                         for q in state.seat_order)
             for index, q in enumerate(state.seat_order):
                 state.players[q].seat = index
             return StepResult.complete()
