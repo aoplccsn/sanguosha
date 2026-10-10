@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { HomePage } from './HomePage'
@@ -56,6 +56,7 @@ it('requires a server grant before creating a test room', async () => {
   const fetchMock = vi.fn().mockResolvedValue({ ok: true })
   vi.stubGlobal('fetch', fetchMock)
   render(<HomePage />)
+  await userEvent.click(screen.getByText('更多工具'))
   await userEvent.click(screen.getByRole('button', { name: '测试模式' }))
   expect(screen.queryByRole('button', { name: '创建测试房' })).not.toBeInTheDocument()
   await userEvent.type(screen.getByLabelText('测试权限码'), 'fixture-only-code')
@@ -65,4 +66,54 @@ it('requires a server grant before creating a test room', async () => {
   await userEvent.click(screen.getByRole('button', { name: '创建测试房' }))
   expect(createRoom).toHaveBeenCalledWith('玩家', true, 'military-five', true)
   vi.unstubAllGlobals()
+})
+
+it('expands the join input only on demand', async () => {
+  window.history.pushState({}, '', '/')
+  render(<HomePage />)
+  expect(screen.queryByLabelText('房间码')).not.toBeInTheDocument()
+  await userEvent.click(screen.getByRole('button', { name: '加入房间' }))
+  await userEvent.type(screen.getByLabelText('房间码'), 'ABC123')
+  await userEvent.click(screen.getByRole('button', { name: '确认加入' }))
+  expect(joinRoom).toHaveBeenCalledWith(expect.any(String), 'ABC123')
+})
+
+it('rotates all five heroes, pauses hidden, and resets the timer on manual control', () => {
+  vi.useFakeTimers()
+  const { container } = render(<HomePage />)
+  const hero = () => container.querySelector('main')!.getAttribute('data-hero')
+  expect(hero()).toBe('zhugeliang')
+  for (const name of ['lvbu', 'zhouyu', 'guanyu', 'ganning', 'zhugeliang']) {
+    act(() => vi.advanceTimersByTime(20_000))
+    expect(hero()).toBe(name)
+    expect(container.querySelectorAll('.home-hero')).toHaveLength(2)
+    act(() => vi.advanceTimersByTime(700))
+    expect(container.querySelectorAll('.home-hero')).toHaveLength(1)
+  }
+  Object.defineProperty(document, 'hidden', { configurable: true, value: true })
+  fireEvent(document, new Event('visibilitychange'))
+  act(() => vi.advanceTimersByTime(40_000))
+  expect(hero()).toBe('zhugeliang')
+  Object.defineProperty(document, 'hidden', { configurable: true, value: false })
+  fireEvent(document, new Event('visibilitychange'))
+  fireEvent.click(screen.getByRole('button', { name: '上一位神将' }))
+  expect(hero()).toBe('ganning')
+  act(() => vi.advanceTimersByTime(19_999))
+  expect(hero()).toBe('ganning')
+  act(() => vi.advanceTimersByTime(1))
+  expect(hero()).toBe('zhugeliang')
+  vi.useRealTimers()
+})
+
+it('uses static posters and manual switching with reduced motion', () => {
+  vi.useFakeTimers()
+  const match = vi.spyOn(window, 'matchMedia').mockReturnValue({ matches: true, addEventListener() {}, removeEventListener() {} } as any)
+  const { container } = render(<HomePage />)
+  act(() => vi.advanceTimersByTime(60_000))
+  expect(container.querySelector('main')).toHaveAttribute('data-hero', 'zhugeliang')
+  expect(container.querySelector('video')).toBeNull()
+  fireEvent.click(screen.getByRole('button', { name: '显示神甘宁' }))
+  expect(container.querySelector('main')).toHaveAttribute('data-hero', 'ganning')
+  expect(container.querySelectorAll('.home-hero')).toHaveLength(1)
+  match.mockRestore(); vi.useRealTimers()
 })

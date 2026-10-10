@@ -23,7 +23,7 @@ export function PregamePage() {
     return general.name.includes(search.trim()) || general.skills.some((skill) => skill.name.includes(search.trim()))
   }) : draft.request.choices
   return <main className="pregame-page table-background">
-    <section className="pregame-shell paper-panel">
+    <section className={`pregame-shell paper-panel ${draft.test_room ? 'test-draft' : ''}`}>
       <header className="pregame-header">
         <div className={`identity-reveal identity-${draft.identity}`}><span>{draft.lord_id ? "你的身份" : "你的阵营"}</span><strong>{identityLabel[draft.identity] ?? draft.identity}</strong></div>
         <div><p className="eyebrow">{draft.test_room ? "测试房 · 自选武将" : "十选一"}</p><h1>择将入局</h1><p>先查看技能，再确认选择。点击武将不会立即锁定。</p></div>

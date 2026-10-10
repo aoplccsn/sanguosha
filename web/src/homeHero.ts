@@ -17,4 +17,5 @@ export const homeHeroes: Record<string, HomeHero> = {
   ganning: { id: 'thunder_god_ganning', name: '神甘宁', accent: '#c9d6e6', light: '#2d4a78', heroPosition: 'center 12%', scenePosition: '78% 50%' },
 }
 
+export const homeHeroOrder = ['zhugeliang', 'lvbu', 'zhouyu', 'guanyu', 'ganning'] as const
 export const defaultHomeHero = 'zhugeliang'

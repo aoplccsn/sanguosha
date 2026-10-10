@@ -1,0 +1,81 @@
+
+[WebServer] INFO:     Started server process [26120]
+[WebServer] INFO:     Waiting for application startup.
+
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8021 (Press CTRL+C to quit)
+
+[WebServer] (node:25268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:30236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+
+(node:30132) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/2] e2e\t21-4-polish.spec.ts:53:1 › T21.4 normal ten-choice draft, 5/8 seats, landscape and reconnect
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+[WebServer] INFO:     127.0.0.1:52139 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+
+[WebServer] INFO:     127.0.0.1:51637 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[WebServer] INFO:     127.0.0.1:51403 - "WebSocket /ws" [accepted]
+
+
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:50580 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+[WebServer] INFO:     127.0.0.1:55004 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+
+[WebServer] INFO:     127.0.0.1:58980 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+[WebServer] INFO:     127.0.0.1:57956 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:61841 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+[2/2] e2e\t21-4-polish.spec.ts:126:1 › T21.4 native dual BGM switches, shares mute/volume, and reuses players
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+
+[WebServer] INFO:     127.0.0.1:61136 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+
+[WebServer] INFO:     127.0.0.1:53382 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+  2 passed (17.1s)

@@ -8,6 +8,7 @@ export type DynamicPortraitProps = {
   name: string
   quality: VfxQuality
   reducedMotion?: boolean
+  paused?: boolean
   objectPosition?: string
 }
 
@@ -16,7 +17,7 @@ export const DynamicPortrait = memo(function DynamicPortrait(props: DynamicPortr
   return <PortraitMedia key={props.staticPortrait + ':' + (props.idleVideo ?? '')} {...props} />
 })
 
-function PortraitMedia({ staticPortrait, idleVideo, name, quality, reducedMotion, objectPosition = 'center top' }: DynamicPortraitProps) {
+function PortraitMedia({ staticPortrait, idleVideo, name, quality, reducedMotion, paused = false, objectPosition = 'center top' }: DynamicPortraitProps) {
   const host = useRef<HTMLSpanElement>(null)
   const video = useRef<HTMLVideoElement>(null)
   const [systemReduced, setSystemReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
@@ -26,7 +27,7 @@ function PortraitMedia({ staticPortrait, idleVideo, name, quality, reducedMotion
   const [ready, setReady] = useState(false)
   const [requested, setRequested] = useState(false)
   const enabled = !!idleVideo && quality !== 'low' && !(reducedMotion || systemReduced) && !failed
-  const shouldPlay = enabled && inViewport && visible
+  const shouldPlay = enabled && inViewport && visible && !paused
 
   useEffect(() => {
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)')

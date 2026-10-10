@@ -1,0 +1,33 @@
+{
+  "production_resources": [
+    "/assets/audio/bgm/lobby_bgm.wav",
+    "/assets/audio/bgm/main_bgm.mp3",
+    "/assets/backgrounds/home/hall_v1.webp",
+    "/assets/backgrounds/table/battle_v2.webp",
+    "/assets/portraits/idle/fire_god_zhugeliang.mp4",
+    "/assets/generals/qun/fire_god_zhugeliang.webp",
+    "/assets/portraits/idle/forest_god_lvbu.mp4",
+    "/assets/generals/qun/forest_god_lvbu.webp",
+    "/assets/portraits/idle/fire_god_zhouyu.mp4",
+    "/assets/generals/qun/fire_god_zhouyu.webp",
+    "/assets/portraits/idle/wind_god_guanyu.mp4",
+    "/assets/generals/qun/wind_god_guanyu.webp",
+    "/assets/portraits/idle/thunder_god_ganning.mp4",
+    "/assets/generals/qun/thunder_god_ganning.webp"
+  ],
+  "missing": [],
+  "lobby_audio": {
+    "duration_s": 64.0,
+    "sample_rate": 22050,
+    "channels": 1,
+    "peak_dbfs": -9.0,
+    "rms_dbfs": -24.59,
+    "loop_boundary_delta": 0
+  },
+  "checks": {
+    "typescript": "passed",
+    "vitest": "20 files / 139 tests passed",
+    "playwright": "7 targeted scenarios passed (5 initial + 2 corrected test-code rechecks)",
+    "production_build": "passed"
+  }
+}
