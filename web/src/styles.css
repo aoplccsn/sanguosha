@@ -110,17 +110,6 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .player-panel.damage-flash .portrait-button { animation: damageFlash .42s ease-out; }
 .player-panel.healing-flash .portrait-button { animation: healingFlash .58s ease-out; }
 .player-panel.chained .chain-mark { animation: chainPulse 1.2s ease-in-out infinite; }
-.player-north-west { left: 7%; top: 15%; }
-.player-north { left: calc(50% - 110px); top: 8%; }
-.player-north-east { right: 7%; top: 15%; }
-.player-east { right: 4%; top: 47%; }
-.player-east-upper { right: 2%; top: 29%; }
-.player-east-lower { right: 2%; top: 55%; }
-.player-west-upper { left: 2%; top: 29%; }
-.player-west-lower { left: 2%; top: 55%; }
-.eight-seats .player-north-west { left: 8%; top: 5%; }
-.eight-seats .player-north { top: 3%; }
-.eight-seats .player-north-east { right: 8%; top: 5%; }
 .lobby-options { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
 .lobby-options label { display: inline-flex; align-items: center; gap: 8px; }
 .player-self { position: relative; inset: auto; width: 260px; min-height: 150px; flex: 0 0 260px; }
@@ -580,15 +569,6 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .game-board .turn-badge,.game-board .response-badge,.game-board .action-badge { top:-9px; left:8px; padding:2px 5px; border:0; background:#7e5b23cc; color:#ffedc3; font-size:10px; pointer-events:none; }
 .game-board .response-badge { left:auto; right:8px; background:#805521dd; }
 .game-board .action-badge { top:28px; left:28px; background:#6e3524b3; }
-.player-north-west { left:12%; top:90px; }
-.player-north { left:calc(50% - var(--seat-w)/2); top:68px; }
-.player-north-east { right:12%; top:90px; }
-.game-board:not(.eight-seats) .player-east { right:3%; top:41%; }
-.eight-seats .player-north-west { left:21%; top:76px; }
-.eight-seats .player-north { left:calc(50% - var(--seat-w)/2); top:64px; }
-.eight-seats .player-north-east { right:21%; top:76px; }
-.eight-seats .player-east-upper,.eight-seats .player-west-upper { top:32%; }
-.eight-seats .player-east-lower,.eight-seats .player-west-lower { top:auto; bottom:14px; }
 .game-board .self-area { left:3%; right:3%; bottom:10px; min-height:0; height:var(--self-h); padding:0 8px; gap:12px; border:0; border-radius:0; background:linear-gradient(transparent 42%,#14110a88); box-shadow:none; }
 .game-board .self-area::before { content:''; position:absolute; inset:auto 0 0; height:1px; background:linear-gradient(90deg,transparent,#b99a5b77,transparent); pointer-events:none; }
 .game-board.eight-seats .self-area { left:20%; right:20%; }
@@ -698,7 +678,6 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .game-board .center-action-card { position:relative; width:clamp(144px,13vw,196px); aspect-ratio: .7; box-shadow:0 8px 28px #0007; }
 .game-board .center-action-card img { width:100%; height:100%; object-fit:contain; }
 .game-board .center-action-card b { position:absolute; bottom:5%; left:5%; right:5%; padding:3px; font-size:23px; color:#f5dfb3; background:#261b13db; }
-.game-board .event-stage:has(.center-action-card) { top:46%; }
 .game-board .event-stage strong { font-size:clamp(14px,1.3vw,20px); }
 @media(prefers-reduced-motion:reduce) { .game-board .player-panel.responding::after { animation:none; } }
 
@@ -713,10 +692,6 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
   .eight-seats .player-east-lower,.eight-seats .player-west-lower { bottom:36px; }
 }
 
-@media(min-width:721px) and (max-height:800px) {
-  .game-board .event-stage:has(.center-action-card) { top:57%; }
-  .game-board .center-action-card { width:144px; }
-}
 
 .game-board .thinking-badge { position:absolute; z-index:7; top:21px; white-space:nowrap; }
 .game-board .action-badge { position:absolute; z-index:7; }
@@ -725,23 +700,7 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 
 .game-board .player-panel.active::before { content:''; position:absolute; inset:8% 0 2%; z-index:2; border:1px solid #d6af6380; box-shadow:0 0 12px #e9bb5340; pointer-events:none; }
 
-@media(min-width:721px) {
-  .game-board .event-stage:has(.center-action-card) { top:55%; }
-}
-@media(min-width:721px) and (max-height:800px) {
-  .game-board .event-stage:has(.center-action-card) { top:56%; }
-  .game-board .center-action-card { width:144px; }
-  .game-board .decision-prompt { bottom:calc(var(--self-h) + 8px); }
-}
 
-@media(min-width:721px) {
-  .game-board .event-stage:has(.center-action-card) { top:60%; }
-  .game-board .event-stage strong { background:#211c12b3; padding:4px 10px; }
-}
-@media(min-width:721px) and (max-height:800px) {
-  .game-board .event-stage:has(.center-action-card) { top:60%; }
-  .game-board .decision-prompt { bottom:-30px; }
-}
 
 .game-board .event-stage { z-index:12; }
 
@@ -764,12 +723,10 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .game-board .aoe-badge { position:absolute; bottom:6px; right:3px; z-index:6; font-size:10px; padding:2px 4px; color:#dfc598; background:#20170dbb; }
 .game-board .aoe-resolved .aoe-badge { opacity:.45; }
 .game-board .aoe-current .aoe-badge { color:#cafff8; }
-.game-board .event-stage:has(.center-action-card) { top:52%; }
 .game-board .center-action-card { width:clamp(120px,10vw,155px); }
 .action-cards { display:flex; align-items:center; justify-content:center; position:relative; }
 .game-board .response-card { width:clamp(105px,9vw,140px); margin-left:-32px; transform:translateY(25px) rotate(5deg); z-index:2; }
 .nullification-status { color:#d8fff4; background:#102326db; padding:3px 9px; }
-@media(min-width:721px) and (max-height:800px) { .game-board .center-action-card { width:125px; } .game-board .event-stage:has(.center-action-card) { top:54%; } }
 @media(max-width:720px) {
   .game-board .center-action-card { width:clamp(78px,23vw,105px); }
   .game-board .response-card { width:86px; margin-left:-24px; }
@@ -836,7 +793,6 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 }
 
 @media(min-width:721px) {
- .game-board .event-stage:has(.center-action-card) { top:53%; }
  .game-board .event-stage strong { max-width:420px; font-size:clamp(14px,1.1vw,16px); line-height:1.35; }
 }
 @keyframes actionRevealMobile { from { opacity:.85; transform:scale(.96); } }
@@ -884,17 +840,6 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .public-resolution-card { width:72px; position:relative; }
 .public-resolution-card img { width:100%; height:100px; object-fit:cover; border-radius:5px; }
 .public-resolution-card b { display:block; font-size:12px; color:#f1dfb4; }
-@media(min-width:721px) {
- .game-board:not(.eight-seats) .player-east { right:4%; top:40%; }
- .game-board:not(.eight-seats) .player-west { left:4%; top:40%; }
- .game-board:not(.eight-seats) .player-north-east { right:26%; top:65px; }
- .game-board:not(.eight-seats) .player-north-west { left:26%; top:65px; }
- .eight-seats .player-east-lower,.eight-seats .player-west-lower { top:55%; bottom:auto; }
- .eight-seats .player-east-upper,.eight-seats .player-west-upper { top:22%; }
- .eight-seats .player-north-east { right:24%; top:65px; }
- .eight-seats .player-north-west { left:24%; top:65px; }
- .eight-seats .player-north { top:65px; }
-}
 @media(max-width:720px) {
  .game-board,.game-board.eight-seats { grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:auto auto auto auto; gap:9px 7px; }
  .game-board .player-panel:not(.player-self) { width:100%; min-width:0; height:145px; min-height:145px; position:relative; inset:auto; margin:0; }
@@ -920,14 +865,6 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
  .game-board .general-line b { font-size:15px; }
 }
 
-@media(min-width:721px) {
- .game-board .self-area { height:350px; }
- .game-board .player-self { position:absolute;left:50%;bottom:155px;transform:translateX(-50%);width:130px;height:180px; }
- .game-board .self-area .hand { position:absolute;left:0;right:0;bottom:0;height:148px;justify-content:center; }
- .game-board .self-area .skill-bar { position:absolute;left:calc(50% - 170px);bottom:165px; }
- .game-board .self-area .decision-prompt { left:calc(50% + 90px);bottom:170px;transform:none;width:280px;max-width:calc(50% - 90px);min-width:175px; }
- .game-board .view-as-materials { position:absolute;left:0;bottom:310px;display:flex;gap:4px; }
-}
 @media(max-width:720px) {
  .game-board .self-area,.game-board.eight-seats .self-area { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;padding-bottom:100px; }
  .game-board .self-area .player-self { grid-column:2;grid-row:1;width:100%;height:150px;min-width:0; }
@@ -943,14 +880,6 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .public-card-history[open] { background:#1d201bea;padding:5px;max-height:180px;overflow:auto; }
 
 /* T18A.11: local controls stay at the bottom; the center is event space. */
-@media(min-width:721px) {
- .game-board .self-area { height:220px; }
- .game-board .player-self { left:auto;right:0;bottom:0;transform:none;width:150px;height:210px; }
- .game-board .self-area .hand { left:0;right:170px;bottom:0;justify-content:flex-start; }
- .game-board .self-area .skill-bar { left:0;bottom:155px;max-width:calc(100% - 170px); }
- .game-board .self-area .decision-prompt { left:0;right:170px;bottom:205px;width:auto;max-width:none;min-width:0; }
- .game-board .view-as-materials { bottom:185px; }
-}
 @media(max-width:720px) {
  .game-board .self-area .player-self { grid-column:3; }
 }
@@ -961,9 +890,6 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 /* Public sides use restrained seals; local controls retain the current layout. */
 .team-A .player-heading span,.team-badge.team-A { color:#a9c7ba;border-bottom:2px solid #789b88; }
 .team-B .player-heading span,.team-badge.team-B { color:#dac2b0;border-bottom:2px solid #b18a70; }
-@media(min-width:721px) {
- .small-party-seats .player-north { left:50%;top:65px;transform:translateX(-50%); }
-}
 @media(max-width:720px) {
  .small-party-seats .player-north { grid-column:2;grid-row:1; }
  .small-party-seats .player-east { grid-column:3;grid-row:2; }

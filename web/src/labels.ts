@@ -32,3 +32,7 @@ export function battlePrompt(request: import('./types').PendingRequest, names: R
   const fallback: Record<string,string> = {yes_no:'是否发动当前技能？',choose_option:'请选择出牌操作，或结束出牌阶段',choose_player:'请选择一名目标角色',choose_players:`请选择 ${request.min_count}～${request.max_count} 名目标角色`,choose_card:'请选择一张牌',choose_cards:`请选择 ${request.min_count} 张牌弃置`,respond_with_card:'请打出响应牌，或选择不出'}
   return fallback[request.request_type] ?? '请完成当前操作'
 }
+
+export const phaseNames: Record<string, string> = {
+  '—': '回合观察', start: '开始', judgment: '判定', draw: '摸牌', play: '出牌', discard: '弃牌', finish: '结束',
+}

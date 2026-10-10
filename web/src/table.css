@@ -1,0 +1,149 @@
+/* T21 table layer. Loads after styles.css and owns: tokens, seat anchor maps,
+   the local operation area, and the shared selection / target / skill states. */
+
+:root {
+  --t-gold: #e2b85e;
+  --t-gold-hi: #ffe3a0;
+  --t-gold-soft: #c9a566;
+  --t-resolve: #79bdb4;           /* "currently resolving", never used for player selection */
+  --t-ink: #1b1610;
+  --t-line: #b99a5b44;
+  --t-radius: 3px;
+  --t-fast: .14s;
+  --t-med: .22s;
+  --t-glow: 0 0 14px;
+}
+
+/* ───────────── Desktop anchor maps (phones keep the T20.3 layout) ───────────── */
+@media (min-width: 721px) and (min-height: 601px) {
+  .game-board {
+    --seat-top: 58px;
+    --edge-gap: 12px;
+    --seat-h: clamp(170px, 27vh, 282px);
+    --seat-w: calc(var(--seat-h) * .72);
+    --local-h: clamp(216px, 29vh, 300px);
+    --local-w: calc(var(--local-h) * .7);
+    --prompt-h: 64px;
+    --card-w: min(104px, calc((var(--local-h) - var(--prompt-h) - 44px) * .667));
+    --center-y: calc((var(--seat-top) + var(--seat-h) + 100% - var(--local-h) - var(--edge-gap)) / 2);
+  }
+  .game-board::before { inset: calc(var(--seat-top) + var(--seat-h) * .6) 15% calc(var(--local-h) + var(--edge-gap) + 8px); }
+
+  .game-board .player-panel:not(.player-self) { width: var(--seat-w); height: var(--seat-h); transform: none; }
+
+  /* 5 players: two upper seats, two lower-set flanks. Also the base for 2/4-player tables. */
+  .game-board .player-panel.player-north { left: calc(50% - var(--seat-w) / 2); right: auto; top: var(--seat-top); }
+  .game-board:not(.eight-seats) .player-panel.player-north-west { left: 28%; right: auto; top: var(--seat-top); }
+  .game-board:not(.eight-seats) .player-panel.player-north-east { right: 28%; left: auto; top: var(--seat-top); }
+  .game-board:not(.eight-seats) .player-panel.player-west { left: 4%; right: auto; top: 24%; }
+  .game-board:not(.eight-seats) .player-panel.player-east { right: 4%; left: auto; top: 24%; }
+
+  /* 8 players use smaller seats and staggered flanks so the seats form an arc around the table. */
+  .game-board.eight-seats { --seat-h: clamp(150px, 24vh, 250px); --flank-top: calc(var(--seat-top) + var(--seat-h) * .3); }
+  /* 8 players: three upper seats, two stacked flanks per side; the local row is never shared. */
+  .game-board.eight-seats .player-panel.player-north-west { left: 24%; right: auto; top: var(--seat-top); }
+  .game-board.eight-seats .player-panel.player-north-east { right: 24%; left: auto; top: var(--seat-top); }
+  .game-board.eight-seats .player-panel.player-west-upper { left: 3%; right: auto; top: var(--flank-top); bottom: auto; }
+  .game-board.eight-seats .player-panel.player-east-upper { right: 3%; left: auto; top: var(--flank-top); bottom: auto; }
+  .game-board.eight-seats .player-panel.player-west-lower { left: 3%; right: auto; top: calc(var(--flank-top) + var(--seat-h) + 10px); bottom: auto; }
+  .game-board.eight-seats .player-panel.player-east-lower { right: 3%; left: auto; top: calc(var(--flank-top) + var(--seat-h) + 10px); bottom: auto; }
+
+  /* Local operation area: skills | equipment | prompt over hand | portrait */
+  .game-board .self-area, .game-board.eight-seats .self-area {
+    left: 3%; right: 3%; bottom: var(--edge-gap); height: var(--local-h);
+    grid-template-columns: 112px 140px minmax(0, 1fr) var(--local-w);
+    grid-template-rows: var(--prompt-h) minmax(0, 1fr); gap: 10px;
+    background: linear-gradient(transparent, #14110a99);
+  }
+  .game-board .self-area .decision-prompt { flex-wrap: wrap; align-content: center; }
+  .game-board .self-area .decision-prompt .prompt-copy { flex: 1 1 200px; min-width: 0; }
+  .game-board .self-area .decision-prompt .prompt-copy small { display: block; }
+  .game-board .self-area .hand-card { flex-basis: var(--card-w); width: var(--card-w); }
+
+  /* Table center: event stage and piles share one vertical midpoint between the seat rows and the local row. */
+  .game-board .event-stage, .game-board .event-stage:has(.center-action-card) { top: var(--center-y); }
+  .game-board .table-piles { left: calc(50% + min(26vw, 380px)); top: var(--center-y); transform: translate(-50%, -50%); }
+  .game-board .recent-actions { top: 2px; }
+
+  /* Response timer sits inside its own portrait so it can never cover a neighbouring seat. */
+  .game-board .player-panel .seat-timer { top: auto; bottom: 0; left: 0; width: 100%; background: #1f1810f0; }
+}
+
+/* ───────────── Player panel information hierarchy ───────────── */
+.game-board .hp-row { font-size: 15px; }
+.game-board .player-heading strong { color: #cfc3aa; font-size: 10px; }
+.game-board .seat-facts { color: #9d9380; font-size: 9px; }
+.game-board .hand-count {
+  padding: 1px 7px; font-size: 12px; font-weight: 700; color: #ffeab8;
+  background: #5b3a1ccc; border: 1px solid #c9a56688; border-radius: 10px;
+}
+.game-board .zone-token { color: #a89c82; }
+.game-board .equipment-token { color: #e3bd65; }
+.game-board .judgment-token { color: #c0a9df; }
+.game-board .mark-badge { background: #3a2a1fa6; color: #cbb78f; font-size: 9px; }
+.game-board .control-badge { font-size: 9px; }
+
+/* ───────────── Target-selection language ─────────────
+   legal: gold outline · hover: stronger · selected: double ring · resolving: teal · illegal: dimmed */
+.game-board .player-panel { transition: filter var(--t-med); }
+.game-board .player-panel.selectable { cursor: pointer; }
+.game-board .player-panel.selectable::after {
+  border: 1px solid var(--t-gold); box-shadow: 0 0 0 1px #000a, var(--t-glow) #e2b85e55;
+  transition: box-shadow var(--t-fast), border-color var(--t-fast);
+}
+.game-board .player-panel.selectable:hover::after {
+  border-color: var(--t-gold-hi); box-shadow: inset 0 0 22px #ffc35950, 0 0 20px #f0ac55aa;
+}
+.game-board .player-panel.selected-target::after {
+  border: 2px solid var(--t-gold-hi); outline: 2px solid var(--t-gold); outline-offset: 3px;
+  box-shadow: inset 0 0 22px #ffc35950, 0 0 22px #f0ac55aa;
+}
+.game-board .player-panel.aoe-current::after, .game-board .player-panel.event-target::after {
+  border: 2px solid var(--t-resolve); outline: 0; box-shadow: inset 0 0 18px #79bdb43a, var(--t-glow) #79bdb466;
+}
+.game-board .player-panel.aoe-resolved .dynamic-portrait { filter: saturate(.6) brightness(.8); }
+.game-board .player-panel.target-illegal .portrait-button { filter: brightness(.55) saturate(.55); }
+.game-board .aoe-badge { color: #cdbb94; }
+.game-board .aoe-current .aoe-badge { color: #082b27; background: var(--t-resolve); font-weight: 700; }
+
+/* ───────────── Hand cards ───────────── */
+.game-board .hand-card img { transition: transform var(--t-fast), box-shadow var(--t-fast), filter var(--t-fast); }
+.game-board .hand-card.disabled { filter: none; opacity: 1; }
+.game-board .hand[data-active="true"] .hand-card:not(.disabled) img { border-color: #d9bd7c; box-shadow: 0 0 0 1px #d9bd7c55, 0 4px 12px #0008; }
+.game-board .hand[data-active="true"] .hand-card.disabled img,
+.game-board .hand[data-active="true"] .hand-card.disabled strong { filter: brightness(.52) saturate(.45); }
+.game-board .hand-card:hover img { transform: translateY(-7px); }
+.game-board .hand-card.selected img { transform: translateY(-14px); box-shadow: 0 0 0 2px var(--t-gold), 0 0 16px #e2b85e88, 0 10px 25px #000; filter: none; }
+.game-board .hand-card.selected strong { filter: none; color: #fff7dc; }
+
+/* ───────────── Equipment ───────────── */
+.equipment-choice, .equipment-empty { min-height: 42px; }
+.local-judgments { display: flex; flex-wrap: wrap; gap: 2px 6px; font-size: 10px; }
+.local-judgments span { display: inline; }
+.equipment-choice.selected { border-color: var(--t-gold); }
+.equipment-empty.abolished {
+  color: #85705f; border-style: solid; border-color: #8a2f2866;
+  background: repeating-linear-gradient(135deg, transparent 0 5px, #8a2f2833 5px 6px), #241b14cc;
+}
+.equipment-empty.abolished small { display: block; font-size: 9px; color: #c0664f; }
+.equipment-choice.slot-defensive_horse small, .equipment-empty.slot-defensive_horse { color: #9fc4b4; }
+.equipment-choice.slot-offensive_horse small, .equipment-empty.slot-offensive_horse { color: #d3a08a; }
+
+/* ───────────── Skills: state through brightness, border and type only ───────────── */
+.game-board .skill-bar button.skill-btn { font-size: 12px; transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast); }
+.game-board .skill-bar button.skill-btn.available { color: #f1dcae; border-color: #c9a566aa; background: linear-gradient(#5a4224d0, #2a2013d0); }
+.game-board .skill-bar button.skill-btn.available:hover { border-color: var(--t-gold-hi); filter: brightness(1.15); }
+.game-board .skill-bar button.skill-btn.unavailable { opacity: 1; color: #8f8470; border-color: #6f5a3a55; background: #1d1812aa; }
+.game-board .skill-bar button.skill-btn.selected { color: #2a190d; font-weight: 700; border-color: var(--t-gold-hi); background: linear-gradient(#f0c46a, #c8923a); }
+.game-board .skill-bar button.skill-btn.locked { border-style: dashed; color: #b9ae92; }
+.game-board .skill-bar button.skill-btn.consumed { opacity: .55; text-decoration: line-through; text-decoration-color: #c0664f; }
+
+/* ───────────── Action prompt: what to do, how far along, why Confirm is off ───────────── */
+.game-board .decision-prompt { border-left: 2px solid var(--t-gold-soft); }
+.prompt-status { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.prompt-progress { color: var(--t-gold); font-weight: 700; font-size: 12px; }
+.prompt-reason { color: #d2a37f; }
+.game-board .decision-prompt .brush-button:disabled { opacity: .45; cursor: not-allowed; }
+@media (prefers-reduced-motion: reduce) { .game-board * { transition-duration: .001ms !important; } }
+
+.game-board .event-stage strong { background: #211c12b3; padding: 4px 10px; }
