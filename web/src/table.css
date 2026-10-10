@@ -67,12 +67,32 @@
 
   /* Response timer sits inside its own portrait so it can never cover a neighbouring seat. */
   .game-board .player-panel .seat-timer { top: auto; bottom: 0; left: 0; width: 100%; background: #1f1810f0; }
+  /* A compact response strip; the seat caption lifts above it instead of being covered. */
+  .game-board .player-panel .responder-state { padding: 3px 5px; }
+  .game-board .player-panel .response-description { flex-direction: row; justify-content: center; gap: 6px; font-size: 11px; }
+  .game-board .player-self .response-description { flex-direction: column; gap: 1px; }
+  .game-board .player-panel:has(.seat-timer) .seat-caption { bottom: var(--timer-h, 44px); }
+  .game-board .player-panel:not(:has(.responder-state)) { --timer-h: 22px; }
+
+  /* Public reveals (judgment, pindian, discards, Fire Attack) read at table distance without covering seats. */
+  .game-board .public-resolution-card { width: clamp(72px, 5.6vw, 96px); }
+  .game-board .public-resolution-card img { height: auto; aspect-ratio: 2 / 3; }
+  .game-board .action-cards { gap: 8px; }
+
+  /* 721–1100px: narrower local columns so the hand keeps room. */
+  @media (max-width: 1100px) {
+    .game-board .self-area, .game-board.eight-seats .self-area { left: 1.5%; right: 1.5%; grid-template-columns: 84px 112px minmax(0, 1fr) var(--local-w); gap: 6px; }
+    .game-board.eight-seats .player-panel.player-north-west { left: 21%; }
+    .game-board.eight-seats .player-panel.player-north-east { right: 21%; }
+    .game-board:not(.eight-seats) .player-panel.player-north-west { left: 24%; }
+    .game-board:not(.eight-seats) .player-panel.player-north-east { right: 24%; }
+  }
 }
 
 /* ───────────── Player panel information hierarchy ───────────── */
 .game-board .hp-row { font-size: 15px; }
 .game-board .player-heading strong { color: #cfc3aa; font-size: 10px; }
-.game-board .seat-facts { color: #9d9380; font-size: 9px; }
+.game-board .seat-facts { color: #c9bd9f; font-size: 10px; }
 .game-board .hand-count {
   padding: 1px 7px; font-size: 12px; font-weight: 700; color: #ffeab8;
   background: #5b3a1ccc; border: 1px solid #c9a56688; border-radius: 10px;

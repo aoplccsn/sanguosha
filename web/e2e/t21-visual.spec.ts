@@ -55,7 +55,7 @@ async function noOverlap(page: Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 }
 
-for (const count of [5, 8]) for (const [w, h] of [[1920, 1080], [1440, 900], [1366, 768]]) {
+for (const count of [5, 8]) for (const [w, h] of [[1920, 1080], [1440, 900], [1366, 768], [1024, 768]]) {
   test(`T21 table ${count} seats ${w}x${h}`, async ({ page }) => {
     await page.setViewportSize({ width: w, height: h })
     await fixture(page, count, `s.projection.waiting={key:'r',player_id:'p3',responding:true,thinking:false,remaining_ms:9000,total_ms:15000,required_definition_id:'basic.dodge',response_to:'basic.slash'}`)
