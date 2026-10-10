@@ -7,6 +7,8 @@ import { GodShowcase } from './components/GodShowcase'
 import { useGame } from './state/GameContext'
 import './styles.css'
 import './table.css'
+import './screens.css'
+import './battle-skin.css'
 import './god-lvbu-motion.css'
 
 export default function App() {

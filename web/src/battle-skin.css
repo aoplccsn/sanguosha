@@ -1,0 +1,97 @@
+/* T21.1 battle-table skin (mobile-table proportions). Visual only; layout anchors live in table.css. */
+
+.game-page { background: #0e0c09; }
+.game-page.table-background::before { background: radial-gradient(ellipse at 50% 46%, #2a2117 0%, #15110c 55%, #080706 100%); }
+.game-board::before {
+  border: 1px solid #c9a35c26; border-radius: 50%;
+  background: radial-gradient(ellipse, #3b2d1d55 0%, #1c160f33 55%, transparent 72%),
+    repeating-radial-gradient(ellipse, transparent 0 22px, #c9a35c08 22px 23px);
+  box-shadow: inset 0 0 80px #000a, 0 0 0 10px #c9a35c08;
+}
+
+/* ── Top HUD: slim lacquer bar, round + phase seal at left, table stats and controls at right ── */
+.game-hud { height: 44px; padding: 0 16px; background: linear-gradient(#1d1610f5, #120e0af0); border-bottom: 1px solid #c9a35c55; box-shadow: 0 4px 14px #0009; }
+.game-hud > div:first-child span { color: #a6957a; font-size: 13px; letter-spacing: .1em; }
+.game-hud strong { padding: 2px 12px; font-size: 15px; letter-spacing: .3em; color: #fff0cc; background: linear-gradient(#a3362a, #6b1d17); border: 1px solid #f0d28c99; }
+.game-hud .pile-stats span { color: #d8c49b; font-size: 12px; padding: 2px 8px; border-left: 1px solid #c9a35c33; }
+.game-hud select, .game-hud button { background: #0d0b08; border: 1px solid #c9a35c55; color: #e8d5ae; border-radius: 2px; }
+.game-hud button:hover { border-color: #f0d28c; }
+@media (min-width: 721px) and (min-height: 601px) { .game-board { height: 100vh; height: 100dvh; } }
+
+/* ── Seats: framed portrait plaque, name banner, jade HP pips, card-count tag ── */
+.game-board .player-panel .portrait-button { box-shadow: 0 0 0 1px #000, 0 0 0 2px #c9a35c88, 0 0 0 3px #000, 0 10px 22px #000d; }
+.game-board .player-panel .dynamic-portrait::after { content: ''; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px #f0d28c33, inset 0 -60px 40px -30px #000c, inset 0 40px 30px -30px #000c; pointer-events: none; }
+.game-board .player-heading { top: 0; left: 0; right: 0; padding: 3px 5px; background: linear-gradient(#0d0b08f0, #0d0b0800); }
+.game-board .player-heading strong { color: #f3e3bd; font-size: 11px; font-weight: 700; max-width: 62%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.game-board .player-heading span { margin-left: auto; padding: 1px 5px; font-size: 10px; color: #ffe9b8; background: #7d1f17; border: 1px solid #f0d28c88; }
+.game-board .general-line b { color: #fff0cc; text-shadow: 0 0 6px #000, 0 2px 3px #000; }
+.game-board .hp-row { top: 24px; left: 5px; gap: 2px; }
+.game-board .hp-row i { display: block; width: 9px; height: 13px; font-size: 0; border-radius: 4px 4px 4px 1px; background: #2a2622; box-shadow: inset 0 0 0 1px #000, 0 0 0 1px #5d554766; }
+.game-board .hp-row i.full { background: linear-gradient(135deg, #b9f29f, #3f9a3c 60%, #1f5e22); box-shadow: inset 0 0 0 1px #0a2a0d, 0 0 4px #6fd16a88; }
+.game-board .hp-row.hp-mid i.full { background: linear-gradient(135deg, #fff1a0, #d6a32a 60%, #7a5a10); box-shadow: inset 0 0 0 1px #2e2205, 0 0 4px #e8c04f88; }
+.game-board .hp-row.hp-low i.full { background: linear-gradient(135deg, #ffb39e, #d0402d 60%, #6e160d); box-shadow: inset 0 0 0 1px #2c0703, 0 0 5px #ff5a3caa; }
+.game-board .seat-caption { padding: 16px 6px 5px; background: linear-gradient(transparent, #0d0b08e6 40%); }
+.game-board .hand-count {
+  display: inline-flex; align-items: center; gap: 4px; padding: 0 6px 0 4px; border-radius: 2px; font-size: 12px;
+  color: #fff3d0; background: linear-gradient(#3a2a19, #1a130c); border: 1px solid #c9a35c99;
+}
+.game-board .hand-count::before { content: ''; width: 8px; height: 11px; border-radius: 1px; background: linear-gradient(135deg, #e8d3a6, #a3824a); box-shadow: 2px -2px 0 -1px #e8d3a688; }
+.game-board .player-zones .equipment-token { display: inline-block; padding: 0 4px; color: #f0d28c; background: #0d0b08b3; border-left: 2px solid #c9a35c; font-size: 10px; }
+.game-board .mini-skills span { color: #d9c08a; }
+
+/* ── Local HUD: equipment bars · prompt + big buttons over a larger hand · plaque skills · portrait ── */
+@media (min-width: 721px) and (min-height: 601px) {
+  .game-board { --local-h: clamp(250px, 33vh, 330px); --prompt-h: 60px; --card-w: min(140px, calc((var(--local-h) - var(--prompt-h) - 34px) * .667)); }
+  .game-board.eight-seats { --seat-h: clamp(140px, 22vh, 232px); }
+  .game-board:not(.eight-seats) { --seat-h: clamp(180px, 30vh, 300px); }
+  .game-board .self-area, .game-board.eight-seats .self-area { grid-template-columns: 176px minmax(0, 1fr) 112px var(--local-w); background: linear-gradient(transparent, #0d0b08d9 30%); border-top: 1px solid #c9a35c33; padding-top: 6px; }
+  .game-board .self-area .equipment-area, .game-board .self-area .skill-area { background: none; border: 0; }
+}
+.equipment-slots { grid-template-columns: 1fr; gap: 4px; padding: 2px; }
+.equipment-choice, .equipment-empty {
+  display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 4px; min-height: 26px; padding: 2px 6px; text-align: left;
+  color: #e9d6ab; background: linear-gradient(90deg, #2c2116, #15100b); border: 1px solid #c9a35c55; border-radius: 2px;
+}
+.equipment-choice small, .equipment-choice b { display: inline; font-size: 11px; }
+.equipment-choice small { color: #a6957a; }
+.equipment-choice b { font-weight: 700; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.equipment-empty { color: #6f6352; background: #0d0b0899; border-style: dashed; border-color: #c9a35c2a; }
+.equipment-choice.selected { transform: translateX(6px); }
+.local-judgments { margin-top: 6px; padding: 4px 6px; color: #c8b28a; background: #0d0b0880; border: 1px solid #c9a35c22; }
+.game-board .skill-bar { gap: 8px; }
+.game-board .skill-bar .skill-detail-trigger { display: flex; }
+.game-board .skill-bar button.skill-btn { min-height: 42px; font-size: 15px; font-weight: 700; letter-spacing: .15em; border-radius: 21px 4px 21px 4px; }
+.game-board .skill-bar button.skill-btn.unavailable { color: #cdb98f; background: linear-gradient(#2a2117, #16110c); border-color: #c9a35c55; }
+.game-board .skill-bar .skill-info { border-radius: 50%; min-width: 22px; height: 22px; align-self: center; padding: 0; font-size: 11px; color: #e8d5ae; background: #0d0b08; border: 1px solid #c9a35c66; }
+.game-board .self-area .decision-prompt { gap: 10px; }
+.game-board .self-area .decision-prompt .prompt-copy strong { font-size: 15px; color: #fff0cc; letter-spacing: .06em; }
+.game-board .decision-prompt .brush-button {
+  min-width: 96px; min-height: 36px; font-size: 15px; font-weight: 700; letter-spacing: .3em; color: #f3e3bd;
+  background: linear-gradient(#3b2c1d, #1c150e); border: 1px solid #c9a35c99; border-radius: 3px; box-shadow: inset 0 1px 0 #ffffff14, 0 4px 10px #000a;
+}
+.game-board .decision-prompt .brush-button.primary { color: #fff1cf; background: linear-gradient(#b0402f, #6b1d17); border-color: #f0d28c; }
+.game-board .decision-prompt .brush-button.subtle { color: #cdbf9f; background: linear-gradient(#2a241b, #14110c); }
+.game-board .hand-card img { border-radius: 6px; border-color: #6e5532; }
+.game-board .hand-card > strong { font-size: 13px; letter-spacing: .1em; background: linear-gradient(transparent, #0d0b08e6); }
+.game-board .card-corner .suit-text { font-size: 15px; padding: 1px 4px; }
+
+/* ── Center resolution: framed public cards, banner caption ── */
+.game-board .center-action-card img, .game-board .public-resolution-card img { border-radius: 6px; box-shadow: 0 0 0 1px #000, 0 0 0 2px #c9a35caa, 0 14px 28px #000d; }
+.game-board .center-action-card b { background: linear-gradient(transparent, #0d0b08ee); color: #fff0cc; letter-spacing: .15em; }
+.game-board .event-stage strong {
+  padding: 6px 44px; color: #fff0cc; letter-spacing: .12em;
+  background: linear-gradient(90deg, transparent, #0d0b08e8 18% 82%, transparent);
+  border-image: linear-gradient(90deg, transparent, #c9a35c, transparent) 1; border-width: 1px 0; border-style: solid;
+}
+.game-board .event-stage small { color: #d8c49b; }
+.game-board .nullification-status { color: #dffaf3; background: #0f2a27e6; border: 1px solid #79bdb4aa; letter-spacing: .1em; }
+.game-board .table-piles { opacity: .8; }
+.game-board .table-deck { border-color: #c9a35c66; background: repeating-linear-gradient(45deg, #c9a35c22 0 1px, transparent 1px 6px), linear-gradient(#3a2a19, #1a130c); }
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .game-hud { height: 40px; }
+  .game-board .skill-bar button.skill-btn { min-height: 36px; font-size: 12px; letter-spacing: .04em; white-space: nowrap; }
+  .game-board .hand-card > strong { font-size: 10px; letter-spacing: 0; white-space: nowrap; overflow: hidden; }
+  .equipment-choice, .equipment-empty { grid-template-columns: 26px 1fr; min-height: 22px; padding: 1px 4px; }
+  .equipment-choice .suit-text { display: none; }
+}

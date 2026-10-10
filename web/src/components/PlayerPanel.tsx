@@ -79,7 +79,7 @@ export function PlayerPanel({ player, position, selected, selectable, dimmed = f
     </button>
     <div className="player-heading"><strong>{player.name}</strong><span>{player.identity_label}</span></div>
     <div className="general-line"><b>{player.character_name}</b></div>
-    <div className="hp-row" aria-label={player.hp + ' / ' + player.max_hp + ' 体力'}>
+    <div className={'hp-row hp-' + (player.hp <= 1 ? 'low' : player.hp * 2 <= player.max_hp ? 'mid' : 'high')} aria-label={player.hp + ' / ' + player.max_hp + ' 体力'}>
       {Array.from({ length: player.max_hp }, (_, index) => <i key={index} className={index < player.hp ? 'full' : ''}>♥</i>)}
     </div>
     <div className="seat-caption">
