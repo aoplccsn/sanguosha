@@ -1,6 +1,12 @@
 import { tryLandscape } from './LandscapeGate'
 import { useEffect, useMemo, useState } from 'react'
 import { useGame } from '../state/GameContext'
+import type { CSSProperties } from 'react'
+import { DynamicPortrait } from './DynamicPortrait'
+import { idlePortrait } from '../idlePortraits'
+import { generalPortrait } from '../assets'
+import { readVfxQuality } from '../vfx/CombatVFXRuntime'
+import { homeHeroes, defaultHomeHero } from '../homeHero'
 
 function roomFromUrl() {
   const pathMatch = window.location.pathname.match(/^\/room\/([A-Z0-9]+)/i)
@@ -49,7 +55,13 @@ export function HomePage() {
     return clean
   }
 
-  return <main className="home-page">
+  const hero = homeHeroes[defaultHomeHero]
+  return <main className="home-page" data-hero={defaultHomeHero}
+    style={{ '--hero-accent': hero.accent, '--hero-light': hero.light, '--scene-position': hero.scenePosition } as CSSProperties}>
+    <div className="home-hero" aria-hidden="true">
+      <DynamicPortrait staticPortrait={generalPortrait(hero.id, 'qun', {})} idleVideo={idlePortrait(hero.id)?.video}
+        objectPosition={hero.heroPosition} name={hero.name} quality={readVfxQuality()} />
+    </div>
     <div className="ink-mist ink-mist-one" />
     <div className="ink-mist ink-mist-two" />
     <section className="home-panel paper-panel">

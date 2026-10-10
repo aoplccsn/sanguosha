@@ -173,3 +173,16 @@ test('T21.1 failed fullscreen and orientation lock still enters and plays', asyn
   await expect(page.locator('.self-area .player-self')).toBeInViewport()
   await context.close()
 })
+
+test('T21.2 portrait close-ups', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await fixture(page, 8, `s.projection.players[3].character_id='fire_god_zhugeliang';s.projection.players[5].character_id='thunder_god_ganning'`)
+  await page.waitForTimeout(1500)
+  const rects = await page.locator('.player-panel').evaluateAll(ps => ps.map(p => {
+    const b = p.querySelector('.portrait-button')!.getBoundingClientRect()
+    const m = [...p.querySelectorAll('.dynamic-portrait > img, .dynamic-portrait > video')].map(e => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); return [Math.round(r.width), Math.round(r.height), cs.objectFit, cs.objectPosition, (e as HTMLVideoElement).videoWidth ?? 0, (e as HTMLVideoElement).videoHeight ?? 0, (e as HTMLImageElement).naturalWidth ?? 0, (e as HTMLImageElement).naturalHeight ?? 0] })
+    return [p.getAttribute('data-character-id'), Math.round(b.width), Math.round(b.height), m]
+  }))
+  console.log(JSON.stringify(rects))
+  for (const id of ['p1', 'p2', 'p4', 'p6']) await page.locator(`[data-player-id="${id}"]`).screenshot({ path: `${dir}/portrait-${id}.png` })
+})

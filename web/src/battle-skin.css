@@ -95,3 +95,18 @@
   .equipment-choice, .equipment-empty { grid-template-columns: 26px 1fr; min-height: 22px; padding: 1px 4px; }
   .equipment-choice .suit-text { display: none; }
 }
+
+/* ═════ T21.2 battle table: provided lacquer/bronze oval scene, graded for readability ═════ */
+.game-page.table-background { background: #0b0907 url('/assets/backgrounds/table/battle_v2.webp') center / cover no-repeat; }
+.game-page.table-background::before {
+  background:
+    radial-gradient(ellipse 34% 30% at 50% 47%, #0b0907b3, #0b090766 60%, transparent 100%),
+    radial-gradient(ellipse 80% 75% at 50% 48%, #0b090740, #0b0907a6 72%, #0b0907e6 100%),
+    linear-gradient(180deg, #0b090799, transparent 14% 62%, #0b0907d9 100%);
+}
+.game-board::before { display: none; }
+
+/* ═════ T21.2 portrait fill: god art carries wide atmospheric margins; zoom to the figure ═════ */
+.game-board .player-panel[data-character-id*="god"] .dynamic-portrait > :is(img, video) {
+  object-fit: cover; scale: 1.32; transform-origin: 50% 14%;
+}

@@ -170,3 +170,61 @@
 .background-music { padding: 4px 8px; color: var(--lq-text); background: #120e0ae6; border: 1px solid #c9a35c55; border-radius: 2px; }
 .background-music button { color: var(--lq-text); background: transparent; border: 1px solid #c9a35c55; border-radius: 2px; padding: 3px 8px; font-size: 12px; }
 .background-music input { accent-color: var(--lq-gold); }
+
+/* ═════ T21.2 home: hall scene + blended god hero, accent from the hero theme ═════ */
+.home-page {
+  --hero-accent: #c9a35c; --hero-light: #8a6a30;
+  background: #0b0907 url('/assets/backgrounds/home/hall_v1.webp') var(--scene-position, 78% 50%) / cover no-repeat;
+  overflow: hidden;
+}
+/* Calm, dark UI side at left; the scene keeps its fortress, mist and banners at right. */
+.home-page::before {
+  z-index: 0;
+  background:
+    linear-gradient(90deg, #080605f7 0 24%, #080605cc 38%, #08060555 58%, #08060522 75%, #08060566 100%),
+    radial-gradient(ellipse 40% 60% at 74% 46%, color-mix(in srgb, var(--hero-light) 34%, transparent), transparent 70%),
+    linear-gradient(180deg, #08060599, transparent 22% 70%, #080605e6);
+}
+.home-hero {
+  position: absolute; z-index: 1; right: max(2vw, calc(50vw - 860px)); bottom: 0;
+  height: 100vh; height: 100dvh; aspect-ratio: 9 / 16; max-width: 52vw; pointer-events: none;
+  /* Feathered on every edge so the figure sits inside the scene, not on top of it. */
+  -webkit-mask-image: radial-gradient(ellipse 58% 62% at 50% 44%, #000 52%, #0008 72%, transparent 92%);
+  mask-image: radial-gradient(ellipse 58% 62% at 50% 44%, #000 52%, #0008 72%, transparent 92%);
+}
+.home-hero .dynamic-portrait :is(img, video) { object-fit: cover; filter: saturate(1.05) contrast(1.04); }
+/* Ground mist and a cool rim of hero light blend the base of the figure into the river below. */
+.home-hero::after {
+  content: ''; position: absolute; inset: auto -20% 0; height: 34%;
+  background: radial-gradient(ellipse 60% 70% at 50% 100%, #0b0907f2, #0b0907aa 45%, transparent 75%);
+}
+.home-hero::before {
+  content: ''; position: absolute; z-index: 1; inset: 6% -10% 30%; pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(ellipse 45% 40% at 50% 30%, color-mix(in srgb, var(--hero-light) 30%, transparent), transparent 70%);
+}
+.home-page > .home-panel { z-index: 2; }
+.home-page .ink-mist { z-index: 1; }
+.home-page .ink-mist-two { right: 30vw; opacity: .22; }
+
+/* Hero accent: title glow, primary-button edge, panel trim. Base lacquer/gold is unchanged. */
+.home-page .home-panel.paper-panel { box-shadow: 0 0 0 1px #000, 0 0 0 2px color-mix(in srgb, var(--hero-accent) 40%, #c9a35c 30%), 0 22px 60px #000c; }
+.home-panel h1 { filter: drop-shadow(0 3px 0 #000) drop-shadow(0 0 24px color-mix(in srgb, var(--hero-accent) 45%, transparent)); }
+.home-panel h2 { color: var(--hero-accent); }
+.home-page .brush-button.primary { border-color: var(--hero-accent); box-shadow: inset 0 1px 0 #ffffff1f, 0 0 18px color-mix(in srgb, var(--hero-accent) 30%, transparent), 0 6px 16px #0009; }
+.home-page input:focus { border-bottom-color: var(--hero-accent); }
+.home-page .eyebrow { color: color-mix(in srgb, var(--hero-accent) 70%, #c9a35c); }
+
+@media (max-width: 900px), (max-height: 600px) {
+  .home-hero { right: -6vw; opacity: .55; }
+}
+@media (prefers-reduced-motion: reduce) { .home-hero::before { mix-blend-mode: normal; } }
+/* Iteration: longer feather + a theme-tinted dusk over the scene behind the hero, so the hero's own sky meets darkness, not paper. */
+.home-hero {
+  -webkit-mask-image: radial-gradient(ellipse 52% 60% at 50% 42%, #000 32%, #000b 52%, #0004 72%, transparent 90%);
+  mask-image: radial-gradient(ellipse 52% 60% at 50% 42%, #000 32%, #000b 52%, #0004 72%, transparent 90%);
+}
+.home-page::after {
+  content: ''; position: absolute; z-index: 0; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 30% 58% at 77% 44%, color-mix(in srgb, var(--hero-light) 38%, #07060a) 0%, color-mix(in srgb, var(--hero-light) 22%, #07060acc) 45%, transparent 80%);
+  mix-blend-mode: multiply;
+}
