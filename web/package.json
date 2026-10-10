@@ -4,15 +4,15 @@
   "version": "0.3.0",
   "type": "module",
   "scripts": {
-    "predev": "python ../scripts/sync_web_assets.py",
+    "predev": "node scripts/sync-assets.mjs",
     "dev": "vite",
-    "prebuild": "python ../scripts/sync_web_assets.py --production",
+    "prebuild": "node scripts/sync-assets.mjs --production",
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "preview": "vite preview",
-    "pretest": "python ../scripts/sync_web_assets.py"
+    "pretest": "node scripts/sync-assets.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.4",

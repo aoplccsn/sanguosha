@@ -1,0 +1,3 @@
+PASS production 5 seats: create/join/draft/reconnect/static fallback
+PASS production 8 seats: create/join/draft/reconnect/static fallback
+PASS no asset 404, console or runtime errors

@@ -228,3 +228,25 @@
   background: radial-gradient(ellipse 30% 58% at 77% 44%, color-mix(in srgb, var(--hero-light) 38%, #07060a) 0%, color-mix(in srgb, var(--hero-light) 22%, #07060acc) 45%, transparent 80%);
   mix-blend-mode: multiply;
 }
+
+/* T21.3: quiet identity fields and secondary tools; retain the hero composition. */
+.home-panel .field-label { gap: 5px; font-size: 12px; color: #a99b83; }
+.home-page .home-panel > .field-label input,
+.home-page .home-panel > .field-label select {
+  background: linear-gradient(90deg, #0b090766, transparent);
+  border-bottom-color: #c9a35c55; padding-left: 8px;
+}
+.home-page .home-panel > .field-label input { font-size: 17px; color: #f0e3c7; }
+.home-page .home-panel > .field-label select { font-size: 14px; }
+.home-actions .brush-button:not(.primary) { border-color: #c9a35c77; background: linear-gradient(#30251b, #18120e); }
+.home-page .brush-button.primary {
+  background: linear-gradient(180deg, #803b3d, #49232b);
+  box-shadow: inset 0 1px 0 #ffffff1f, 0 0 12px color-mix(in srgb, var(--hero-accent) 20%, transparent), 0 6px 16px #0009;
+}
+.home-panel .test-mode-panel { text-align: right; }
+.home-panel .test-mode-panel > .brush-button.compact {
+  min-height: 28px; padding: 3px 0; border-color: transparent; background: transparent; font-size: 11px;
+}
+.home-panel .god-preview-entry, .home-panel .network-entry { color: #8b7d68; font-size: 10px; text-decoration-color: #8b7d6844; }
+.home-panel .join-row { margin-top: 8px; padding-top: 12px; }
+.home-panel footer { font-size: 10px; color: #8b7d68; }

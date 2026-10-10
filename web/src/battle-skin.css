@@ -110,3 +110,20 @@
 .game-board .player-panel[data-character-id*="god"] .dynamic-portrait > :is(img, video) {
   object-fit: cover; scale: 1.32; transform-origin: 50% 14%;
 }
+
+/* T21.3: confine the phone prompt to its hand column and quiet compact seat tags. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .game-board .self-area .operation-area { overflow: hidden; }
+  .game-board .self-area .decision-prompt { gap: 4px; }
+  .game-board .self-area .decision-prompt .prompt-copy strong { font-size: 12px; letter-spacing: 0; }
+  .game-board .self-area .decision-prompt .brush-button { min-width: 54px; font-size: 12px; letter-spacing: .08em; }
+  .game-board .player-heading { padding: 2px 3px; gap: 2px; }
+  .game-board .player-heading strong { font-size: 10px; max-width: 55%; }
+  .game-board .player-heading span { font-size: 9px; padding: 1px 3px; }
+  .game-board .identity-note-trigger > span { font-size: 9px; padding: 2px; }
+}
+
+/* These two compositions put head ornaments closest to the top edge. Keep the fill zoom. */
+.game-board .player-panel:is([data-character-id="thunder_god_ganning"], [data-character-id="fire_god_zhouyu"]) .dynamic-portrait > :is(img, video) {
+  transform-origin: 50% 0%;
+}

@@ -1,0 +1,258 @@
+
+
+[WebServer] INFO:     Started server process [28112]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8004 (Press CTRL+C to quit)
+
+[WebServer] (node:25576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:12176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 17 tests using 1 worker
+
+
+(node:28296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/17] e2e\t20-3-draft.spec.ts:2:1 › T20.3 draft portrait gate and landscape ten-choice grid
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[WebServer] INFO:     127.0.0.1:53677 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+
+[WebServer] INFO:     127.0.0.1:58336 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+[2/17] e2e\t20-3-draft.spec.ts:15:1 › T20.3 protected test draft remains a searchable landscape grid
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+[WebServer] INFO:     127.0.0.1:53626 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:53291 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:64351 - "WebSocket /ws" [accepted]
+
+
+[WebServer] INFO:     connection open
+[3/17] e2e\t20-3-engine.spec.ts:12:35 › T20.3 real three-survivor loyalist chain
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+[WebServer] INFO:     127.0.0.1:61636 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:61866 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+[4/17] e2e\t20-3-engine.spec.ts:12:35 › T20.3 real three-survivor loyalist recast
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[WebServer] INFO:     127.0.0.1:58924 - "WebSocket /ws" [accepted]
+
+
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:58906 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+[5/17] e2e\t20-3-engine.spec.ts:26:1 › T20.3 real equipment payload and rotation preserve room and WebSocket
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+[WebServer] INFO:     127.0.0.1:61546 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:65307 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+[6/17] e2e\t20-3-hud.spec.ts:26:2 › T20.3 HUD 1440x1000 5 seats
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[7/17] e2e\t20-3-hud.spec.ts:26:2 › T20.3 HUD 844x390 5 seats
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[8/17] e2e\t20-3-hud.spec.ts:26:2 › T20.3 HUD 932x430 8 seats
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[9/17] e2e\t20-3-hud.spec.ts:26:2 › T20.3 HUD 844x390 2 seats
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[10/17] e2e\t20-3-hud.spec.ts:26:2 › T20.3 HUD 852x393 4 seats
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[11/17] e2e\t20-3-hud.spec.ts:26:2 › T20.3 HUD 915x412 8 seats
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[12/17] e2e\t20-3-hud.spec.ts:45:1 › T20.3 identity notes survive refresh and remain browser-private
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[13/17] e2e\t20-3-hud.spec.ts:57:1 › T21.1 portrait fallback keeps selection and the same portrait across rotation
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[14/17] e2e\t20-3-hud.spec.ts:67:54 › T20.3 local dynamic and fallback viewport 1440
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+[15/17] e2e\t20-3-hud.spec.ts:67:54 › T20.3 local dynamic and fallback viewport 844
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[16/17] e2e\t20-3-tamo.spec.ts:34:3 › T20.3 landscape 5-player Tamo rearranges the table and reconnects both viewpoints
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+[WebServer] INFO:     127.0.0.1:51931 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+[WebServer] 15:37:39 [vite] ws proxy error:
+
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[WebServer] 15:37:39 [vite] ws proxy socket error:
+[WebServer] Error: read ECONNRESET
+[WebServer]     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+
+[WebServer] INFO:     127.0.0.1:54408 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+
+[WebServer] INFO:     127.0.0.1:49674 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+[WebServer] INFO:     127.0.0.1:60515 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:57815 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[WebServer] INFO:     127.0.0.1:54291 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+
+[WebServer] INFO:     127.0.0.1:58856 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[WebServer] INFO:     127.0.0.1:58436 - "WebSocket /ws" [accepted]
+
+[WebServer] INFO:     connection open
+
+
+[WebServer] INFO:     127.0.0.1:61440 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+[17/17] e2e\t20-3-tamo.spec.ts:34:3 › T20.3 landscape 8-player Tamo rearranges the table and reconnects both viewpoints
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[WebServer] INFO:     127.0.0.1:61764 - "WebSocket /ws" [accepted]
+
+
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:58737 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:55796 - "WebSocket /ws" [accepted]
+
+
+[WebServer] INFO:     connection open
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+[WebServer] INFO:     127.0.0.1:54132 - "WebSocket /ws" [accepted]
+
+
+[WebServer] INFO:     connection open
+
+[WebServer] INFO:     127.0.0.1:55873 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+
+[WebServer] INFO:     127.0.0.1:59590 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+
+[WebServer] INFO:     127.0.0.1:54857 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+[WebServer] Assets in public directory cannot be imported from JavaScript.
+
+[WebServer] If you intend to import that asset, put the file in the src directory, and use /src/assets/manifest.json instead of /public/assets/manifest.json.
+[WebServer] If you intend to use the URL of that asset, use /assets/manifest.json?url.
+
+[WebServer] INFO:     127.0.0.1:52974 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+
+
+[WebServer] INFO:     127.0.0.1:53896 - "WebSocket /ws" [accepted]
+[WebServer] INFO:     connection open
+  17 passed (29.1s)

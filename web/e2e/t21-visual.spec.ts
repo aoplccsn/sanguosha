@@ -176,7 +176,7 @@ test('T21.1 failed fullscreen and orientation lock still enters and plays', asyn
 
 test('T21.2 portrait close-ups', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
-  await fixture(page, 8, `s.projection.players[3].character_id='fire_god_zhugeliang';s.projection.players[5].character_id='thunder_god_ganning'`)
+  await fixture(page, 8, `s.projection.players[0].character_id='fire_god_zhouyu';s.projection.players[3].character_id='fire_god_zhugeliang';s.projection.players[5].character_id='thunder_god_ganning';s.projection.players.forEach(p=>p.character_name=s.generals[p.character_id].name)`)
   await page.waitForTimeout(1500)
   const rects = await page.locator('.player-panel').evaluateAll(ps => ps.map(p => {
     const b = p.querySelector('.portrait-button')!.getBoundingClientRect()

@@ -1,0 +1,392 @@
+
+> sanguosha-web@0.3.0 pretest
+> node scripts/sync-assets.mjs
+
+Web development assets synchronized: C:\Sanguosha-T21\web\public\assets
+
+> sanguosha-web@0.3.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/Sanguosha-T21/web
+
+ ✓ src/vfx/CombatVFXRuntime.test.ts (4 tests) 24ms
+ ✓ src/presentation/pacing.test.tsx (11 tests) 34ms
+stderr | src/components/HomePage.test.tsx > HomePage > creates a single-player cloud room
+Not implemented: HTMLMediaElement's play() method
+
+ ✓ src/components/LobbyPage.test.tsx (1 test) 176ms
+ ✓ src/test/background-music.test.tsx (2 tests) 216ms
+ ✓ src/components/IdentityNote.test.tsx (2 tests) 285ms
+stderr | src/components/GamePage.test.tsx > GamePage > retains final judgment outcome while showing its public card
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ ✓ src/components/SkillTooltip.test.tsx (2 tests) 497ms
+   ✓ shows Chinese details for hover, focus and touch/info without consuming choice clicks  496ms
+stderr | src/components/HomePage.test.tsx > HomePage > creates a single-player cloud room
+Not implemented: HTMLMediaElement's pause() method
+
+stderr | src/components/GamePage.test.tsx > GamePage > shows the delayed trick consequence in Chinese
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/HomePage.test.tsx > HomePage > creates a military-eight room with gods always available
+Not implemented: HTMLMediaElement's play() method
+
+stderr | src/components/GamePage.test.tsx > GamePage > labels a recast face as 重铸 in the public presentation
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ ✓ src/components/TemporaryInteractionPanel.test.tsx (2 tests) 286ms
+ ✓ src/components/PregamePage.test.tsx (1 test) 416ms
+   ✓ PregamePage > shows identity and requires a deliberate general selection  415ms
+stderr | src/components/HomePage.test.tsx > HomePage > creates a military-eight room with gods always available
+Not implemented: HTMLMediaElement's pause() method
+
+stderr | src/components/HomePage.test.tsx > HomePage > prefills a shared room URL
+Not implemented: HTMLMediaElement's play() method
+
+stderr | src/components/HomePage.test.tsx > HomePage > prefills a shared room URL
+Not implemented: HTMLMediaElement's pause() method
+
+stderr | src/components/HomePage.test.tsx > HomePage > shows a non-blocking new version prompt from server state
+Not implemented: HTMLMediaElement's play() method
+
+stderr | src/components/HomePage.test.tsx > HomePage > shows a non-blocking new version prompt from server state
+Not implemented: HTMLMediaElement's pause() method
+
+stderr | src/components/HomePage.test.tsx > requires a server grant before creating a test room
+Not implemented: HTMLMediaElement's play() method
+
+ ✓ src/components/DynamicPortrait.test.tsx (18 tests) 463ms
+stderr | src/components/GamePage.test.tsx > GamePage > acquired Qixi deselect, cancel and normal play are independent contexts
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > GamePage > acquired Qixi deselect, cancel and normal play are independent contexts
+[game] click card slash-1 request qixi-lifecycle option 
+
+stdout | src/components/GamePage.test.tsx > GamePage > acquired Qixi deselect, cancel and normal play are independent contexts
+[game] click card slash-1 request qixi-lifecycle option virtual:qixi:slash-1
+
+stdout | src/components/GamePage.test.tsx > GamePage > acquired Qixi deselect, cancel and normal play are independent contexts
+[game] click card slash-1 request qixi-lifecycle option 
+
+ ✓ src/components/Timer.test.tsx (1 test) 26ms
+stdout | src/components/GamePage.test.tsx > GamePage > acquired Qixi deselect, cancel and normal play are independent contexts
+[game] click card peach request qixi-lifecycle option 
+
+ ✓ src/components/SuitText.test.tsx (2 tests) 20ms
+ ✓ src/connection/GameConnection.test.ts (9 tests) 14ms
+ ✓ src/connection/networkProbe.test.ts (2 tests) 8ms
+ ✓ src/state/selection.test.ts (18 tests) 6ms
+stderr | src/components/HomePage.test.tsx > requires a server grant before creating a test room
+Not implemented: HTMLMediaElement's pause() method
+
+ ✓ src/components/HomePage.test.tsx (5 tests) 1754ms
+   ✓ HomePage > creates a single-player cloud room  399ms
+   ✓ requires a server grant before creating a test room  1097ms
+stderr | src/components/GamePage.test.tsx > GamePage > renders abolished equipment slots from authoritative projection
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ ✓ src/components/LandscapeGate.test.tsx (1 test) 3ms
+stderr | src/components/GamePage.test.tsx > GamePage > renders private Zongxuan cards and submits the selected top-placement order
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > GamePage > renders private Zongxuan cards and submits the selected top-placement order
+[game] click card reserved-2 request zongxuan option 
+
+stderr | src/state/RenderRestart.test.tsx > returns to the home banner when a saved room disappeared after restart
+Not implemented: HTMLMediaElement's play() method
+
+stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
+[game] request replaced r1
+
+stderr | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
+Not implemented: HTMLMediaElement's play() method
+Not implemented: HTMLMediaElement's pause() method
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > GamePage > renders private Zongxuan cards and submits the selected top-placement order
+[game] click card reserved-1 request zongxuan option 
+
+stderr | src/state/RenderRestart.test.tsx > returns to the home banner when a saved room disappeared after restart
+Not implemented: HTMLMediaElement's pause() method
+
+ ✓ src/vfx/GodAttackFX.test.ts (2 tests) 2ms
+stderr | src/state/RenderRestart.test.tsx > ignores a StrictMode cleanup socket after its replacement connects
+Not implemented: HTMLMediaElement's play() method
+
+stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
+[game] click card dodge-1 request r1 option 
+
+stderr | src/state/RenderRestart.test.tsx > ignores a StrictMode cleanup socket after its replacement connects
+Not implemented: HTMLMediaElement's pause() method
+
+stderr | src/components/GamePage.test.tsx > GamePage > shows public counter cards in the Xiansi modal and requires exactly two
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/state/InteractionFlow.test.tsx > first click selects, second click cancels, and illegal cards explain why
+[game] click card dodge-1 request r1 option 
+
+stdout | src/components/GamePage.test.tsx > GamePage > shows public counter cards in the Xiansi modal and requires exactly two
+[game] click card counter-1 request xiansi option 
+
+stderr | src/state/RenderRestart.test.tsx > continues a saved room after the initial websocket is already connected
+Not implemented: HTMLMediaElement's play() method
+
+stderr | src/state/RenderRestart.test.tsx > continues a saved room after the initial websocket is already connected
+Not implemented: HTMLMediaElement's pause() method
+
+ ✓ src/state/RenderRestart.test.tsx (3 tests) 713ms
+   ✓ returns to the home banner when a saved room disappeared after restart  590ms
+stdout | src/components/GamePage.test.tsx > GamePage > shows public counter cards in the Xiansi modal and requires exactly two
+[game] click card counter-2 request xiansi option 
+
+stderr | src/components/GamePage.test.tsx > GamePage > shows authorized Poxi hand faces and rejects four cards with duplicate suits
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > GamePage > shows authorized Poxi hand faces and rejects four cards with duplicate suits
+[game] click card slash-1 request poxi option 
+
+stdout | src/components/GamePage.test.tsx > GamePage > shows authorized Poxi hand faces and rejects four cards with duplicate suits
+[game] click card dodge-2 request poxi option 
+
+stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] request replaced r1
+
+stderr | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+Not implemented: HTMLMediaElement's play() method
+Not implemented: HTMLMediaElement's pause() method
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] click card dodge-1 request r1 option 
+
+stdout | src/components/GamePage.test.tsx > GamePage > shows authorized Poxi hand faces and rejects four cards with duplicate suits
+[game] click card fire-4 request poxi option 
+
+stdout | src/components/GamePage.test.tsx > GamePage > shows authorized Poxi hand faces and rejects four cards with duplicate suits
+[game] click card thunder-5 request poxi option 
+
+stdout | src/components/GamePage.test.tsx > GamePage > shows authorized Poxi hand faces and rejects four cards with duplicate suits
+[game] click card fire-4 request poxi option 
+
+stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] submit begin r1
+
+stdout | src/components/GamePage.test.tsx > GamePage > shows authorized Poxi hand faces and rejects four cards with duplicate suits
+[game] click card wine-3 request poxi option 
+
+stderr | src/components/GamePage.test.tsx > GamePage > permits declining Fencheng but rejects undersized nonempty card selections
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > GamePage > permits declining Fencheng but rejects undersized nonempty card selections
+[game] click card slash-1 request fencheng option 
+
+stdout | src/state/InteractionFlow.test.tsx > first confirm shows processing, blocks duplicates, and rejection restores action
+[game] submit rejected rejected
+
+stdout | src/components/GamePage.test.tsx > GamePage > permits declining Fencheng but rejects undersized nonempty card selections
+[game] click card dodge-2 request fencheng option 
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] request replaced r1
+
+stdout | src/components/GamePage.test.tsx > GamePage > permits declining Fencheng but rejects undersized nonempty card selections
+[game] click card wine-3 request fencheng option 
+
+stderr | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+Not implemented: HTMLMediaElement's play() method
+Not implemented: HTMLMediaElement's pause() method
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] click card dodge-1 request r1 option 
+
+stderr | src/components/GamePage.test.tsx > GamePage > binds a public remote response timer to one seat and restores its server remaining fraction
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] request replaced r2
+
+stderr | src/components/GamePage.test.tsx > GamePage > highlights only the real decision actor while thinking and clears for a human request
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] click card dodge-1 request r2 option 
+
+stderr | src/components/GamePage.test.tsx > GamePage > names the actor and highlights action/target for { event_id: 'slash', kind: 'CardUsedEvent', source_id: 'p1', target_ids: [ 'p2' ], card_name: '杀' }
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > names the actor and highlights action/target for { event_id: 'dodge', kind: 'CardRespondedEvent', source_id: 'p2', definition_id: 'basic.dodge' }
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > names the actor and highlights action/target for { event_id: 'skill', kind: 'SkillEvent', source_id: 'p1', skill_name: '奸雄' }
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > selects a Slash target and submits card plus target with one final confirm
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > GamePage > selects a Slash target and submits card plus target with one final confirm
+[game] click card slash-1 request play-1 option 
+
+stdout | src/state/InteractionFlow.test.tsx > replaced request clears selection and the next request accepts its first click
+[game] submit begin r2
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] request replaced r1
+
+stderr | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+Not implemented: HTMLMediaElement's play() method
+Not implemented: HTMLMediaElement's pause() method
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > confirms equipment without requesting a character target
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] click card dodge-1 request r1 option 
+
+stdout | src/components/GamePage.test.tsx > GamePage > confirms equipment without requesting a character target
+[game] click card slash-1 request play-equip option 
+
+stderr | src/components/GamePage.test.tsx > GamePage > shows Chinese labels for Yinghun branches while preserving machine values
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] request replaced r2
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] click card dodge-1 request r2 option 
+
+stderr | src/components/GamePage.test.tsx > GamePage > renders the five-player table, hand and skill bar
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > shows Mountain field and private transformation state
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > shows power pile count without exposing hidden card faces
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > requires confirm after selecting a response card
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > GamePage > requires confirm after selecting a response card
+[game] click card slash-1 request r1 option 
+
+stdout | src/state/InteractionFlow.test.tsx > projection revokes stale request and old rejection cannot overwrite the replacement
+[game] submit begin r2
+
+stderr | src/components/GamePage.test.tsx > GamePage > offers Guhuo in a response window and submits the virtual choice
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/state/InteractionFlow.test.tsx > clears acknowledged notices and never toasts repeated snapshots of the same request
+[game] request replaced r1
+[game] request replaced r1
+[game] request replaced r1
+[game] submit rejected 当前响应已更新，请重新选择。
+
+stderr | src/state/InteractionFlow.test.tsx > clears acknowledged notices and never toasts repeated snapshots of the same request
+Not implemented: HTMLMediaElement's play() method
+Not implemented: HTMLMediaElement's pause() method
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+ ✓ src/state/InteractionFlow.test.tsx (5 tests) 2262ms
+   ✓ first click selects, second click cancels, and illegal cards explain why  962ms
+   ✓ first confirm shows processing, blocks duplicates, and rejection restores action  417ms
+   ✓ replaced request clears selection and the next request accepts its first click  431ms
+   ✓ projection revokes stale request and old rejection cannot overwrite the replacement  426ms
+stderr | src/components/GamePage.test.tsx > GamePage > submits Jiuchi wine from a hand card during self rescue
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > GamePage > submits Jiuchi wine from a hand card during self rescue
+[game] click card slash-1 request jiuchi-rescue option 
+
+stderr | src/components/GamePage.test.tsx > GamePage > lets a physical response replace a previously selected Guhuo option
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > GamePage > lets a physical response replace a previously selected Guhuo option
+[game] click card slash-1 request guhuo-switch option virtual:guhuo
+
+stderr | src/components/GamePage.test.tsx > GamePage > labels the two challenge decisions
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > GamePage > selects a target before submitting it
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > T15 dynamic target interaction > selects immediately on the first portrait click with multiple dynamic panels
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > T15 dynamic target interaction > selects immediately on the first portrait click with multiple dynamic panels
+[game] click card slash-1 request t15-target option 
+
+stderr | src/components/GamePage.test.tsx > T18A.7 response semantics > keeps turn phase and binds response description, thinking and countdown to one seat
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > T18A.7 response semantics > submits distinct current-request and root-trick commands
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > renders the authoritative AOE targets, root trick and top counter without a second stack UI
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > never duplicates opponents while reconnect seat confirmation is pending
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > restores delayed outcome text from projection history without live events
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > shows signed horse faces and authoritative abolished slots
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > shows each public pindian card beside its original owner
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > lets 榻谟 order every nonlord including self and clear a cancelled selection
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > rearranges the 5-player table from the confirmed Tamo projection and restores its local view
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > rearranges the 5-player table from the confirmed Tamo projection and restores its local view
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > rearranges the 8-player table from the confirmed Tamo projection and restores its local view
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > rearranges the 8-player table from the confirmed Tamo projection and restores its local view
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stderr | src/components/GamePage.test.tsx > T20.3 HUD separates many hand cards from skill and equipment selection
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > T20.3 HUD separates many hand cards from skill and equipment selection
+[game] click card cost-eq request equip-cost option 
+
+stdout | src/components/GamePage.test.tsx > T20.3 HUD separates many hand cards from skill and equipment selection
+[game] click card cost-eq request equip-cost option 
+
+stdout | src/components/GamePage.test.tsx > T20.3 HUD separates many hand cards from skill and equipment selection
+[game] click card cost-eq request equip-cost option 
+
+stdout | src/components/GamePage.test.tsx > T20.3 HUD separates many hand cards from skill and equipment selection
+[game] click card slash-1 request equip-cost option 
+
+stderr | src/components/GamePage.test.tsx > T20.3 separates physical chain use from zero-target recast
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+stdout | src/components/GamePage.test.tsx > T20.3 separates physical chain use from zero-target recast
+[game] click card chain request chain-play option 
+
+ ✓ src/components/GamePage.test.tsx (42 tests) 6111ms
+   ✓ GamePage > acquired Qixi deselect, cancel and normal play are independent contexts  1322ms
+   ✓ GamePage > shows authorized Poxi hand faces and rejects four cards with duplicate suits  393ms
+   ✓ lets 榻谟 order every nonlord including self and clear a cancelled selection  438ms
+   ✓ rearranges the 5-player table from the confirmed Tamo projection and restores its local view  342ms
+   ✓ rearranges the 8-player table from the confirmed Tamo projection and restores its local view  486ms
+   ✓ T20.3 HUD separates many hand cards from skill and equipment selection  373ms
+
+ Test Files  20 passed (20)
+      Tests  133 passed (133)
+   Start at  15:29:20
+   Duration  8.08s (transform 1.65s, setup 4.15s, collect 6.32s, tests 13.32s, environment 17.75s, prepare 2.15s)
+
