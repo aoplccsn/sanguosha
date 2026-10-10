@@ -3,7 +3,7 @@ test('T20.3 draft portrait gate and landscape ten-choice grid',async({page})=>{
  await page.setViewportSize({width:390,height:844});await page.goto('/?seed=6')
  await expect(page.getByText('请横屏游玩')).toHaveCount(0)
  await page.getByRole('button',{name:'单人游戏'}).click()
- await expect(page.getByText('请横屏游玩')).toBeVisible()
+ await expect(page.getByText('请横屏游玩')).toHaveCount(0)
  await page.setViewportSize({width:844,height:390})
  await expect(page.getByText('请横屏游玩')).not.toBeVisible()
  await expect(page.locator('.general-card')).toHaveCount(10)

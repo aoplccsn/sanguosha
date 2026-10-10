@@ -123,3 +123,53 @@ test('T21 real draft, 5 and 8 seat tables, refresh reconnect', async ({ page }) 
   }
   expect(errors).toEqual([])
 })
+
+// T21.1 orientation: landscape uses the mobile table; portrait is a usable fallback, never a gate.
+for (const [w, h, count] of [[844, 390, 5], [915, 412, 8], [390, 844, 5], [412, 915, 8]]) {
+  test(`T21.1 mobile ${w > h ? 'landscape' : 'portrait'} ${count} seats`, async ({ page }) => {
+    await page.setViewportSize({ width: w, height: h })
+    await fixture(page, count, '')
+    await expect(page.getByText('请横屏游玩')).toHaveCount(0)
+    await expect(page.locator('.player-panel:visible')).toHaveCount(count)
+    if (w > h) {
+      const x = async (sel: string) => (await page.locator(sel).boundingBox())!
+      const [eq, hand, skills, self] = [await x('.equipment-area'), await x('.hand'), await x('.skill-area'), await x('.player-self')]
+      expect(eq.x + eq.width).toBeLessThanOrEqual(hand.x + 1)
+      expect(hand.x + hand.width).toBeLessThanOrEqual(skills.x + 1)
+      expect(skills.x + skills.width).toBeLessThanOrEqual(self.x + 1)
+      await noOverlap(page)
+    }
+    // Full play flow: card → target → Confirm, everything reachable in this orientation.
+    await page.getByRole('button', { name: '杀 ♠7' }).click()
+    await page.locator('[data-player-id="p3"] .portrait-button').click()
+    const confirm = page.getByRole('button', { name: '确定', exact: true })
+    await confirm.scrollIntoViewIfNeeded(); await expect(confirm).toBeInViewport()
+    await expect(page.getByRole('button', { name: '取消选中' })).toBeInViewport()
+    await shot(page, `mobile-${w}x${h}-${count}`)
+    await confirm.click()
+    expect(await page.evaluate(() => (window as any).__decision.value)).toEqual({ option: 'use:h1', targets: ['p3'] })
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  })
+}
+
+test('T21.1 failed fullscreen and orientation lock still enters and plays', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
+  const page = await context.newPage()
+  await page.addInitScript(() => {
+    (window as any).__lockCalls = 0
+    Element.prototype.requestFullscreen = () => Promise.reject(new Error('denied'))
+    Object.defineProperty(screen, 'orientation', { configurable: true, value: { type: 'portrait-primary', lock: () => { (window as any).__lockCalls++; return Promise.reject(new Error('NotSupportedError')) } } })
+  })
+  await page.goto('/?seed=21')
+  await page.getByRole('button', { name: '单人游戏', exact: true }).tap()
+  await page.locator('.general-card').first().tap()
+  await page.getByRole('button', { name: '确认武将' }).tap()
+  await expect(page.locator('.player-self')).toBeVisible()
+  await expect(page.locator('.hand')).toBeVisible()
+  await expect(page.getByText('请横屏游玩')).toHaveCount(0)
+  expect(await page.evaluate(() => (window as any).__lockCalls)).toBeGreaterThan(0)
+  await shot(page, 'mobile-lock-failed-portrait')
+  await page.setViewportSize({ width: 844, height: 390 })  // manual rotation later re-lays out
+  await expect(page.locator('.self-area .player-self')).toBeInViewport()
+  await context.close()
+})

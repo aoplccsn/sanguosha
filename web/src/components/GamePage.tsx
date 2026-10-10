@@ -10,7 +10,7 @@ import { SuitText } from './SuitText'
 import { CombatVFXLayer } from './CombatVFXLayer'
 import type { GodPortraitMode } from './GodPortrait'
 import { readVfxQuality, saveVfxQuality, type VfxQuality } from '../vfx/CombatVFXRuntime'
-import { LandscapeGate } from './LandscapeGate'
+import { tryLandscape } from './LandscapeGate'
 import { seatAnchors, boardClass } from '../tableLayout'
 import { cardNames } from './cardUtil'
 import { PlayerPanel } from './PlayerPanel'
@@ -57,6 +57,12 @@ export function GamePage() {
     } catch { /* A malformed local selection never changes the authoritative request. */ }
   },[request,selectionKey,selectionStorageKey])
 
+  useEffect(() => {
+    if (!window.matchMedia?.('(orientation: portrait)').matches) return
+    const attempt = () => { void tryLandscape() }
+    window.addEventListener('pointerdown', attempt, { once: true })
+    return () => window.removeEventListener('pointerdown', attempt)
+  }, [])
   const [hint, setHint] = useState('')
   useEffect(() => {
     if (!hint) return
@@ -249,7 +255,7 @@ export function GamePage() {
 
   const temporaryPanel = projection.shared_cards.length > 0 || (!!request && (request.request_type === 'choose_card' || request.request_type === 'choose_cards' && (!!projection.players.find((p) => p.player_id === request.subject_player_id)?.revealed_hand?.length || Object.values(projection.players.find((p) => p.player_id === request.subject_player_id)?.special_piles ?? {}).some(cards=>cards.some(card=>request.eligible_card_ids?.includes(card.card_id))))) && !!request.subject_player_id && (otherCardChoices.length > 0 || !!projection.players.find((p) => p.player_id === request.subject_player_id)?.revealed_hand?.some((card) => request.eligible_card_ids?.includes(card.card_id))))
   return <main className="game-page table-background">
-    <LandscapeGate />
+    
     {temporaryPanel && <TemporaryInteractionPanel projection={projection} request={request} seatId={state.seatId} connected={state.connection === 'connected'} processing={!!state.decisionProcessing} selected={selectedCards} canConfirm={canConfirm} onSelect={toggleCard} onConfirm={confirm} onPass={() => submitImmediate({ pass: true })} requestControls={request && request.request_type !== 'choose_card' ? <DecisionPrompt request={request} projection={projection} canConfirm={canConfirm} processing={!!state.decisionProcessing} summary={summary} progress={progress} reason={confirmBlocker} onConfirm={confirm} onCancel={() => setSelectedCards([])} onPass={() => submitImmediate({ pass: true })} onPassRoot={() => submitImmediate({ pass: true, scope: 'root_trick' })} onBoolean={submitImmediate} onOption={submitImmediate} /> : undefined} />}
     <header className="game-hud"><div><span>第 {projection.turn_number} 回合</span><strong>{phaseNames[projection.current_phase] ?? projection.current_phase}</strong>{state.updateAvailable && <small className="game-update-note">新版本可用</small>}</div><div className="pile-stats"><span>牌堆 {projection.deck_count}</span><span>弃牌 {projection.discard_count}</span><label>对局速度 <select aria-label="对局速度" value={gameSpeed} onChange={(event) => { const value = event.target.value as GameSpeed; setGameSpeed(value); actions.setPresentationSpeed?.(value); localStorage.setItem('sanguosha.web.speed', value) }}><option value="slow">慢</option><option value="normal">正常</option><option value="fast">快</option></select></label><label className="vfx-quality-control">画质 <select aria-label="战斗特效画质" value={vfxQuality} onChange={(event) => { const value = event.target.value as VfxQuality; setVfxQuality(value); saveVfxQuality(value) }}><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></label><button onClick={actions.returnHome}>离开牌局</button></div></header>
     <section className={boardClass(projection.players.length)}>

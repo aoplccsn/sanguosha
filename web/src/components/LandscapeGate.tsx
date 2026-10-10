@@ -1,12 +1,11 @@
-export function LandscapeGate() {
-  return <div className="landscape-gate" role="status"><span aria-hidden="true">↻ ▯</span><strong>请横屏游玩</strong><p>旋转手机后即可继续当前对局</p></div>
-}
-
-// Called once from the user's start button; rotation itself never touches game state.
+// Best-effort landscape for touch devices. Never blocks: on any failure the
+// responsive portrait layout stays in use, and later rotation is handled by CSS.
 export async function tryLandscape() {
-  if (!window.matchMedia('(pointer: coarse)').matches) return
+  if (!window.matchMedia?.('(pointer: coarse)').matches) return
   try {
-    await document.documentElement.requestFullscreen?.()
+    if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.()
+  } catch { /* Fullscreen denied: continue without it. */ }
+  try {
     await (screen.orientation as ScreenOrientation & { lock?: (orientation: string) => Promise<void> }).lock?.('landscape')
-  } catch { /* Unsupported browsers use the portrait prompt. */ }
+  } catch { /* Lock unsupported or rejected: portrait fallback layout. */ }
 }

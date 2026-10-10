@@ -29,7 +29,7 @@ for(const [width,height,count] of [[1440,1000,5],[844,390,5],[932,430,8],[844,39
   const areas=await page.locator('.skill-area,.equipment-area,.hand,.player-self').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom}}))
   expect(areas.every(r=>r.x>=0&&r.right<=width&&r.y>=0&&r.bottom<=height)).toBe(true)
   const skills=await page.locator('.skill-area').boundingBox(),hand=await page.locator('.hand').boundingBox()
-  expect(skills!.x+skills!.width).toBeLessThanOrEqual(hand!.x)
+  expect(hand!.x+hand!.width).toBeLessThanOrEqual(skills!.x)
   const button=page.getByRole('button',{name:'查看制衡技能说明'}).first()
   await button.click();await expect(page.getByRole('tooltip')).toContainText('制衡');await page.mouse.move(0,0);await button.blur()
   const eq=page.getByRole('button',{name:'装备 诸葛连弩'})
@@ -54,11 +54,11 @@ test('T20.3 identity notes survive refresh and remain browser-private',async({pa
  await expect(note).toHaveCount(0)
 })
 
-test('T20.3 portrait gate keeps selection and the same portrait across rotation',async({page})=>{
+test('T21.1 portrait fallback keeps selection and the same portrait across rotation',async({page})=>{
  await page.setViewportSize({width:844,height:390});await fixture(page,5)
  await page.getByRole('button',{name:'装备 诸葛连弩'}).click()
  await page.evaluate(()=>{(window as any).__portrait=document.querySelector('.player-self .dynamic-portrait')})
- await page.setViewportSize({width:390,height:844});await expect(page.getByText('请横屏游玩')).toBeVisible()
+ await page.setViewportSize({width:390,height:844});await expect(page.getByText('请横屏游玩')).toHaveCount(0)
  await page.setViewportSize({width:844,height:390});await expect(page.getByText('请横屏游玩')).not.toBeVisible()
  await expect(page.getByRole('button',{name:'装备 诸葛连弩'})).toHaveAttribute('aria-pressed','true')
  expect(await page.evaluate(()=>(window as any).__portrait===document.querySelector('.player-self .dynamic-portrait'))).toBe(true)

@@ -33,7 +33,7 @@ test('T20.3 real equipment payload and rotation preserve room and WebSocket',asy
  await equipment.click();await expect(equipment).toHaveAttribute('aria-pressed','true')
  await equipment.click();await expect(equipment).toHaveAttribute('aria-pressed','false')
  await equipment.click()
- await page.setViewportSize({width:390,height:844});await expect(page.getByText('请横屏游玩')).toBeVisible()
+ await page.setViewportSize({width:390,height:844});await expect(page.getByText('请横屏游玩')).toHaveCount(0)
  await page.setViewportSize({width:932,height:430});await expect(equipment).toHaveAttribute('aria-pressed','true')
  expect(sockets).toBe(socketsBefore)
  await page.getByRole('button',{name:'确定',exact:true}).click()

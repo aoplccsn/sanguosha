@@ -1,4 +1,4 @@
-import { LandscapeGate } from './LandscapeGate'
+
 import { useState } from 'react'
 import { useGame } from '../state/GameContext'
 import { DynamicPortrait } from './DynamicPortrait'
@@ -15,14 +15,14 @@ export function PregamePage() {
   const { state, actions } = useGame()
   const draft = state.draft
   const [search, setSearch] = useState('')
-  if (!draft) return <main className="pregame-page table-background"><LandscapeGate /><div className="paper-panel loading-panel">等待服务器发放武将候选……</div></main>
-  if (draft.request.choices.some((id) => !state.generals[id])) return <main className="pregame-page table-background"><LandscapeGate /><div className="paper-panel loading-panel">武将资料载入中……<button onClick={() => window.location.reload()}>重新载入</button></div></main>
+  if (!draft) return <main className="pregame-page table-background"><div className="paper-panel loading-panel">等待服务器发放武将候选……</div></main>
+  if (draft.request.choices.some((id) => !state.generals[id])) return <main className="pregame-page table-background"><div className="paper-panel loading-panel">武将资料载入中……<button onClick={() => window.location.reload()}>重新载入</button></div></main>
   const selected = state.generals[state.selectedGeneral]
   const choices = draft.test_room ? draft.request.choices.filter((id) => {
     const general = state.generals[id]
     return general.name.includes(search.trim()) || general.skills.some((skill) => skill.name.includes(search.trim()))
   }) : draft.request.choices
-  return <main className="pregame-page table-background"><LandscapeGate />
+  return <main className="pregame-page table-background">
     <section className="pregame-shell paper-panel">
       <header className="pregame-header">
         <div className={`identity-reveal identity-${draft.identity}`}><span>{draft.lord_id ? "你的身份" : "你的阵营"}</span><strong>{identityLabel[draft.identity] ?? draft.identity}</strong></div>

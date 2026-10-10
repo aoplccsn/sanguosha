@@ -913,7 +913,6 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .game-board .responder-state .timer i { background:linear-gradient(90deg,#a87b3c,var(--response-gold)); }
 
 /* T20.3: one table DOM, five independently allocated local HUD regions. */
-.landscape-gate { display:none; }
 .game-page { height:100vh; height:100dvh; min-height:0; padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
 .game-board { --local-h:clamp(230px,30dvh,300px); --local-w:calc(var(--local-h)*.7); --card-w:clamp(72px,7vw,100px); height:100%; min-height:0; }
 .game-board .self-area,.game-board.eight-seats .self-area { display:grid; position:absolute; left:3%; right:3%; bottom:26px; height:var(--local-h); min-height:0; padding:0; gap:10px; grid-template-columns:112px 140px minmax(0,1fr) var(--local-w); grid-template-rows:80px minmax(0,1fr); align-items:stretch; }
@@ -953,12 +952,7 @@ input:focus { border-color: #b07a23; box-shadow: 0 0 0 2px rgba(189,135,44,.18);
 .identity-note-menu { position:absolute; top:100%; right:0; display:grid; grid-template-columns:repeat(2,44px); background:#282116f5; border:1px solid #bda16c; }
 .identity-note-menu button { min-height:44px; padding:3px; font-size:12px; color:#ebd8ad; border:0; background:transparent; }
 @media (orientation:portrait) and (max-width:720px) {
-  .game-page > :not(.landscape-gate),.pregame-page > :not(.landscape-gate) { visibility:hidden; pointer-events:none; }
-  .game-page,.pregame-page { height:100vh; height:100dvh; min-height:0; padding:0; overflow:hidden; }
-  .landscape-gate { display:flex; position:fixed; z-index:1000; inset:0; align-items:center; justify-content:center; flex-direction:column; color:#f3dfb5; background:#16140eea; backdrop-filter:blur(12px); padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
-  .landscape-gate > span { font-size:60px; }
-  .landscape-gate strong { font-size:26px; }
-  .landscape-gate p { font-size:13px; }
+  .game-page,.pregame-page { height:auto; min-height:100dvh; padding:0; overflow-x:hidden; overflow-y:auto; }
 }
 @media (orientation:landscape) and (max-height:600px) {
   .game-board { --table-scale:clamp(.48,calc(100dvh / 800px),.75); --seat-h:clamp(100px,28dvh,156px); --seat-w:calc(var(--seat-h)*.72); --local-h:clamp(155px,43dvh,190px); --local-w:calc(var(--local-h)*.7); --card-w:clamp(52px,15dvh,78px); display:block; padding:0; min-height:0; height:100%; }
