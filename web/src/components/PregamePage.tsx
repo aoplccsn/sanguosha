@@ -41,7 +41,7 @@ export function PregamePage() {
             <img src={general ? generalPortrait(id, general.kingdom, state.generals) : defaultGeneralPortrait} alt={general?.name ?? id} />
             <span className={`kingdom kingdom-${general?.kingdom ?? 'qun'}`}>{kingdomLabel[general?.kingdom ?? ''] ?? '群'}</span>
             <strong>{general?.name ?? id}</strong>
-            <small>{general?.max_hp ?? '?'} 体力</small>
+            <small>{general?.max_hp ?? '?'} 体力 · {general?.skills.map((skill) => skill.name).join(' / ') || '载入中'}</small>
           </button>
         })}
       </div>
