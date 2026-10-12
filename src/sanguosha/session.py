@@ -367,6 +367,8 @@ class GameSession:
             register_yj2013(registry, skills, moves, definitions, deck)
             from sanguosha.engine.boundary_combat import register as register_boundary_combat
             register_boundary_combat(registry, skills, moves, definitions, deck)
+            from sanguosha.engine.boundary_triggers import register as register_boundary_triggers
+            register_boundary_triggers(registry, skills, moves, definitions, deck)
         engine = GameEngine(state, registry)
         engine.terminal_cleanup = moves.cleanup_terminal
         if military:

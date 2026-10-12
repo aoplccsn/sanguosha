@@ -203,6 +203,8 @@ class MilitaryDamageHandler(DamageActionHandler):
             frame.local['chain'] = '|'.join(chain)
             self.recorder.record(BeforeDamageEvent(action.action_id + ':before', action.source_id, action.target_id, amount))
             frame.local['yj_face_down_before'] = not target.face_up
+            from .boundary_triggers import prepare_damage as prepare_boundary_damage
+            prepare_boundary_damage(state, frame, self.skills, self.distance)
             target.hp -= amount
             from .boundary_combat import note_damage
             note_damage(state, action)
@@ -418,6 +420,10 @@ class MilitaryDamageHandler(DamageActionHandler):
                 if lord is not None:
                     from .forest import BaonueAction
                     return StepResult.push(BaonueAction(action.action_id + ':baonue', source, lord))
+        from .boundary_triggers import damage_reaction as boundary_trigger_damage_reaction
+        reaction = boundary_trigger_damage_reaction(state, frame, self.skills)
+        if reaction is not None:
+            return reaction
         from .yj2011 import after_damage
         reaction = after_damage(state, frame, self.skills)
         if reaction is not None:
@@ -489,7 +495,8 @@ class SkillSlashLimit:
             return None
         base = self.equipment.limit(state, user)
         from .remaining_gods import camp_bonus
-        return None if base is None else base + camp_bonus(state,user,self.skills) + max(0, state.players[user].marks.get('slash_quota_bonus', 0))
+        from .boundary_triggers import qimou_amount
+        return None if base is None else base + camp_bonus(state,user,self.skills) + max(0, state.players[user].marks.get('slash_quota_bonus', 0)) + qimou_amount(state,user)
 
 
 class MilitarySlashRule(SlashRule):

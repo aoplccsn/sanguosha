@@ -25,3 +25,16 @@ BOUNDARY_SKILL_CATALOGUE = (
     skill('jie_paoxiao', '咆哮', '锁定技。使用杀没有次数上限；本出牌阶段使用过杀后，本阶段后续杀不受距离限制。', SkillType.LOCKED, 154),
     skill('jie_tishen', '替身', '出牌阶段结束时，可以弃置自己全部锦囊和坐骑牌。直到下个自己的回合开始，获得以自己为目标且未对自己造成伤害的杀的可获得材料牌。', SkillType.TRIGGERED, 154),
 )
+
+BOUNDARY_GENERAL_POOL += (
+    character('fa_zheng', '法正', Kingdom.SHU, 3, ('jie_enyuan', 'jie_xuanhuo'), 134),
+    character('wei_yan', '魏延', Kingdom.SHU, 4, ('jie_kuanggu', 'jie_qimou'), 308),
+    character('zhu_ran', '朱然', Kingdom.WU, 4, ('jie_danshou',), 389),
+)
+BOUNDARY_SKILL_CATALOGUE += (
+    skill('jie_enyuan', '恩怨', '一次获得另一名角色至少两张牌后，可以令其摸一张；每受到一点伤害，可以令伤害来源交给你一张手牌，否则来源失去一点体力。', SkillType.TRIGGERED, 134),
+    skill('jie_xuanhuo', '眩惑', '摸牌阶段可以替代正常摸牌，令另一名角色摸两张。由你选择其攻击范围内另一目标，令受益者使用一张杀；若不使用，你获得受益者两张牌。', SkillType.TRIGGERED, 134),
+    skill('jie_kuanggu', '狂骨', '造成伤害时，在目标因该伤害扣减体力前检查距离；距离不大于1时，每一点伤害可以独立选择回复一点体力或摸一张牌。', SkillType.TRIGGERED, 308),
+    skill('jie_qimou', '奇谋', '限定技。自己的出牌阶段，可以选择失去X点体力；当前回合到其他角色的距离减少X，杀次数上限增加X。失去体力不视为伤害。', SkillType.LIMITED, 308, limited=True),
+    skill('jie_danshou', '胆守', '其他角色结束阶段，若本回合未成为其使用牌的目标，摸一张；否则可以弃置X张牌，对其造成一点伤害。X为本回合成为其使用牌目标的次数。', SkillType.TRIGGERED, 389),
+)

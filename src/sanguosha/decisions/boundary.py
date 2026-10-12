@@ -12,16 +12,30 @@ def decide(provider, state, request):
     def reply(value):
         request.validate(value)
         return Decision(request.request_id, pid, value)
-    combat = any(name in prompt for name in ('【破军】', '【旋风】', '【替身】'))
+    if kind is RequestType.CHOOSE_OPTION and 'skill:jie_qimou' in request.choices:
+        slashes = sum('slash' in state.cards[cid].definition_id for cid in own)
+        if (state.players[pid].hp >= 3 and slashes >= 2 and any(q != pid
+                and state.players[q].is_alive and priority(q) > 0 for q in state.seat_order)):
+            return reply('skill:jie_qimou')
+    if '【狂骨】' in prompt and kind is RequestType.CHOOSE_OPTION:
+        p=state.players[pid]
+        return reply('recover' if 'recover' in request.choices and (p.hp <= 2 or p.max_hp-p.hp >= 2) else 'draw')
+    if '【奇谋】' in prompt and kind is RequestType.CHOOSE_OPTION:
+        safe=[int(x) for x in request.choices if int(x)<state.players[pid].hp]
+        return reply(str(min(safe))) if safe else reply(request.choices[0])
+    if '【胆守】' in prompt and kind is RequestType.YES_NO:
+        import re
+        count=int(re.search(r'弃置 (\d+)',prompt).group(1))
+        target=request.subject_player_id
+        return reply(target is not None and priority(target)>0 and
+            (count <= 2 or state.players[target].hp <= 1))
+    combat = any(name in prompt for name in ('【破军】', '【旋风】', '【替身】', '【胆守】'))
     if not combat:
         return None
     if kind is RequestType.YES_NO:
         if '【破军】' in prompt:
             return reply(request.subject_player_id is not None and priority(request.subject_player_id) > 0)
         if '【替身】' in prompt:
-            from sanguosha.engine.card_registry import CardDefinitionRegistry
-            from sanguosha.model.enums import CardCategory, EquipmentSlot
-            definitions = CardDefinitionRegistry()
             # Only own cards and public equipment are considered for the cost.
             cards = tuple(cid for ref,zone in state.zones.items()
                 if ref.player_id == pid and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT) for cid in zone.card_ids)

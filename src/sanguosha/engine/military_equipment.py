@@ -89,6 +89,8 @@ class MilitaryMoveService(CardMoveService):
                     if targets is not None:event=replace(event,target_ids=tuple(targets))
                 from .boundary_combat import event_reactions as boundary_combat_reactions
                 self.reactions.extend(boundary_combat_reactions(state,event,self.skills,self.recorder,getattr(self,'definitions',None)))
+                from .boundary_triggers import event_reactions as boundary_trigger_reactions
+                self.reactions.extend(boundary_trigger_reactions(state,event,self.skills,self.recorder))
                 from .mobile_gods import event_reactions as mobile_event_reactions
                 self.reactions.extend(mobile_event_reactions(state,event,self.skills,self.recorder))
                 from .zhangliao import event_reactions as zhangliao_event_reactions

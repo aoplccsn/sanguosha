@@ -171,6 +171,12 @@ class DrawPhaseBody:
             frame.step_index = 1
         if frame.step_index == 1:
             action = frame.action
+            if (self.skills is not None and self.skills.has(state, action.player_id, 'jie_xuanhuo')
+                    and not frame.local.get('boundary_xuanhuo')):
+                from .boundary_triggers import BoundaryTriggerAction
+                frame.local['boundary_xuanhuo'] = True
+                frame.step_index = 40
+                return StepResult.push(BoundaryTriggerAction(action.action_id + ':jie-xuanhuo', action.player_id, 'jie_xuanhuo'))
             if (self.skills is not None and self.skills.has(state, action.player_id, 'xuanhuo')
                     and not frame.local.get('yj_xuanhuo')):
                 from .yj2011_tier3 import YJSkillAction
