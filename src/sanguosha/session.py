@@ -365,6 +365,8 @@ class GameSession:
             register_remaining_gods(registry,skills,moves,definitions,deck)
             from sanguosha.engine.yj2013 import register as register_yj2013
             register_yj2013(registry, skills, moves, definitions, deck)
+            from sanguosha.engine.boundary_combat import register as register_boundary_combat
+            register_boundary_combat(registry, skills, moves, definitions, deck)
         engine = GameEngine(state, registry)
         engine.terminal_cleanup = moves.cleanup_terminal
         if military:

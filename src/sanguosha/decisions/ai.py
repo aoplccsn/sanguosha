@@ -229,6 +229,10 @@ class AIDecisionProvider:
         return 0
 
     def decide(self, state: GameState, request: PendingRequest, *, response_context=None) -> Decision:
+        from .boundary import decide as decide_boundary
+        boundary_decision = decide_boundary(self, state, request)
+        if boundary_decision is not None:
+            return boundary_decision
         decision=self._decide(state,request,response_context=response_context)
         import os
         if os.environ.get('AI_DECISION_DEBUG')=='1':

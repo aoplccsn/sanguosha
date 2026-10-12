@@ -123,7 +123,8 @@ class MilitaryDamageHandler(DamageActionHandler):
                 return StepResult.push(MobileGodAction(action.action_id + ':pinghe', action.target_id, 'pinghe', action.source_id))
             if not frame.local.get('source_modifiers_done'):
                 frame.local['source_modifiers_done'] = True
-                amount = action.amount
+                from .boundary_combat import damage_bonus
+                amount = action.amount + damage_bonus(state, action, self.skills)
                 if not getattr(action, 'propagated', False) and not getattr(action, 'redirected', False):
                     if (action.source_id is not None and state.current_player_id == action.source_id
                             and state.players[action.source_id].marks.get('luoyi')
@@ -203,6 +204,8 @@ class MilitaryDamageHandler(DamageActionHandler):
             self.recorder.record(BeforeDamageEvent(action.action_id + ':before', action.source_id, action.target_id, amount))
             frame.local['yj_face_down_before'] = not target.face_up
             target.hp -= amount
+            from .boundary_combat import note_damage
+            note_damage(state, action)
             from .fuhun import grant_after_damage
             grant_after_damage(state,action,self.skills)
             from .remaining_gods import gain_junlve
@@ -482,7 +485,7 @@ class SkillSlashLimit:
         self.equipment = EquipmentSlashLimit()
 
     def limit(self, state, user):
-        if self.skills is not None and self.skills.has(state, user, 'paoxiao'):
+        if self.skills is not None and (self.skills.has(state, user, 'paoxiao') or self.skills.has(state, user, 'jie_paoxiao')):
             return None
         base = self.equipment.limit(state, user)
         from .remaining_gods import camp_bonus
@@ -510,9 +513,10 @@ class MilitarySlashRule(SlashRule):
         from .fuhuanghou import target_allowed
         if not self.can_use(state,user) or any(not target_allowed(state,user,q) for q in state.seat_order if q!=user):
             return ()
+        from .boundary_combat import slash_ignores_distance
         candidates = (tuple(pid for pid in state.seat_order if pid != user
                            and state.players[pid].is_alive)
-                      if marks.get('slash_ignore_distance') else
+                      if marks.get('slash_ignore_distance') or slash_ignores_distance(state,user,self.skills) else
                       super().target_candidates(state, user))
         scoped = tuple(pid for pid in state.seat_order if pid != user and state.players[pid].is_alive
                        and scoped_target(state, user, pid))
@@ -618,6 +622,10 @@ class MilitarySlashHandler:
 
     def _step(self, state, frame):
         action = frame.action
+        from .boundary_combat import slash_target_reaction
+        reaction = slash_target_reaction(state, frame, self.skills)
+        if reaction is not None:
+            return reaction
         if frame.step_index == 51:
             frame.step_index = 0
             if frame.child_result is True:

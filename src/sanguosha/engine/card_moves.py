@@ -44,6 +44,8 @@ class CardMoveService:
         """Discard transient public cards after terminal stack cancellation."""
         from .yj2011_tier3 import clear_turn
         clear_turn(state)
+        from .boundary_combat import clear_turn as clear_boundary_combat
+        clear_boundary_combat(state, self, action_id='gameover-boundary:' + str(state.turn_number))
         for player in state.players.values():
             player.marks.pop('nightmare', None)
             player.marks.pop('lianpo_pending', None)
