@@ -44,6 +44,12 @@ class CardMoveService:
         """Discard transient public cards after terminal stack cancellation."""
         from .yj2011_tier3 import clear_turn
         clear_turn(state)
+        from .boundary_advanced import clear_turn as clear_boundary_advanced
+        clear_boundary_advanced(state)
+        from .boundary_triggers import clear_turn as clear_boundary_triggers
+        clear_boundary_triggers(state)
+        from .boundary_combat import clear_turn as clear_boundary_combat
+        clear_boundary_combat(state, self, action_id='gameover-boundary:' + str(state.turn_number))
         for player in state.players.values():
             player.marks.pop('nightmare', None)
             player.marks.pop('lianpo_pending', None)
@@ -56,6 +62,33 @@ class CardMoveService:
                 self.move(state, CardMove('gameover-cleanup:' + str(state.turn_number) + ':' + str(index),
                     cards, ref, ZoneRef(ZoneType.DISCARD_PILE), CardMoveReason.SYSTEM))
 
+    def move_batch(self, state, moves, batch_id):
+        """Validate a whole move batch before committing equipment departures."""
+        from copy import deepcopy
+        from dataclasses import replace
+        from .events import Event, EventRecorder
+        moves = tuple(moves)
+        if len(moves) == 1:
+            self.move(state, moves[0])
+            return
+        preview = deepcopy(state)
+        validator = CardMoveService(EventRecorder())
+        for move in moves:
+            validator.move(preview, move)
+        departures = {}
+        for move in moves:
+            if move.triggers_rules and move.from_zone.zone_type is ZoneType.EQUIPMENT:
+                owner = move.from_zone.player_id
+                departures[owner] = departures.get(owner, 0) + len(move.card_ids)
+        for move in moves:
+            if departures.get(move.from_zone.player_id, 0) > 1 and move.from_zone.zone_type is ZoneType.EQUIPMENT:
+                move = replace(move, related_action_id='equipment-departure:' + batch_id)
+            self.move(state, move)
+        for owner, count in departures.items():
+            if count > 1:
+                self.recorder.record(Event(batch_id + ':equipment-left:' + owner,
+                    'equipment_departure_batch', owner, metadata={'count': count}))
+
     def move_owned_materials(self, state, card_ids, owner_id, destination, reason, action_id):
         """Pay one virtual card from the owner's hand and equipment areas."""
         groups = {}
@@ -64,9 +97,9 @@ class CardMoveService:
                           if ref.player_id == owner_id and ref.zone_type in (ZoneType.HAND, ZoneType.EQUIPMENT)
                           and cid in zone.card_ids)
             groups.setdefault(source, []).append(cid)
-        for index, (source, ids) in enumerate(groups.items()):
-            self.move(state, CardMove(action_id + ':materials:' + str(index), tuple(ids),
-                source, destination, reason, owner_id, action_id))
+        self.move_batch(state, tuple(CardMove(action_id + ':materials:' + str(index), tuple(ids),
+            source, destination, reason, owner_id, action_id)
+            for index, (source, ids) in enumerate(groups.items())), action_id + ':materials')
 
     def obtain_cards(self, state, card_ids, recipient_id, actor_id, acquisition_id):
         """One acquisition can draw from several zones of the same card owner."""
@@ -87,9 +120,9 @@ class CardMoveService:
                 counts[ref.player_id] = counts.get(ref.player_id, 0) + 1
         # No choice or callback runs between these moves. The published summary
         # binds the whole acquisition, including cards from different zones.
-        for index, (ref, ids) in enumerate(groups.items()):
-            self.move(state, CardMove(acquisition_id + ':part:' + str(index), tuple(ids),
-                ref, destination, CardMoveReason.SYSTEM, actor_id, 'acquisition:' + acquisition_id))
+        self.move_batch(state, tuple(CardMove(acquisition_id + ':part:' + str(index), tuple(ids),
+            ref, destination, CardMoveReason.SYSTEM, actor_id, 'acquisition:' + acquisition_id)
+            for index, (ref, ids) in enumerate(groups.items())), acquisition_id + ':obtain')
         for source, count in counts.items():
             self.recorder.record(Event(acquisition_id + ':obtained:' + source, 'cards_obtained',
                 recipient_id, metadata={'from_player_id': source, 'count': count}))
@@ -190,6 +223,10 @@ class CardMoveService:
             concealed = state.metadata.get('concealed_discard_cards', {})
             for card_id in ids:
                 concealed.pop(card_id, None)
+        if move.from_zone.zone_type is ZoneType.SPECIAL and (move.from_zone.special_key or '').startswith('committed:'):
+            revealed = state.metadata.get('revealed_committed', {})
+            for card_id in ids:
+                revealed.pop(card_id, None)
         for ref in (move.from_zone, move.to_zone):
             if (ref.zone_type is ZoneType.SPECIAL and ref.special_key == 'quan'
                     and ref.player_id is not None):

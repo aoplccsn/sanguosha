@@ -33,10 +33,10 @@ def decide(ai,state,request):
     elif kind is RequestType.CHOOSE_PLAYER:
         targets = request.allowed_player_ids
         if prompt.startswith(('天翊：','辉逝：','慧识：','冯河：')):
-            value = pid if pid in targets else min(targets,key=lambda q: ai._priority(state,pid,q))
+            value = max(targets,key=lambda q:ai._support_score(state,pid,q))
         elif prompt.startswith('智盟：'):
             value = max(targets,key=lambda q: len(state.cards_in(ZoneRef(ZoneType.HAND,q))))
         else:
-            value = max(targets,key=lambda q: ai._priority(state,pid,q))
+            value = max(targets,key=lambda q: ai._target_score(state,pid,q))
     if value is None: return None
     return Decision(request.request_id,pid,value)

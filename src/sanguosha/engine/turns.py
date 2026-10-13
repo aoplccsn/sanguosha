@@ -175,6 +175,8 @@ class TurnActionHandler:
             clear_zhuikong(state,action.player_id)
             from .skill_leases import expire_target
             expire_target(state,action.player_id)
+            from .boundary_advanced import clear_turn as clear_boundary_advanced
+            clear_boundary_advanced(state)
             from .boundary_triggers import clear_turn as clear_boundary_triggers
             clear_boundary_triggers(state)
             from .boundary_combat import clear_turn as clear_boundary_combat

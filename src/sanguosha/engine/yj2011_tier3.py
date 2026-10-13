@@ -135,9 +135,11 @@ class YJSkillHandler:
         groups = {}
         for cid in cards:
             groups.setdefault(locate(state, cid), []).append(cid)
-        for index, (ref, ids) in enumerate(groups.items()):
-            self.moves.move(state, CardMove(f'{a.action_id}:move:{index}:{ids[0]}', tuple(ids),
-                ref, destination, reason, actor or a.player_id, a.action_id))
+        self.moves.move_batch(state, tuple(
+            CardMove(f'{a.action_id}:move:{index}:{ids[0]}', tuple(ids),
+                ref, destination, reason, actor or a.player_id, a.action_id)
+            for index, (ref, ids) in enumerate(groups.items())),
+            a.action_id + ':move:' + (cards[0] if cards else 'empty'))
 
     def step(self, state, f):
         a = f.action

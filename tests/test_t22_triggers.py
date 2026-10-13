@@ -1,3 +1,4 @@
+from sanguosha.engine.requests import PASS_RESPONSE
 """Risk-focused rules and resumability checks for the second boundary group."""
 from test_t22_combat import game, answer, drain
 from test_t6_military_basics import put
@@ -100,10 +101,29 @@ def test_xuanhuo_replaces_normal_draw_and_declined_slash_transfers_two_hidden_ca
     s=game('boundary_fa_zheng')
     before=len(s.state.cards_in(ZoneRef(ZoneType.HAND,'p1')))
     s.engine.start_action(PhaseAction('draw','p1',Phase.DRAW))
-    answer(s,True); answer(s,'p2'); answer(s,'p3'); answer(s,'decline')
+    answer(s,True); answer(s,'p2'); answer(s,'p3'); answer(s,PASS_RESPONSE)
     assert s.engine.pending_request.subject_player_id=='p2'
     a=s.engine.pending_request.eligible_card_ids[0]; answer(s,a)
     b=s.engine.pending_request.eligible_card_ids[0]
     s=restore_session(snapshot_session(s)); answer(s,b); drain(s)
     assert len(s.state.cards_in(ZoneRef(ZoneType.HAND,'p1')))==before+2
     assert {a,b}<=set(s.state.cards_in(ZoneRef(ZoneType.HAND,'p1')))
+
+def test_xuanhuo_accepts_wusheng_through_shared_response_and_finishes_materials():
+    from dataclasses import replace
+    from sanguosha.engine.requests import RequestType
+    from sanguosha.model.enums import Suit
+    s=game('boundary_fa_zheng')
+    s.state.players['p2'].character_id='guanyu'
+    red=put(s,'basic.dodge','p2')
+    s.state.cards[red]=replace(s.state.cards[red],suit=Suit.DIAMOND)
+    s.engine.start_action(PhaseAction('converted-draw','p1',Phase.DRAW))
+    answer(s,True);answer(s,'p2');answer(s,'p3')
+    assert s.engine.pending_request.request_type is RequestType.RESPOND_WITH_CARD
+    value='virtual:wusheng:'+red
+    assert value in s.engine.pending_request.eligible_card_ids
+    before=s.state.players['p3'].hp
+    s=restore_session(snapshot_session(s));answer(s,value);drain(s)
+    assert s.state.players['p3'].hp==before-1
+    assert red in s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
+    assert not s.state.cards_in(ZoneRef(ZoneType.PROCESSING))

@@ -113,6 +113,9 @@ class MilitaryDamageHandler(DamageActionHandler):
             return replacement
         if frame.step_index == 0:
             self.validate_start(state, action)
+            from .boundary_advanced import prepare_damage as prepare_boundary_advanced_damage
+            offer = prepare_boundary_advanced_damage(state, frame, self.skills, self.distance)
+            if offer is not None: return offer
             if (not frame.local.get('mobile_pinghe') and self.skills is not None
                     and self.skills.has(state, action.target_id, 'pinghe')
                     and action.source_id is not None and action.source_id != action.target_id
@@ -123,7 +126,8 @@ class MilitaryDamageHandler(DamageActionHandler):
                 return StepResult.push(MobileGodAction(action.action_id + ':pinghe', action.target_id, 'pinghe', action.source_id))
             if not frame.local.get('source_modifiers_done'):
                 frame.local['source_modifiers_done'] = True
-                amount = action.amount
+                from .boundary_combat import damage_bonus
+                amount = action.amount + damage_bonus(state, action, self.skills) + int(frame.local.get('jie_qingxi_bonus', 0))
                 if not getattr(action, 'propagated', False) and not getattr(action, 'redirected', False):
                     if (action.source_id is not None and state.current_player_id == action.source_id
                             and state.players[action.source_id].marks.get('luoyi')
@@ -202,7 +206,12 @@ class MilitaryDamageHandler(DamageActionHandler):
             frame.local['chain'] = '|'.join(chain)
             self.recorder.record(BeforeDamageEvent(action.action_id + ':before', action.source_id, action.target_id, amount))
             frame.local['yj_face_down_before'] = not target.face_up
-            target.hp -= amount
+            from .boundary_triggers import prepare_damage as prepare_boundary_damage
+            prepare_boundary_damage(state, frame, self.skills, self.distance)
+            from .shield import apply_damage_to_hp
+            apply_damage_to_hp(state, action.target_id, amount, self.recorder, action.action_id)
+            from .boundary_combat import note_damage
+            note_damage(state, action)
             from .fuhun import grant_after_damage
             grant_after_damage(state,action,self.skills)
             from .remaining_gods import gain_junlve
@@ -415,6 +424,13 @@ class MilitaryDamageHandler(DamageActionHandler):
                 if lord is not None:
                     from .forest import BaonueAction
                     return StepResult.push(BaonueAction(action.action_id + ':baonue', source, lord))
+        from .boundary_advanced import damage_reaction as boundary_advanced_damage_reaction
+        reaction = boundary_advanced_damage_reaction(state, frame, self.skills)
+        if reaction is not None: return reaction
+        from .boundary_triggers import damage_reaction as boundary_trigger_damage_reaction
+        reaction = boundary_trigger_damage_reaction(state, frame, self.skills)
+        if reaction is not None:
+            return reaction
         from .yj2011 import after_damage
         reaction = after_damage(state, frame, self.skills)
         if reaction is not None:
@@ -482,11 +498,12 @@ class SkillSlashLimit:
         self.equipment = EquipmentSlashLimit()
 
     def limit(self, state, user):
-        if self.skills is not None and self.skills.has(state, user, 'paoxiao'):
+        if self.skills is not None and (self.skills.has(state, user, 'paoxiao') or self.skills.has(state, user, 'jie_paoxiao')):
             return None
         base = self.equipment.limit(state, user)
         from .remaining_gods import camp_bonus
-        return None if base is None else base + camp_bonus(state,user,self.skills) + max(0, state.players[user].marks.get('slash_quota_bonus', 0))
+        from .boundary_triggers import qimou_amount
+        return None if base is None else base + camp_bonus(state,user,self.skills) + max(0, state.players[user].marks.get('slash_quota_bonus', 0)) + qimou_amount(state,user)
 
 
 class MilitarySlashRule(SlashRule):
@@ -510,9 +527,10 @@ class MilitarySlashRule(SlashRule):
         from .fuhuanghou import target_allowed
         if not self.can_use(state,user) or any(not target_allowed(state,user,q) for q in state.seat_order if q!=user):
             return ()
+        from .boundary_combat import slash_ignores_distance
         candidates = (tuple(pid for pid in state.seat_order if pid != user
                            and state.players[pid].is_alive)
-                      if marks.get('slash_ignore_distance') else
+                      if marks.get('slash_ignore_distance') or slash_ignores_distance(state,user,self.skills) else
                       super().target_candidates(state, user))
         scoped = tuple(pid for pid in state.seat_order if pid != user and state.players[pid].is_alive
                        and scoped_target(state, user, pid))
@@ -618,6 +636,10 @@ class MilitarySlashHandler:
 
     def _step(self, state, frame):
         action = frame.action
+        from .boundary_combat import slash_target_reaction
+        reaction = slash_target_reaction(state, frame, self.skills)
+        if reaction is not None:
+            return reaction
         if frame.step_index == 51:
             frame.step_index = 0
             if frame.child_result is True:
@@ -1150,10 +1172,17 @@ class MilitaryResponseHandler(RespondWithCardHandler):
                                        'basic.peach', 'trick.nullification'):
                         eligible += tuple(longhun_option(cards) for cards in
                                           longhun_materials(state, action.player_id, transformed))
+            from .boundary_advanced import response_options as boundary_response_options
+            eligible += boundary_response_options(state, action, self.skills)
             from .card_limits import card_allowed
             def allowed(option):
+                if action.validate_slash_target:
+                    from .boundary_triggers import forced_slash_option_allowed
+                    if not forced_slash_option_allowed(state,action,option,self.skills,getattr(self.moves,'definitions',None)):
+                        return False
                 if not option.startswith('virtual:'):return card_allowed(state,action.player_id,(option,))
                 if option in ('virtual:spear','virtual:fuhun','virtual:jijiang','virtual:hujia','virtual:jiushi'):return True
+                if option.startswith('virtual:jie_jianying:'):return True
                 if option=='virtual:guhuo':return any(card_allowed(state,action.player_id,(cid,)) for cid in hand)
                 materials=tuple(option.split(':')[2:])
                 return card_allowed(state,action.player_id,materials)
@@ -1174,6 +1203,9 @@ class MilitaryResponseHandler(RespondWithCardHandler):
         from .events import CardRespondedEvent
         choice = frame.decision
         frame.decision = None
+        if isinstance(choice, str) and choice.startswith('virtual:jie_jianying:'):
+            from .boundary_advanced import commit_response as commit_boundary_response
+            return StepResult.complete(commit_boundary_response(state, action, choice, self.moves, self.recorder, self.skills))
         if frame.step_index==2:
             if not frame.local.get('fuhun') and equipped(state,action.player_id,EquipmentSlot.WEAPON)!='equipment.weapon.serpent_spear':
                 raise InvalidCardUse('spear no longer equipped')

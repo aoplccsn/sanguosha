@@ -114,7 +114,8 @@ class AIDecisionProvider:
             return -10_000
         from sanguosha.engine.distance import DistanceSystem
         terms = strategy.damage_terms(self,state,actor,target,damage,elemental)
-        terms['distance']=-max(0,DistanceSystem().distance_between(state,actor,target)-1)*2
+        terms['distance']=(-max(0,DistanceSystem().distance_between(state,actor,target)-1)*2
+                           if state.players[actor].is_alive else 0)
         return round(sum(terms.values()))
 
     def _support_score(self,state,actor,target):
@@ -190,7 +191,9 @@ class AIDecisionProvider:
             return 92 if enemies and own_slash else -100
         if 'slash' in definition:
             best=max((self._target_score(state,actor,pid,damage=1+player.marks.get('wine',0),elemental=definition!='basic.slash') for pid in enemies),default=-100)
-            return 115+best*.15 if best>=90 else 60+best*.25 if best>0 else -100
+            # The basic three-card deck has no other way to pressure neutral opponents.
+            neutral_basic = state.ruleset_id == 't5-basic-identity' and best == 0
+            return 115+best*.15 if best>=90 else 60+best*.25 if best>0 or neutral_basic else -100
         if definition in ('trick.savage_assault', 'trick.archery_attack'):
             from sanguosha.engine.military_basics import equipped
             from sanguosha.model.enums import EquipmentSlot

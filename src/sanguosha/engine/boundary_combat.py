@@ -238,11 +238,6 @@ class BoundaryCombatHandler:
                 return self.ask(frame, RequestType.CHOOSE_CARD, '【旋风】选择其他角色装备区的牌移动',
                                 eligible_card_ids=tuple(dict.fromkeys(pair[0] for pair in pairs)))
             frame.step_index = 2
-        if frame.step_index == 7:
-            wanted, frame.decision = frame.decision is True, None
-            if not wanted:
-                return StepResult.complete()
-            frame.step_index = 2
         if frame.step_index == 2:
             allowed = targets
             chosen = frame.local.get('targets', [])
@@ -271,9 +266,6 @@ class BoundaryCombatHandler:
                     CardMoveReason.DISCARD, pid, action.action_id))
             frame.cursor += 1
             frame.step_index = 2
-            if frame.cursor < 2 and any(owned_cards(state, q) for q in targets):
-                frame.step_index = 7
-                return self.ask(frame, RequestType.YES_NO, '【旋风】是否继续弃置第二张牌？')
             return StepResult.continue_()
         if frame.step_index == 5:
             cid, frame.decision = frame.decision, None

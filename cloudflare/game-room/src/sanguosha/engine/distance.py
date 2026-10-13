@@ -41,6 +41,10 @@ class CharacterDistanceModifier:
         delta = -int(skills.has(state, source, 'mashu')) + int(skills.has(state, target, 'feiying'))
         if skills.has(state, source, 'tuntian'):
             delta -= len(state.cards_in(ZoneRef(ZoneType.SPECIAL, source, special_key='tian')))
+        from .boundary_triggers import qimou_amount
+        delta -= qimou_amount(state, source)
+        if skills.has(state, source, 'jie_qianju'):
+            delta -= max(0, state.players[source].max_hp - state.players[source].hp)
         return delta
 
     def attack_range(self, state: GameState, player: PlayerId, current: int) -> int:

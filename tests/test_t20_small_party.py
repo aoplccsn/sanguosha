@@ -51,7 +51,7 @@ def test_room_draft_autofill_and_takeover_reclaim(mode,count):
     if count>1:assert mode.team_for(joined[0][0])!=mode.team_for(joined[1][0])
     room.start(joined[0][0])
     assert sum(s.controller is Controller.AI for s in room.seats.values())==mode.seat_count-count
-    assert len(room.draft_requests['p1'].choices)==108
+    assert len(room.draft_requests['p1'].choices)==118
     for pid,_ in joined:
         request=room.draft_requests[pid]
         choice=next(c for c in request.choices if c not in room.pregame.generals.values())

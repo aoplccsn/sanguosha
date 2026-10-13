@@ -146,6 +146,9 @@ class GameSession:
                 if skills.has(state,pid,'tianzuo'):
                     inject_qizheng(state,pid,rng)
         for player in players.values():
+            if skills is not None:
+                shield = skills.characters[player.character_id].metadata.get("initial_shield", 0)
+                if shield: player.marks["shield"] = shield
             if skills is not None and skills.has(state,player.player_id,'jieying_liubei'):
                 player.chained=True
             if player.character_id == 'forest_god_lvbu':
@@ -365,6 +368,12 @@ class GameSession:
             register_remaining_gods(registry,skills,moves,definitions,deck)
             from sanguosha.engine.yj2013 import register as register_yj2013
             register_yj2013(registry, skills, moves, definitions, deck)
+            from sanguosha.engine.boundary_combat import register as register_boundary_combat
+            register_boundary_combat(registry, skills, moves, definitions, deck)
+            from sanguosha.engine.boundary_triggers import register as register_boundary_triggers
+            register_boundary_triggers(registry, skills, moves, definitions, deck)
+            from sanguosha.engine.boundary_advanced import register as register_boundary_advanced
+            register_boundary_advanced(registry, skills, moves, definitions, deck)
         engine = GameEngine(state, registry)
         engine.terminal_cleanup = moves.cleanup_terminal
         if military:
@@ -388,8 +397,7 @@ class GameSession:
         return self.engine.submit_decision(decision)
 
     def ai_response_context(self):
-        if not game_mode(self.state.metadata.get('mode_id', 'military-five')).public_sides:
-            return None
+        # The trick, affected target and counter parity are public in every mode.
         from sanguosha.engine.military_tricks import NullificationWindow, TrickAction
         frames = self.engine.stack.snapshot()
         window = next((f for f in reversed(frames) if isinstance(f.action, NullificationWindow)), None)

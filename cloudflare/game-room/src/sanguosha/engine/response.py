@@ -31,6 +31,7 @@ class RespondWithCardAction(Action):
     use_card: bool = False
     card_source_id: str | None = None
     delayed_card: bool = False
+    validate_slash_target: bool = False
 
 
 class RespondWithCardHandler:

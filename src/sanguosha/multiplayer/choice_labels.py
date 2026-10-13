@@ -11,6 +11,7 @@ CHOICE_NAMES = {
     'qi':'奇兵（仅你可见）', 'zheng':'正兵（仅你可见）', 'dodge':'打出闪', 'pass':'放弃响应',
     'draw1_quota':'摸一张，杀上限加一', 'draw3_stop':'摸三张，本回合禁杀',
     'discard_damage':'弃一张手牌，造成一点伤害', 'take_hand':'获得一张背面手牌', 'extra_turn':'本回合结束后额外回合',
+    'give_trick':'交给一张锦囊', 'discard_nontricks':'依次弃置两张非锦囊', 'move':'移动装备',
     'cancel':'放弃', 'add':'增加目标', 'remove':'减少目标',
     'default':'正常摸牌', 'jiang':'多摸一张，本回合不能用或打出杀',
     'chi':'少摸一张，杀无距离限制且可多用一次',
@@ -50,6 +51,10 @@ def choice_labels(room, request):
         return f'{definition.name}（{suit}{card.rank}）'
 
     def label(value, index):
+        if value.startswith('virtual:jie_jianying:'):
+            return '渐营 · ' + (card_name(value.split(':',2)[2]) or '所选牌')
+        if value.isdigit() and '【奇谋】' in request.prompt:
+            return f'失去 {value} 点体力'
         if ('【夺锐】' in request.prompt or '【止啼】' in request.prompt) and value in ('weapon','armor','offensive_horse','defensive_horse'):
             return {'weapon':'武器栏','armor':'防具栏','offensive_horse':'进攻马栏','defensive_horse':'防御马栏'}[value]
         if value in CHOICE_NAMES:

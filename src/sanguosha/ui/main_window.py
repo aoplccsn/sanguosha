@@ -238,6 +238,8 @@ class MainWindow(QMainWindow):
                 request = self.session.engine.pending_request if self.session else None
                 if request and CardInstanceId(card_id) in request.eligible_card_ids:
                     value = CardInstanceId(card_id)
+                elif request and f'virtual:jie_jianying:{card_id}' in request.eligible_card_ids:
+                    value = f'virtual:jie_jianying:{card_id}'
                 elif request and f'virtual:qingguo:{card_id}' in request.eligible_card_ids:
                     value = f'virtual:qingguo:{card_id}'
                 elif request and f'virtual:jijiu:{card_id}' in request.eligible_card_ids:
@@ -378,6 +380,7 @@ class MainWindow(QMainWindow):
                 self._render()
         elif request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD):
             if (CardInstanceId(card_id) in request.eligible_card_ids or
+                    f'virtual:jie_jianying:{card_id}' in request.eligible_card_ids or
                     f'virtual:wusheng:{card_id}' in request.eligible_card_ids or
                     f'virtual:qingguo:{card_id}' in request.eligible_card_ids or
                     f'virtual:jijiu:{card_id}' in request.eligible_card_ids or
@@ -552,11 +555,11 @@ class MainWindow(QMainWindow):
             if human_request.request_type is RequestType.CHOOSE_OPTION:
                 selectable = {choice[4:] for choice in human_request.choices if choice.startswith("use:")}
                 selectable.update(choice.split(':', 2)[2] for choice in human_request.choices
-                                  if choice.startswith(('virtual:wusheng:', 'virtual:qixi:', 'virtual:guose:', 'virtual:longdan:', 'virtual:lianhuan:', 'virtual:huoji:', 'virtual:shuangxiong:', 'virtual:luanji:', 'virtual:duanliang:', 'virtual:jiuchi:')))
+                                  if choice.startswith(('virtual:jie_jianying:', 'virtual:wusheng:', 'virtual:qixi:', 'virtual:guose:', 'virtual:longdan:', 'virtual:lianhuan:', 'virtual:huoji:', 'virtual:shuangxiong:', 'virtual:luanji:', 'virtual:duanliang:', 'virtual:jiuchi:')))
             elif human_request.request_type in (RequestType.RESPOND_WITH_CARD, RequestType.CHOOSE_CARD, RequestType.CHOOSE_CARDS):
                 selectable = set(map(str, human_request.eligible_card_ids))
                 selectable.update(choice.split(':',2)[2] for choice in human_request.eligible_card_ids
-                                  if isinstance(choice,str) and choice.startswith(('virtual:wusheng:', 'virtual:qingguo:', 'virtual:jijiu:', 'virtual:longdan:', 'virtual:kanpo:', 'virtual:jiuchi:')))
+                                  if isinstance(choice,str) and choice.startswith(('virtual:jie_jianying:', 'virtual:wusheng:', 'virtual:qingguo:', 'virtual:jijiu:', 'virtual:longdan:', 'virtual:kanpo:', 'virtual:jiuchi:')))
         selected_cards = set(self._selected_cards)
         if self.interaction.card_id:
             selected_cards.add(self.interaction.card_id)
@@ -687,6 +690,8 @@ class MainWindow(QMainWindow):
                 from sanguosha.multiplayer.choice_labels import CHOICE_NAMES
                 labels.update(CHOICE_NAMES)
                 def option_label(choice):
+                    if choice.isdigit() and '【奇谋】' in request.prompt:
+                        return f'失去 {choice} 点体力'
                     if choice.startswith('learn:'):
                         return '永久获得【' + self.session.skills.skills[choice.split(':',1)[1]].name + '】'
                     if choice.startswith('draw:'):
@@ -771,6 +776,11 @@ class MainWindow(QMainWindow):
             if 'virtual:guhuo' in request.eligible_card_ids:
                 actions.append(('蛊惑 · 声明响应牌','virtual:guhuo',True))
             for choice in request.eligible_card_ids:
+                if isinstance(choice,str) and choice.startswith('virtual:jie_jianying:'):
+                    material = choice.split(':',2)[2]
+                    card = next((c for c in view.hand if str(c.card_id) == material), None)
+                    label = f'{card.name} {card.suit}{card.rank}' if card else self._public_card_label(material,view)
+                    actions.append(('渐营 · ' + label,choice,True))
                 if isinstance(choice,str) and choice.startswith('virtual:jijiu:'):
                     actions.append(('急救 · 红牌当桃',choice,True))
                 if isinstance(choice,str) and choice.startswith('virtual:jiuchi:'):

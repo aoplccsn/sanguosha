@@ -1,0 +1,135 @@
+[
+  {
+    "general_id": "boundary_xu_sheng",
+    "skill_id": "jie_pojun",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_ling_tong",
+    "skill_id": "jie_xuanfeng",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_zhang_fei",
+    "skill_id": "jie_paoxiao",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_zhang_fei",
+    "skill_id": "jie_tishen",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_fa_zheng",
+    "skill_id": "jie_enyuan",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_fa_zheng",
+    "skill_id": "jie_xuanhuo",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_wei_yan",
+    "skill_id": "jie_kuanggu",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_wei_yan",
+    "skill_id": "jie_qimou",
+    "allowed": false,
+    "source": "docs/t22/official_rules.md",
+    "reason": "limited or awakening skill excluded by Huashen rules"
+  },
+  {
+    "general_id": "boundary_zhu_ran",
+    "skill_id": "jie_danshou",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_zhong_hui",
+    "skill_id": "jie_quanji",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_zhong_hui",
+    "skill_id": "jie_zili",
+    "allowed": false,
+    "source": "docs/t22/official_rules.md",
+    "reason": "limited or awakening skill excluded by Huashen rules"
+  },
+  {
+    "general_id": "boundary_zhong_hui",
+    "skill_id": "jie_paiyi",
+    "allowed": false,
+    "source": "docs/t22/official_rules.md",
+    "reason": "awakening-granted derived skill, not printed native"
+  },
+  {
+    "general_id": "boundary_li_ru",
+    "skill_id": "jie_juece",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_li_ru",
+    "skill_id": "jie_mieji",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_li_ru",
+    "skill_id": "jie_fencheng",
+    "allowed": false,
+    "source": "docs/t22/official_rules.md",
+    "reason": "limited or awakening skill excluded by Huashen rules"
+  },
+  {
+    "general_id": "boundary_ju_shou",
+    "skill_id": "jie_jianying",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_ju_shou",
+    "skill_id": "jie_shibei",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_cao_xiu",
+    "skill_id": "jie_qianju",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  },
+  {
+    "general_id": "boundary_cao_xiu",
+    "skill_id": "jie_qingxi",
+    "allowed": true,
+    "source": "docs/t22/official_rules.md",
+    "reason": "visible native non-lord/non-limited/non-awakening skill; owner/phase scoped action and state"
+  }
+]

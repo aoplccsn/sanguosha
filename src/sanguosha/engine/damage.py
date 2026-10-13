@@ -56,7 +56,8 @@ class DamageActionHandler:
         action = frame.action = normalize_damage_source(state, action)
         target = state.players[action.target_id]
         self.recorder.record(BeforeDamageEvent(f"{action.action_id}:before", action.source_id, action.target_id, action.amount))
-        target.hp -= action.amount
+        from .shield import apply_damage_to_hp
+        apply_damage_to_hp(state, action.target_id, action.amount, self.recorder, action.action_id)
         self.recorder.record(DamageDealtEvent(f"{action.action_id}:dealt", action.source_id, action.target_id, action.amount, target.hp))
         self.recorder.record(AfterDamageEvent(f"{action.action_id}:after", action.source_id, action.target_id, action.amount))
         if target.hp <= 0:

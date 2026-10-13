@@ -24,7 +24,71 @@ class BoundaryTriggerHandler(YJSkillHandler):
     # This official mobile archive retains the classic Fa Zheng rule contract.
     jie_enyuan_gain = YJSkillHandler.enyuan_gain
     jie_enyuan_damage = YJSkillHandler.enyuan_damage
-    jie_xuanhuo = YJSkillHandler.xuanhuo
+    def jie_xuanhuo(self, state, f):
+        from .response import RespondWithCardAction
+        from .events import CardUsedEvent, CardResolvedEvent
+        from .military_basics import SlashSequence
+        from sanguosha.model.virtual_card import VirtualCard
+        a=f.action
+        if f.step_index==0:
+            f.step_index=1
+            return self.ask(f,RequestType.YES_NO,'【眩惑】是否放弃正常摸牌并令另一角色摸两张？')
+        if f.step_index==1:
+            wanted,f.decision=f.decision is True,None
+            if not wanted:return StepResult.complete(False)
+            f.step_index=2
+            return self.ask(f,RequestType.CHOOSE_PLAYER,'【眩惑】选择摸牌角色',
+                allowed_player_ids=tuple(q for q in state.seat_order if q!=a.player_id and state.players[q].is_alive))
+        if f.step_index==2:
+            f.local['recipient'],f.decision=f.decision,None
+            f.step_index=3
+            return StepResult.push(DrawCardsAction(a.action_id+':draw',f.local['recipient'],2))
+        pid=f.local['recipient']
+        if not state.players[pid].is_alive:return StepResult.complete(True)
+        if f.step_index==3:
+            targets=self.authorized.candidates(state,pid)
+            if targets:
+                f.step_index=4
+                return self.ask(f,RequestType.CHOOSE_PLAYER,'【眩惑】选择其攻击范围内的杀目标',allowed_player_ids=targets)
+            f.step_index=7
+        if f.step_index==4:
+            f.local['victim'],f.decision=f.decision,None
+            f.step_index=5
+            return StepResult.push(RespondWithCardAction(a.action_id+':jie-xuanhuo-response',pid,
+                'basic.slash',a.action_id,'【眩惑】使用一张杀（可以转换），或让法正获得两张牌',
+                f.local['victim'],use_card=True,validate_slash_target=True))
+        if f.step_index==5:
+            result=f.child_result
+            if result is not None:
+                virtual=result if isinstance(result,VirtualCard) else VirtualCard(state.cards[result].definition_id,(result,),
+                    state.cards[result].suit,state.cards[result].color)
+                f.local['materials']=virtual.material_ids
+                card=virtual.material_ids[0] if virtual.material_ids else a.action_id
+                self.moves.recorder.record(CardUsedEvent(a.action_id+':used',pid,card,(f.local['victim'],),
+                    virtual.definition_id,virtual_card=virtual))
+                f.step_index=6
+                if state.players[f.local['victim']].is_alive:
+                    return StepResult.push(SlashSequence(a.action_id+':forced',pid,card,(f.local['victim'],),virtual))
+            else:f.step_index=7
+        if f.step_index==6:
+            materials=tuple(cid for cid in f.local['materials'] if cid in state.cards_in(ZoneRef(ZoneType.PROCESSING)))
+            if materials:self.transfer(state,a,materials,ZoneRef(ZoneType.DISCARD_PILE),CardMoveReason.USE,actor=pid)
+            card=f.local['materials'][0] if f.local['materials'] else a.action_id
+            self.moves.recorder.record(CardResolvedEvent(a.action_id+':resolved',pid,card))
+            return StepResult.complete(True)
+        if f.step_index==7:
+            selected=f.local.setdefault('selected',[])
+            cards=tuple(cid for cid in discardable(state,pid) if cid not in selected)
+            if f.cursor>=2 or not cards:
+                if selected:self.transfer(state,a,tuple(selected),ZoneRef(ZoneType.HAND,a.player_id))
+                return StepResult.complete(True)
+            f.step_index=8
+            return self.ask(f,RequestType.CHOOSE_CARD,'【眩惑】获得该角色一张牌',eligible_card_ids=cards,subject_player_id=pid)
+        cid,f.decision=f.decision,None
+        if cid not in discardable(state,pid) or cid in f.local['selected']:raise InvalidCardUse('眩惑取得牌已不可用')
+        f.local['selected'].append(cid);f.cursor+=1;f.step_index=7
+        return StepResult.continue_()
+
 
     def step(self, state, frame):
         actor = frame.action.player_id
@@ -195,3 +259,26 @@ def clear_turn(state):
 
 def register(registry, skills, moves, definitions, deck):
     registry.register(BoundaryTriggerAction, BoundaryTriggerHandler(skills, moves, definitions, deck))
+
+def forced_slash_option_allowed(state, action, option, skills, definitions):
+    """Check the declared target after paying known equipment view-as material."""
+    from dataclasses import replace
+    from sanguosha.model.zones import CardZone
+    from .distance import DistanceSystem
+    if action.subject_player_id not in state.players or not state.players[action.subject_player_id].is_alive:
+        return False
+    cards = tuple(cid for cid in option.split(':') if cid in state.cards)
+    if option in state.cards:cards=(option,)
+    suffix=option.split(':',2)[-1]
+    if suffix in state.cards:cards=(suffix,)
+    preview=replace(state,zones={ref:CardZone(ref,list(zone.card_ids))
+        for ref,zone in state.zones.items()})
+    if cards:
+        from .card_moves import CardMoveService
+        from .events import EventRecorder
+        CardMoveService(EventRecorder()).move_owned_materials(preview,cards,action.player_id,
+            ZoneRef(ZoneType.PROCESSING),CardMoveReason.USE,'forced-slash-preview')
+    from .gods import wushen_applies
+    if any(wushen_applies(state,skills,action.player_id,cid) for cid in cards):
+        return True
+    return DistanceSystem(definitions).can_reach_with_slash(preview,action.player_id,action.subject_player_id)

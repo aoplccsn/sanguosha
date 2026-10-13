@@ -93,6 +93,8 @@ async def _receive_message(websocket: WebSocket, limit: int) -> dict[str, Any]:
 
 
 def create_app(config: WebConfig | None = None) -> FastAPI:
+    import mimetypes
+    mimetypes.add_type('image/webp', '.webp')
     config = config or WebConfig.from_env()
     config.validate_production()
     if config.production:

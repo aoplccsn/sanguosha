@@ -14,7 +14,7 @@ from test_t6_military_basics import game, put
 from test_t18a7_flow import room_for, send
 
 def test_108_descriptions_are_complete_and_original():
-    assert len(PLAYABLE_GENERAL_POOL)==108
+    assert len(PLAYABLE_GENERAL_POOL)==118
     registry={s.id:s for s in ALL_SKILL_CATALOGUE}
     for general in PLAYABLE_GENERAL_POOL:
         for sid in general.skill_ids:

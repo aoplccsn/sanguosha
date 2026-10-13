@@ -91,6 +91,8 @@ class MilitaryMoveService(CardMoveService):
                 self.reactions.extend(boundary_combat_reactions(state,event,self.skills,self.recorder,getattr(self,'definitions',None)))
                 from .boundary_triggers import event_reactions as boundary_trigger_reactions
                 self.reactions.extend(boundary_trigger_reactions(state,event,self.skills,self.recorder))
+                from .boundary_advanced import event_reactions as boundary_advanced_reactions
+                self.reactions.extend(boundary_advanced_reactions(state,event,self.skills,self.recorder))
                 from .mobile_gods import event_reactions as mobile_event_reactions
                 self.reactions.extend(mobile_event_reactions(state,event,self.skills,self.recorder))
                 from .zhangliao import event_reactions as zhangliao_event_reactions

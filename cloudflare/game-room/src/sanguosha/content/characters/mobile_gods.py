@@ -7,7 +7,7 @@ MOBILE_GENERAL_POOL = (
     CharacterDefinition('mobile_god_guojia', '神郭嘉', Kingdom.QUN, 3, Gender.MALE,
         ('huishi', 'tianyi_guojia', 'huishi_guojia'), {'pack': 'mobile_gods', 'god': True,
         'implemented': True, 'playable': True, 'huashen_eligible': False, 'overpowered': True,
-        'resource_id': 'general.mobile_god_guojia', 'portrait_mode': 'static'}),
+        'resource_id': 'general.mobile_god_guojia', 'portrait_mode': 'dynamic'}),
     CharacterDefinition('mobile_god_xunyu', '神荀彧', Kingdom.QUN, 3, Gender.MALE,
         ('tianzuo', 'lingce', 'dinghan'), {'pack': 'mobile_gods', 'god': True,
         'implemented': True, 'playable': True, 'huashen_eligible': False, 'overpowered': True,

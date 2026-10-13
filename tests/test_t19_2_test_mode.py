@@ -56,7 +56,7 @@ def test_test_room_requires_server_auth_and_normal_draft_rejects_forgery():
             draft = until(socket, 'DRAFT_REQUEST')
             assert draft['test_room'] is True
             assert set(draft['request']['choices']) == {str(c.id) for c in PLAYABLE_GENERAL_POOL}
-            assert len(draft['request']['choices']) == 108
+            assert len(draft['request']['choices']) == 118
             assert len(app.state.room_manager.rooms[code].game.seats) == 8
             socket.send_json(message('SUBMIT_DECISION', decision={
                 'request_id': draft['request']['request_id'], 'value': 'mobile_god_lusu'}))

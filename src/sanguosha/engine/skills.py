@@ -1208,6 +1208,8 @@ class SkillPlayOptions:
         extra = play_options(state, pid, self.skills)
         from .boundary_triggers import play_options as boundary_trigger_play_options
         extra.extend(boundary_trigger_play_options(state,pid,self.skills))
+        from .boundary_advanced import play_options as boundary_advanced_play_options
+        extra.extend(boundary_advanced_play_options(state,pid,self.skills,self.validator.definitions))
         from .remaining_gods import play_options as god_play_options
         extra.extend(god_play_options(state,pid,self.skills))
         if self.skills.has(state,pid,'huishi') and state.players[pid].max_hp < 10 and not state.play_usage.count('skill.huishi'):
@@ -1389,6 +1391,9 @@ class SkillPlayOptions:
     def build_action(self, state, pid, option, aid):
         if option not in self.options(state,pid):
             raise InvalidCardUse('skill option is no longer legal')
+        if option in ('skill:jie_paiyi', 'skill:jie_mieji', 'skill:jie_fencheng', 'skill:jie_jianying'):
+            from .boundary_advanced import BoundaryAdvancedAction
+            return BoundaryAdvancedAction(aid + ':boundary', pid, option.split(':')[1])
         if option == 'skill:jie_qimou':
             from .boundary_triggers import BoundaryTriggerAction
             return BoundaryTriggerAction(aid + ':boundary', pid, 'jie_qimou')

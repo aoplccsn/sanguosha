@@ -156,8 +156,6 @@ def test_xuanfeng_two_cards_can_share_target_and_hidden_choices_remain_authorita
         answer(s, 'p2')
         assert s.engine.pending_request.subject_player_id == 'p2'
         answer(s, cid)
-        if cid == cards[0]:
-            answer(s, True)
     assert all(cid in s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE)) for cid in cards)
     assert s.engine.pending_request is None
 
@@ -219,16 +217,17 @@ def test_tishen_collects_complete_slash_only_when_target_took_no_damage(hit):
     s.state.__post_init__()
 
 
-def test_xuanfeng_can_stop_after_one_actual_discard():
+def test_xuanfeng_official_discard_branch_requires_second_card():
     s = game('boundary_ling_tong')
     cards = s.state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))[:2]
     s.engine.start_action(BoundaryCombatAction('one-discard', 'p1', 'jie_xuanfeng'))
     answer(s, 'discard')
     answer(s, 'p2')
     answer(s, cards[0])
-    answer(s, False)
-    assert cards[0] in s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE))
-    assert cards[1] in s.state.cards_in(ZoneRef(ZoneType.HAND, 'p2'))
+    assert s.engine.pending_request.request_type is RequestType.CHOOSE_PLAYER
+    answer(s, 'p2')
+    answer(s, cards[1])
+    assert all(cid in s.state.cards_in(ZoneRef(ZoneType.DISCARD_PILE)) for cid in cards)
     assert s.engine.stack.is_empty()
 
 

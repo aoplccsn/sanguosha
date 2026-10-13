@@ -175,6 +175,13 @@ class TurnActionHandler:
             clear_zhuikong(state,action.player_id)
             from .skill_leases import expire_target
             expire_target(state,action.player_id)
+            from .boundary_advanced import clear_turn as clear_boundary_advanced
+            clear_boundary_advanced(state)
+            from .boundary_triggers import clear_turn as clear_boundary_triggers
+            clear_boundary_triggers(state)
+            from .boundary_combat import clear_turn as clear_boundary_combat
+            from .card_moves import CardMoveService
+            clear_boundary_combat(state, CardMoveService(self.recorder), action.player_id, action.action_id + ':boundary-return')
             state.current_phase = None
             self.recorder.record(TurnEndedEvent(f"{action.action_id}:end", action.player_id, state.turn_number))
             return StepResult.complete()
