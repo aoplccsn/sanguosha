@@ -1,0 +1,242 @@
+[
+  {
+    "id": "boundary_xu_sheng",
+    "name": "界徐盛",
+    "source": "assets/source_art/boundary/boundary_xu_sheng.png",
+    "source_sha256": "10b088ed53179252e3fd44526fd7914f0e19e3d06196911bf4b4b1288e7fc9b8",
+    "runtime": "assets/generals/wu/boundary_xu_sheng.png",
+    "web": "assets/generals/wu/boundary_xu_sheng.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    },
+    "generator": "built-in image_gen",
+    "visual_qa": "pass: distinct original ink-wash scene, readable face, historical clothing, no typography/watermark"
+  },
+  {
+    "id": "boundary_ling_tong",
+    "name": "界凌统",
+    "source": "assets/source_art/boundary/boundary_ling_tong.png",
+    "source_sha256": "b976ed8d9bac80a3172e946978417512b2721477ad408d78734371d1bc48691e",
+    "runtime": "assets/generals/wu/boundary_ling_tong.png",
+    "web": "assets/generals/wu/boundary_ling_tong.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    },
+    "generator": "built-in image_gen",
+    "visual_qa": "pass: distinct original ink-wash scene, readable face, historical clothing, no typography/watermark"
+  },
+  {
+    "id": "boundary_zhang_fei",
+    "name": "界张飞",
+    "source": "assets/source_art/boundary/boundary_zhang_fei.png",
+    "source_sha256": "a813c51a4a98f1af65e9f5c8cfd91732ee4ff5b99951d265f3b9774146232a96",
+    "runtime": "assets/generals/shu/boundary_zhang_fei.png",
+    "web": "assets/generals/shu/boundary_zhang_fei.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    },
+    "generator": "built-in image_gen",
+    "visual_qa": "pass: distinct original ink-wash scene, readable face, historical clothing, no typography/watermark"
+  },
+  {
+    "id": "boundary_fa_zheng",
+    "name": "界法正",
+    "source": "assets/source_art/boundary/boundary_fa_zheng.png",
+    "source_sha256": "74d3cc6778db0627ef7120014601bd7779a3486f286e352bf0d4cb90d29f85dd",
+    "runtime": "assets/generals/shu/boundary_fa_zheng.png",
+    "web": "assets/generals/shu/boundary_fa_zheng.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    },
+    "generator": "built-in image_gen",
+    "visual_qa": "pass: distinct original ink-wash scene, readable face, historical clothing, no typography/watermark"
+  },
+  {
+    "id": "boundary_wei_yan",
+    "name": "界魏延",
+    "source": "assets/source_art/boundary/boundary_wei_yan.png",
+    "source_sha256": "520dfd4e9b4fe3313695a250f51b4e777240f46e9e052a2427cb2049c34c0174",
+    "runtime": "assets/generals/shu/boundary_wei_yan.png",
+    "web": "assets/generals/shu/boundary_wei_yan.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    },
+    "generator": "built-in image_gen",
+    "visual_qa": "pass: distinct original ink-wash scene, readable face, historical clothing, no typography/watermark"
+  },
+  {
+    "id": "boundary_zhu_ran",
+    "name": "界朱然",
+    "source": "assets/source_art/boundary/boundary_zhu_ran.png",
+    "source_sha256": "f87e4877ba7948e805c717c3599065a9eb605cb7041f0e8ac6363828c418a17c",
+    "runtime": "assets/generals/wu/boundary_zhu_ran.png",
+    "web": "assets/generals/wu/boundary_zhu_ran.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    },
+    "generator": "built-in image_gen",
+    "visual_qa": "pass: distinct original ink-wash scene, readable face, historical clothing, no typography/watermark"
+  },
+  {
+    "id": "boundary_zhong_hui",
+    "name": "界钟会",
+    "source": "assets/source_art/boundary/boundary_zhong_hui.png",
+    "source_sha256": "7fd2afd958794b69383e79913e0bf196ef30f09237e933cba70c72b816641a81",
+    "runtime": "assets/generals/wei/boundary_zhong_hui.png",
+    "web": "assets/generals/wei/boundary_zhong_hui.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    },
+    "generator": "built-in image_gen",
+    "visual_qa": "pass: distinct original ink-wash scene, readable face, historical clothing, no typography/watermark"
+  },
+  {
+    "id": "boundary_li_ru",
+    "name": "界李儒",
+    "source": "assets/source_art/boundary/boundary_li_ru.png",
+    "source_sha256": "b95d675f35a2984a0124203ca00ce43ed800140a261151f24d1d669448176801",
+    "runtime": "assets/generals/qun/boundary_li_ru.png",
+    "web": "assets/generals/qun/boundary_li_ru.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    },
+    "generator": "built-in image_gen",
+    "visual_qa": "pass: distinct original ink-wash scene, readable face, historical clothing, no typography/watermark"
+  },
+  {
+    "id": "boundary_ju_shou",
+    "name": "界沮授",
+    "source": "assets/source_art/boundary/boundary_ju_shou.png",
+    "source_sha256": "a78cee8029eb4a84ae3e7e418427002fc92a39a8d70389b854dbfc752ba2bd3b",
+    "runtime": "assets/generals/qun/boundary_ju_shou.png",
+    "web": "assets/generals/qun/boundary_ju_shou.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    },
+    "generator": "built-in image_gen",
+    "visual_qa": "pass: distinct original ink-wash scene, readable face, historical clothing, no typography/watermark"
+  },
+  {
+    "id": "boundary_cao_xiu",
+    "name": "界曹休",
+    "source": "assets/source_art/boundary/boundary_cao_xiu.png",
+    "source_sha256": "72f74a1c8c120a7d1f211062d81f8aebc91dbe295a584460d1210645572613b9",
+    "runtime": "assets/generals/wei/boundary_cao_xiu.png",
+    "web": "assets/generals/wei/boundary_cao_xiu.webp",
+    "dimensions": {
+      "source": [
+        1024,
+        1536
+      ],
+      "runtime": [
+        768,
+        1152
+      ],
+      "web": [
+        600,
+        900
+      ]
+    },
+    "generator": "built-in image_gen",
+    "visual_qa": "pass: distinct original ink-wash scene, readable face, historical clothing, no typography/watermark"
+  }
+]

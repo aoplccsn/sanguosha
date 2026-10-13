@@ -172,5 +172,15 @@
   "general.mobile_god_sunce": "generals/qun/mobile_god_sunce.png",
   "general.mobile_god_xunyu": "generals/qun/mobile_god_xunyu.png",
   "general.mobile_god_guojia": "generals/qun/mobile_god_guojia.png",
-  "trick.qizhengxiangsheng": "cards/default_card.png"
+  "trick.qizhengxiangsheng": "cards/default_card.png",
+  "general.boundary_xu_sheng": "generals/wu/boundary_xu_sheng.png",
+  "general.boundary_ling_tong": "generals/wu/boundary_ling_tong.png",
+  "general.boundary_zhang_fei": "generals/shu/boundary_zhang_fei.png",
+  "general.boundary_fa_zheng": "generals/shu/boundary_fa_zheng.png",
+  "general.boundary_wei_yan": "generals/shu/boundary_wei_yan.png",
+  "general.boundary_zhu_ran": "generals/wu/boundary_zhu_ran.png",
+  "general.boundary_zhong_hui": "generals/wei/boundary_zhong_hui.png",
+  "general.boundary_li_ru": "generals/qun/boundary_li_ru.png",
+  "general.boundary_ju_shou": "generals/qun/boundary_ju_shou.png",
+  "general.boundary_cao_xiu": "generals/wei/boundary_cao_xiu.png"
 }

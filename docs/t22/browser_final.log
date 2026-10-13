@@ -1,0 +1,18 @@
+
+Running 10 tests using 1 worker
+
+
+
+(node:20068) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/10] [chromium] › e2e\t22-boundary.spec.ts:4:2 › T22 select portrait and reconnect boundary_xu_sheng
+[2/10] [chromium] › e2e\t22-boundary.spec.ts:4:2 › T22 select portrait and reconnect boundary_ju_shou
+[3/10] [chromium] › e2e\t22-boundary.spec.ts:4:2 › T22 select portrait and reconnect boundary_zhong_hui
+[4/10] [chromium] › e2e\t22-boundary.spec.ts:4:2 › T22 select portrait and reconnect boundary_li_ru
+[5/10] [chromium] › e2e\t22-boundary.spec.ts:4:2 › T22 select portrait and reconnect boundary_ling_tong
+[6/10] [chromium] › e2e\t22-boundary.spec.ts:4:2 › T22 select portrait and reconnect boundary_zhu_ran
+[7/10] [chromium] › e2e\t22-boundary.spec.ts:4:2 › T22 select portrait and reconnect boundary_fa_zheng
+[8/10] [chromium] › e2e\t22-boundary.spec.ts:4:2 › T22 select portrait and reconnect boundary_cao_xiu
+[9/10] [chromium] › e2e\t22-boundary.spec.ts:4:2 › T22 select portrait and reconnect boundary_wei_yan
+[10/10] [chromium] › e2e\t22-boundary.spec.ts:4:2 › T22 select portrait and reconnect boundary_zhang_fei
+  10 passed (15.1s)
